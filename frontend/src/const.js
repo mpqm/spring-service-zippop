@@ -1,0 +1,1 @@
+export const backend = "/api/api/v1";
