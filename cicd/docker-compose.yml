@@ -1,0 +1,62 @@
+services:
+
+  backend:
+    container_name: zippop-backend
+    image: okqkrwhdtjd/backend:${DOCKER_IMAGE_TAG}
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+      - KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
+      - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
+      - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
+      - NAVER_REDIRECT_URL=${NAVER_REDIRECT_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - IMP_KEY=${IMP_KEY}
+      - IMP_SECRET=${IMP_SECRET}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    container_name: zippop-frontend
+    ports:
+      - "80:80"
+    image: okqkrwhdtjd/frontend:${DOCKER_IMAGE_TAG}
+    volumes:
+      - ../cicd/nginx:/etc/nginx/conf.d
+
+  mariadb:
+    container_name: zippop-mariadb
+    ports:
+      - 3306:3306
+    image: mariadb:latest
+    environment:
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    volumes:
+      - ../cicd/mariadb:/var/lib/mysql
+
+  redis:
+    container_name: zippop-redis
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    command: >
+      sh -c "echo 'requirepass qwer1234' > /usr/local/etc/redis/redis.conf && 
+      exec redis-server /usr/local/etc/redis/redis.conf"
+    volumes:
+      - ./redis:/usr/local/etc/redis

@@ -17,6 +17,7 @@
 	</h3>
 </div>
 
+<br>
 
 ## 👩🏻‍💻‍ FIIIIIVE 팀원
 <div align="center">
@@ -27,6 +28,7 @@
 
 </div>
 
+<br>
 
 ## 👨🏻‍🏫 프로젝트 개요
 <details>
@@ -115,11 +117,14 @@
 <div align="center">
     <img src="https://github.com/mpqm/spring-service-zippop/blob/dev/docs/img/erd.png">
 </div>
+<br>
 
 ## 🎡 Architecture
 <div align="center">
-    <img src="https://github.com/mpqm/spring-service-zippop/blob/dev/docs/img/systemarch.png">
+    <img src="https://github.com/mpqm/spring-service-zippop/blob/dev/docs/img/systemarch.PNG">
 </div>
+
+<br>
 
 ## 🗄️ 개발 문서
 <ul>
