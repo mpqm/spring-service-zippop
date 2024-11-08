@@ -5,9 +5,9 @@ import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.orders.model.dto.SearchCustomerOrdersRes;
 import com.fiiiiive.zippop.orders.service.OrdersService;
-import com.fiiiiive.zippop.orders.model.dto.GetCompanyOrdersRes;
-import com.fiiiiive.zippop.orders.model.dto.GetCustomerOrdersRes;
+import com.fiiiiive.zippop.orders.model.dto.SearchCompanyOrdersRes;
 import com.fiiiiive.zippop.orders.model.dto.VerifyOrdersRes;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,7 +40,7 @@ public class OrdersController {
     @GetMapping("/search-customer")
     public BaseResponse<List<VerifyOrdersRes>> searchCustomer(
         @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
-        List<GetCustomerOrdersRes> response = ordersService.searchCustomer(customUserDetails);
+        List<SearchCustomerOrdersRes> response = ordersService.searchCustomer(customUserDetails);
         return new BaseResponse(BaseResponseMessage.POPUP_ORDERS_SEARCH_SUCCESS,response);
     }
 
@@ -48,7 +48,7 @@ public class OrdersController {
     @GetMapping("/search-company")
     public BaseResponse<List<VerifyOrdersRes>> searchCompany(
         @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
-        List<GetCompanyOrdersRes> response = ordersService.searchCompany(customUserDetails);
+        List<SearchCompanyOrdersRes> response = ordersService.searchCompany(customUserDetails);
         return new BaseResponse(BaseResponseMessage.POPUP_ORDERS_SEARCH_SUCCESS,response);
     }
 

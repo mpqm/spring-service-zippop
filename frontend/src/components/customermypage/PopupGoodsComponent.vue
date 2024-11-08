@@ -30,7 +30,7 @@
           <td>{{ formatDate(order.updatedAt) }}</td>
           <td>
             <ul>
-              <li v-for="detail in order.getCustomerOrdersDetailResList" :key="detail.id">
+              <li v-for="detail in order.searchCustomerOrdersDetailResList" :key="detail.id">
                 {{ detail.info }} <!-- Replace with actual detail fields -->
               </li>
             </ul>

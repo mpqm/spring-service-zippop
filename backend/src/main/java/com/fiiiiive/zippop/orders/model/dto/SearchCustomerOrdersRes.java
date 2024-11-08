@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetCustomerOrdersRes {
+public class SearchCustomerOrdersRes {
     private Long customerOrdersIdx;
     private String impUid;
     private Integer usedPoint;
@@ -20,5 +20,5 @@ public class GetCustomerOrdersRes {
     private Integer deliveryCost;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<GetCustomerOrdersDetailRes> getCustomerOrdersDetailResList = new ArrayList<>();
+    private List<SearchCustomerOrdersDetailRes> searchCustomerOrdersDetailResList = new ArrayList<>();
 }

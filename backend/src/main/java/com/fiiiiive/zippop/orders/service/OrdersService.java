@@ -4,6 +4,7 @@ package com.fiiiiive.zippop.orders.service;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
+import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
@@ -37,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.fiiiiive.zippop.global.common.responses.BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND;
+
 
 @Service
 @RequiredArgsConstructor
@@ -56,22 +59,22 @@ public class OrdersService {
         // 기업회원 등록 수수료 결제(operation = 0 )
         if (customUserDetails.getRole().equals("ROLE_COMPANY") && operation == 0) {
             Company company = companyRepository.findByCompanyEmail(customUserDetails.getEmail())
-            .orElseThrow(() -> new BaseException(POPUP_STORE_PAY_FAIL_NOT_FOUND_COMPANY));
+            .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_PAY_FAIL_NOT_FOUND_COMPANY));
             IamportResponse<Payment> response = iamportClient.paymentByImpUid(impUid);
             Payment payment = response.getResponse();
             if (payment == null) {
-                throw new BaseException(POPUP_STORE_PAY_FAIL_NOT_FOUND_PAYINFO);
+                throw new BaseException(BaseResponseMessage.POPUP_STORE_PAY_FAIL_NOT_FOUND_PAYINFO);
             }
             Integer payedPrice = payment.getAmount().intValue();
             String customData = payment.getCustomData();
             Gson gson = new Gson();
             Map<String, Object > customDataMap = gson.fromJson(customData, Map.class);
             if (customDataMap.get("storeIdx") == null) {
-                throw new BaseException(POPUP_STORE_PAY_FAIL_INCORRECT_REQUEST);
+                throw new BaseException(BaseResponseMessage.POPUP_STORE_PAY_FAIL_INCORRECT_REQUEST);
             }
             Long storeIdx = ((Double)customDataMap.get("storeIdx")).longValue();
             Store store = storeRepository.findById(storeIdx)
-            .orElseThrow(() -> new BaseException(POPUP_STORE_PAY_FAIL_NOT_FOUND_STORE));
+            .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_PAY_FAIL_NOT_FOUND_STORE));
             Integer totalPeople = store.getTotalPeople();
             Integer expectedPrice = totalPeople * 1500;
             if (!payedPrice.equals(expectedPrice)) {
@@ -97,62 +100,62 @@ public class OrdersService {
         }
         else if (customUserDetails.getRole().equals("ROLE_CUSTOMER")) {
             Customer customer = customerRepository.findByCustomerEmail(customUserDetails.getEmail())
-            .orElseThrow(() -> new BaseException(POPUP_GOODS_PAY_FAIL_NOT_FOUND_MEMBER));
+            .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_FAIL_NOT_FOUND_MEMBER));
             IamportResponse<Payment> response = iamportClient.paymentByImpUid(impUid);
             Payment payment = response.getResponse();
             if (payment == null) {
-                throw new BaseException(POPUP_STORE_PAY_FAIL);
+                throw new BaseException(BaseResponseMessage.POPUP_STORE_PAY_FAIL);
             }
             Integer payedPrice = payment.getAmount().intValue();
             String customData = payment.getCustomData();
             if (customData == null) {
-                throw new BaseException(POPUP_STORE_PAY_FAIL);
+                throw new BaseException(BaseResponseMessage.POPUP_STORE_PAY_FAIL);
             }
             Gson gson = new Gson();
             Map<String, Double> goodsMap = gson.fromJson(customData, Map.class);
             Integer totalPurchasePrice = 0;
             Integer addPoint = 0;
             Integer usedPoint = 0;
-            List<PopupGoods> popupGoodsList = new ArrayList<>();
+            List<Goods> goodsList = new ArrayList<>();
             // 사전 굿즈 구매(operation = 1)
             if (operation == 1) {
                 for (String key : goodsMap.keySet()) {
                     Integer purchaseGoodsPrice = goodsMap.get(key).intValue();
-                    PopupGoods popupGoods = popupGoodsRepository.findByIdx(Long.parseLong(key))
-                    .orElseThrow(() -> new BaseException(POPUP_GOODS_PAY_GOODS_NULL));
+                    Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_GOODS_NULL));
                     if (purchaseGoodsPrice != 1) {
-                        throw new BaseException(POPUP_GOODS_PAY_FAIL_LIMIT_EXCEEDED);
+                        throw new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_FAIL_LIMIT_EXCEEDED);
                     }
-                    popupGoodsList.add(popupGoods);
-                    totalPurchasePrice += purchaseGoodsPrice * popupGoods.getProductPrice();
+                    goodsList.add(goods);
+                    totalPurchasePrice += purchaseGoodsPrice * goods.getPrice();
                 }
                 addPoint += (int) Math.round(totalPurchasePrice * 0.05);
                 usedPoint = (totalPurchasePrice + 500) - payedPrice;
                 if (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0) {
-                    throw new BaseException(POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED);
+                    throw new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED);
                 }
                 totalPurchasePrice += 500 - usedPoint;
                 customer.setPoint(customer.getPoint() - usedPoint + addPoint);
             } else { // 재고 굿즈 구매 (operation = 2)
                 for (String key : goodsMap.keySet()) {
                     Integer purchaseGoodsPrice = goodsMap.get(key).intValue();
-                    PopupGoods popupGoods = popupGoodsRepository.findByIdx(Long.parseLong(key))
-                    .orElseThrow(() -> new BaseException(POPUP_GOODS_PAY_GOODS_NULL));
-                    if (purchaseGoodsPrice > popupGoods.getProductAmount()) {
-                        throw new BaseException(POPUP_GOODS_PAY_FAIL_EXCEEDED);
+                    Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_GOODS_NULL));
+                    if (purchaseGoodsPrice > goods.getAmount()) {
+                        throw new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_FAIL_EXCEEDED);
                     }
-                    popupGoodsList.add(popupGoods);
-                    totalPurchasePrice += purchaseGoodsPrice * popupGoods.getProductPrice();
+                    goodsList.add(goods);
+                    totalPurchasePrice += purchaseGoodsPrice * goods.getPrice();
                 }
                 usedPoint = (totalPurchasePrice + 2500) - payedPrice;
                 if (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0) {
-                    throw new BaseException(POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED);
+                    throw new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED);
                 }
                 totalPurchasePrice += 2500 - usedPoint;
                 customer.setPoint(customer.getPoint() - usedPoint);
             }
             if (!payedPrice.equals(totalPurchasePrice)){
-                throw new BaseException(POPUP_GOODS_PAY_FAIL_VALIDATION_ERROR);
+                throw new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_FAIL_VALIDATION_ERROR);
             }
             else {
                 customerRepository.save(customer);
@@ -179,58 +182,58 @@ public class OrdersService {
                 customerOrdersRepository.save(customerOrders);
                 for (String key : goodsMap.keySet()) {
                     Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
-                    PopupGoods popupGoods = popupGoodsRepository.findById(Long.parseLong(key))
-                    .orElseThrow(() -> new BaseException(POPUP_GOODS_PAY_GOODS_NULL));
-                    popupGoods.setProductAmount(popupGoods.getProductAmount() - purchaseGoodsAmount);
-                    popupGoodsRepository.save(popupGoods);
+                    Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_GOODS_NULL));
+                    goods.setAmount(goods.getAmount() - purchaseGoodsAmount);
+                    goodsRepository.save(goods);
                     // 배송지 정보는 없음
                     String uuid = UUID.randomUUID().toString();
                     CustomerOrdersDetail customerOrdersDetail = CustomerOrdersDetail.builder()
-                            .eachPrice(popupGoods.getProductPrice() * purchaseGoodsAmount)
+                            .eachPrice(goods.getPrice() * purchaseGoodsAmount)
                             .trackingNumber(uuid)
                             .customerOrders(customerOrders)
-                            .popupGoods(popupGoods)
+                            .goods(goods)
                             .build();
                     customerOrdersDetailRepository.save(customerOrdersDetail);
                 }
                 return VerifyOrdersRes.builder()
                         .impUid(impUid)
-                        .productIdxMap(goodsMap)
+                        .goodsIdxMap(goodsMap)
                         .totalPrice(totalPurchasePrice)
                         .build();
             }
         } else {
-            throw new BaseException(POPUP_PAY_FAIL_NOT_INVALID);
+            throw new BaseException(BaseResponseMessage.POPUP_PAY_FAIL_NOT_INVALID);
         }
     }
 
-    public List<GetCustomerOrdersRes> searchCustomer(CustomUserDetails customUserDetails) throws BaseException {
+    public List<SearchCustomerOrdersRes> searchCustomer(CustomUserDetails customUserDetails) throws BaseException {
         Customer customer = customerRepository.findByCustomerEmail(customUserDetails.getEmail())
-        .orElseThrow(() -> new BaseException(POPUP_PAY_FAIL_NOT_INVALID));
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_FAIL_NOT_INVALID));
         List<CustomerOrders> customerOrdersList = customerOrdersRepository.findByCustomerIdx(customUserDetails.getIdx())
         .orElseThrow(() -> new BaseException(POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
-        List<GetCustomerOrdersRes> getCustomerOrdersResList = new ArrayList<>();
+        List<SearchCustomerOrdersRes> getCustomerOrdersResList = new ArrayList<>();
         for(CustomerOrders customerOrders : customerOrdersList){
             List<CustomerOrdersDetail> customerOrdersDetailList = customerOrders.getCustomerOrdersDetailList();
-            List<GetCustomerOrdersDetailRes> getCustomerOrdersDetailResList = new ArrayList<>();
+            List<SearchCustomerOrdersDetailRes> searchCustomerOrdersDetailResList = new ArrayList<>();
             for(CustomerOrdersDetail customerOrdersDetail : customerOrdersDetailList){
-                PopupGoods popupGoods = customerOrdersDetail.getPopupGoods();
+                Goods goods = customerOrdersDetail.getGoods();
                 SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
-                        .productIdx(popupGoods.getProductIdx())
-                        .productName(popupGoods.getProductName())
-                        .productPrice(popupGoods.getProductPrice())
-                        .productContent(popupGoods.getProductContent())
-                        .productAmount(popupGoods.getProductAmount())
+                        .goodsIdx(goods.getIdx())
+                        .goodsName(goods.getName())
+                        .goodsPrice(goods.getPrice())
+                        .goodsContent(goods.getContent())
+                        .goodsAmount(goods.getAmount())
                         .build();
-                GetCustomerOrdersDetailRes getCustomerOrdersDetailRes = GetCustomerOrdersDetailRes.builder()
-                        .companyOrdersDetailIdx(customerOrdersDetail.getCustomerOrderDetailIdx())
+                SearchCustomerOrdersDetailRes searchCustomerOrdersDetailRes = SearchCustomerOrdersDetailRes.builder()
+                        .customerOrdersDetailIdx(customerOrdersDetail.getIdx())
                         .eachPrice(customerOrdersDetail.getEachPrice())
                         .trackingNumber(customerOrdersDetail.getTrackingNumber())
                         .searchGoodsRes(searchGoodsRes)
                         .build();
-                getCustomerOrdersDetailResList.add(getCustomerOrdersDetailRes);
+                searchCustomerOrdersDetailResList.add(searchCustomerOrdersDetailRes);
             }
-            GetCustomerOrdersRes getCustomerOrdersRes = GetCustomerOrdersRes.builder()
+            SearchCustomerOrdersRes getCustomerOrdersRes = SearchCustomerOrdersRes.builder()
                     .customerOrdersIdx(customerOrders.getCustomerOrdersIdx())
                     .impUid(customerOrders.getImpUid())
                     .usedPoint(customerOrders.getUsedPoint())
@@ -239,55 +242,55 @@ public class OrdersService {
                     .deliveryCost(customerOrders.getDeliveryCost())
                     .createdAt(customerOrders.getCreatedAt())
                     .updatedAt(customerOrders.getUpdatedAt())
-                    .getCustomerOrdersDetailResList(getCustomerOrdersDetailResList)
+                    .searchCustomerOrdersDetailResList(searchCustomerOrdersDetailResList)
                     .build();
             getCustomerOrdersResList.add(getCustomerOrdersRes);
         }
         return getCustomerOrdersResList;
     }
 
-    public List<GetCompanyOrdersRes> searchCompany(CustomUserDetails customUserDetails) throws BaseException {
+    public List<SearchCompanyOrdersRes> searchCompany(CustomUserDetails customUserDetails) throws BaseException {
         Company company = companyRepository.findByCompanyEmail(customUserDetails.getEmail())
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER));
         List<CompanyOrders> companyOrdersList = companyOrdersRepository.findByCompanyIdx(customUserDetails.getIdx())
-        .orElseThrow(() -> new BaseException(POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
-        List<GetCompanyOrdersRes> getCompanyOrdersResList = new ArrayList<>();
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
+        List<SearchCompanyOrdersRes> searchCompanyOrdersResList = new ArrayList<>();
         for(CompanyOrders companyOrders : companyOrdersList){
             List<CompanyOrdersDetail> companyOrdersDetailList = companyOrders.getCompanyOrdersDetailList();
-            List<GetCompanyOrdersDetailRes> getCompanyOrdersDetailResList = new ArrayList<>();
+            List<SearchCompanyOrdersDetailRes> searchCompanyOrdersDetailResList = new ArrayList<>();
             for(CompanyOrdersDetail companyOrdersDetail : companyOrdersDetailList) {
                 Store store = companyOrdersDetail.getStore();
                 SearchStoreRes searchStoreRes = SearchStoreRes.builder()
-                        .storeIdx(store.getStoreIdx())
+                        .storeIdx(store.getIdx())
                         .companyEmail(store.getCompanyEmail())
-                        .storeName(store.getStoreName())
-                        .storeContent(store.getStoreContent())
-                        .storeAddress(store.getStoreAddress())
+                        .storeName(store.getName())
+                        .storeContent(store.getContent())
+                        .storeAddress(store.getAddress())
                         .category(store.getCategory())
                         .likeCount(store.getLikeCount())
                         .totalPeople(store.getTotalPeople())
-                        .storeStartDate(store.getStoreStartDate())
-                        .storeEndDate(store.getStoreEndDate())
+                        .storeStartDate(store.getStartDate())
+                        .storeEndDate(store.getEndDate())
                         .build();
-                GetCompanyOrdersDetailRes getCompanyOrdersDetailRes = GetCompanyOrdersDetailRes.builder()
-                        .companyOrdersDetailIdx(companyOrdersDetail.getCompanyOrderDetailIdx())
+                SearchCompanyOrdersDetailRes searchCompanyOrdersDetailRes = SearchCompanyOrdersDetailRes.builder()
+                        .companyOrdersDetailIdx(companyOrdersDetail.getIdx())
                         .totalPrice(companyOrdersDetail.getTotalPrice())
                         .searchStoreRes(searchStoreRes)
                         .createdAt(companyOrdersDetail.getCreatedAt())
                         .updatedAt(companyOrdersDetail.getUpdatedAt())
                         .build();
-                getCompanyOrdersDetailResList.add(getCompanyOrdersDetailRes);
+                searchCompanyOrdersDetailResList.add(searchCompanyOrdersDetailRes);
             }
-            GetCompanyOrdersRes getCompanyOrdersRes = GetCompanyOrdersRes.builder()
-                    .companyOrdersIdx(companyOrders.getCompanyOrdersIdx())
+            SearchCompanyOrdersRes searchCompanyOrdersRes = SearchCompanyOrdersRes.builder()
+                    .companyOrdersIdx(companyOrders.getIdx())
                     .impUid(companyOrders.getImpUid())
                     .createdAt(companyOrders.getCreatedAt())
                     .updatedAt(companyOrders.getUpdatedAt())
-                    .getCompanyOrdersDetailResList(getCompanyOrdersDetailResList)
+                    .searchCompanyOrdersDetailResList(searchCompanyOrdersDetailResList)
                     .build();
-            getCompanyOrdersResList.add(getCompanyOrdersRes);
+            searchCompanyOrdersResList.add(searchCompanyOrdersRes);
         }
-        return getCompanyOrdersResList;
+        return searchCompanyOrdersResList;
     }
 }
 

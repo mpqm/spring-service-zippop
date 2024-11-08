@@ -118,7 +118,7 @@ public class AuthService {
         }
     }
 
-    public Boolean activeMember(String email, String role) throws BaseException {
+    public void activeMember(String email, String role) throws BaseException {
         if(Objects.equals(role, "ROLE_COMPANY")){
             Optional<Company> result = companyRepository.findByCompanyEmail(email);
             if(result.isPresent()){
@@ -140,7 +140,6 @@ public class AuthService {
                 throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL);
             }
         }
-        return true;
     }
 
     public String sendEmail(PostSignupRes response) {
@@ -166,8 +165,8 @@ public class AuthService {
         return uuid;
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public void inActiveMenber(CustomUserDetails customUserDetails) throws BaseException {
+    @Transactional
+    public void inActiveMember(CustomUserDetails customUserDetails) throws BaseException {
         String email = customUserDetails.getUsername();
         String role = customUserDetails.getRole();
         Long idx = customUserDetails.getIdx();
@@ -204,11 +203,11 @@ public class AuthService {
         Optional<EmailVerify> result = emailVerifyRepository.findByEmail(email);
         if (result.isPresent()) {
             EmailVerify emailVerify = result.get();
-            if (emailVerify.getUuid().equals(uuid)) { return true; }
+            return emailVerify.getUuid().equals(uuid);
         } else { throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL); }
-        return false;
     }
 
+    @Transactional
     public void save(String email, String uuid) throws BaseException{
         EmailVerify emailVerify = EmailVerify.builder()
                 .email(email)
@@ -217,12 +216,10 @@ public class AuthService {
         emailVerifyRepository.save(emailVerify);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void editInfo(CustomUserDetails customUserDetails, EditInfoReq dto) throws BaseException {
-        String email = customUserDetails.getEmail();
-        String role = customUserDetails.getRole();
-        if(Objects.equals(role, "ROLE_COMPANY")){
-            Optional<Company> result = companyRepository.findByCompanyEmail(email);
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
+            Optional<Company> result = companyRepository.findByCompanyIdx(customUserDetails.getIdx());
             if(result.isPresent()){
                 Company company = result.get();
                 company.setName(dto.getName());
@@ -234,7 +231,7 @@ public class AuthService {
                 throw new BaseException(BaseResponseMessage.MEMBER_EDIT_INFO_FAIL);
             }
         } else {
-            Optional<Customer> result = customerRepository.findByCustomerEmail(customUserDetails.getEmail());
+            Optional<Customer> result = customerRepository.findByCustomerIdx(customUserDetails.getIdx());
             if(result.isPresent()) {
                 Customer customer = result.get();
                 customer.setName(dto.getName());
@@ -247,12 +244,10 @@ public class AuthService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public void editPassword(CustomUserDetails customUserDetails, EditPasswordReq dto) throws BaseException {
-        String email = customUserDetails.getEmail();
-        String role = customUserDetails.getRole();
-        if(Objects.equals(role, "ROLE_COMPANY")){
-            Optional<Company> result = companyRepository.findByCompanyEmail(email);
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
+            Optional<Company> result = companyRepository.findByCompanyIdx(customUserDetails.getIdx());
             if(result.isPresent()){
                 Company company = result.get();
                 if(passwordEncoder.matches(dto.getOriginPassword(), company.getPassword()))
@@ -267,7 +262,7 @@ public class AuthService {
                 throw new BaseException(BaseResponseMessage.MEMBER_EDIT_PASSWORD_FAIL);
             }
         } else {
-            Optional<Customer> result = customerRepository.findByCustomerEmail(customUserDetails.getEmail());
+            Optional<Customer> result = customerRepository.findByCustomerIdx(customUserDetails.getIdx());
             if(result.isPresent()) {
                 Customer customer = result.get();
                 if(passwordEncoder.matches(dto.getOriginPassword(), customer.getPassword()))
@@ -286,7 +281,7 @@ public class AuthService {
 
     public SearchProfileRes getProfile(CustomUserDetails customUserDetails) throws BaseException {
         if(Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
-            Customer customer = customerRepository.findById(customUserDetails.getIdx())
+            Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx())
             .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_PROFILE_FAIL));
             return SearchProfileRes.builder()
                     .name(customer.getName())
@@ -296,7 +291,7 @@ public class AuthService {
                     .address(customer.getAddress())
                     .build();
         } else{
-            Company company = companyRepository.findById(customUserDetails.getIdx())
+            Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx())
             .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_PROFILE_FAIL));
             return SearchProfileRes.builder()
                     .name(company.getName())

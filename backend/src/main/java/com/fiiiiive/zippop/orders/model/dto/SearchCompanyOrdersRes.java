@@ -11,10 +11,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetCompanyOrdersRes {
+public class SearchCompanyOrdersRes {
     private Long companyOrdersIdx;
     private String impUid;
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
-    private List<GetCompanyOrdersDetailRes> getCompanyOrdersDetailResList = new ArrayList<>();
+    private List<SearchCompanyOrdersDetailRes> searchCompanyOrdersDetailResList = new ArrayList<>();
 }

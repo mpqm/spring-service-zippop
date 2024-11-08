@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetCustomerOrdersDetailRes {
-    private Long companyOrdersDetailIdx;
+public class SearchCustomerOrdersDetailRes {
+    private Long customerOrdersDetailIdx;
     private Integer eachPrice;
     private String trackingNumber;
     private SearchGoodsRes searchGoodsRes;
