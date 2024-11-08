@@ -4,23 +4,16 @@ package com.fiiiiive.zippop.popup_goods;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponse;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.common.annotation.ExeTimer;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
-import com.fiiiiive.zippop.popup_goods.model.PopupGoods;
-import com.fiiiiive.zippop.popup_goods.model.request.CreatePopupGoodsReq;
-import com.fiiiiive.zippop.popup_goods.model.request.UpdatePopupGoodsReq;
-import com.fiiiiive.zippop.popup_goods.model.response.CreatePopupGoodsRes;
-import com.fiiiiive.zippop.popup_goods.model.response.GetPopupGoodsRes;
-import com.fiiiiive.zippop.popup_goods.model.response.UpdatePopupGoodsRes;
-import com.fiiiiive.zippop.popup_store.model.request.CreatePopupStoreReq;
-import com.fiiiiive.zippop.popup_store.model.request.UpdatePopupStoreReq;
-import com.fiiiiive.zippop.popup_store.model.response.UpdatePopupStoreRes;
+import com.fiiiiive.zippop.popup_goods.model.dto.CreatePopupGoodsReq;
+import com.fiiiiive.zippop.popup_goods.model.dto.UpdatePopupGoodsReq;
+import com.fiiiiive.zippop.popup_goods.model.dto.CreatePopupGoodsRes;
+import com.fiiiiive.zippop.popup_goods.model.dto.GetPopupGoodsRes;
+import com.fiiiiive.zippop.popup_goods.model.dto.UpdatePopupGoodsRes;
 import com.fiiiiive.zippop.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
-import java.util.Optional;
 
 @Tag(name = "popup-goods-api", description = "PopupGoods")
 @RestController

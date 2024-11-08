@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.cart;
 
-import com.fiiiiive.zippop.cart.model.Cart;
+import com.fiiiiive.zippop.cart.model.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

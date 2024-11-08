@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.popup_store;
 
-import com.fiiiiive.zippop.popup_store.model.PopupStore;
-import com.fiiiiive.zippop.post.model.Post;
+import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

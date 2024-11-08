@@ -1,19 +1,17 @@
 package com.fiiiiive.zippop.favorite;
 
-import com.fiiiiive.zippop.cart.model.Cart;
-import com.fiiiiive.zippop.cart.model.response.GetCartRes;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.favorite.model.Favorite;
-import com.fiiiiive.zippop.favorite.model.response.GetFavoriteRes;
+import com.fiiiiive.zippop.favorite.model.entity.Favorite;
+import com.fiiiiive.zippop.favorite.model.dto.GetFavoriteRes;
 import com.fiiiiive.zippop.member.CustomerRepository;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
-import com.fiiiiive.zippop.member.model.Customer;
+import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.popup_store.PopupStoreRepository;
-import com.fiiiiive.zippop.popup_store.model.PopupStore;
-import com.fiiiiive.zippop.popup_store.model.PopupStoreImage;
-import com.fiiiiive.zippop.popup_store.model.response.GetPopupStoreImageRes;
-import com.fiiiiive.zippop.popup_store.model.response.GetPopupStoreRes;
+import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
+import com.fiiiiive.zippop.popup_store.model.entity.PopupStoreImage;
+import com.fiiiiive.zippop.popup_store.model.dto.GetPopupStoreImageRes;
+import com.fiiiiive.zippop.popup_store.model.dto.GetPopupStoreRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

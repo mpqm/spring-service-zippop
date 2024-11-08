@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.popup_goods;
 
-import com.fiiiiive.zippop.popup_goods.model.PopupGoods;
+import com.fiiiiive.zippop.popup_goods.model.entity.PopupGoods;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import jakarta.persistence.LockModeType;

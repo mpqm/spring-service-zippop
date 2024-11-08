@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.comment;
 
-import com.fiiiiive.zippop.comment.model.CommentLike;
+import com.fiiiiive.zippop.comment.model.entity.CommentLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

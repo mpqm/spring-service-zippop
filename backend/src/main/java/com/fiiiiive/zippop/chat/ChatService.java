@@ -1,19 +1,17 @@
 package com.fiiiiive.zippop.chat;
 
-import com.fiiiiive.zippop.chat.chatmessage.ChatMessage;
-import com.fiiiiive.zippop.chat.chatmessage.ChatMessageRepository;
-import com.fiiiiive.zippop.chat.chatroom.ChatRoom;
-import com.fiiiiive.zippop.chat.chatroom.ChatRoomDto;
-import com.fiiiiive.zippop.chat.chatroom.ChatRoomRepository;
-import com.fiiiiive.zippop.chat.model.request.ChatMessageReq;
-import com.fiiiiive.zippop.chat.model.request.ChatRoomReq;
+import com.fiiiiive.zippop.chat.model.entity.ChatMessage;
+import com.fiiiiive.zippop.chat.model.entity.ChatRoom;
+import com.fiiiiive.zippop.chat.model.dto.ChatRoomDto;
+import com.fiiiiive.zippop.chat.model.dto.ChatMessageReq;
+import com.fiiiiive.zippop.chat.model.dto.ChatRoomReq;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponse;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.member.CompanyRepository;
 import com.fiiiiive.zippop.member.CustomerRepository;
-import com.fiiiiive.zippop.member.model.Company;
-import com.fiiiiive.zippop.member.model.Customer;
+import com.fiiiiive.zippop.member.model.entity.Company;
+import com.fiiiiive.zippop.member.model.entity.Customer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

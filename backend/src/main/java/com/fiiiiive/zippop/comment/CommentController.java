@@ -1,10 +1,10 @@
 package com.fiiiiive.zippop.comment;
 
-import com.fiiiiive.zippop.comment.model.request.CreateCommentReq;
-import com.fiiiiive.zippop.comment.model.request.UpdateCommentReq;
-import com.fiiiiive.zippop.comment.model.response.CreateCommentRes;
-import com.fiiiiive.zippop.comment.model.response.GetCommentRes;
-import com.fiiiiive.zippop.comment.model.response.UpdateCommentRes;
+import com.fiiiiive.zippop.comment.model.dto.CreateCommentReq;
+import com.fiiiiive.zippop.comment.model.dto.UpdateCommentReq;
+import com.fiiiiive.zippop.comment.model.dto.CreateCommentRes;
+import com.fiiiiive.zippop.comment.model.dto.GetCommentRes;
+import com.fiiiiive.zippop.comment.model.dto.UpdateCommentRes;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponse;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;

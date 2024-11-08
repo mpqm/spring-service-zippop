@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.popup_store;
 
-import com.fiiiiive.zippop.popup_store.model.PopupStoreLike;
+import com.fiiiiive.zippop.popup_store.model.entity.PopupStoreLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

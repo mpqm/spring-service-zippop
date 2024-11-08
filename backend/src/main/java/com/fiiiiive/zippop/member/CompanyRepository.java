@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.member;
 
-import com.fiiiiive.zippop.member.model.Company;
+import com.fiiiiive.zippop.member.model.entity.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

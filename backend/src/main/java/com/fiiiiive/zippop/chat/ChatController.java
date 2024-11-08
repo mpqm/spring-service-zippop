@@ -1,8 +1,8 @@
 
 package com.fiiiiive.zippop.chat;
 
-import com.fiiiiive.zippop.chat.chatmessage.ChatMessage;
-import com.fiiiiive.zippop.chat.model.request.ChatMessageReq;
+import com.fiiiiive.zippop.chat.model.entity.ChatMessage;
+import com.fiiiiive.zippop.chat.model.dto.ChatMessageReq;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponse;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;

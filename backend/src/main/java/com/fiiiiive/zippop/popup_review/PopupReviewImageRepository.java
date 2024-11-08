@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.popup_review;
 
 
-import com.fiiiiive.zippop.popup_review.model.PopupReviewImage;
+import com.fiiiiive.zippop.popup_review.model.entity.PopupReviewImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

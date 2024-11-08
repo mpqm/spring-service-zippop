@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.member;
 
 import com.fiiiiive.zippop.member.model.CustomOauth2UserDetails;
-import com.fiiiiive.zippop.member.model.Customer;
+import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.member.model.KakaoUserDetails;
 import com.fiiiiive.zippop.member.model.OAuth2UserInfo;
 import lombok.RequiredArgsConstructor;

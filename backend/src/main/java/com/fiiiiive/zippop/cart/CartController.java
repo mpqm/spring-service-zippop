@@ -1,9 +1,9 @@
 package com.fiiiiive.zippop.cart;
 
-import com.fiiiiive.zippop.cart.model.request.CreateCartReq;
-import com.fiiiiive.zippop.cart.model.response.CountCartRes;
-import com.fiiiiive.zippop.cart.model.response.CreateCartRes;
-import com.fiiiiive.zippop.cart.model.response.GetCartRes;
+import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
+import com.fiiiiive.zippop.cart.model.dto.CountCartRes;
+import com.fiiiiive.zippop.cart.model.dto.CreateCartRes;
+import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponse;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
+
 public class CartController {
     private final CartService cartService;
     private final MemberService memberService;

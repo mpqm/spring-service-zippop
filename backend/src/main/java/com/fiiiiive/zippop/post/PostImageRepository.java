@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.post;
 
-import com.fiiiiive.zippop.post.model.PostImage;
+import com.fiiiiive.zippop.post.model.entity.PostImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

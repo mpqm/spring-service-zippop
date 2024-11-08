@@ -1,9 +1,8 @@
 package com.fiiiiive.zippop.favorite;
 
-import com.fiiiiive.zippop.common.annotation.ExeTimer;
 import com.fiiiiive.zippop.common.responses.BaseResponse;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.favorite.model.response.GetFavoriteRes;
+import com.fiiiiive.zippop.favorite.model.dto.GetFavoriteRes;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

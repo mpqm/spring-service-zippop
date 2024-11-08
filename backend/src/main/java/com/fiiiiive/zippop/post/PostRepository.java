@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.post;
 
-import com.fiiiiive.zippop.post.model.Post;
+import com.fiiiiive.zippop.post.model.entity.Post;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

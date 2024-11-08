@@ -4,11 +4,11 @@ package com.fiiiiive.zippop.popup_reserve;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
-import com.fiiiiive.zippop.popup_reserve.model.PopupReserve;
-import com.fiiiiive.zippop.popup_reserve.model.request.CreatePopupReserveReq;
-import com.fiiiiive.zippop.popup_reserve.model.response.CreatePopupReserveRes;
+import com.fiiiiive.zippop.popup_reserve.model.entity.PopupReserve;
+import com.fiiiiive.zippop.popup_reserve.model.dto.CreatePopupReserveReq;
+import com.fiiiiive.zippop.popup_reserve.model.dto.CreatePopupReserveRes;
 import com.fiiiiive.zippop.popup_store.PopupStoreRepository;
-import com.fiiiiive.zippop.popup_store.model.PopupStore;
+import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
 import com.fiiiiive.zippop.utils.JwtUtil;
 import com.fiiiiive.zippop.utils.RedisUtil;
 import jakarta.servlet.http.Cookie;
@@ -16,14 +16,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j

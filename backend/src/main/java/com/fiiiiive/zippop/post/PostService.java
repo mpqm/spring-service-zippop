@@ -1,27 +1,22 @@
 package com.fiiiiive.zippop.post;
 
-import com.fiiiiive.zippop.comment.model.Comment;
-import com.fiiiiive.zippop.comment.model.response.GetCommentRes;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.member.CustomerRepository;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
-import com.fiiiiive.zippop.member.model.Customer;
-import com.fiiiiive.zippop.popup_store.model.PopupStoreImage;
-import com.fiiiiive.zippop.popup_store.model.response.GetPopupStoreImageRes;
-import com.fiiiiive.zippop.post.model.Post;
-import com.fiiiiive.zippop.post.model.PostImage;
-import com.fiiiiive.zippop.post.model.PostLike;
-import com.fiiiiive.zippop.post.model.request.UpdatePostReq;
-import com.fiiiiive.zippop.post.model.response.CreatePostRes;
-import com.fiiiiive.zippop.post.model.response.GetPostImageRes;
-import com.fiiiiive.zippop.post.model.response.GetPostRes;
-import com.fiiiiive.zippop.post.model.response.UpdatePostRes;
+import com.fiiiiive.zippop.member.model.entity.Customer;
+import com.fiiiiive.zippop.post.model.entity.Post;
+import com.fiiiiive.zippop.post.model.entity.PostImage;
+import com.fiiiiive.zippop.post.model.entity.PostLike;
+import com.fiiiiive.zippop.post.model.dto.UpdatePostReq;
+import com.fiiiiive.zippop.post.model.dto.CreatePostRes;
+import com.fiiiiive.zippop.post.model.dto.GetPostImageRes;
+import com.fiiiiive.zippop.post.model.dto.GetPostRes;
+import com.fiiiiive.zippop.post.model.dto.UpdatePostRes;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

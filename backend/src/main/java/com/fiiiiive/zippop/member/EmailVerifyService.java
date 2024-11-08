@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.member;
 
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.member.model.EmailVerify;
+import com.fiiiiive.zippop.member.model.entity.EmailVerify;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

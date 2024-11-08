@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.favorite;
 
-import com.fiiiiive.zippop.favorite.model.Favorite;
-import org.springframework.data.jpa.repository.EntityGraph;
+import com.fiiiiive.zippop.favorite.model.entity.Favorite;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

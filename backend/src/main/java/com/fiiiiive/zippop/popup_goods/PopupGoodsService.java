@@ -2,31 +2,25 @@ package com.fiiiiive.zippop.popup_goods;
 
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.member.CompanyRepository;
-import com.fiiiiive.zippop.member.model.Company;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
-import com.fiiiiive.zippop.popup_goods.model.PopupGoods;
-import com.fiiiiive.zippop.popup_goods.model.PopupGoodsImage;
-import com.fiiiiive.zippop.popup_goods.model.PopupGoodsImageRepository;
-import com.fiiiiive.zippop.popup_goods.model.request.CreatePopupGoodsReq;
-import com.fiiiiive.zippop.popup_goods.model.request.UpdatePopupGoodsReq;
-import com.fiiiiive.zippop.popup_goods.model.response.CreatePopupGoodsRes;
-import com.fiiiiive.zippop.popup_goods.model.response.GetPopupGoodsImageRes;
-import com.fiiiiive.zippop.popup_goods.model.response.GetPopupGoodsRes;
-import com.fiiiiive.zippop.popup_goods.model.response.UpdatePopupGoodsRes;
-import com.fiiiiive.zippop.popup_store.model.PopupStore;
+import com.fiiiiive.zippop.popup_goods.model.entity.PopupGoods;
+import com.fiiiiive.zippop.popup_goods.model.entity.PopupGoodsImage;
+import com.fiiiiive.zippop.popup_goods.model.dto.CreatePopupGoodsReq;
+import com.fiiiiive.zippop.popup_goods.model.dto.UpdatePopupGoodsReq;
+import com.fiiiiive.zippop.popup_goods.model.dto.CreatePopupGoodsRes;
+import com.fiiiiive.zippop.popup_goods.model.dto.GetPopupGoodsImageRes;
+import com.fiiiiive.zippop.popup_goods.model.dto.GetPopupGoodsRes;
+import com.fiiiiive.zippop.popup_goods.model.dto.UpdatePopupGoodsRes;
+import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
 import com.fiiiiive.zippop.popup_store.PopupStoreRepository;
-import com.fiiiiive.zippop.popup_store.model.PopupStoreImage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

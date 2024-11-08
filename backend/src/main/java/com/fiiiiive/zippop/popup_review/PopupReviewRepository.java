@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.popup_review;
 
-import com.fiiiiive.zippop.popup_review.model.PopupReview;
+import com.fiiiiive.zippop.popup_review.model.entity.PopupReview;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

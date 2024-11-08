@@ -1,13 +1,10 @@
 package com.fiiiiive.zippop.post;
 
-import com.fiiiiive.zippop.post.model.Post;
-import com.fiiiiive.zippop.post.model.PostImage;
-import com.fiiiiive.zippop.post.model.PostLike;
+import com.fiiiiive.zippop.post.model.entity.PostLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
