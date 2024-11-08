@@ -43,8 +43,8 @@ public class CommentController {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.COMMENT_SEARCH_ALL_SUCCESS, comments));
     }
 
-    @GetMapping("/search-customer")
-    public ResponseEntity<BaseResponse<Page<GetCommentRes>>> searchByCustomer(
+    @GetMapping("/search")
+    public ResponseEntity<BaseResponse<Page<GetCommentRes>>> search(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam int page,
             @RequestParam int size) throws BaseException {

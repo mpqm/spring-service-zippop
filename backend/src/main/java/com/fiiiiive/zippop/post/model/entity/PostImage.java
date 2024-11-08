@@ -16,11 +16,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 public class PostImage extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postImageIdx;
-    private String imageUrl;
+    private Long idx;
+    private String url;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="postIdx")
     private Post post;

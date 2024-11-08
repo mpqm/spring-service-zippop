@@ -21,8 +21,6 @@ public class ChatController {
 
     @Autowired
     private ChatService chatService;
-//    @Autowired
-//    private ChatUserSessionService chatUserSessionService;
 
     @MessageMapping("/chat.sendMessage/{roomId}")
     @SendTo("/topic/{roomId}")

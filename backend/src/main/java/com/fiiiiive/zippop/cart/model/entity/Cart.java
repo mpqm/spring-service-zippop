@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.cart.model.entity;
 
 import com.fiiiiive.zippop.common.base.BaseEntity;
+import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.member.model.entity.Customer;
-import com.fiiiiive.zippop.goods.model.entity.PopupGoods;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,17 +13,19 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class Cart extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartIdx;
-    private Integer itemCount;
-    private Integer itemPrice;
+    private Long idx;
+    private Integer count;
+    private Integer price;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerIdx")
+    @JoinColumn(name = "customer_idx")
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "productIdx")
-    private PopupGoods popupGoods;
+    @JoinColumn(name = "goods_idx")
+    private Goods goods;
 }

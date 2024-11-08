@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class CustomerOrders extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerOrdersIdx;
@@ -25,10 +26,14 @@ public class CustomerOrders extends BaseEntity {
     private String orderState;
     private Integer deliveryCost;
 
+    // OneToMany
+    @OneToMany(mappedBy = "customerOrders")
+    private List<CustomerOrdersDetail> customerOrdersDetailList;
+
+    // ManyToOne
     @ManyToOne
-    @JoinColumn(name = "customerIdx")
+    @JoinColumn(name = "customer_idx")
     private Customer customer;
 
-    @OneToMany(mappedBy = "customerOrders")
-    private List<CustomerOrdersDetail> customerOrdersDetailList = new ArrayList<>();
+
 }

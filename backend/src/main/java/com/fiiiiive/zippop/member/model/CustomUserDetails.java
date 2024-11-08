@@ -18,7 +18,7 @@ public class CustomUserDetails implements UserDetails {
     private final String name;
     private final String password;
     private final String role;
-    private final Boolean enabled;
+    private final Boolean isEmailAuth;
 
     public CustomUserDetails(Long idx, String email, String role) {
         this.idx = idx;
@@ -26,7 +26,7 @@ public class CustomUserDetails implements UserDetails {
         this.role = role;
         this.name = null;
         this.password = null;
-        this.enabled = null;
+        this.isEmailAuth = null;
     }
 
     @Override
@@ -69,6 +69,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return isEmailAuth;
     }
 }

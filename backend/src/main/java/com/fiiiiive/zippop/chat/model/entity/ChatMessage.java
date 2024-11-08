@@ -13,14 +13,15 @@ import lombok.*;
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ChatMessage extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idx;
     private String sender;
-
     private String content;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_room_id")
+    @JoinColumn(name = "chatRoom_idx")
     private ChatRoom chatRoom;
 }

@@ -12,9 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 public class GetCartRes {
     private Long cartIdx;
-    private Integer itemCount;
-    private Integer itemPrice;
+    private Integer count;
+    private Integer price;
     private GetGoodsRes getGoodsRes;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

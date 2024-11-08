@@ -13,16 +13,17 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class Favorite {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long favoriteIdx;
+    private Long idx;
+
+    // ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_idx")
+    private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerIdx")
-    @JsonIgnore
-    private Customer customer;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storeIdx")
-    @JsonIgnore
+    @JoinColumn(name = "store_idx")
     private Store store;
 }

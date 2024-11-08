@@ -12,15 +12,18 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class StoreLike extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long storeLikeIdx;
+    private Long idx;
+
+    // ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="store_idx")
+    private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="postIdx")
-    private Store store;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="customerIdx")
+    @JoinColumn(name="customer_idx")
     private Customer customer;
 }
 

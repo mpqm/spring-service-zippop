@@ -73,7 +73,7 @@
 //
 //    @Override
 //    public boolean isEnabled() {
-//        return customer.getEnabled();
+//        return customer.getIsEmailAuth();
 //    }
 //
 //}
@@ -101,7 +101,7 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
     }
 
     public Long getIdx(){
-        return customer.getCustomerIdx();
+        return customer.getIdx();
     }
 
     public String getRole() {
@@ -157,6 +157,6 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isEnabled() {
-        return customer.getEnabled();
+        return customer.getIsEmailAuth();
     }
 }

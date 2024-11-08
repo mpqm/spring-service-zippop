@@ -13,14 +13,16 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class Reserve extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reserveIdx;
-    private String reserveUUID;
-    private String reserveWaitingUUID;
+    private Long idx;
+    private String OnDoingUUID;
+    private String WaitingUUID;
     private Long maxCount;
-    private Long expiredTime; // 날짜 형식으로 변환
+    private Long expiredTime;
 
+    // ManyToOne
     @ManyToOne
     @JoinColumn(name ="store_idx")
     private Store store;

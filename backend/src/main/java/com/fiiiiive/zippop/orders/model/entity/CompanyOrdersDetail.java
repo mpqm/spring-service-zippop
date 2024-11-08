@@ -14,14 +14,15 @@ import lombok.*;
 public class CompanyOrdersDetail extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long companyOrderDetailIdx;
+    private Long idx;
     private Integer totalPrice;
 
+    // ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "companyOrders_idx")
+    private CompanyOrders companyOrders;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "companyOrdersIdx")
-    private CompanyOrders companyOrders;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "popupStoreIdx")
+    @JoinColumn(name = "store_idx")
     private Store store;
 }

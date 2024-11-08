@@ -14,14 +14,14 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart,Long> {
     @Query("SELECT c FROM Cart c " +
             "JOIN FETCH c.customer " +
-            "JOIN FETCH c.popupGoods "+
+            "JOIN FETCH c.goods "+
             "WHERE c.customer.email = :customerEmail")
     Optional<List<Cart>> findAllByCustomerEmail(String customerEmail);
 
     @Query("SELECT c FROM Cart c " +
             "JOIN FETCH c.customer " +
-            "JOIN FETCH c.popupGoods " +
-            "WHERE c.customer.email = :customerEmail and c.popupGoods.productIdx = :productIdx")
+            "JOIN FETCH c.goods " +
+            "WHERE c.customer.email = :customerEmail and c.goods.productIdx = :productIdx")
     Optional<Cart> findByCustomerEmailAndProductIdx(String customerEmail, Long productIdx);
 
     @Query("SELECT c FROM Cart c WHERE c.customer.email = :customerEmail and c.cartIdx = :cartIdx")

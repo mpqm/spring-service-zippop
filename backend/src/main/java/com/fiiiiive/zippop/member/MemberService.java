@@ -42,13 +42,13 @@ public class MemberService {
             Optional<Company> result = companyRepository.findByCompanyEmail(dto.getEmail());
             if(result.isPresent()){
                 Company company = result.get();
-                if(!company.getEnabled() && company.getInactive()) {
+                if(!company.getIsEmailAuth() && company.getIsInActive()) {
                     return PostSignupRes.builder()
-                            .idx(company.getCompanyIdx())
-                            .enabled(company.getEnabled())
+                            .idx(company.getIdx())
+                            .enabled(company.getIsInActive())
                             .role(company.getRole())
                             .email(company.getEmail())
-                            .inactive(company.getInactive())
+                            .inactive(company.getIsInActive())
                             .build();
                 } else {
                     throw new BaseException(BaseResponseMessage.MEMBER_REGISTER_FAIL_ALREADY_EXIST);
@@ -62,15 +62,15 @@ public class MemberService {
                         .role(dto.getRole())
                         .address(dto.getAddress())
                         .phoneNumber(dto.getPhoneNumber())
-                        .enabled(false)
-                        .inactive(false)
+                        .isEmailAuth(false)
+                        .isInActive(false)
                         .build();
                 companyRepository.save(company);
                 return PostSignupRes.builder()
-                        .idx(company.getCompanyIdx())
+                        .idx(company.getIdx())
                         .role(dto.getRole())
-                        .enabled(company.getEnabled())
-                        .inactive(company.getInactive())
+                        .enabled(company.getIsEmailAuth())
+                        .inactive(company.getIsInActive())
                         .email(dto.getEmail())
                         .build();
             }

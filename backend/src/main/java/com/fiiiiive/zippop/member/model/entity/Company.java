@@ -16,25 +16,25 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 public class Company extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long companyIdx;
-    @Column(nullable = false, length = 100, unique = true)
+    private Long idx;
     private String email;
-    @Column(nullable = false, length = 100, unique = true)
     private String password;
     private String name;
     private String crn; // 사업자 등록 번호
     private String phoneNumber;
     private String address;
-    private Boolean enabled;
-    private Boolean inactive;
+    private Boolean isEmailAuth;
+    private Boolean isInActive;
     private String role;
 
+    // OneToMany
     @OneToMany(mappedBy = "company")
-    @JsonManagedReference
-    private List<Store> storeList = new ArrayList<>();
+    private List<Store> storeList;
+
     @OneToMany(mappedBy = "company")
-    private List<CompanyOrders> companyOrdersList = new ArrayList<>();
+    private List<CompanyOrders> companyOrdersList;
 }
 

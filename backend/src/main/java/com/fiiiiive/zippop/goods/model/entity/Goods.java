@@ -17,22 +17,24 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Goods extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productIdx;
-    private String productName;
-    private Integer productPrice;
-    private String productContent;
-    private Integer productAmount;
+    private Long idx;
+    private String name;
+    private Integer price;
+    private String content;
+    private Integer amount;
 
+    // OneToMany
+    @OneToMany(mappedBy = "goods")
+    private List<Cart> cartList;
 
-    @OneToMany(mappedBy = "popupGoods")
-    private List<Cart> carts;
-    @OneToMany(mappedBy = "popupGoods", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GoodsImage> goodsImageList = new ArrayList<>();;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storeIdx")
-    @JsonBackReference
+    @JoinColumn(name = "store_idx")
     private Store store;
 }

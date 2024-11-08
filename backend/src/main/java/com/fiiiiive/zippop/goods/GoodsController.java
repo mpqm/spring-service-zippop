@@ -64,7 +64,7 @@ public class GoodsController {
     public ResponseEntity<BaseResponse> update(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long productIdx,
-        @RequestPart(name = "dto") UpdatePopupGoodsReq dto,
+        @RequestPart(name = "dto") UpdateGoodsReq dto,
         @RequestPart(name = "files") MultipartFile[] files) throws BaseException {
         List<String> fileNames = cloudFileUpload.multipleUpload(files);
         UpdateGoodsRes response = goodsService.update(customUserDetails, productIdx, fileNames, dto);

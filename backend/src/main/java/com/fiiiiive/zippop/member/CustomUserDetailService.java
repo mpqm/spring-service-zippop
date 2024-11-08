@@ -22,24 +22,24 @@ public class CustomUserDetailService implements UserDetailsService {
         if (resultCustomer.isPresent()) {
             Customer customer = resultCustomer.get();
             return CustomUserDetails.builder()
-                    .idx(customer.getCustomerIdx())
+                    .idx(customer.getIdx())
                     .name(customer.getName())
                     .email(customer.getEmail())
                     .password(customer.getPassword())
                     .role(customer.getRole())
-                    .enabled(customer.getEnabled())
+                    .isEmailAuth(customer.getIsEmailAuth())
                     .build();
         } else {
             Optional<Company> resultCompany = companyRepository.findByCompanyEmail(email);
             if (resultCompany.isPresent()) {
                 Company company = resultCompany.get();
                 return CustomUserDetails.builder()
-                        .idx(company.getCompanyIdx())
+                        .idx(company.getIdx())
                         .name(company.getName())
                         .email(company.getEmail())
                         .password(company.getPassword())
                         .role(company.getRole())
-                        .enabled(company.getEnabled())
+                        .isEmailAuth(company.getIsEmailAuth())
                         .build();
             } else {
                 return null;

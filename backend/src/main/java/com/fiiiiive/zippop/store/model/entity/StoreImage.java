@@ -11,13 +11,14 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class StoreImage extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long storeImageIdx;
-    @Column(columnDefinition="varchar(255) CHARACTER SET UTF8")
-    private String imageUrl;
+    private Long idx;
+    private String url;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="storeIdx")
+    @JoinColumn(name="store_idx")
     private Store store;
 }

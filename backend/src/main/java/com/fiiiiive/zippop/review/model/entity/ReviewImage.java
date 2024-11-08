@@ -11,13 +11,14 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class ReviewImage extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewImageIdx;
-    @Column(columnDefinition="varchar(255) CHARACTER SET UTF8")
-    private String imageUrl;
+    private Long idx;
+    private String url;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reviewIdx")
+    @JoinColumn(name="review_idx")
     private Review review;
 }

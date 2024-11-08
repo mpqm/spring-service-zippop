@@ -51,7 +51,7 @@ public class ChatService {
                 throw new BaseException(BaseResponseMessage.USER_NOT_FOUND);
             }
             List<ChatRoomDto> chatRoomDtos = chatRooms.stream()
-                    .map(room -> new ChatRoomDto(room.getId(), room.getName()))
+                    .map(room -> new ChatRoomDto(room.getIdx(), room.getName()))
                     .toList();
             return new BaseResponse<>(BaseResponseMessage.CHAT_ROOM_SEARCH_SUCCESS, chatRoomDtos);
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class ChatService {
                     .build();
 
             ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
-            ChatRoomDto chatRoomDto = new ChatRoomDto(savedChatRoom.getId(), savedChatRoom.getName());
+            ChatRoomDto chatRoomDto = new ChatRoomDto(savedChatRoom.getIdx(), savedChatRoom.getName());
             return new BaseResponse<>(BaseResponseMessage.CHAT_ROOM_CREATE_SUCCESS, chatRoomDto);
         } catch (BaseException e) {
             throw e;

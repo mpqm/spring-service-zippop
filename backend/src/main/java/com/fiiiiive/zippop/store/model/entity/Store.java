@@ -1,12 +1,9 @@
 package com.fiiiiive.zippop.store.model.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fiiiiive.zippop.common.base.BaseEntity;
 import com.fiiiiive.zippop.favorite.model.entity.Favorite;
+import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.member.model.entity.Company;
-import com.fiiiiive.zippop.goods.model.entity.PopupGoods;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.review.model.entity.Review;
 import jakarta.persistence.*;
@@ -21,9 +18,10 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Store extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long storeIdx;
+    private Long idx;
     private String companyEmail;
     @Column(unique = true)
     private String name;
@@ -35,24 +33,28 @@ public class Store extends BaseEntity {
     private Integer totalPeople;
     private Integer likeCount;
 
+    // OneToMany
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Review> reviewList = new ArrayList<>();
+    private List<Review> reviewList;
+
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<PopupGoods> popupGoodsList = new ArrayList<>();
+    private List<Goods> goodsList;
+
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favoriteList;
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true )
-    private List<StoreImage> popupstoreImageList;
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reserve> reserveList = new ArrayList<>();
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StoreLike> storeLikeList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true )
+    private List<StoreImage> storeImageList;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reserve> reserveList;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StoreLike> storeLikeList;
+
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "companyIdx")
-    @JsonBackReference
+    @JoinColumn(name = "company_idx")
     private Company company;
 }
 

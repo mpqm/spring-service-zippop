@@ -17,15 +17,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 public class PostLike extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postLikeIdx;
+    private Long idx;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="postIdx")
+    @JoinColumn(name="post_idx")
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="customerIdx")
+    @JoinColumn(name="customer_idx")
     private Customer customer;
 }

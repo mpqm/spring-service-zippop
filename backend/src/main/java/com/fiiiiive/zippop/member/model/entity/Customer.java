@@ -21,10 +21,10 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 public class Customer extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long customerIdx;
-    @Column(nullable = false, length = 100, unique = true)
+    private Long idx;
     private String email;
     private String password;
     private String name;
@@ -32,22 +32,27 @@ public class Customer extends BaseEntity {
     private String address;
     private Integer point;
     private String role;
-    private Boolean enabled;
-    private Boolean inactive;
+    private Boolean isEmailAuth;
+    private Boolean isInActive;
+
+    // OneToMany
+    @BatchSize(size=10)
+    @OneToMany(mappedBy = "customer")
+    private List<Post> postList;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Cart> cartList;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Favorite> favoriteList;
 
     @BatchSize(size=10)
     @OneToMany(mappedBy = "customer")
-    @JsonManagedReference
-    private List<Post> postList = new ArrayList<>();
-    @OneToMany(mappedBy = "customer")
-    private List<Cart> cartList = new ArrayList<>();
-    @OneToMany(mappedBy = "customer")
-    private List<Favorite> favoriteList;
-    @BatchSize(size=10)
-    @OneToMany(mappedBy = "customer")
     private List<Comment> commentList;
+
     @OneToMany(mappedBy = "customer")
     private List<Review> reviewList;
+
     @OneToMany(mappedBy = "customer")
     private List<CustomerOrders> customerOrdersList;
 }

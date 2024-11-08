@@ -45,7 +45,7 @@ public class CommentService {
                 .build();
         commentRepository.save(comment);
         return CreateCommentRes.builder()
-                .commentIdx(comment.getCommentIdx())
+                .commentIdx(comment.getIdx())
                 .customerEmail(customUserDetails.getEmail())
                 .content(comment.getContent())
                 .likeCount(comment.getLikeCount())
@@ -58,7 +58,7 @@ public class CommentService {
         Page<Comment> result = commentRepository.findByPostIdx(postIdx, PageRequest.of(page, size))
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_SEARCH_ALL_FAIL));
         Page<GetCommentRes> getCommentResPage = result.map(comment-> GetCommentRes.builder()
-                .commentIdx(comment.getCommentIdx())
+                .commentIdx(comment.getIdx())
                 .customerEmail(comment.getCustomer().getEmail())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
@@ -72,7 +72,7 @@ public class CommentService {
         Page<Comment> result = commentRepository.findByCustomerEmail(customUserDetails.getEmail(), PageRequest.of(page, size))
         .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_SEARCH_BY_CUSTOMER_FAIL));
         Page<GetCommentRes> getCommentResPage = result.map(comment-> GetCommentRes.builder()
-                .commentIdx(comment.getCommentIdx())
+                .commentIdx(comment.getIdx())
                 .customerEmail(comment.getCustomer().getEmail())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
@@ -91,7 +91,7 @@ public class CommentService {
         comment.setContent(dto.getContent());
         commentRepository.save(comment);
         return UpdateCommentRes.builder()
-                .commentIdx(comment.getCommentIdx())
+                .commentIdx(comment.getIdx())
                 .customerEmail(customUserDetails.getEmail())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())

@@ -11,12 +11,14 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class GoodsImage extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long PopupGoodsImageIdx;
-    private String imageUrl;
+    private Long idx;
+    private String url;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="productIdx")
-    private Goods popupGoods;
+    @JoinColumn(name="goods_idx")
+    private Goods goods;
 }

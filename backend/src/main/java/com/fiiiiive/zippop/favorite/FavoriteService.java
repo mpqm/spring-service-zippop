@@ -34,7 +34,7 @@ public class FavoriteService {
         Optional<Favorite> result = favoriteRepository.findByCustomerEmailAndStoreIdx(customUserDetails.getEmail(), storeIdx);
         if(result.isPresent()){
             Favorite favorite = result.get();
-            favoriteRepository.deleteById(favorite.getFavoriteIdx());
+            favoriteRepository.deleteById(favorite.getIdx());
         } else {
             Favorite favorite = Favorite.builder()
                     .store(store)

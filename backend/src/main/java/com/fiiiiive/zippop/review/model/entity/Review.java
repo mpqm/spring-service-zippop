@@ -17,24 +17,26 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Review extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewIdx;
+    private Long idx;
     private String customerEmail;
-    private String reviewTitle;
-    private String reviewContent;
+    private String title;
+    private String content;
     private Integer rating;
 
-
+    // OneToMany
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReviewImage> reviewImageList = new ArrayList<>();
+    private List<ReviewImage> reviewImageList;
+
+    // ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_idx")
+    private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerIdx")
-    private Customer customer;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "storeIdx")
-    @JsonBackReference
+    @JoinColumn(name = "store_idx")
     private Store store;
 }
 

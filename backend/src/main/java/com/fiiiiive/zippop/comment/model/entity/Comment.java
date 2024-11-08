@@ -16,22 +16,24 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Comment extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentIdx;
-    @Column(nullable = false)
+    private Long idx;
     private String customerEmail;
     private String content;
     private Integer likeCount;
 
+    // OneToMany
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentLike> commentLikeList;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postIdx")
+    @JoinColumn(name = "post_idx")
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerIdx")
+    @JoinColumn(name = "customer_idx")
     private Customer customer;
 }

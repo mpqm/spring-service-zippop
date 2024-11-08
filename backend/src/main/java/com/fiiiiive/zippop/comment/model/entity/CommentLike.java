@@ -13,15 +13,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @Entity
 public class CommentLike extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentLikeIdx;
+    private Long idx;
 
+    // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="commentIdx")
+    @JoinColumn(name="comment_idx")
     private Comment comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="customerIdx")
+    @JoinColumn(name="customer_idx")
     private Customer customer;
 }
