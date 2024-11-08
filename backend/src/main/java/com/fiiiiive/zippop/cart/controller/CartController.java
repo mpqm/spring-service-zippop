@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.cart.controller;
 
 import com.fiiiiive.zippop.cart.service.CartService;
 import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
-import com.fiiiiive.zippop.cart.model.dto.CountCartRes;
+import com.fiiiiive.zippop.cart.model.dto.CountCartItemRes;
 import com.fiiiiive.zippop.cart.model.dto.CreateCartRes;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
@@ -15,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @Tag(name = "cart-api", description = "Cart")
@@ -40,14 +38,14 @@ public class CartController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long cartIdx,
         @RequestParam Long operation) throws BaseException {
-        CountCartRes response  = cartService.count(customUserDetails, cartIdx, operation);
+        CountCartItemRes response  = cartService.count(customUserDetails, cartIdx, operation);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_COUNT_SUCCESS, response));
     }
 
     @GetMapping("/search-all")
     public ResponseEntity<BaseResponse> searchAll(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
-        List<GetCartRes> response = cartService.searchAll(customUserDetails);
+        GetCartRes response = cartService.searchAll(customUserDetails);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_SEARCH_LIST_SUCESS, response));
     }
 
@@ -55,7 +53,7 @@ public class CartController {
     public ResponseEntity<BaseResponse> delete(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long cartIdx) throws BaseException {
-        cartService.delete(customUserDetails, cartIdx);
+        cartService.delete(cartIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_DELETE_SUCCESS));
     }
 

@@ -11,8 +11,5 @@ import java.time.LocalDateTime;
 @Builder
 public class CreateCartRes {
     private Long cartIdx;
-    private Long customerIdx;
-    private Long productIdx;
-    private Integer count;
-    private Integer price;
+    private Long cartItemIdx;
 }

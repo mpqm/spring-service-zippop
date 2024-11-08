@@ -1,6 +1,5 @@
 package com.fiiiiive.zippop.cart.model.dto;
 
-import com.fiiiiive.zippop.cart.model.entity.Cart;
 import lombok.*;
 
 @Getter
@@ -8,6 +7,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CountCartRes {
-    private Cart cart;
+public class CountCartItemRes {
+    private Long cartItemIdx;
+    private Integer count;
 }

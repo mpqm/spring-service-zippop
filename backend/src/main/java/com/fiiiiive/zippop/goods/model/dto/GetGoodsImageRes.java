@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetGoodsImageRes {
-    private Long productImageIdx;
+    private Long goodsImageIdx;
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

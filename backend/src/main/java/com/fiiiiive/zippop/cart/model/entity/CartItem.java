@@ -6,27 +6,26 @@ import com.fiiiiive.zippop.member.model.entity.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Cart extends BaseEntity {
+public class CartItem extends BaseEntity {
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-
-    // OneToMany
-    @OneToMany(mappedBy = "cart")
-    private List<CartItem> cartItemList;
+    private Integer count;
+    private Integer price;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_idx")
-    private Customer customer;
+    @JoinColumn(name = "cart_idx")
+    private Cart cart;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "goods_idx")
+    private Goods goods;
 }
