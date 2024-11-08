@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@Tag(name = "popup-reserve-api", description = "Reserve")
+@Tag(name = "reserve-api", description = "Reserve")
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/popup-reserve")
+@RequestMapping("/api/v1/reserve")
 @RequiredArgsConstructor
 public class ReserveController {
     private final ReserveService reserveService;
