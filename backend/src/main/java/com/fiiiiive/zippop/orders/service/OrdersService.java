@@ -4,18 +4,17 @@ package com.fiiiiive.zippop.orders.service;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
-import com.fiiiiive.zippop.member.repository.CompanyRepository;
-import com.fiiiiive.zippop.member.repository.CustomerRepository;
-import com.fiiiiive.zippop.member.model.entity.Company;
+import com.fiiiiive.zippop.goods.repository.GoodsRepository;
+import com.fiiiiive.zippop.auth.repository.CompanyRepository;
+import com.fiiiiive.zippop.auth.repository.CustomerRepository;
+import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.member.model.entity.Customer;
+import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.orders.model.entity.CompanyOrders;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrdersDetail;
 import com.fiiiiive.zippop.orders.model.entity.CompanyOrdersDetail;
 import com.fiiiiive.zippop.orders.model.dto.*;
-import com.fiiiiive.zippop.goods.PopupGoodsRepository;
-import com.fiiiiive.zippop.goods.model.entity.PopupGoods;
 import com.fiiiiive.zippop.orders.repository.CompanyOrdersDetailRepository;
 import com.fiiiiive.zippop.orders.repository.CompanyOrdersRepository;
 import com.fiiiiive.zippop.orders.repository.CustomerOrdersDetailRepository;
@@ -49,7 +48,7 @@ public class OrdersService {
     private final CompanyOrdersDetailRepository companyOrdersDetailRepository;
     private final CustomerOrdersRepository customerOrdersRepository;
     private final CompanyOrdersRepository companyOrdersRepository;
-    private final PopupGoodsRepository popupGoodsRepository;
+    private final GoodsRepository goodsRepository;
     private final StoreRepository storeRepository;
 
     @Transactional

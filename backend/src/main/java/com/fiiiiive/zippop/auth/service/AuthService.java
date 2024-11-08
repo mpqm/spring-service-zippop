@@ -1,21 +1,20 @@
-package com.fiiiiive.zippop.member.service;
+package com.fiiiiive.zippop.auth.service;
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.member.model.entity.Company;
+import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.member.model.entity.Customer;
-import com.fiiiiive.zippop.member.model.dto.EditInfoReq;
-import com.fiiiiive.zippop.member.model.dto.EditPasswordReq;
-import com.fiiiiive.zippop.member.model.dto.PostSignupReq;
-import com.fiiiiive.zippop.member.model.dto.GetProfileRes;
-import com.fiiiiive.zippop.member.model.dto.PostSignupRes;
-import com.fiiiiive.zippop.member.repository.CompanyRepository;
-import com.fiiiiive.zippop.member.repository.CustomerRepository;
-import com.fiiiiive.zippop.member.repository.EmailVerifyRepository;
+import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.auth.model.dto.EditInfoReq;
+import com.fiiiiive.zippop.auth.model.dto.EditPasswordReq;
+import com.fiiiiive.zippop.auth.model.dto.PostSignupReq;
+import com.fiiiiive.zippop.auth.model.dto.SearchProfileRes;
+import com.fiiiiive.zippop.auth.model.dto.PostSignupRes;
+import com.fiiiiive.zippop.auth.model.entity.EmailVerify;
+import com.fiiiiive.zippop.auth.repository.CompanyRepository;
+import com.fiiiiive.zippop.auth.repository.CustomerRepository;
+import com.fiiiiive.zippop.auth.repository.EmailVerifyRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,8 +28,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
-    private static final Logger log = LoggerFactory.getLogger(MemberService.class);
+public class AuthService {
     private final JavaMailSender emailSender;
     private final CompanyRepository companyRepository;
     private final CustomerRepository customerRepository;
@@ -48,10 +46,10 @@ public class MemberService {
                 if(!company.getIsEmailAuth() && company.getIsInActive()) {
                     return PostSignupRes.builder()
                             .idx(company.getIdx())
-                            .enabled(company.getIsInActive())
-                            .role(company.getRole())
                             .email(company.getEmail())
-                            .inactive(company.getIsInActive())
+                            .isEmailAuth(company.getIsEmailAuth())
+                            .isInactive(company.getIsInActive())
+                            .role(company.getRole())
                             .build();
                 } else {
                     throw new BaseException(BaseResponseMessage.MEMBER_REGISTER_FAIL_ALREADY_EXIST);
@@ -72,8 +70,8 @@ public class MemberService {
                 return PostSignupRes.builder()
                         .idx(company.getIdx())
                         .role(dto.getRole())
-                        .enabled(company.getIsEmailAuth())
-                        .inactive(company.getIsInActive())
+                        .isEmailAuth(company.getIsEmailAuth())
+                        .isInactive(company.getIsInActive())
                         .email(dto.getEmail())
                         .build();
             }
@@ -84,12 +82,12 @@ public class MemberService {
             Optional<Customer> result = customerRepository.findByCustomerEmail(dto.getEmail());
             if(result.isPresent()){
                 Customer customer = result.get();
-                if(!customer.getEnabled() && customer.getInactive()){
+                if(!customer.getIsEmailAuth() && customer.getIsInActive()){
                     return PostSignupRes.builder()
-                            .idx(customer.getCustomerIdx())
+                            .idx(customer.getIdx())
                             .role(customer.getRole())
-                            .enabled(customer.getEnabled())
-                            .inactive(customer.getInactive())
+                            .isEmailAuth(customer.getIsEmailAuth())
+                            .isInactive(customer.getIsInActive())
                             .email(customer.getEmail())
                             .build();
                 }
@@ -105,15 +103,15 @@ public class MemberService {
                         .address(dto.getAddress())
                         .phoneNumber(dto.getPhoneNumber())
                         .point(3000)
-                        .enabled(false)
-                        .inactive(false)
+                        .isEmailAuth(false)
+                        .isInActive(false)
                         .build();
                 customerRepository.save(customer);
                 return PostSignupRes.builder()
-                        .idx(customer.getCustomerIdx())
+                        .idx(customer.getIdx())
                         .role(customer.getRole())
-                        .enabled(customer.getEnabled())
-                        .inactive(customer.getInactive())
+                        .isEmailAuth(customer.getIsEmailAuth())
+                        .isInactive(customer.getIsInActive())
                         .email(customer.getEmail())
                         .build();
             }
@@ -125,8 +123,8 @@ public class MemberService {
             Optional<Company> result = companyRepository.findByCompanyEmail(email);
             if(result.isPresent()){
                 Company company = result.get();
-                company.setEnabled(true);
-                company.setInactive(false);
+                company.setIsEmailAuth(true);
+                company.setIsInActive(false);
                 companyRepository.save(company);
             } else {
                 throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL);
@@ -135,8 +133,8 @@ public class MemberService {
             Optional<Customer> result = customerRepository.findByCustomerEmail(email);
             if(result.isPresent()) {
                 Customer customer = result.get();
-                customer.setEnabled(true);
-                customer.setInactive(false);
+                customer.setIsEmailAuth(true);
+                customer.setIsInActive(false);
                 customerRepository.save(customer);
             } else {
                 throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL);
@@ -149,14 +147,14 @@ public class MemberService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(response.getEmail());
         if(Objects.equals(response.getRole(), "ROLE_COMPANY")){
-            if(!response.getEnabled() && !response.getInactive()){
+            if(!response.getIsEmailAuth() && !response.getIsInactive()){
                 message.setSubject("ZIPPOP - 기업으로 가입하신걸 환영합니다.");
             } else {
                 message.setSubject("ZIPPOP - 기업회원계정 복구 이메일");
             }
         }
         else {
-            if(!response.getEnabled() && !response.getInactive()){
+            if(!response.getIsEmailAuth() && !response.getIsInactive()){
                 message.setSubject("ZIPPOP - 고객으로 가입하신걸 환영합니다.");
             } else {
                 message.setSubject("ZIPPOP - 고객회원계정 복구 이메일");
@@ -177,8 +175,8 @@ public class MemberService {
             Optional<Company> result = companyRepository.findByCompanyEmail(email);
             if(result.isPresent()){
                 Company company = result.get();
-                company.setEnabled(false);
-                company.setInactive(true);
+                company.setIsEmailAuth(false);
+                company.setIsInActive(true);
                 companyRepository.save(company);
                 emailVerifyRepository.deleteByEmail(email);
             } else {
@@ -188,8 +186,8 @@ public class MemberService {
             Optional<Customer> result = customerRepository.findByCustomerEmail(customUserDetails.getEmail());
             if(result.isPresent()) {
                 Customer customer = result.get();
-                customer.setEnabled(false);
-                customer.setInactive(true);
+                customer.setIsEmailAuth(false);
+                customer.setIsInActive(true);
                 if(customer.getPassword() == null){
                     customerRepository.save(customer);
                 } else {
@@ -200,6 +198,23 @@ public class MemberService {
                 throw new BaseException(BaseResponseMessage.MEMBER_INACTIVE_FAIL);
             }
         }
+    }
+
+    public Boolean isExist(String email, String uuid) throws BaseException {
+        Optional<EmailVerify> result = emailVerifyRepository.findByEmail(email);
+        if (result.isPresent()) {
+            EmailVerify emailVerify = result.get();
+            if (emailVerify.getUuid().equals(uuid)) { return true; }
+        } else { throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL); }
+        return false;
+    }
+
+    public void save(String email, String uuid) throws BaseException{
+        EmailVerify emailVerify = EmailVerify.builder()
+                .email(email)
+                .uuid(uuid)
+                .build();
+        emailVerifyRepository.save(emailVerify);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -269,11 +284,11 @@ public class MemberService {
         }
     }
 
-    public GetProfileRes getProfile(CustomUserDetails customUserDetails) throws BaseException {
+    public SearchProfileRes getProfile(CustomUserDetails customUserDetails) throws BaseException {
         if(Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
             Customer customer = customerRepository.findById(customUserDetails.getIdx())
             .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_PROFILE_FAIL));
-            return GetProfileRes.builder()
+            return SearchProfileRes.builder()
                     .name(customer.getName())
                     .point(customer.getPoint())
                     .email(customer.getEmail())
@@ -283,7 +298,7 @@ public class MemberService {
         } else{
             Company company = companyRepository.findById(customUserDetails.getIdx())
             .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_PROFILE_FAIL));
-            return GetProfileRes.builder()
+            return SearchProfileRes.builder()
                     .name(company.getName())
                     .crn(company.getCrn())
                     .email(company.getEmail())

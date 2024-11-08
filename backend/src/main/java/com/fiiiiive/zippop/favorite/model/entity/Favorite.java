@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.favorite.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fiiiiive.zippop.member.model.entity.Customer;
+import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;

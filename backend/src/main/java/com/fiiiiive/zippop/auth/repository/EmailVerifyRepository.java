@@ -1,6 +1,6 @@
-package com.fiiiiive.zippop.member.repository;
+package com.fiiiiive.zippop.auth.repository;
 
-import com.fiiiiive.zippop.member.model.entity.EmailVerify;
+import com.fiiiiive.zippop.auth.model.entity.EmailVerify;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,9 +1,8 @@
 package com.fiiiiive.zippop.post.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fiiiiive.zippop.comment.model.entity.Comment;
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.member.model.entity.Customer;
+import com.fiiiiive.zippop.auth.model.entity.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 

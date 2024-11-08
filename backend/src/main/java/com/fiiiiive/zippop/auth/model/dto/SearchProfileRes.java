@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.member.model.dto;
+package com.fiiiiive.zippop.auth.model.dto;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-public class GetProfileRes {
+public class SearchProfileRes {
     private String name;
     private String email;
     private Integer point;

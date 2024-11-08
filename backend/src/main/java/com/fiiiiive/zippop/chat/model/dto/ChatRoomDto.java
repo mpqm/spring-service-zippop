@@ -12,6 +12,4 @@ import lombok.Setter;
 public class ChatRoomDto {
     private Long id;
     private String name;
-
-
 }

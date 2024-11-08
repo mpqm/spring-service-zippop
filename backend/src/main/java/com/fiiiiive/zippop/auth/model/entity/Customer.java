@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.member.model.entity;
+package com.fiiiiive.zippop.auth.model.entity;
 
 import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.comment.model.entity.Comment;
