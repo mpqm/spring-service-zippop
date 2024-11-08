@@ -17,8 +17,8 @@ public class Reserve extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-    private String OnDoingUUID;
-    private String WaitingUUID;
+    private String onDoingUUID;
+    private String waitingUUID;
     private Long maxCount;
     private Long expiredTime;
 
