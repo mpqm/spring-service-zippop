@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class CompanyOrdersDetail extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;

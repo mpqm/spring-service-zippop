@@ -14,7 +14,7 @@ import java.util.Map;
 @Data
 public class VerifyOrdersRes {
     private String impUid;
-    private Map<String, Double> productIdxMap;
+    private Map<String, Double> goodsIdxMap;
     private Long storeIdx;
     private Integer totalPeople;
     private Integer totalPrice;

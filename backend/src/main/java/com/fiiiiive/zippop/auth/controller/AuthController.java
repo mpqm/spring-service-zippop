@@ -48,7 +48,7 @@ public class AuthController {
     @GetMapping("/inactive")
     public ResponseEntity<BaseResponse> inactive(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception, BaseException {
-        authService.inActiveMenber(customUserDetails);
+        authService.inActiveMember(customUserDetails);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_INACTIVE_SUCCESS));
     }
 

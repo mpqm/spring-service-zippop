@@ -16,15 +16,20 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class CompanyOrders extends BaseEntity {
+    // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
     @Column(nullable = false, length = 100, unique = true)
     private String impUid;
-    //
+
+    // OneToMany
+    @OneToMany(mappedBy = "companyOrders")
+    private List<CompanyOrdersDetail> companyOrdersDetailList = new ArrayList<>();
+
+    // ManyToOne
     @ManyToOne
     @JoinColumn(name = "companyIdx")
     private Company company;
-    @OneToMany(mappedBy = "companyOrders")
-    private List<CompanyOrdersDetail> companyOrdersDetailList = new ArrayList<>();
+
 }
