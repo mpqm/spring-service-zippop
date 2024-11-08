@@ -10,6 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface CompanyOrdersRepository extends JpaRepository<CompanyOrders, Long> {
-    @Query("SELECT co FROM CompanyOrders co JOIN FETCH co.company c WHERE c.companyIdx = :companyIdx")
+    @Query("SELECT co FROM CompanyOrders co " +
+            "JOIN FETCH co.company c " +
+            "WHERE c.idx = :companyIdx")
     Optional<List<CompanyOrders>> findByCompanyIdx(Long companyIdx);
 }

@@ -39,7 +39,7 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
                     .name(name)
                     .email(email)
                     .point(3000)
-                    .enabled(true)
+                    .isEmailAuth(true)
                     .build();
             customerRepository.save(customer);
         } else {

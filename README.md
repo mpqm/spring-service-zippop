@@ -32,17 +32,6 @@
 
 ## 👨🏻‍🏫 프로젝트 개요
 <details>
-	<summary><b> 💻 전체 프로젝트 링크</b></summary>
-	<ul>
-        <li><a href="https://github.com/beyond-sw-camp/be06-1st-FIIIIIVE-ZIP_POP">초기 설계</a></li>
-		<li><a href="https://github.com/beyond-sw-camp/be06-2nd-FIIIIIVE-ZIP_POP">백엔드</a></li>
-        <li><a href="https://github.com/beyond-sw-camp/be06-3rd-FIIIIIVE-ZIP_POP">프론트엔드</a></li>
-	</ul>
-</details>
-
-<br>
-
-<details>
 	<summary><b> 📋 프로젝트 소개</b></summary>
     <ul>
     <li>
@@ -115,27 +104,32 @@
 
 ## ⚙ ERD
 <div align="center">
-    <img src="https://github.com/mpqm/spring-service-zippop/blob/dev/docs/img/erd.png">
+    
 </div>
 <br>
 
 ## 🎡 Architecture
 <div align="center">
-    <img src="https://github.com/mpqm/spring-service-zippop/blob/dev/docs/img/systemarch.PNG">
+    
 </div>
 
 <br>
 
-## 🗄️ 개발 문서
+## 🗄️ v2 개발 문서 및 링크
+
+## 🗄️ v1 개발 문서 및 링크
 <ul>
+    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%901.-%EC%B4%88%EA%B8%B0%EC%84%A4%EA%B3%84">📖 초기 설계</a></li>
     <li> <a href="https://docs.google.com/spreadsheets/d/1Oy9dhMyVrUTMVNd5EqTX9RuNqQDUb2-Y/edit?usp=sharing&ouid=117935972514311680024&rtpof=true&sd=true">➰ 요구사항 정의서</a></li>
     <li> <a href="https://jazzy-bumper-d95.notion.site/ZIPPOP-API-b8578829d1b140a6825b8880aa47e5ee">📃 API 명세서</a></li>
+    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%904.-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98">📡 아키텍처</a></li>
+    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%905.-%EA%B8%B0%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8">✔️ 기능 테스트 </a></li>
+    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%906-%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5-%EC%84%A4%EB%AA%85">🔎 핵심 기능 설명</a></li>
     <li><a href="https://www.figma.com/design/Lsk0T0J6oH3GSzmzInUJPZ/%ED%99%94%EB%A9%B4%EC%84%A4%EA%B3%84%EC%84%9C?node-id=0-1&t=lKoGim9PCwtw4xTA-0">🌱 화면설계서</a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/5.-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98">🛠 시스템 아키텍처</a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/6.-%EC%86%8C%ED%94%84%ED%8A%B8%EC%9B%A8%EC%96%B4-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98">📡 소프트웨어 아키텍처</a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/7.-%EC%B4%88%EA%B8%B0%EC%84%A4%EA%B3%84">⚙ 초기 설계</a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/2.-%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5">🔎 핵심 기능</a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/3.-%EA%B8%B0%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8">⚙ 기능 테스트 </a></li>
+    <li><a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%907.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81">🎥 프로젝트 시연 영상</a></li>
     <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/4.-%EC%BD%94%EB%94%A9-%EC%BB%A8%EB%B2%A4%EC%85%98">🔗 코딩 컨벤션</a></li>
-    <li><a href="https://github.com/mpqm/spring-service-zippop/wiki/8.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81">🎥 프로젝트 시연 영상</a></li>
+    <li><a href="https://github.com/beyond-sw-camp/be06-1st-FIIIIIVE-ZIP_POP">📖 초기 설계 프로젝트 이동</a></li>
+    <li><a href="https://github.com/beyond-sw-camp/be06-2nd-FIIIIIVE-ZIP_POP">📖 백엔드 프로젝트 이동</a></li>
+    <li><a href="https://github.com/beyond-sw-camp/be06-3rd-FIIIIIVE-ZIP_POP">📖 프론트엔드 프로젝트 이동</a></li>
 </ul>
+

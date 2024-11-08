@@ -22,7 +22,7 @@ public interface CartItemRepository extends JpaRepository<CartItem,Long> {
     int decrementCount(Long cartItemIdx);
 
 
-    @Query("SELECT ci FROM CartItem WHERE ci.idx = :cartItemIdx")
+    @Query("SELECT ci FROM CartItem ci WHERE ci.idx = :cartItemIdx")
     Optional<CartItem> findByCartItemIdx(Long cartItemIdx);
 
     @Modifying
