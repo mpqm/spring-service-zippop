@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetPostImageRes {
+public class SearchPostImageRes {
     private Long postImageIdx;
     private String imageUrl;
     private LocalDateTime createdAt;

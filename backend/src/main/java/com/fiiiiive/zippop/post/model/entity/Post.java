@@ -18,8 +18,8 @@ import java.util.List;
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postIdx;
-    private String email;
+    private Long idx;
+    private String customerEmail;
     private String title;
     private String content;
     private Integer likeCount;
@@ -32,7 +32,6 @@ public class Post extends BaseEntity {
     private List<PostImage> postImageList;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customerIdx")
-    @JsonBackReference
+    @JoinColumn(name = "customer_idx")
     private Customer customer;
 }

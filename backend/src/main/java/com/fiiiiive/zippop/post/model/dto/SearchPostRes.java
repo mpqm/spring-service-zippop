@@ -10,14 +10,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetPostRes {
+public class SearchPostRes {
     private Long postIdx;
     private String customerEmail;
-    private String title;
-    private String content;
+    private String postTitle;
+    private String postContent;
     private Integer likeCount;
     private Integer commentCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<GetPostImageRes> getPostImageResList;
+    private List<SearchPostImageRes> searchPostImageResList;
 }
