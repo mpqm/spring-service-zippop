@@ -10,10 +10,10 @@ import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 팝업 스토어 인덱스를 기반으로 스토어의 리뷰를 조회
-    @Query("SELECT pr FROM Review pr JOIN FETCH pr.store ps WHERE ps.storeIdx = :storeIdx")
+    @Query("SELECT r FROM Review r JOIN FETCH r.store s WHERE s.storeIdx = :storeIdx")
     Optional<Page<Review>> findByStoreIdx(Long storeIdx, Pageable pageable);
 
-    // 고객의 이메일를 기반으로 자신이 쓴 리뷰를 전체 조회
-    @Query("SELECT pr FROM Review pr JOIN FETCH pr.customer c WHERE c.email = :customerEmail")
-    Optional<Page<Review>> findByCustomerEmail(String customerEmail, Pageable pageable);
+    // 고객의 인덱스를 기반으로 자신이 쓴 리뷰를 전체 조회
+    @Query("SELECT r FROM Review r JOIN FETCH r.customer c WHERE c.idx = :customerIdx")
+    Optional<Page<Review>> findByCustomerIdx(Long customerIdx, Pageable pageable);
 }

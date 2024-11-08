@@ -1,15 +1,16 @@
-package com.fiiiiive.zippop.review.model.dto;
+package com.fiiiiive.zippop.goods.model.dto;
 
 import lombok.*;
 
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetReviewImageRes {
-    private Long reviewImageIdx;
+public class SearchGoodsImageRes {
+    private Long goodsImageIdx;
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -7,7 +7,7 @@ import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.review.service.ReviewService;
 import com.fiiiiive.zippop.review.model.dto.CreateReviewReq;
 import com.fiiiiive.zippop.review.model.dto.CreateReviewRes;
-import com.fiiiiive.zippop.review.model.dto.GetReviewRes;
+import com.fiiiiive.zippop.review.model.dto.SearchReviewRes;
 import com.fiiiiive.zippop.global.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Tag(name = "popup-review-api", description = "Review")
 @RestController
@@ -39,23 +40,19 @@ public class ReviewController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_REGISTER_SUCCESS, response));
     }
 
-    // 스토어의 인덱스 번호로 등록된 리뷰 조회
-    @GetMapping(value = "/search-store")
-    public ResponseEntity<BaseResponse<Page<GetReviewRes>>> searchStore(
+    // 리뷰 목록 조회: 스토어의 인덱스 번호로 등록된 리뷰 조회 및 자신이 쓴 리뷰 조회
+    @GetMapping(value = "/search-all")
+    public ResponseEntity<BaseResponse<Page<SearchReviewRes>>> searchStore(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long storeIdx,
         @RequestParam int page,
         @RequestParam int size) throws BaseException {
-        Page<GetReviewRes> response = reviewService.searchStore(storeIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, response));
-    }
-
-    // 자신이 쓴 리뷰 조회
-    @GetMapping(value = "/search-customer")
-    public ResponseEntity<BaseResponse<Page<GetReviewRes>>> searchCustomer(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam int page,
-        @RequestParam int size) throws BaseException {
-        Page<GetReviewRes> response = reviewService.searchCustomer(customUserDetails, page, size);
+        Page<SearchReviewRes> response = null;
+        if(customUserDetails != null && Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
+            response = reviewService.searchAllAsCustomer(customUserDetails, page, size);
+        } else if (customUserDetails == null){
+            response = reviewService.searchAllAsGuest(storeIdx, page, size);
+        }
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, response));
     }
 }
