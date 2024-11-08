@@ -13,16 +13,4 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateStoreRes {
     private Long storeIdx;
-    private String companyEmail;
-    private String storeName;
-    private String storeContent;
-    private String storeAddress;
-    private String category;
-    private Integer likeCount;
-    private Integer totalPeople;
-    private String storeStartDate;
-    private String storeEndDate;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
 }

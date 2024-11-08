@@ -60,6 +60,7 @@ public enum BaseResponseMessage {
     // 팝업 스토어 조회 3100
     POPUP_STORE_SEARCH_SUCCESS(true, 3100, "팝업 스토어 목록 조회에 성공했습니다."),
     POPUP_STORE_SEARCH_FAIL_NOT_EXIST(false, 3101, "해당 팝업 스토어가 존재하지 않습니다."),
+    POPUP_STORE_SEARCH_FAIL_INVALID_REQUEST(false, 3102, "유효하지 않은 팝업 스토어 조회 파라미터입니다."),
     // 팝업 스토어 수정 3200
     POPUP_STORE_UPDATE_SUCCESS(true, 3200, "팝업 스토어 수정에 성공했습니다."),
     POPUP_STORE_UPDATE_FAIL_INVALID_MEMBER(false, 3201, "해당 팝업스토어를 등록한 기업회원이 아닙니다."),

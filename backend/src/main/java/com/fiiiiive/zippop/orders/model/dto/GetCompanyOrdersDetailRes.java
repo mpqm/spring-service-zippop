@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.orders.model.dto;
 
-import com.fiiiiive.zippop.store.model.dto.GetStoreRes;
+import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class GetCompanyOrdersDetailRes {
     private Long companyOrdersDetailIdx;
     private Integer totalPrice;
-    private GetStoreRes getStoreRes;
+    private SearchStoreRes searchStoreRes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

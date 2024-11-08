@@ -18,7 +18,7 @@
             <div data-v-11ae1556="">
                 <div data-v-29d5164e="" data-v-11ae1556="" class="user-profile-picture pro-profile-picture">
                     <div data-v-29d5164e="" data-name="image" class="is-square"
-                        :style="{ backgroundImage: `url(${store.getStoreImageResList[0]?.imageUrl})` }">
+                        :style="{ backgroundImage: `url(${store.searchStoreImageResList[0]?.imageUrl})` }">
                     </div>
                 </div>
             </div>

@@ -3,12 +3,11 @@ package com.fiiiiive.zippop.store.service;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
+import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.member.repository.CompanyRepository;
 import com.fiiiiive.zippop.member.repository.CustomerRepository;
 import com.fiiiiive.zippop.member.model.entity.Company;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.member.model.entity.Customer;
-import com.fiiiiive.zippop.goods.model.entity.PopupGoods;
 import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsImageRes;
 import com.fiiiiive.zippop.review.model.dto.GetReviewImageRes;
@@ -18,8 +17,7 @@ import com.fiiiiive.zippop.review.model.dto.GetReviewRes;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.store.model.entity.StoreImage;
-import com.fiiiiive.zippop.store.model.entity.StoreLike;
-import com.fiiiiive.zippop.store.model.dto.GetStoreRes;
+import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
 import com.fiiiiive.zippop.store.repository.StoreImageRepository;
 import com.fiiiiive.zippop.store.repository.StoreLikeRepository;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
@@ -30,7 +28,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.List;
 import java.util.*;
 
@@ -43,111 +40,113 @@ public class StoreService {
     private final CustomerRepository customerRepository;
     private final StoreLikeRepository storeLikeRepository;
 
-    public CreateStoreRes register(CustomUserDetails customUserDetails, CreateStoreReq dto, List<String> fileNames) throws BaseException {
+    // 팝업 스토어 등록
+    @Transactional
+    public CreateStoreRes register(CustomUserDetails customUserDetails, CreateStoreReq dto, List<String> fileNameList) throws BaseException {
+        // 예외: 팝업 스토어 등록은  기업 회원만 가능
         Company company = companyRepository.findByCompanyEmail(customUserDetails.getEmail())
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REGISTER_FAIL_UNAUTHORIZED));
+
+        // Store 엔티티 생성 및 저장
         Store store = Store.builder()
                 .companyEmail(customUserDetails.getEmail())
                 .name(dto.getStoreName())
                 .content(dto.getStoreContent())
-                .storeAddress(dto.getStoreAddress())
+                .address(dto.getStoreAddress())
                 .category(dto.getCategory())
-                .storeStartDate(dto.getStoreStartDate())
-                .storeEndDate(dto.getStoreEndDate())
+                .startDate(dto.getStoreStartDate())
+                .endDate(dto.getStoreEndDate())
                 .likeCount(0)
                 .company(company)
                 .build();
         storeRepository.save(store);
-        List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-        for(String fileName : fileNames){
+
+        // Store Image 엔티티들 생성 및 저장
+        for(String fileName : fileNameList){
             StoreImage storeImage = StoreImage.builder()
-                    .imageUrl(fileName)
+                    .url(fileName)
                     .store(store)
                     .build();
             storeImageRepository.save(storeImage);
-            GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                    .storeImageIdx(storeImage.getStoreImageIdx())
-                    .imageUrl(storeImage.getImageUrl())
-                    .createdAt(storeImage.getCreatedAt())
-                    .updatedAt(storeImage.getUpdatedAt())
-                    .build();
-            getStoreImageResList.add(getStoreImageRes);
         }
-        return CreateStoreRes.builder()
-                .storeIdx(store.getStoreIdx())
-                .companyEmail(store.getCompanyEmail())
-                .storeName(store.getStoreName())
-                .storeContent(store.getStoreContent())
-                .storeAddress(store.getStoreAddress())
-                .category(store.getCategory())
-                .likeCount(store.getLikeCount())
-                .totalPeople(store.getTotalPeople())
-                .storeStartDate(store.getStoreStartDate())
-                .storeEndDate(store.getStoreEndDate())
-                .createdAt(store.getCreatedAt())
-                .updatedAt(store.getUpdatedAt())
-                .getStoreImageResList(getStoreImageResList)
-                .build();
+
+        // CreateStoreRes 반환
+        return CreateStoreRes.builder().storeIdx(store.getIdx()).build();
     }
 
-    public GetStoreRes search(Long storeIdx) throws BaseException {
-        Store store = storeRepository.findByStoreIdx(storeIdx)
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
-        List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-        List<StoreImage> storeImageList = store.getPopupstoreImageList();
-        for (StoreImage storeImage : storeImageList) {
-            GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                    .storeImageIdx(storeImage.getStoreImageIdx())
-                    .imageUrl(storeImage.getImageUrl())
+    // 팝업 스토어 단일 조회 (idx, name)
+    public SearchStoreRes search(Long storeIdx, String storeName) throws BaseException {
+        // idx, name / 예외: 팝업 스토어가 존재하지 않을때
+        Store store = null;
+        if(storeIdx != null && storeName == null){
+            store = storeRepository.findByStoreIdx(storeIdx)
+            .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
+        } else if(storeIdx == null && storeName != null) {
+            store = storeRepository.findByStoreName(storeName)
+            .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
+        } else {
+            throw new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_INVALID_REQUEST);
+        }
+
+        // Store Image Dto 생성
+        List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
+        for (StoreImage storeImage : store.getStoreImageList()) {
+            SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
+                    .storeImageIdx(storeImage.getIdx())
+                    .storeImageUrl(storeImage.getUrl())
                     .createdAt(storeImage.getCreatedAt())
                     .updatedAt(storeImage.getUpdatedAt())
                     .build();
-            getStoreImageResList.add(getStoreImageRes);
+            searchStoreImageResList.add(searchStoreImageRes);
         }
+
+        // Goods Dto List 생성
         List<GetGoodsRes> getGoodsResList = new ArrayList<>();
-        List<PopupGoods> popupGoodsList = store.getPopupGoodsList();
-        for (PopupGoods popupGoods : popupGoodsList) {
-            List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
+        for (Goods goods : store.getGoodsList()) {
+            // Goods Image Dto 생성
             List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-            for(GoodsImage goodsImage : goodsImageList){
+            for(GoodsImage goodsImage : goods.getGoodsImageList()){
                 GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                        .productImageIdx(goodsImage.getPopupGoodsImageIdx())
-                        .imageUrl(goodsImage.getImageUrl())
+                        .productImageIdx(goodsImage.getIdx())
+                        .imageUrl(goodsImage.getUrl())
                         .createdAt(goodsImage.getCreatedAt())
                         .updatedAt(goodsImage.getUpdatedAt())
                         .build();
                 getGoodsImageResList.add(getGoodsImageRes);
             }
+            // Goods Dto 생성
             GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                    .productIdx(popupGoods.getProductIdx())
-                    .productName(popupGoods.getProductName())
-                    .productPrice(popupGoods.getProductPrice())
-                    .productContent(popupGoods.getProductContent())
-                    .productAmount(popupGoods.getProductAmount())
-                    .createdAt(popupGoods.getCreatedAt())
-                    .updatedAt(popupGoods.getUpdatedAt())
+                    .productIdx(goods.getIdx())
+                    .productName(goods.getName())
+                    .productPrice(goods.getPrice())
+                    .productContent(goods.getContent())
+                    .productAmount(goods.getAmount())
+                    .createdAt(goods.getCreatedAt())
+                    .updatedAt(goods.getUpdatedAt())
                     .getGoodsImageResList(getGoodsImageResList)
                     .build();
             getGoodsResList.add(getGoodsRes);
         }
+
+        // Review Dto List 생성
         List<GetReviewRes> getReviewResList = new ArrayList<>();
-        List<Review> reviewList = store.getReviewList();
-        for (Review review : reviewList) {
-            List<ReviewImage> reviewImageList = review.getReviewImageList();
+        for (Review review :  store.getReviewList()) {
+            // Review Image Dto 생성
             List<GetReviewImageRes> getReviewImageResList = new ArrayList<>();
-            for(ReviewImage reviewImage : reviewImageList){
+            for(ReviewImage reviewImage : review.getReviewImageList()){
                 GetReviewImageRes getReviewImageRes = GetReviewImageRes.builder()
-                        .reviewImageIdx(reviewImage.getReviewImageIdx())
-                        .imageUrl(reviewImage.getImageUrl())
+                        .reviewImageIdx(reviewImage.getIdx())
+                        .imageUrl(reviewImage.getUrl())
                         .createdAt(review.getCreatedAt())
                         .updatedAt(review.getUpdatedAt())
                         .build();
                 getReviewImageResList.add(getReviewImageRes);
             }
+            // Review Dto 생성
             GetReviewRes getReviewRes = GetReviewRes.builder()
-                    .reviewIdx(review.getReviewIdx())
-                    .reviewTitle(review.getReviewTitle())
-                    .reviewContent(review.getReviewContent())
+                    .reviewIdx(review.getIdx())
+                    .reviewTitle(review.getTitle())
+                    .reviewContent(review.getContent())
                     .rating(review.getRating())
                     .createdAt(review.getCreatedAt())
                     .updatedAt(review.getUpdatedAt())
@@ -155,315 +154,162 @@ public class StoreService {
                     .build();
             getReviewResList.add(getReviewRes);
         }
-        GetStoreRes getStoreRes = GetStoreRes.builder()
-                .storeIdx(store.getStoreIdx())
+
+        // GetStoreRes 반환
+        return SearchStoreRes.builder()
+                .storeIdx(store.getIdx())
                 .companyEmail(store.getCompanyEmail())
-                .storeName(store.getStoreName())
-                .storeContent(store.getStoreContent())
-                .storeAddress(store.getStoreAddress())
+                .storeName(store.getName())
+                .storeContent(store.getContent())
+                .storeAddress(store.getAddress())
                 .category(store.getCategory())
                 .likeCount(store.getLikeCount())
                 .totalPeople(store.getTotalPeople())
-                .storeStartDate(store.getStoreStartDate())
-                .storeEndDate(store.getStoreEndDate())
+                .storeStartDate(store.getStartDate())
+                .storeEndDate(store.getEndDate())
                 .getGoodsResList(getGoodsResList)
                 .getReviewResList(getReviewResList)
-                .getStoreImageResList(getStoreImageResList)
+                .searchStoreImageResList(searchStoreImageResList)
                 .build();
-            return getStoreRes;
     }
+    
+    // 기업 사용자가 등록한 팝업 스토어 조회
+    public Page<SearchStoreRes> searchAllAsCompany(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
+        // 예외: 기업 사용자 이메일로 조회된 팝업 스토어가 없을때,
+        Page<Store> result = storeRepository.findByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size))
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
+        Page<SearchStoreRes> searchStoreResPage = result.map(store -> {
+            List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
+            
+            for (StoreImage storeImage : store.getStoreImageList()) {
+                SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
+                        .storeImageIdx(storeImage.getIdx())
+                        .storeImageUrl(storeImage.getUrl())
+                        .createdAt(storeImage.getCreatedAt())
+                        .updatedAt(storeImage.getUpdatedAt())
+                        .build();
+                searchStoreImageResList.add(searchStoreImageRes);
+            }
+            return SearchStoreRes.builder()
+                    .storeIdx(store.getIdx())
+                    .companyEmail(store.getCompanyEmail())
+                    .storeName(store.getName())
+                    .storeContent(store.getContent())
+                    .storeAddress(store.getAddress())
+                    .category(store.getCategory())
+                    .likeCount(store.getLikeCount())
+                    .totalPeople(store.getTotalPeople())
+                    .storeStartDate(store.getStartDate())
+                    .storeEndDate(store.getEndDate())
+                    .searchStoreImageResList(searchStoreImageResList)
+                    .build();
+        });
+        return searchStoreResPage;
+    }
+    
+    // 팝업 스토어 목록 조회 (page)
+    public Page<SearchStoreRes> searchAllAsGuest(String keyword, LocalDateTime startDate, LocalDateTime endDate, int page, int size) throws BaseException {
 
-    public Page<GetStoreRes> searchAll(int page, int size) throws BaseException {
-        Page<Store> result = storeRepository.findAll(PageRequest.of(page, size));
+        Page<Store> result = null;
+        if(keyword != null) {
+            result = storeRepository.findByKeyword(keyword, PageRequest.of(page, size));
+        } else if(startDate != null && endDate != null){
+            result = storeRepository.findByStoreDateRange(startDate, endDate, PageRequest.of(page, size));
+        } else {
+            result = storeRepository.findAll(PageRequest.of(page, size));
+        }
+
+        // 예외: 값이 없다면
         if (!result.hasContent()) {
             throw new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST);
         }
-        Page<GetStoreRes> getPopupStoreResList = result.map(popupStore -> {
-            List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-            List<StoreImage> storeImageList = popupStore.getPopupstoreImageList();
-            for (StoreImage popupStoreImage : storeImageList) {
-                GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                        .storeImageIdx(popupStoreImage.getStoreImageIdx())
-                        .imageUrl(popupStoreImage.getImageUrl())
-                        .createdAt(popupStoreImage.getCreatedAt())
-                        .updatedAt(popupStoreImage.getUpdatedAt())
-                        .build();
-                getStoreImageResList.add(getStoreImageRes);
-            }
-            GetStoreRes getStoreRes = GetStoreRes.builder()
-                    .storeIdx(popupStore.getStoreIdx())
-                    .companyEmail(popupStore.getCompanyEmail())
-                    .storeName(popupStore.getStoreName())
-                    .storeContent(popupStore.getStoreContent())
-                    .storeAddress(popupStore.getStoreAddress())
-                    .category(popupStore.getCategory())
-                    .likeCount(popupStore.getLikeCount())
-                    .totalPeople(popupStore.getTotalPeople())
-                    .storeStartDate(popupStore.getStoreStartDate())
-                    .storeEndDate(popupStore.getStoreEndDate())
-                    .getStoreImageResList(getStoreImageResList)
-                    .build();
-            return getStoreRes;
-        });
-        return getPopupStoreResList;
-    }
 
-    public Page<GetStoreRes> searchCompany(CustomUserDetails customUserDetails, int page, int size) throws BaseException{
-        Page<Store> result = storeRepository.findByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size))
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
-        Page<GetStoreRes> getPopupStoreResList = result.map(popupStore -> {
-            List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-            List<StoreImage> storeImageList = popupStore.getPopupstoreImageList();
-            for (StoreImage popupStoreImage : storeImageList) {
-                GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                        .storeImageIdx(popupStoreImage.getStoreImageIdx())
-                        .imageUrl(popupStoreImage.getImageUrl())
-                        .createdAt(popupStoreImage.getCreatedAt())
-                        .updatedAt(popupStoreImage.getUpdatedAt())
-                        .build();
-                getStoreImageResList.add(getStoreImageRes);
-            }
-            GetStoreRes getStoreRes = GetStoreRes.builder()
-                    .storeIdx(popupStore.getStoreIdx())
-                    .companyEmail(popupStore.getCompanyEmail())
-                    .storeName(popupStore.getStoreName())
-                    .storeContent(popupStore.getStoreContent())
-                    .storeAddress(popupStore.getStoreAddress())
-                    .category(popupStore.getCategory())
-                    .likeCount(popupStore.getLikeCount())
-                    .totalPeople(popupStore.getTotalPeople())
-                    .storeStartDate(popupStore.getStoreStartDate())
-                    .storeEndDate(popupStore.getStoreEndDate())
-                    .getStoreImageResList(getStoreImageResList)
-                    .build();
-            return getStoreRes;
-        });
-        return getPopupStoreResList;
-    }
+        // 페이징 적용
+        Page<SearchStoreRes> searchStoreResPage = result.map(store -> {
+            List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
 
-    public Page<GetStoreRes> searchKeyword(String keyword, int page, int size) throws BaseException{
-        Page<Store> result = storeRepository.findByKeyword(keyword, PageRequest.of(page, size))
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
-        Page<GetStoreRes> getPopupStoreResList = result.map(popupStore -> {
-            List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-            List<StoreImage> storeImageList = popupStore.getPopupstoreImageList();
-            for (StoreImage popupStoreImage : storeImageList) {
-                GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                        .storeImageIdx(popupStoreImage.getStoreImageIdx())
-                        .imageUrl(popupStoreImage.getImageUrl())
-                        .createdAt(popupStoreImage.getCreatedAt())
-                        .updatedAt(popupStoreImage.getUpdatedAt())
+            // Store Image Dto List 생성
+            for (StoreImage storeImage : store.getStoreImageList()) {
+                SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
+                        .storeImageIdx(storeImage.getIdx())
+                        .storeImageUrl(storeImage.getUrl())
+                        .createdAt(storeImage.getCreatedAt())
+                        .updatedAt(storeImage.getUpdatedAt())
                         .build();
-                getStoreImageResList.add(getStoreImageRes);
+                searchStoreImageResList.add(searchStoreImageRes);
             }
-            List<GetGoodsRes> getGoodsResList = new ArrayList<>();
-            List<PopupGoods> popupGoodsList = popupStore.getPopupGoodsList();
-            for (PopupGoods popupGoods : popupGoodsList) {
-                List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
-                List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-                for(GoodsImage popupGoodsImage: goodsImageList){
-                    GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                            .productImageIdx(popupGoodsImage.getPopupGoodsImageIdx())
-                            .imageUrl(popupGoodsImage.getImageUrl())
-                            .createdAt(popupGoodsImage.getCreatedAt())
-                            .updatedAt(popupGoodsImage.getUpdatedAt())
-                            .build();
-                    getGoodsImageResList.add(getGoodsImageRes);
-                }
-                GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                        .productIdx(popupGoods.getProductIdx())
-                        .productName(popupGoods.getProductName())
-                        .productPrice(popupGoods.getProductPrice())
-                        .productContent(popupGoods.getProductContent())
-                        .productAmount(popupGoods.getProductAmount())
-                        .createdAt(popupGoods.getCreatedAt())
-                        .updatedAt(popupGoods.getUpdatedAt())
-                        .getGoodsImageResList(getGoodsImageResList)
-                        .build();
-                getGoodsResList.add(getGoodsRes);
-            }
-            List<GetReviewRes> getReviewResList = new ArrayList<>();
-            List<Review> reviewList = popupStore.getReviewList();
-            for (Review popupReview : reviewList) {
-                List<ReviewImage> reviewImageList = popupReview.getReviewImageList();
-                List<GetReviewImageRes> getReviewImageResList = new ArrayList<>();
-                for(ReviewImage popupReviewImage : reviewImageList){
-                    GetReviewImageRes getReviewImageRes = GetReviewImageRes.builder()
-                            .reviewImageIdx(popupReviewImage.getReviewImageIdx())
-                            .imageUrl(popupReviewImage.getImageUrl())
-                            .createdAt(popupReview.getCreatedAt())
-                            .updatedAt(popupReview.getUpdatedAt())
-                            .build();
-                    getReviewImageResList.add(getReviewImageRes);
-                }
-                GetReviewRes getReviewRes = GetReviewRes.builder()
-                        .reviewIdx(popupReview.getReviewIdx())
-                        .reviewTitle(popupReview.getReviewTitle())
-                        .reviewContent(popupReview.getReviewContent())
-                        .rating(popupReview.getRating())
-                        .createdAt(popupReview.getCreatedAt())
-                        .updatedAt(popupReview.getUpdatedAt())
-                        .getReviewImageResList(getReviewImageResList)
-                        .build();
-                getReviewResList.add(getReviewRes);
-            }
-            GetStoreRes getStoreRes = GetStoreRes.builder()
-                    .storeIdx(popupStore.getStoreIdx())
-                    .companyEmail(popupStore.getCompanyEmail())
-                    .storeName(popupStore.getStoreName())
-                    .storeContent(popupStore.getStoreContent())
-                    .storeAddress(popupStore.getStoreAddress())
-                    .category(popupStore.getCategory())
-                    .likeCount(popupStore.getLikeCount())
-                    .totalPeople(popupStore.getTotalPeople())
-                    .storeStartDate(popupStore.getStoreStartDate())
-                    .storeEndDate(popupStore.getStoreEndDate())
-                    .getGoodsResList(getGoodsResList)
-                    .getReviewResList(getReviewResList)
-                    .getStoreImageResList(getStoreImageResList)
+            
+            // GetStoreRes 반환
+            return SearchStoreRes.builder()
+                    .storeIdx(store.getIdx())
+                    .companyEmail(store.getCompanyEmail())
+                    .storeName(store.getName())
+                    .storeContent(store.getContent())
+                    .storeAddress(store.getAddress())
+                    .category(store.getCategory())
+                    .likeCount(store.getLikeCount())
+                    .totalPeople(store.getTotalPeople())
+                    .storeStartDate(store.getStartDate())
+                    .storeEndDate(store.getEndDate())
+                    .searchStoreImageResList(searchStoreImageResList)
                     .build();
-            return getStoreRes;
         });
-        return getPopupStoreResList;
+        // GetStoreResList 반환
+        return searchStoreResPage;
     }
-
-    public Page<GetStoreRes> searchDateRange(LocalDateTime storeStartDate, LocalDateTime storeEndDate, int page, int size) throws BaseException{
-        Page<Store> result = storeRepository.findByStoreDateRange(storeStartDate, storeEndDate, PageRequest.of(page, size))
-                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
-        Page<GetStoreRes> getPopupStoreResList = result.map(popupStore -> {
-            List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-            List<StoreImage> storeImageList = popupStore.getPopupstoreImageList();
-            for (StoreImage popupStoreImage : storeImageList) {
-                GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                        .storeImageIdx(popupStoreImage.getStoreImageIdx())
-                        .imageUrl(popupStoreImage.getImageUrl())
-                        .createdAt(popupStoreImage.getCreatedAt())
-                        .updatedAt(popupStoreImage.getUpdatedAt())
-                        .build();
-                getStoreImageResList.add(getStoreImageRes);
-            }
-            List<GetGoodsRes> getGoodsResList = new ArrayList<>();
-            List<PopupGoods> popupGoodsList = popupStore.getPopupGoodsList();
-            for (PopupGoods popupGoods : popupGoodsList) {
-                List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
-                List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-                for(GoodsImage popupGoodsImage: goodsImageList){
-                    GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                            .productImageIdx(popupGoodsImage.getPopupGoodsImageIdx())
-                            .imageUrl(popupGoodsImage.getImageUrl())
-                            .createdAt(popupGoodsImage.getCreatedAt())
-                            .updatedAt(popupGoodsImage.getUpdatedAt())
-                            .build();
-                    getGoodsImageResList.add(getGoodsImageRes);
-                }
-                GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                        .productIdx(popupGoods.getProductIdx())
-                        .productName(popupGoods.getProductName())
-                        .productPrice(popupGoods.getProductPrice())
-                        .productContent(popupGoods.getProductContent())
-                        .productAmount(popupGoods.getProductAmount())
-                        .createdAt(popupGoods.getCreatedAt())
-                        .updatedAt(popupGoods.getUpdatedAt())
-                        .getGoodsImageResList(getGoodsImageResList)
-                        .build();
-                getGoodsResList.add(getGoodsRes);
-            }
-            List<GetReviewRes> getReviewResList = new ArrayList<>();
-            List<Review> reviewList = popupStore.getReviewList();
-            for (Review popupReview : reviewList) {
-                List<ReviewImage> reviewImageList = popupReview.getReviewImageList();
-                List<GetReviewImageRes> getReviewImageResList = new ArrayList<>();
-                for(ReviewImage popupReviewImage : reviewImageList){
-                    GetReviewImageRes getReviewImageRes = GetReviewImageRes.builder()
-                            .reviewImageIdx(popupReviewImage.getReviewImageIdx())
-                            .imageUrl(popupReviewImage.getImageUrl())
-                            .createdAt(popupReview.getCreatedAt())
-                            .updatedAt(popupReview.getUpdatedAt())
-                            .build();
-                    getReviewImageResList.add(getReviewImageRes);
-                }
-                GetReviewRes getReviewRes = GetReviewRes.builder()
-                        .reviewIdx(popupReview.getReviewIdx())
-                        .reviewTitle(popupReview.getReviewTitle())
-                        .reviewContent(popupReview.getReviewContent())
-                        .rating(popupReview.getRating())
-                        .createdAt(popupReview.getCreatedAt())
-                        .updatedAt(popupReview.getUpdatedAt())
-                        .getReviewImageResList(getReviewImageResList)
-                        .build();
-                getReviewResList.add(getReviewRes);
-            }
-            GetStoreRes getStoreRes = GetStoreRes.builder()
-                    .storeIdx(popupStore.getStoreIdx())
-                    .companyEmail(popupStore.getCompanyEmail())
-                    .storeName(popupStore.getStoreName())
-                    .storeContent(popupStore.getStoreContent())
-                    .storeAddress(popupStore.getStoreAddress())
-                    .category(popupStore.getCategory())
-                    .likeCount(popupStore.getLikeCount())
-                    .totalPeople(popupStore.getTotalPeople())
-                    .storeStartDate(popupStore.getStoreStartDate())
-                    .storeEndDate(popupStore.getStoreEndDate())
-                    .getGoodsResList(getGoodsResList)
-                    .getReviewResList(getReviewResList)
-                    .getStoreImageResList(getStoreImageResList)
-                    .build();
-            return getStoreRes;
-        });
-        return getPopupStoreResList;
-    }
-
+    
+    // 팝업 스토어 수정
+    @Transactional
     public UpdateStoreRes update(CustomUserDetails customUserDetails, Long storeIdx, UpdateStoreReq dto, List<String> fileNames) throws BaseException {
+        // 예외: 팝업 스토어가 존재하지 않을때, 현재 사용자가 이메일이 다를때
         Store store = storeRepository.findByStoreIdx(storeIdx)
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
         if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) {
             throw new BaseException(BaseResponseMessage.POPUP_STORE_UPDATE_FAIL_INVALID_MEMBER);
         }
-        store.setStoreName(dto.getStoreName());
-        store.setStoreContent(dto.getStoreContent());
-        store.setStoreAddress(dto.getStoreAddress());
+        // Store 업데이트
+        store.setName(dto.getStoreName());
+        store.setContent(dto.getStoreContent());
+        store.setAddress(dto.getStoreAddress());
         store.setCategory(dto.getCategory());
         store.setTotalPeople(dto.getTotalPeople());
-        store.setStoreEndDate(dto.getStoreEndDate());
-        store.setStoreEndDate(dto.getStoreEndDate());
+        store.setEndDate(dto.getStoreEndDate());
+        store.setStartDate(dto.getStoreStartDate());
         storeRepository.save(store);
-        List<StoreImage> storeImageList = store.getPopupstoreImageList();
-        List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-        for(StoreImage storeImage : storeImageList){
-            storeImageRepository.deleteById(storeImage.getStoreImageIdx());
+        
+        // Store Image 업데이트
+        // 기존 이미지 URL 목록 불러오기
+        List<String> existingUrls = new ArrayList<>();
+        for (StoreImage image : store.getStoreImageList()) {
+            existingUrls.add(image.getUrl());
         }
-        for (String fileName: fileNames) {
-            StoreImage popupstoreImage = StoreImage.builder()
-                    .imageUrl(fileName)
-                    .store(store)
-                    .build();
-            storeImageRepository.save(popupstoreImage);
-            GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                    .storeImageIdx(popupstoreImage.getStoreImageIdx())
-                    .imageUrl(popupstoreImage.getImageUrl())
-                    .createdAt(popupstoreImage.getCreatedAt())
-                    .updatedAt(popupstoreImage.getUpdatedAt())
-                    .build();
-            getStoreImageResList.add(getStoreImageRes);
+
+        // 삭제할 이미지 URL (기존에 있었으나 새 목록에 없는 것들)
+        for (StoreImage image : store.getStoreImageList()) {
+            if (!fileNames.contains(image.getUrl())) {
+                storeImageRepository.deleteById(image.getIdx());
+            }
         }
-        return UpdateStoreRes.builder()
-                .storeIdx(store.getStoreIdx())
-                .companyEmail(store.getCompanyEmail())
-                .storeName(store.getStoreName())
-                .storeContent(store.getStoreContent())
-                .storeAddress(store.getStoreAddress())
-                .category(store.getCategory())
-                .likeCount(store.getLikeCount())
-                .totalPeople(store.getTotalPeople())
-                .storeStartDate(store.getStoreStartDate())
-                .storeEndDate(store.getStoreEndDate())
-                .createdAt(store.getCreatedAt())
-                .updatedAt(store.getUpdatedAt())
-                .getStoreImageResList(getStoreImageResList)
-                .build();
+
+        // 추가할 이미지 URL (새 목록에 있는데 기존 목록에는 없는 것들)
+        for (String fileName : fileNames) {
+            if (!existingUrls.contains(fileName)) {
+                StoreImage storeImage = StoreImage.builder()
+                        .url(fileName)
+                        .store(store)
+                        .build();
+                storeImageRepository.save(storeImage);
+            }
+        }
+
+        // UpdateStoreRes 반환
+        return UpdateStoreRes.builder().storeIdx(store.getIdx()).build();
     }
 
+    // 팝업 스토어 삭제
+    @Transactional
     public void delete(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException{
+        // 예외: 팝업 스토어가 존재하지 않을때, 현재 사용자가 이메일이 다를때
         Store store = storeRepository.findByStoreIdx(storeIdx)
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_DELETE_FAIL_NOT_FOUND));
         if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())){
@@ -472,282 +318,4 @@ public class StoreService {
         storeRepository.deleteById(storeIdx);
     }
 
-    @Transactional
-    public void like(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException{
-        Store store = storeRepository.findByStoreIdx(storeIdx)
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_LIKE_FAIL_NOT_FOUND));
-        Customer customer = customerRepository.findById(customUserDetails.getIdx())
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_LIKE_FAIL_INVALID_MEMBER));
-        Optional<StoreLike> result = storeLikeRepository.findByCustomerEmailAndStoreIdx(customUserDetails.getEmail(),storeIdx);
-        if (result.isEmpty()) {
-            store.setLikeCount(store.getLikeCount() + 1);
-            storeRepository.save(store);
-            StoreLike storeLike = StoreLike.builder()
-                    .store(store)
-                    .customer(customer)
-                    .build();
-            storeLikeRepository.save(storeLike);
-        } else {
-            store.setLikeCount(store.getLikeCount() - 1);
-            storeRepository.save(store);
-            storeLikeRepository.deleteByCustomerEmailAndStoreIdx(customer.getEmail(), storeIdx);
-        }
-    }
-
-    public Page<GetStoreRes> searchCategory(String category, int page, int size) throws BaseException {
-        Page<Store> result = storeRepository.findByCategory(category, PageRequest.of(page, size))
-                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
-        Page<GetStoreRes> getPopupStoreResList = result.map(popupStore -> {
-            List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-            List<StoreImage> storeImageList = popupStore.getPopupstoreImageList();
-            for (StoreImage popupStoreImage : storeImageList) {
-                GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                        .storeImageIdx(popupStoreImage.getStoreImageIdx())
-                        .imageUrl(popupStoreImage.getImageUrl())
-                        .createdAt(popupStoreImage.getCreatedAt())
-                        .updatedAt(popupStoreImage.getUpdatedAt())
-                        .build();
-                getStoreImageResList.add(getStoreImageRes);
-            }
-            List<GetGoodsRes> getGoodsResList = new ArrayList<>();
-            List<PopupGoods> popupGoodsList = popupStore.getPopupGoodsList();
-            for (PopupGoods popupGoods : popupGoodsList) {
-                List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
-                List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-                for(GoodsImage popupGoodsImage: goodsImageList){
-                    GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                            .productImageIdx(popupGoodsImage.getPopupGoodsImageIdx())
-                            .imageUrl(popupGoodsImage.getImageUrl())
-                            .createdAt(popupGoodsImage.getCreatedAt())
-                            .updatedAt(popupGoodsImage.getUpdatedAt())
-                            .build();
-                    getGoodsImageResList.add(getGoodsImageRes);
-                }
-                GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                        .productIdx(popupGoods.getProductIdx())
-                        .productName(popupGoods.getProductName())
-                        .productPrice(popupGoods.getProductPrice())
-                        .productContent(popupGoods.getProductContent())
-                        .productAmount(popupGoods.getProductAmount())
-                        .createdAt(popupGoods.getCreatedAt())
-                        .updatedAt(popupGoods.getUpdatedAt())
-                        .getGoodsImageResList(getGoodsImageResList)
-                        .build();
-                getGoodsResList.add(getGoodsRes);
-            }
-            List<GetReviewRes> getReviewResList = new ArrayList<>();
-            List<Review> reviewList = popupStore.getReviewList();
-            for (Review popupReview : reviewList) {
-                List<ReviewImage> reviewImageList = popupReview.getReviewImageList();
-                List<GetReviewImageRes> getReviewImageResList = new ArrayList<>();
-                for(ReviewImage popupReviewImage : reviewImageList){
-                    GetReviewImageRes getReviewImageRes = GetReviewImageRes.builder()
-                            .reviewImageIdx(popupReviewImage.getReviewImageIdx())
-                            .imageUrl(popupReviewImage.getImageUrl())
-                            .createdAt(popupReview.getCreatedAt())
-                            .updatedAt(popupReview.getUpdatedAt())
-                            .build();
-                    getReviewImageResList.add(getReviewImageRes);
-                }
-                GetReviewRes getReviewRes = GetReviewRes.builder()
-                        .reviewIdx(popupReview.getReviewIdx())
-                        .reviewTitle(popupReview.getReviewTitle())
-                        .reviewContent(popupReview.getReviewContent())
-                        .rating(popupReview.getRating())
-                        .createdAt(popupReview.getCreatedAt())
-                        .updatedAt(popupReview.getUpdatedAt())
-                        .getReviewImageResList(getReviewImageResList)
-                        .build();
-                getReviewResList.add(getReviewRes);
-            }
-            GetStoreRes getStoreRes = GetStoreRes.builder()
-                    .storeIdx(popupStore.getStoreIdx())
-                    .companyEmail(popupStore.getCompanyEmail())
-                    .storeName(popupStore.getStoreName())
-                    .storeContent(popupStore.getStoreContent())
-                    .storeAddress(popupStore.getStoreAddress())
-                    .category(popupStore.getCategory())
-                    .likeCount(popupStore.getLikeCount())
-                    .totalPeople(popupStore.getTotalPeople())
-                    .storeStartDate(popupStore.getStoreStartDate())
-                    .storeEndDate(popupStore.getStoreEndDate())
-                    .getGoodsResList(getGoodsResList)
-                    .getReviewResList(getReviewResList)
-                    .getStoreImageResList(getStoreImageResList)
-                    .build();
-            return getStoreRes;
-        });
-        return getPopupStoreResList;
-    }
-
-    public GetStoreRes searchStore(String storeName) throws BaseException{
-        Store store = storeRepository.findByStoreName(storeName)
-                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
-        List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-        List<StoreImage> storeImageList = store.getPopupstoreImageList();
-        for (StoreImage storeImage : storeImageList) {
-            GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                    .storeImageIdx(storeImage.getStoreImageIdx())
-                    .imageUrl(storeImage.getImageUrl())
-                    .createdAt(storeImage.getCreatedAt())
-                    .updatedAt(storeImage.getUpdatedAt())
-                    .build();
-            getStoreImageResList.add(getStoreImageRes);
-        }
-        List<GetGoodsRes> getGoodsResList = new ArrayList<>();
-        List<PopupGoods> popupGoodsList = store.getPopupGoodsList();
-        for (PopupGoods popupGoods : popupGoodsList) {
-            List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
-            List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-            for(GoodsImage goodsImage : goodsImageList){
-                GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                        .productImageIdx(goodsImage.getPopupGoodsImageIdx())
-                        .imageUrl(goodsImage.getImageUrl())
-                        .createdAt(goodsImage.getCreatedAt())
-                        .updatedAt(goodsImage.getUpdatedAt())
-                        .build();
-                getGoodsImageResList.add(getGoodsImageRes);
-            }
-            GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                    .productIdx(popupGoods.getProductIdx())
-                    .productName(popupGoods.getProductName())
-                    .productPrice(popupGoods.getProductPrice())
-                    .productContent(popupGoods.getProductContent())
-                    .productAmount(popupGoods.getProductAmount())
-                    .createdAt(popupGoods.getCreatedAt())
-                    .updatedAt(popupGoods.getUpdatedAt())
-                    .getGoodsImageResList(getGoodsImageResList)
-                    .build();
-            getGoodsResList.add(getGoodsRes);
-        }
-        List<GetReviewRes> getReviewResList = new ArrayList<>();
-        List<Review> reviewList = store.getReviewList();
-        for (Review review : reviewList) {
-            List<ReviewImage> reviewImageList = review.getReviewImageList();
-            List<GetReviewImageRes> getReviewImageResList = new ArrayList<>();
-            for(ReviewImage reviewImage : reviewImageList){
-                GetReviewImageRes getReviewImageRes = GetReviewImageRes.builder()
-                        .reviewImageIdx(reviewImage.getReviewImageIdx())
-                        .imageUrl(reviewImage.getImageUrl())
-                        .createdAt(review.getCreatedAt())
-                        .updatedAt(review.getUpdatedAt())
-                        .build();
-                getReviewImageResList.add(getReviewImageRes);
-            }
-            GetReviewRes getReviewRes = GetReviewRes.builder()
-                    .reviewIdx(review.getReviewIdx())
-                    .reviewTitle(review.getReviewTitle())
-                    .reviewContent(review.getReviewContent())
-                    .rating(review.getRating())
-                    .createdAt(review.getCreatedAt())
-                    .updatedAt(review.getUpdatedAt())
-                    .getReviewImageResList(getReviewImageResList)
-                    .build();
-            getReviewResList.add(getReviewRes);
-        }
-        GetStoreRes getStoreRes = GetStoreRes.builder()
-                .storeIdx(store.getStoreIdx())
-                .companyEmail(store.getCompanyEmail())
-                .storeName(store.getStoreName())
-                .storeContent(store.getStoreContent())
-                .storeAddress(store.getStoreAddress())
-                .category(store.getCategory())
-                .likeCount(store.getLikeCount())
-                .totalPeople(store.getTotalPeople())
-                .storeStartDate(store.getStoreStartDate())
-                .storeEndDate(store.getStoreEndDate())
-                .getGoodsResList(getGoodsResList)
-                .getReviewResList(getReviewResList)
-                .getStoreImageResList(getStoreImageResList)
-                .build();
-        return getStoreRes;
-    }
-
-    public Page<GetStoreRes> searchAddress(String storeAddress, int page, int size) throws BaseException{
-        Page<Store> result = storeRepository.findByStoreAddress(storeAddress, PageRequest.of(page, size));
-        if (!result.hasContent()) {
-            throw new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST);
-        }
-        Page<GetStoreRes> getPopupStoreResPage = result.map(popupStore -> {
-            List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
-            List<StoreImage> storeImageList = popupStore.getPopupstoreImageList();
-            for (StoreImage popupStoreImage : storeImageList) {
-                GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
-                        .storeImageIdx(popupStoreImage.getStoreImageIdx())
-                        .imageUrl(popupStoreImage.getImageUrl())
-                        .createdAt(popupStoreImage.getCreatedAt())
-                        .updatedAt(popupStoreImage.getUpdatedAt())
-                        .build();
-                getStoreImageResList.add(getStoreImageRes);
-            }
-            List<GetGoodsRes> getGoodsResList = new ArrayList<>();
-            List<PopupGoods> popupGoodsList = popupStore.getPopupGoodsList();
-            for (PopupGoods popupGoods : popupGoodsList) {
-                List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
-                List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-                for(GoodsImage popupGoodsImage: goodsImageList){
-                    GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                            .productImageIdx(popupGoodsImage.getPopupGoodsImageIdx())
-                            .imageUrl(popupGoodsImage.getImageUrl())
-                            .createdAt(popupGoodsImage.getCreatedAt())
-                            .updatedAt(popupGoodsImage.getUpdatedAt())
-                            .build();
-                    getGoodsImageResList.add(getGoodsImageRes);
-                }
-                GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                        .productIdx(popupGoods.getProductIdx())
-                        .productName(popupGoods.getProductName())
-                        .productPrice(popupGoods.getProductPrice())
-                        .productContent(popupGoods.getProductContent())
-                        .productAmount(popupGoods.getProductAmount())
-                        .createdAt(popupGoods.getCreatedAt())
-                        .updatedAt(popupGoods.getUpdatedAt())
-                        .getGoodsImageResList(getGoodsImageResList)
-                        .build();
-                getGoodsResList.add(getGoodsRes);
-            }
-            List<GetReviewRes> getReviewResList = new ArrayList<>();
-            List<Review> reviewList = popupStore.getReviewList();
-            for (Review popupReview : reviewList) {
-                List<ReviewImage> reviewImageList = popupReview.getReviewImageList();
-                List<GetReviewImageRes> getReviewImageResList = new ArrayList<>();
-                for(ReviewImage popupReviewImage : reviewImageList){
-                    GetReviewImageRes getReviewImageRes = GetReviewImageRes.builder()
-                            .reviewImageIdx(popupReviewImage.getReviewImageIdx())
-                            .imageUrl(popupReviewImage.getImageUrl())
-                            .createdAt(popupReview.getCreatedAt())
-                            .updatedAt(popupReview.getUpdatedAt())
-                            .build();
-                    getReviewImageResList.add(getReviewImageRes);
-                }
-                GetReviewRes getReviewRes = GetReviewRes.builder()
-                        .reviewIdx(popupReview.getReviewIdx())
-                        .reviewTitle(popupReview.getReviewTitle())
-                        .reviewContent(popupReview.getReviewContent())
-                        .rating(popupReview.getRating())
-                        .createdAt(popupReview.getCreatedAt())
-                        .updatedAt(popupReview.getUpdatedAt())
-                        .getReviewImageResList(getReviewImageResList)
-                        .build();
-                getReviewResList.add(getReviewRes);
-            }
-            GetStoreRes getStoreRes = GetStoreRes.builder()
-                    .storeIdx(popupStore.getStoreIdx())
-                    .companyEmail(popupStore.getCompanyEmail())
-                    .storeName(popupStore.getStoreName())
-                    .storeContent(popupStore.getStoreContent())
-                    .storeAddress(popupStore.getStoreAddress())
-                    .category(popupStore.getCategory())
-                    .likeCount(popupStore.getLikeCount())
-                    .totalPeople(popupStore.getTotalPeople())
-                    .storeStartDate(popupStore.getStoreStartDate())
-                    .storeEndDate(popupStore.getStoreEndDate())
-                    .getGoodsResList(getGoodsResList)
-                    .getReviewResList(getReviewResList)
-                    .getStoreImageResList(getStoreImageResList)
-                    .build();
-            return getStoreRes;
-        });
-        return getPopupStoreResPage;
-    }
 }

@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.favorite.model.dto;
 
-import com.fiiiiive.zippop.store.model.dto.GetStoreRes;
+import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
 import lombok.*;
 
 @Getter
@@ -9,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetFavoriteRes {
-    private GetStoreRes getStoreRes;
+    private SearchStoreRes searchStoreRes;
 }
