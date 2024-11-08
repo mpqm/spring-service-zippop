@@ -5,6 +5,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -23,8 +24,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "WHERE p.title LIKE %:keyword% " +
             "OR p.content LIKE %:keyword% " +
             "OR p.customerEmail LIKE %:keyword%")
-    Optional<Page<Post>> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    Optional<Page<Post>> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     // 전체 게시글 조회
-    Page<Post> findAll(Pageable pageable);
+    @Query("SELECT p FROM Post p")
+    Optional<Page<Post>> findAllPageable(Pageable pageable);
 }

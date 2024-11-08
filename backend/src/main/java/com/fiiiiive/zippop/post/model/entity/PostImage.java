@@ -19,6 +19,6 @@ public class PostImage extends BaseEntity {
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="postIdx")
+    @JoinColumn(name="post_idx")
     private Post post;
 }

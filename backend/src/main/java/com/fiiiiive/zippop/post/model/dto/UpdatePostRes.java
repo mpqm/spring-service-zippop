@@ -13,9 +13,9 @@ import java.util.List;
 public class UpdatePostRes {
     private Long postIdx;
     private String customerEmail;
-    private String title;
-    private String content;
+    private String postTitle;
+    private String postContent;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<GetPostImageRes> getPostImageResList;
+    private List<SearchPostImageRes> searchPostImageResList;
 }

@@ -9,6 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CreatePostReq {
-    private String title;
-    private String content;
+    private String postTitle;
+    private String postContent;
 }

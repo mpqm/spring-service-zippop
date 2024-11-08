@@ -27,7 +27,6 @@ import java.util.Objects;
 @RequestMapping("/api/v1/store")
 public class StoreController {
     private final StoreService storeService;
-    private final StoreLikeService storeLikeService;
     private final CloudFileUpload cloudFileUpload;
 
     // 팝업 스토어 등록
@@ -95,7 +94,7 @@ public class StoreController {
     public ResponseEntity<BaseResponse> like(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long storeIdx) throws BaseException {
-        storeLikeService.like(customUserDetails, storeIdx);
+        storeService.like(customUserDetails, storeIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_LIKE_SUCCESS));
     }
 }

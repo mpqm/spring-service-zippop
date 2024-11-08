@@ -12,11 +12,4 @@ import java.util.List;
 @Builder
 public class CreatePostRes {
     private Long postIdx;
-    private String customerEmail;
-    private String title;
-    private String content;
-    private Integer likeCount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private List<GetPostImageRes> getPostImageResList;
 }
