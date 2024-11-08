@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.goods.model.entity;
 
 import com.fiiiiive.zippop.cart.model.entity.Cart;
+import com.fiiiiive.zippop.cart.model.entity.CartItem;
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
@@ -21,16 +22,16 @@ public class Goods extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
     private String name;
-    private Integer price;
     private String content;
+    private Integer price;
     private Integer amount;
 
     // OneToMany
     @OneToMany(mappedBy = "goods")
-    private List<Cart> cartList;
+    private List<CartItem> cartItemList;
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GoodsImage> goodsImageList = new ArrayList<>();;
+    private List<GoodsImage> goodsImageList;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)

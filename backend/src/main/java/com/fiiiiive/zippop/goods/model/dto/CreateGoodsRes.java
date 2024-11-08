@@ -13,11 +13,4 @@ import java.util.List;
 @Builder
 public class CreateGoodsRes {
     private Long goodsIdx;
-    private String goodsName;
-    private Integer goodsPrice;
-    private Integer goodsAmount;
-    private String goodsContent;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
 }

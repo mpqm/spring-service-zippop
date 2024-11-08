@@ -44,7 +44,7 @@ public class StoreService {
     @Transactional
     public CreateStoreRes register(CustomUserDetails customUserDetails, CreateStoreReq dto, List<String> fileNameList) throws BaseException {
         // 예외: 팝업 스토어 등록은  기업 회원만 가능
-        Company company = companyRepository.findByCompanyEmail(customUserDetails.getEmail())
+        Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx())
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REGISTER_FAIL_UNAUTHORIZED));
 
         // Store 엔티티 생성 및 저장
@@ -107,7 +107,7 @@ public class StoreService {
             List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
             for(GoodsImage goodsImage : goods.getGoodsImageList()){
                 GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                        .productImageIdx(goodsImage.getIdx())
+                        .goodsImageIdx(goodsImage.getIdx())
                         .imageUrl(goodsImage.getUrl())
                         .createdAt(goodsImage.getCreatedAt())
                         .updatedAt(goodsImage.getUpdatedAt())
@@ -116,11 +116,11 @@ public class StoreService {
             }
             // Goods Dto 생성
             GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                    .productIdx(goods.getIdx())
-                    .productName(goods.getName())
-                    .productPrice(goods.getPrice())
-                    .productContent(goods.getContent())
-                    .productAmount(goods.getAmount())
+                    .goodsIdx(goods.getIdx())
+                    .goodsName(goods.getName())
+                    .goodsPrice(goods.getPrice())
+                    .goodsContent(goods.getContent())
+                    .goodsAmount(goods.getAmount())
                     .createdAt(goods.getCreatedAt())
                     .updatedAt(goods.getUpdatedAt())
                     .getGoodsImageResList(getGoodsImageResList)
@@ -180,7 +180,6 @@ public class StoreService {
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
         Page<SearchStoreRes> searchStoreResPage = result.map(store -> {
             List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
-            
             for (StoreImage storeImage : store.getStoreImageList()) {
                 SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
                         .storeImageIdx(storeImage.getIdx())
@@ -280,14 +279,14 @@ public class StoreService {
         // Store Image 업데이트
         // 기존 이미지 URL 목록 불러오기
         List<String> existingUrls = new ArrayList<>();
-        for (StoreImage image : store.getStoreImageList()) {
-            existingUrls.add(image.getUrl());
+        for (StoreImage storeImage : store.getStoreImageList()) {
+            existingUrls.add(storeImage.getUrl());
         }
 
         // 삭제할 이미지 URL (기존에 있었으나 새 목록에 없는 것들)
-        for (StoreImage image : store.getStoreImageList()) {
-            if (!fileNames.contains(image.getUrl())) {
-                storeImageRepository.deleteById(image.getIdx());
+        for (StoreImage storeImage : store.getStoreImageList()) {
+            if (!fileNames.contains(storeImage.getUrl())) {
+                storeImageRepository.deleteById(storeImage.getIdx());
             }
         }
 
