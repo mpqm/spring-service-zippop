@@ -11,8 +11,4 @@ import java.time.LocalDateTime;
 @Builder
 public class UpdateCommentRes {
     private Long commentIdx;
-    private String customerEmail;
-    private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

@@ -5,7 +5,7 @@ import com.fiiiiive.zippop.comment.model.entity.CommentLike;
 import com.fiiiiive.zippop.comment.model.dto.CreateCommentReq;
 import com.fiiiiive.zippop.comment.model.dto.UpdateCommentReq;
 import com.fiiiiive.zippop.comment.model.dto.CreateCommentRes;
-import com.fiiiiive.zippop.comment.model.dto.GetCommentRes;
+import com.fiiiiive.zippop.comment.model.dto.SearchCommentRes;
 import com.fiiiiive.zippop.comment.model.dto.UpdateCommentRes;
 import com.fiiiiive.zippop.comment.repository.CommentLikeRepository;
 import com.fiiiiive.zippop.comment.repository.CommentRepository;
@@ -33,10 +33,11 @@ public class CommentService {
     private final CustomerRepository customerRepository;
     private final CommentLikeRepository commentLikeRepository;
 
+    @Transactional
     public CreateCommentRes register(CustomUserDetails customUserDetails, Long postIdx, CreateCommentReq dto) throws BaseException {
-        Post post = postRepository.findById(postIdx)
+        Post post = postRepository.findByPostIdx(postIdx)
         .orElseThrow(() ->  new BaseException(BaseResponseMessage.COMMENT_REGISTER_FAIL_INVALID_MEMBER));
-        Customer customer = customerRepository.findById(customUserDetails.getIdx())
+        Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx())
         .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_REGISTER_FAIL_POST_NOT_FOUND));
         Comment comment = Comment.builder()
                 .post(post)
@@ -46,20 +47,13 @@ public class CommentService {
                 .customer(customer)
                 .build();
         commentRepository.save(comment);
-        return CreateCommentRes.builder()
-                .commentIdx(comment.getIdx())
-                .customerEmail(customUserDetails.getEmail())
-                .content(comment.getContent())
-                .likeCount(comment.getLikeCount())
-                .createdAt(comment.getCreatedAt())
-                .updatedAt(comment.getUpdatedAt())
-                .build();
+        return CreateCommentRes.builder().commentIdx(comment.getIdx()).build();
     }
 
-    public Page<GetCommentRes> searchAll(int page, int size, Long postIdx) throws BaseException {
+    public Page<SearchCommentRes> searchAllAsGuest(int page, int size, Long postIdx) throws BaseException {
         Page<Comment> result = commentRepository.findByPostIdx(postIdx, PageRequest.of(page, size))
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_SEARCH_ALL_FAIL));
-        Page<GetCommentRes> getCommentResPage = result.map(comment-> GetCommentRes.builder()
+        Page<SearchCommentRes> searchCommentResPage = result.map(comment-> SearchCommentRes.builder()
                 .commentIdx(comment.getIdx())
                 .customerEmail(comment.getCustomer().getEmail())
                 .content(comment.getContent())
@@ -67,13 +61,13 @@ public class CommentService {
                 .updatedAt(comment.getUpdatedAt())
                 .build()
         );
-        return getCommentResPage;
+        return searchCommentResPage;
     }
 
-    public Page<GetCommentRes> searchCustomer(int page, int size, CustomUserDetails customUserDetails) throws BaseException {
-        Page<Comment> result = commentRepository.findByCustomerEmail(customUserDetails.getEmail(), PageRequest.of(page, size))
+    public Page<SearchCommentRes> searchAllAsCustomer(int page, int size, CustomUserDetails customUserDetails) throws BaseException {
+        Page<Comment> result = commentRepository.findByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size))
         .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_SEARCH_BY_CUSTOMER_FAIL));
-        Page<GetCommentRes> getCommentResPage = result.map(comment-> GetCommentRes.builder()
+        Page<SearchCommentRes> searchCommentResPage = result.map(comment-> SearchCommentRes.builder()
                 .commentIdx(comment.getIdx())
                 .customerEmail(comment.getCustomer().getEmail())
                 .content(comment.getContent())
@@ -81,42 +75,16 @@ public class CommentService {
                 .updatedAt(comment.getUpdatedAt())
                 .build()
         );
-        return getCommentResPage;
-    }
-
-    public UpdateCommentRes update(CustomUserDetails customUserDetails, Long commentIdx, UpdateCommentReq dto) throws BaseException {
-        Comment comment = commentRepository.findByCommentIdx(commentIdx)
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_UPDATE_FAIL_COMMENT_NOT_FOUND));
-        if(!Objects.equals(comment.getCustomerEmail(), customUserDetails.getEmail())){
-            throw new BaseException(BaseResponseMessage.COMMENT_UPDATE_FAIL_INVALID_MEMBER);
-        }
-        comment.setContent(dto.getContent());
-        commentRepository.save(comment);
-        return UpdateCommentRes.builder()
-                .commentIdx(comment.getIdx())
-                .customerEmail(customUserDetails.getEmail())
-                .content(comment.getContent())
-                .createdAt(comment.getCreatedAt())
-                .updatedAt(comment.getUpdatedAt())
-                .build();
-    }
-
-    public void delete(CustomUserDetails customUserDetails, Long commentIdx) throws BaseException{
-        Comment comment = commentRepository.findByCommentIdx(commentIdx)
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_DELETE_FAIL_COMMENT_NOT_FOUND));
-        if(!Objects.equals(comment.getCustomerEmail(), customUserDetails.getEmail())){
-            throw new BaseException(BaseResponseMessage.COMMENT_DELETE_FAIL_INVALID_MEMBER);
-        }
-        commentRepository.deleteById(commentIdx);
+        return searchCommentResPage;
     }
 
     @Transactional
     public void like(CustomUserDetails customUserDetails, Long commentIdx) throws BaseException{
         Customer customer = customerRepository.findByCustomerEmail(customUserDetails.getEmail())
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_LIKE_FAIL_INVALID_MEMBER));
+                .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_LIKE_FAIL_INVALID_MEMBER));
         Comment comment = commentRepository.findByCommentIdx(commentIdx)
-        .orElseThrow(()-> new BaseException(BaseResponseMessage.COMMENT_LIKE_FAIL_COMMENT_NOT_FOUND));
-        Optional<CommentLike> result = commentLikeRepository.findByCustomerEmailAndCommentIdx(customUserDetails.getEmail(), commentIdx);
+                .orElseThrow(()-> new BaseException(BaseResponseMessage.COMMENT_LIKE_FAIL_COMMENT_NOT_FOUND));
+        Optional<CommentLike> result = commentLikeRepository.findByCustomerIdxAndCommentIdx(customUserDetails.getIdx(), commentIdx);
         if(result.isEmpty()){
             comment.setLikeCount(comment.getLikeCount() + 1);
             commentRepository.save(comment);
@@ -128,7 +96,29 @@ public class CommentService {
         } else {
             comment.setLikeCount(comment.getLikeCount() - 1);
             commentRepository.save(comment);
-            commentLikeRepository.deleteByCustomerEmailAndCommentIdx(customer.getEmail(), commentIdx);
+            commentLikeRepository.deleteByCustomerIdxAndCommentIdx(customer.getIdx(), commentIdx);
         }
+    }
+
+    @Transactional
+    public UpdateCommentRes update(CustomUserDetails customUserDetails, Long commentIdx, UpdateCommentReq dto) throws BaseException {
+        Comment comment = commentRepository.findByCommentIdx(commentIdx)
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_UPDATE_FAIL_COMMENT_NOT_FOUND));
+        if(!Objects.equals(comment.getCustomerEmail(), customUserDetails.getEmail())){
+            throw new BaseException(BaseResponseMessage.COMMENT_UPDATE_FAIL_INVALID_MEMBER);
+        }
+        comment.setContent(dto.getContent());
+        commentRepository.save(comment);
+        return UpdateCommentRes.builder().commentIdx(comment.getIdx()).build();
+    }
+
+    @Transactional
+    public void delete(CustomUserDetails customUserDetails, Long commentIdx) throws BaseException{
+        Comment comment = commentRepository.findByCommentIdx(commentIdx)
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.COMMENT_DELETE_FAIL_COMMENT_NOT_FOUND));
+        if(!Objects.equals(comment.getCustomerEmail(), customUserDetails.getEmail())){
+            throw new BaseException(BaseResponseMessage.COMMENT_DELETE_FAIL_INVALID_MEMBER);
+        }
+        commentRepository.deleteById(commentIdx);
     }
 }

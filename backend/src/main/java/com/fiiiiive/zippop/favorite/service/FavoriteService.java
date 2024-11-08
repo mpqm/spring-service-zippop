@@ -13,6 +13,7 @@ import com.fiiiiive.zippop.store.repository.StoreRepository;
 import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.store.model.entity.StoreImage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class FavoriteService {
     private final StoreRepository storeRepository;
     private final CustomerRepository customerRepository;
 
+    @Transactional
     public void active(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
         Customer customer = customerRepository.findById(customUserDetails.getIdx())
         .orElseThrow(() -> (new BaseException(BaseResponseMessage.FAVORITE_ACTIVE_FAIL_MEMBER_NOT_FOUND)));
@@ -45,35 +47,33 @@ public class FavoriteService {
         }
     }
 
-    public List<GetFavoriteRes> list(CustomUserDetails customUserDetails) throws BaseException {
+    public List<GetFavoriteRes> searchAll(CustomUserDetails customUserDetails) throws BaseException {
         List<Favorite> favoriteList = favoriteRepository.findAllByCustomerEmail(customUserDetails.getEmail())
         .orElseThrow(()->new BaseException(BaseResponseMessage.FAVORITE_SEARCH_ALL_FAIL));
         List<GetFavoriteRes> getFavoriteResList = new ArrayList<>();
         for(Favorite favorite: favoriteList){
-
             Store store = favorite.getStore();
-            List<StoreImage> storeImageList = store.getPopupstoreImageList();
             List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
-            for(StoreImage storeImage : storeImageList){
+            for(StoreImage storeImage : store.getStoreImageList()){
                 SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
-                        .storeImageIdx(storeImage.getStoreImageIdx())
-                        .imageUrl(storeImage.getImageUrl())
+                        .storeImageIdx(storeImage.getIdx())
+                        .storeImageUrl(storeImage.getUrl())
                         .createdAt(storeImage.getCreatedAt())
                         .updatedAt(storeImage.getUpdatedAt())
                         .build();
                 searchStoreImageResList.add(searchStoreImageRes);
             }
             SearchStoreRes searchStoreRes = SearchStoreRes.builder()
-                    .storeIdx(store.getStoreIdx())
+                    .storeIdx(store.getIdx())
                     .companyEmail(store.getCompanyEmail())
-                    .storeName(store.getStoreName())
-                    .storeContent(store.getStoreContent())
-                    .storeAddress(store.getStoreAddress())
+                    .storeName(store.getName())
+                    .storeContent(store.getContent())
+                    .storeAddress(store.getAddress())
                     .category(store.getCategory())
                     .likeCount(store.getLikeCount())
                     .totalPeople(store.getTotalPeople())
-                    .storeStartDate(store.getStoreStartDate())
-                    .storeEndDate(store.getStoreEndDate())
+                    .storeStartDate(store.getStartDate())
+                    .storeEndDate(store.getEndDate())
                     .createdAt(store.getCreatedAt())
                     .updatedAt(store.getUpdatedAt())
                     .searchStoreImageResList(searchStoreImageResList)
