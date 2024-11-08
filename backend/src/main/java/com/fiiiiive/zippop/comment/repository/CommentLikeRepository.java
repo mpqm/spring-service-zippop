@@ -12,9 +12,9 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> 
             "JOIN FETCH cl.customer " +
             "JOIN FETCH cl.comment " +
             "WHERE cl.customer.email = :customerEmail and cl.comment.commentIdx = :commentIdx")
-    Optional<CommentLike> findByCustomerEmailAndCommentIdx(String customerEmail, Long commentIdx);
+    Optional<CommentLike> findByCustomerIdxAndCommentIdx(Long customerIdx, Long commentIdx);
 
     @Modifying
-    @Query("DELETE FROM CommentLike cl WHERE cl.customer.email = :customerEmail AND cl.comment.commentIdx = :commentIdx")
-    void deleteByCustomerEmailAndCommentIdx(String customerEmail, Long commentIdx);
+    @Query("DELETE FROM CommentLike cl WHERE cl.customer.idx = :customerIdx AND cl.comment.commentIdx = :commentIdx")
+    void deleteByCustomerIdxAndCommentIdx(Long customerIdx, Long commentIdx);
 }

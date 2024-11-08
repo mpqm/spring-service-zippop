@@ -4,7 +4,7 @@ import com.fiiiiive.zippop.comment.service.CommentService;
 import com.fiiiiive.zippop.comment.model.dto.CreateCommentReq;
 import com.fiiiiive.zippop.comment.model.dto.UpdateCommentReq;
 import com.fiiiiive.zippop.comment.model.dto.CreateCommentRes;
-import com.fiiiiive.zippop.comment.model.dto.GetCommentRes;
+import com.fiiiiive.zippop.comment.model.dto.SearchCommentRes;
 import com.fiiiiive.zippop.comment.model.dto.UpdateCommentRes;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @Tag(name = "comment-api", description = "Comment")
 @Slf4j
@@ -36,21 +38,26 @@ public class CommentController {
     }
 
     @GetMapping("/search-all")
-    public ResponseEntity<BaseResponse<Page<GetCommentRes>>> searchByPost(
-        @RequestParam Long postIdx,
+    public ResponseEntity<BaseResponse<Page<SearchCommentRes>>> searchAll(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam(required = false) Long postIdx,
         @RequestParam int page,
         @RequestParam int size) throws BaseException {
-        Page<GetCommentRes> comments = commentService.searchAll(page, size, postIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.COMMENT_SEARCH_ALL_SUCCESS, comments));
+        Page<SearchCommentRes> response = null;
+        if(customUserDetails != null && Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
+            response = commentService.searchAllAsCustomer(page, size, customUserDetails);
+        } else {
+            response = commentService.searchAllAsGuest(page, size, postIdx);
+        }
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.COMMENT_SEARCH_ALL_SUCCESS, response));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<BaseResponse<Page<GetCommentRes>>> search(
+    @GetMapping("/like")
+    public ResponseEntity<BaseResponse> like(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestParam int page,
-            @RequestParam int size) throws BaseException {
-        Page<GetCommentRes> comments = commentService.searchCustomer(page, size, customUserDetails);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.COMMENT_SEARCH_BY_CUSTOMER_SUCCESS, comments));
+            @RequestParam Long commentIdx) throws BaseException {
+        commentService.like(customUserDetails, commentIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POST_LIKE_SUCCESS));
     }
 
     @PatchMapping("/update")
@@ -69,13 +76,4 @@ public class CommentController {
         commentService.delete(customUserDetails, commentIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.COMMENT_DELETE_SUCCESS));
     }
-
-    @GetMapping("/like")
-    public ResponseEntity<BaseResponse> like(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam Long commentIdx) throws BaseException {
-        commentService.like(customUserDetails, commentIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POST_LIKE_SUCCESS));
-    }
-
 }

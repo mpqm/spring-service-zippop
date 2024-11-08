@@ -30,10 +30,10 @@ public class FavoriteController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.FAVORITE_INACTIVE_SUCCESS));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search-all")
     public ResponseEntity<BaseResponse> list(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception {
-        List<GetFavoriteRes> response = favoriteService.list(customUserDetails);
+        List<GetFavoriteRes> response = favoriteService.searchAll(customUserDetails);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.FAVORITE_SEARCH_ALL_SUCCESS, response));
     }
 }

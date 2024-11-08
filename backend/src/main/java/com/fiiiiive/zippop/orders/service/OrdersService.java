@@ -249,7 +249,7 @@ public class OrdersService {
 
     public List<GetCompanyOrdersRes> searchCompany(CustomUserDetails customUserDetails) throws BaseException {
         Company company = companyRepository.findByCompanyEmail(customUserDetails.getEmail())
-        .orElseThrow(() -> new BaseException(POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER));
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER));
         List<CompanyOrders> companyOrdersList = companyOrdersRepository.findByCompanyIdx(customUserDetails.getIdx())
         .orElseThrow(() -> new BaseException(POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
         List<GetCompanyOrdersRes> getCompanyOrdersResList = new ArrayList<>();
