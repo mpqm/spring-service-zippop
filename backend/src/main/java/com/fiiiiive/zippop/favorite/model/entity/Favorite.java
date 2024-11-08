@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.favorite.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fiiiiive.zippop.member.model.entity.Customer;
-import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
+import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +24,5 @@ public class Favorite {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storeIdx")
     @JsonIgnore
-    private PopupStore popupStore;
+    private Store store;
 }

@@ -3,7 +3,7 @@ package com.fiiiiive.zippop.member.model.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fiiiiive.zippop.common.base.BaseEntity;
 import com.fiiiiive.zippop.orders.model.entity.CompanyOrders;
-import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
+import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,7 +33,7 @@ public class Company extends BaseEntity {
 
     @OneToMany(mappedBy = "company")
     @JsonManagedReference
-    private List<PopupStore> popupStoreList = new ArrayList<>();
+    private List<Store> storeList = new ArrayList<>();
     @OneToMany(mappedBy = "company")
     private List<CompanyOrders> companyOrdersList = new ArrayList<>();
 }

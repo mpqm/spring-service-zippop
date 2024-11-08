@@ -1,13 +1,9 @@
 package com.fiiiiive.zippop.orders.model.entity;
 
 import com.fiiiiive.zippop.common.base.BaseEntity;
-import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
+import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,5 +23,5 @@ public class CompanyOrdersDetail extends BaseEntity {
     private CompanyOrders companyOrders;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "popupStoreIdx")
-    private PopupStore popupStore;
+    private Store store;
 }

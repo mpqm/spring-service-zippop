@@ -3,6 +3,7 @@ package com.fiiiiive.zippop.orders;
 
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
 import com.fiiiiive.zippop.member.CompanyRepository;
 import com.fiiiiive.zippop.member.CustomerRepository;
 import com.fiiiiive.zippop.member.model.entity.Company;
@@ -13,12 +14,11 @@ import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrdersDetail;
 import com.fiiiiive.zippop.orders.model.entity.CompanyOrdersDetail;
 import com.fiiiiive.zippop.orders.model.dto.*;
-import com.fiiiiive.zippop.popup_goods.PopupGoodsRepository;
-import com.fiiiiive.zippop.popup_goods.model.entity.PopupGoods;
-import com.fiiiiive.zippop.popup_goods.model.dto.GetPopupGoodsRes;
-import com.fiiiiive.zippop.popup_store.PopupStoreRepository;
-import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
-import com.fiiiiive.zippop.popup_store.model.dto.GetPopupStoreRes;
+import com.fiiiiive.zippop.goods.PopupGoodsRepository;
+import com.fiiiiive.zippop.goods.model.entity.PopupGoods;
+import com.fiiiiive.zippop.store.StoreRepository;
+import com.fiiiiive.zippop.store.model.dto.GetStoreRes;
+import com.fiiiiive.zippop.store.model.entity.Store;
 import com.google.gson.Gson;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
@@ -48,7 +48,7 @@ public class OrdersService {
     private final CustomerOrdersRepository customerOrdersRepository;
     private final CompanyOrdersRepository companyOrdersRepository;
     private final PopupGoodsRepository popupGoodsRepository;
-    private final PopupStoreRepository popupStoreRepository;
+    private final StoreRepository storeRepository;
 
     @Transactional
     public VerifyOrdersRes verify(CustomUserDetails customUserDetails, String impUid, Integer operation) throws BaseException, IamportResponseException, IOException {
@@ -69,9 +69,9 @@ public class OrdersService {
                 throw new BaseException(POPUP_STORE_PAY_FAIL_INCORRECT_REQUEST);
             }
             Long storeIdx = ((Double)customDataMap.get("storeIdx")).longValue();
-            PopupStore popupStore = popupStoreRepository.findById(storeIdx)
+            Store store = storeRepository.findById(storeIdx)
             .orElseThrow(() -> new BaseException(POPUP_STORE_PAY_FAIL_NOT_FOUND_STORE));
-            Integer totalPeople = popupStore.getTotalPeople();
+            Integer totalPeople = store.getTotalPeople();
             Integer expectedPrice = totalPeople * 1500;
             if (!payedPrice.equals(expectedPrice)) {
                 throw new BaseException(BaseResponseMessage.POPUP_STORE_PAY_FAIL_VALIDATION_ERROR);
@@ -84,7 +84,7 @@ public class OrdersService {
             CompanyOrdersDetail companyOrdersDetail = CompanyOrdersDetail.builder()
                     .companyOrders(companyOrders)
                     .totalPrice(expectedPrice)
-                    .popupStore(popupStore)
+                    .store(store)
                     .build();
             companyOrdersDetailRepository.save(companyOrdersDetail);
             return VerifyOrdersRes.builder()
@@ -214,7 +214,7 @@ public class OrdersService {
             List<GetCustomerOrdersDetailRes> getCustomerOrdersDetailResList = new ArrayList<>();
             for(CustomerOrdersDetail customerOrdersDetail : customerOrdersDetailList){
                 PopupGoods popupGoods = customerOrdersDetail.getPopupGoods();
-                GetPopupGoodsRes getPopupGoodsRes = GetPopupGoodsRes.builder()
+                GetGoodsRes getGoodsRes = GetGoodsRes.builder()
                         .productIdx(popupGoods.getProductIdx())
                         .productName(popupGoods.getProductName())
                         .productPrice(popupGoods.getProductPrice())
@@ -225,7 +225,7 @@ public class OrdersService {
                         .companyOrdersDetailIdx(customerOrdersDetail.getCustomerOrderDetailIdx())
                         .eachPrice(customerOrdersDetail.getEachPrice())
                         .trackingNumber(customerOrdersDetail.getTrackingNumber())
-                        .getPopupGoodsRes(getPopupGoodsRes)
+                        .getGoodsRes(getGoodsRes)
                         .build();
                 getCustomerOrdersDetailResList.add(getCustomerOrdersDetailRes);
             }
@@ -255,23 +255,23 @@ public class OrdersService {
             List<CompanyOrdersDetail> companyOrdersDetailList = companyOrders.getCompanyOrdersDetailList();
             List<GetCompanyOrdersDetailRes> getCompanyOrdersDetailResList = new ArrayList<>();
             for(CompanyOrdersDetail companyOrdersDetail : companyOrdersDetailList) {
-                PopupStore popupStore = companyOrdersDetail.getPopupStore();
-                GetPopupStoreRes getPopupStoreRes = GetPopupStoreRes.builder()
-                        .storeIdx(popupStore.getStoreIdx())
-                        .companyEmail(popupStore.getCompanyEmail())
-                        .storeName(popupStore.getStoreName())
-                        .storeContent(popupStore.getStoreContent())
-                        .storeAddress(popupStore.getStoreAddress())
-                        .category(popupStore.getCategory())
-                        .likeCount(popupStore.getLikeCount())
-                        .totalPeople(popupStore.getTotalPeople())
-                        .storeStartDate(popupStore.getStoreStartDate())
-                        .storeEndDate(popupStore.getStoreEndDate())
+                Store store = companyOrdersDetail.getStore();
+                GetStoreRes getStoreRes = GetStoreRes.builder()
+                        .storeIdx(store.getStoreIdx())
+                        .companyEmail(store.getCompanyEmail())
+                        .storeName(store.getStoreName())
+                        .storeContent(store.getStoreContent())
+                        .storeAddress(store.getStoreAddress())
+                        .category(store.getCategory())
+                        .likeCount(store.getLikeCount())
+                        .totalPeople(store.getTotalPeople())
+                        .storeStartDate(store.getStoreStartDate())
+                        .storeEndDate(store.getStoreEndDate())
                         .build();
                 GetCompanyOrdersDetailRes getCompanyOrdersDetailRes = GetCompanyOrdersDetailRes.builder()
                         .companyOrdersDetailIdx(companyOrdersDetail.getCompanyOrderDetailIdx())
                         .totalPrice(companyOrdersDetail.getTotalPrice())
-                        .getPopupStoreRes(getPopupStoreRes)
+                        .getStoreRes(getStoreRes)
                         .createdAt(companyOrdersDetail.getCreatedAt())
                         .updatedAt(companyOrdersDetail.getUpdatedAt())
                         .build();

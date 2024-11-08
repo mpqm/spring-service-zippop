@@ -7,11 +7,11 @@ import com.fiiiiive.zippop.favorite.model.dto.GetFavoriteRes;
 import com.fiiiiive.zippop.member.CustomerRepository;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
 import com.fiiiiive.zippop.member.model.entity.Customer;
-import com.fiiiiive.zippop.popup_store.PopupStoreRepository;
-import com.fiiiiive.zippop.popup_store.model.entity.PopupStore;
-import com.fiiiiive.zippop.popup_store.model.entity.PopupStoreImage;
-import com.fiiiiive.zippop.popup_store.model.dto.GetPopupStoreImageRes;
-import com.fiiiiive.zippop.popup_store.model.dto.GetPopupStoreRes;
+import com.fiiiiive.zippop.store.StoreRepository;
+import com.fiiiiive.zippop.store.model.dto.GetStoreRes;
+import com.fiiiiive.zippop.store.model.entity.Store;
+import com.fiiiiive.zippop.store.model.entity.StoreImage;
+import com.fiiiiive.zippop.store.model.dto.GetStoreImageRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +23,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
-    private final PopupStoreRepository popupStoreRepository;
+    private final StoreRepository storeRepository;
     private final CustomerRepository customerRepository;
 
     public void active(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
         Customer customer = customerRepository.findById(customUserDetails.getIdx())
         .orElseThrow(() -> (new BaseException(BaseResponseMessage.FAVORITE_ACTIVE_FAIL_MEMBER_NOT_FOUND)));
-        PopupStore popupStore = popupStoreRepository.findById(storeIdx)
+        Store store = storeRepository.findById(storeIdx)
         .orElseThrow(() -> (new BaseException(BaseResponseMessage.FAVORITE_ACTIVE_FAIL_STORE_NOT_FOUND)));
         Optional<Favorite> result = favoriteRepository.findByCustomerEmailAndStoreIdx(customUserDetails.getEmail(), storeIdx);
         if(result.isPresent()){
@@ -37,7 +37,7 @@ public class FavoriteService {
             favoriteRepository.deleteById(favorite.getFavoriteIdx());
         } else {
             Favorite favorite = Favorite.builder()
-                    .popupStore(popupStore)
+                    .store(store)
                     .customer(customer)
                     .build();
             favoriteRepository.save(favorite);
@@ -50,35 +50,35 @@ public class FavoriteService {
         List<GetFavoriteRes> getFavoriteResList = new ArrayList<>();
         for(Favorite favorite: favoriteList){
 
-            PopupStore popupStore = favorite.getPopupStore();
-            List<PopupStoreImage> popupStoreImageList = popupStore.getPopupstoreImageList();
-            List<GetPopupStoreImageRes> getPopupStoreImageResList = new ArrayList<>();
-            for(PopupStoreImage popupStoreImage : popupStoreImageList ){
-                GetPopupStoreImageRes getPopupStoreImageRes = GetPopupStoreImageRes.builder()
-                        .storeImageIdx(popupStoreImage.getStoreImageIdx())
-                        .imageUrl(popupStoreImage.getImageUrl())
-                        .createdAt(popupStoreImage.getCreatedAt())
-                        .updatedAt(popupStoreImage.getUpdatedAt())
+            Store store = favorite.getStore();
+            List<StoreImage> storeImageList = store.getPopupstoreImageList();
+            List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
+            for(StoreImage storeImage : storeImageList){
+                GetStoreImageRes getStoreImageRes = GetStoreImageRes.builder()
+                        .storeImageIdx(storeImage.getStoreImageIdx())
+                        .imageUrl(storeImage.getImageUrl())
+                        .createdAt(storeImage.getCreatedAt())
+                        .updatedAt(storeImage.getUpdatedAt())
                         .build();
-                getPopupStoreImageResList.add(getPopupStoreImageRes);
+                getStoreImageResList.add(getStoreImageRes);
             }
-            GetPopupStoreRes getPopupStoreRes = GetPopupStoreRes.builder()
-                    .storeIdx(popupStore.getStoreIdx())
-                    .companyEmail(popupStore.getCompanyEmail())
-                    .storeName(popupStore.getStoreName())
-                    .storeContent(popupStore.getStoreContent())
-                    .storeAddress(popupStore.getStoreAddress())
-                    .category(popupStore.getCategory())
-                    .likeCount(popupStore.getLikeCount())
-                    .totalPeople(popupStore.getTotalPeople())
-                    .storeStartDate(popupStore.getStoreStartDate())
-                    .storeEndDate(popupStore.getStoreEndDate())
-                    .createdAt(popupStore.getCreatedAt())
-                    .updatedAt(popupStore.getUpdatedAt())
-                    .getPopupStoreImageResList(getPopupStoreImageResList)
+            GetStoreRes getStoreRes = GetStoreRes.builder()
+                    .storeIdx(store.getStoreIdx())
+                    .companyEmail(store.getCompanyEmail())
+                    .storeName(store.getStoreName())
+                    .storeContent(store.getStoreContent())
+                    .storeAddress(store.getStoreAddress())
+                    .category(store.getCategory())
+                    .likeCount(store.getLikeCount())
+                    .totalPeople(store.getTotalPeople())
+                    .storeStartDate(store.getStoreStartDate())
+                    .storeEndDate(store.getStoreEndDate())
+                    .createdAt(store.getCreatedAt())
+                    .updatedAt(store.getUpdatedAt())
+                    .getStoreImageResList(getStoreImageResList)
                     .build();
             GetFavoriteRes getFavoriteRes = GetFavoriteRes.builder()
-                    .getPopupStoreRes(getPopupStoreRes)
+                    .getStoreRes(getStoreRes)
                     .build();
             getFavoriteResList.add(getFavoriteRes);
         }

@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.orders.model.entity;
 
 import com.fiiiiive.zippop.common.base.BaseEntity;
-import com.fiiiiive.zippop.popup_goods.model.entity.PopupGoods;
+import com.fiiiiive.zippop.goods.model.entity.PopupGoods;
 import jakarta.persistence.*;
 import lombok.*;
 

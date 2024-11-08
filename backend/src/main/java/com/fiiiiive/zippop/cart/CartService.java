@@ -7,13 +7,13 @@ import com.fiiiiive.zippop.cart.model.dto.CreateCartRes;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.common.exception.BaseException;
 import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
 import com.fiiiiive.zippop.member.CustomerRepository;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
 import com.fiiiiive.zippop.member.model.entity.Customer;
-import com.fiiiiive.zippop.popup_goods.PopupGoodsRepository;
-import com.fiiiiive.zippop.popup_goods.model.entity.PopupGoods;
-import com.fiiiiive.zippop.popup_goods.model.dto.GetPopupGoodsImageRes;
-import com.fiiiiive.zippop.popup_goods.model.dto.GetPopupGoodsRes;
+import com.fiiiiive.zippop.goods.PopupGoodsRepository;
+import com.fiiiiive.zippop.goods.model.entity.PopupGoods;
+import com.fiiiiive.zippop.goods.model.dto.GetGoodsImageRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,8 +61,8 @@ public class CartService {
         List<GetCartRes> getCartResList = new ArrayList<>();
         for(Cart cart: cartList){
             PopupGoods popupGoods = cart.getPopupGoods();
-            List<GetPopupGoodsImageRes> imageResList = popupGoods.getPopupGoodsImageList().stream()
-                    .map(image -> GetPopupGoodsImageRes.builder()
+            List<GetGoodsImageRes> imageResList = popupGoods.getPopupGoodsImageList().stream()
+                    .map(image -> GetGoodsImageRes.builder()
                             .productImageIdx(image.getPopupGoodsImageIdx())
                             .imageUrl(image.getImageUrl())
                             .createdAt(image.getCreatedAt())
@@ -70,7 +70,7 @@ public class CartService {
                             .build())
                     .collect(Collectors.toList());
 
-            GetPopupGoodsRes getPopupGoodsRes = GetPopupGoodsRes.builder()
+            GetGoodsRes getGoodsRes = GetGoodsRes.builder()
                     .productIdx(popupGoods.getProductIdx())
                     .productName(popupGoods.getProductName())
                     .productPrice(popupGoods.getProductPrice())
@@ -78,12 +78,12 @@ public class CartService {
                     .productAmount(popupGoods.getProductAmount())
                     .createdAt(popupGoods.getCreatedAt())
                     .updatedAt(popupGoods.getUpdatedAt())
-                    .getPopupGoodsImageResList(imageResList)
+                    .getGoodsImageResList(imageResList)
                     .build();
 
             GetCartRes getCartRes = GetCartRes.builder()
                     .cartIdx(cart.getCartIdx())
-                    .getPopupGoodsRes(getPopupGoodsRes)
+                    .getGoodsRes(getGoodsRes)
                     .itemCount(cart.getItemCount())
                     .itemPrice(cart.getItemPrice())
 

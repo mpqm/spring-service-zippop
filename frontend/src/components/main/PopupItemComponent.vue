@@ -6,7 +6,7 @@
         <article data-v-dbfa36e6="" data-v-5e2a32d3="" class="preview-image">
           <div data-v-dbfa36e6="" class="image-wrap" style="padding-top: 66.6667%;">
             <img data-v-dbfa36e6="" data-src=""
-              :src="popup.getPopupStoreImageResList[0].imageUrl" lazy="loaded">
+              :src="popup.getStoreImageResList[0].imageUrl" lazy="loaded">
           </div>
           <!----><!----><!---->
         </article>

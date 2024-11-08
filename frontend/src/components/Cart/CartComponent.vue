@@ -18,9 +18,9 @@
           <tbody id="cartTable-other" class="cart-bundle-list">
             <tr v-for="item in cartItems" :key="item.cartIdx">
               <td class="cart-deal-item__image">
-                <img v-if="item.getPopupGoodsRes.getPopupGoodsImageResList && item.getPopupGoodsRes.getPopupGoodsImageResList.length > 0" 
-                     :src="item.getPopupGoodsRes.getPopupGoodsImageResList[0].imageUrl || '/default_image.jpg'" 
-                     :alt="item.getPopupGoodsRes.productName" 
+                <img v-if="item.getGoodsRes.getGoodsImageResList && item.getGoodsRes.getGoodsImageResList.length > 0"
+                     :src="item.getGoodsRes.getGoodsImageResList[0].imageUrl || '/default_image.jpg'"
+                     :alt="item.getGoodsRes.productName"
                      width="140" 
                      height="140" />
                 <img v-else src="/default_image.jpg" alt="Default Image" width="140" height="140" />
@@ -29,7 +29,7 @@
                 <div class="product-name-part">
                   <div class="product-name-part-content">
                     <a href="#" class="moveProduct">
-                      <span v-if="item.getPopupGoodsRes" class="product-name">{{ item.getPopupGoodsRes.productName }}</span>
+                      <span v-if="item.getGoodsRes" class="product-name">{{ item.getGoodsRes.productName }}</span>
                       <span v-else class="product-name">상품명 없음</span>
                     </a>
                   </div>

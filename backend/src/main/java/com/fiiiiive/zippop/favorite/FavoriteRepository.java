@@ -12,12 +12,12 @@ import java.util.Optional;
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     @Query("SELECT f FROM Favorite f " +
             "WHERE f.customer.email = :customerEmail " +
-            "AND f.popupStore.storeIdx = :storeIdx")
+            "AND f.store.storeIdx = :storeIdx")
     Optional<Favorite> findByCustomerEmailAndStoreIdx(String customerEmail, Long storeIdx);
 
     @Query("SELECT f FROM Favorite f " +
             "JOIN FETCH f.customer " +
-            "JOIN FETCH f.popupStore " +
+            "JOIN FETCH f.store " +
             "WHERE f.customer.email = :customerEmail")
     Optional<List<Favorite>> findAllByCustomerEmail(String customerEmail);
 }

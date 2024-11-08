@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.favorite.model.dto;
 
-import com.fiiiiive.zippop.popup_store.model.dto.GetPopupStoreRes;
+import com.fiiiiive.zippop.store.model.dto.GetStoreRes;
 import lombok.*;
 
 @Getter
@@ -9,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetFavoriteRes {
-    private GetPopupStoreRes getPopupStoreRes;
+    private GetStoreRes getStoreRes;
 }

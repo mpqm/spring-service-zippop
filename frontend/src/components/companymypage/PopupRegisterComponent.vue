@@ -5,7 +5,7 @@
         <legend tabindex="-1" class="bv-no-focus-ring col-form-label pt-0" id="__BVID__1432__BV_label_">팝업 스토어 이름
         </legend>
         <div><!---->
-          <div data-v-74c08a55="" class="input-wrap"><input v-model="popupStore.storeName" name="storeName"
+          <div data-v-74c08a55="" class="input-wrap"><input v-model="store.storeName" name="storeName"
               data-v-74c08a55="" type="text" placeholder="ex) 카카오 프렌즈 팝업" class="form-control is-invalid" maxlength="50"
               aria-invalid="true" id="__BVID__1434"></div>
           <div data-v-74c08a55="" class="info-wrap">
@@ -17,7 +17,7 @@
         <legend tabindex="-1" class="bv-no-focus-ring col-form-label pt-0" id="__BVID__1432__BV_label_">팝업 스토어 주소
         </legend>
         <div><!---->
-          <div data-v-74c08a55="" class="input-wrap"><input v-model="popupStore.storeAddress" name="storeAddress"
+          <div data-v-74c08a55="" class="input-wrap"><input v-model="store.storeAddress" name="storeAddress"
               data-v-74c08a55="" type="text" placeholder="ex) 서울특별시 동작구 보라매로 87" class="form-control is-invalid"
               minlength="10" maxlength="50" aria-invalid="true" id="__BVID__1434"></div>
           <div data-v-74c08a55="" class="info-wrap">
@@ -29,7 +29,7 @@
         <legend tabindex="-1" class="bv-no-focus-ring col-form-label pt-0" id="__BVID__1432__BV_label_">팝업 스토어 시작일
         </legend>
         <div><!---->
-          <div data-v-74c08a55="" class="input-wrap"><input v-model="popupStore.storeEndDate" data-v-74c08a55=""
+          <div data-v-74c08a55="" class="input-wrap"><input v-model="store.storeEndDate" data-v-74c08a55=""
               name="storeEndDate" type="date" placeholder="ex) 2024-08-07" class="form-control is-invalid"
               minlength="10" maxlength="50" aria-invalid="true" id="__BVID__1434"></div>
           <div data-v-74c08a55="" class="info-wrap">
@@ -41,7 +41,7 @@
         <legend tabindex="-1" class="bv-no-focus-ring col-form-label pt-0" id="__BVID__1432__BV_label_">팝업 스토어 카테고리
         </legend>
         <div><!---->
-          <div data-v-74c08a55="" class="input-wrap"><input v-model="popupStore.category" data-v-74c08a55=""
+          <div data-v-74c08a55="" class="input-wrap"><input v-model="store.category" data-v-74c08a55=""
               name="category" type="text" placeholder="ex) 뷰티" class="form-control is-invalid" maxlength="50"
               aria-invalid="true" id="__BVID__1434"></div>
           <div data-v-74c08a55="" class="info-wrap">
@@ -53,7 +53,7 @@
         <legend tabindex="-1" class="bv-no-focus-ring col-form-label pt-0" id="__BVID__1432__BV_label_">팝업 스토어 설명
         </legend>
         <div><!---->
-          <div data-v-74c08a55="" class="input-wrap"><input v-model="popupStore.storeContent" data-v-74c08a55=""
+          <div data-v-74c08a55="" class="input-wrap"><input v-model="store.storeContent" data-v-74c08a55=""
               name="storeContent" type="text" placeholder="팝업 스토어 상세 설명" class="form-control is-invalid" minlength="10"
               maxlength="50" aria-invalid="true" id="__BVID__1434"></div>
           <div data-v-74c08a55="" class="info-wrap">
@@ -102,7 +102,7 @@ export default {
   name: "PopupRegisterComponent",
   data() {
     return {
-      popupStore: {
+      store: {
         storeName: '',
         storeAddress: '',
         storeEndtDate: '',
@@ -118,7 +118,7 @@ export default {
   methods: {
     async register() {
       const formData = new FormData();
-      const jsonBlob = new Blob([JSON.stringify(this.popupStore)], { type: 'application/json' })
+      const jsonBlob = new Blob([JSON.stringify(this.store)], { type: 'application/json' })
 
       Array.from(this.imageFile).forEach((file) => {
         formData.append("files", file);

@@ -6,7 +6,7 @@ import com.fiiiiive.zippop.comment.model.entity.Comment;
 import com.fiiiiive.zippop.common.base.BaseEntity;
 import com.fiiiiive.zippop.favorite.model.entity.Favorite;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
-import com.fiiiiive.zippop.popup_review.model.entity.PopupReview;
+import com.fiiiiive.zippop.review.model.entity.Review;
 import com.fiiiiive.zippop.post.model.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,7 +47,7 @@ public class Customer extends BaseEntity {
     @OneToMany(mappedBy = "customer")
     private List<Comment> commentList;
     @OneToMany(mappedBy = "customer")
-    private List<PopupReview> popupReviewList;
+    private List<Review> reviewList;
     @OneToMany(mappedBy = "customer")
     private List<CustomerOrders> customerOrdersList;
 }
