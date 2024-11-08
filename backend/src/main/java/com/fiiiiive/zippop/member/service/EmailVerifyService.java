@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.member.service;
 
-import com.fiiiiive.zippop.common.exception.BaseException;
-import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.member.model.entity.EmailVerify;
 import com.fiiiiive.zippop.member.repository.EmailVerifyRepository;
 import lombok.RequiredArgsConstructor;

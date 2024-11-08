@@ -1,14 +1,14 @@
 package com.fiiiiive.zippop.goods.controller;
 
 
-import com.fiiiiive.zippop.common.exception.BaseException;
-import com.fiiiiive.zippop.common.responses.BaseResponse;
-import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponse;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.goods.service.GoodsService;
 import com.fiiiiive.zippop.goods.model.dto.*;
-import com.fiiiiive.zippop.member.model.CustomUserDetails;
+import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
-import com.fiiiiive.zippop.utils.CloudFileUpload;
+import com.fiiiiive.zippop.global.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

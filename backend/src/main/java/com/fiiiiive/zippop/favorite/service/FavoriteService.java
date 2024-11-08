@@ -1,12 +1,12 @@
 package com.fiiiiive.zippop.favorite.service;
 
-import com.fiiiiive.zippop.common.exception.BaseException;
-import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.favorite.model.entity.Favorite;
 import com.fiiiiive.zippop.favorite.model.dto.GetFavoriteRes;
 import com.fiiiiive.zippop.favorite.repository.FavoriteRepository;
 import com.fiiiiive.zippop.member.repository.CustomerRepository;
-import com.fiiiiive.zippop.member.model.CustomUserDetails;
+import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import com.fiiiiive.zippop.store.model.dto.GetStoreRes;

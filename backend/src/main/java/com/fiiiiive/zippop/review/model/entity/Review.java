@@ -1,13 +1,11 @@
 package com.fiiiiive.zippop.review.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fiiiiive.zippop.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

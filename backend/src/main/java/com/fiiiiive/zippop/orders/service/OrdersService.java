@@ -1,13 +1,13 @@
 package com.fiiiiive.zippop.orders.service;
 
 
-import com.fiiiiive.zippop.common.exception.BaseException;
-import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
 import com.fiiiiive.zippop.member.repository.CompanyRepository;
 import com.fiiiiive.zippop.member.repository.CustomerRepository;
 import com.fiiiiive.zippop.member.model.entity.Company;
-import com.fiiiiive.zippop.member.model.CustomUserDetails;
+import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.orders.model.entity.CompanyOrders;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
@@ -37,8 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import static com.fiiiiive.zippop.common.responses.BaseResponseMessage.*;
 
 
 @Service

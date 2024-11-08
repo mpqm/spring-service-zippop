@@ -1,17 +1,17 @@
 package com.fiiiiive.zippop.reserve.service;
 
 
-import com.fiiiiive.zippop.common.exception.BaseException;
-import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.member.model.CustomUserDetails;
+import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;
-import com.fiiiiive.zippop.utils.JwtUtil;
-import com.fiiiiive.zippop.utils.RedisUtil;
+import com.fiiiiive.zippop.global.utils.JwtUtil;
+import com.fiiiiive.zippop.global.utils.RedisUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

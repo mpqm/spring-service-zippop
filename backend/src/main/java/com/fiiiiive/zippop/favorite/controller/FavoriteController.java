@@ -1,10 +1,10 @@
 package com.fiiiiive.zippop.favorite.controller;
 
-import com.fiiiiive.zippop.common.responses.BaseResponse;
-import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.common.responses.BaseResponse;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.favorite.service.FavoriteService;
 import com.fiiiiive.zippop.favorite.model.dto.GetFavoriteRes;
-import com.fiiiiive.zippop.member.model.CustomUserDetails;
+import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

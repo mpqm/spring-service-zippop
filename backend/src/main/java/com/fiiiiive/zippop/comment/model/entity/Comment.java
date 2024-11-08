@@ -1,11 +1,10 @@
 package com.fiiiiive.zippop.comment.model.entity;
 
-import com.fiiiiive.zippop.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.post.model.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 

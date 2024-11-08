@@ -1,9 +1,9 @@
 package com.fiiiiive.zippop.member.service;
 
-import com.fiiiiive.zippop.common.exception.BaseException;
-import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.member.model.entity.Company;
-import com.fiiiiive.zippop.member.model.CustomUserDetails;
+import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.member.model.dto.EditInfoReq;
 import com.fiiiiive.zippop.member.model.dto.EditPasswordReq;

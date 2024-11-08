@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.store.model.entity;
 
-import com.fiiiiive.zippop.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.favorite.model.entity.Favorite;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.member.model.entity.Company;
@@ -9,7 +9,6 @@ import com.fiiiiive.zippop.review.model.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 @Getter
 @Setter

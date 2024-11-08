@@ -1,9 +1,8 @@
 package com.fiiiiive.zippop.member.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.comment.model.entity.Comment;
-import com.fiiiiive.zippop.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.favorite.model.entity.Favorite;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
 import com.fiiiiive.zippop.review.model.entity.Review;

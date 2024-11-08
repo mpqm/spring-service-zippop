@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.member.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fiiiiive.zippop.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.orders.model.entity.CompanyOrders;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;

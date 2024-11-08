@@ -1,10 +1,10 @@
 package com.fiiiiive.zippop.goods.service;
 
-import com.fiiiiive.zippop.common.exception.BaseException;
-import com.fiiiiive.zippop.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.goods.model.dto.*;
 import com.fiiiiive.zippop.goods.repository.GoodsImageRepository;
-import com.fiiiiive.zippop.member.model.CustomUserDetails;
+import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.entity.PopupGoods;
 import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsImageRes;

@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.chat.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fiiiiive.zippop.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
