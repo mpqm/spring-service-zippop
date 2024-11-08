@@ -20,8 +20,8 @@ import com.fiiiiive.zippop.orders.repository.CompanyOrdersDetailRepository;
 import com.fiiiiive.zippop.orders.repository.CompanyOrdersRepository;
 import com.fiiiiive.zippop.orders.repository.CustomerOrdersDetailRepository;
 import com.fiiiiive.zippop.orders.repository.CustomerOrdersRepository;
+import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
-import com.fiiiiive.zippop.store.model.dto.GetStoreRes;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.google.gson.Gson;
 import com.siot.IamportRestClient.IamportClient;
@@ -258,7 +258,7 @@ public class OrdersService {
             List<GetCompanyOrdersDetailRes> getCompanyOrdersDetailResList = new ArrayList<>();
             for(CompanyOrdersDetail companyOrdersDetail : companyOrdersDetailList) {
                 Store store = companyOrdersDetail.getStore();
-                GetStoreRes getStoreRes = GetStoreRes.builder()
+                SearchStoreRes searchStoreRes = SearchStoreRes.builder()
                         .storeIdx(store.getStoreIdx())
                         .companyEmail(store.getCompanyEmail())
                         .storeName(store.getStoreName())
@@ -273,7 +273,7 @@ public class OrdersService {
                 GetCompanyOrdersDetailRes getCompanyOrdersDetailRes = GetCompanyOrdersDetailRes.builder()
                         .companyOrdersDetailIdx(companyOrdersDetail.getCompanyOrderDetailIdx())
                         .totalPrice(companyOrdersDetail.getTotalPrice())
-                        .getStoreRes(getStoreRes)
+                        .searchStoreRes(searchStoreRes)
                         .createdAt(companyOrdersDetail.getCreatedAt())
                         .updatedAt(companyOrdersDetail.getUpdatedAt())
                         .build();

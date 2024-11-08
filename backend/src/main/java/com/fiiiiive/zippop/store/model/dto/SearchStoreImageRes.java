@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetStoreImageRes {
+public class SearchStoreImageRes {
     private Long storeImageIdx;
-    private String imageUrl;
+    private String storeImageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

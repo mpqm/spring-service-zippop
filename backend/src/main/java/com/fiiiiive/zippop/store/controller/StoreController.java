@@ -4,9 +4,10 @@ import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.store.service.StoreLikeService;
 import com.fiiiiive.zippop.store.service.StoreService;
 import com.fiiiiive.zippop.store.model.dto.*;
-import com.fiiiiive.zippop.store.model.dto.GetStoreRes;
+import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
 import com.fiiiiive.zippop.global.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +19,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 
-@Tag(name = "popup-store-api", description = "Store")
+@Tag(name = "store-api", description = "Store")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/popup-store")
+@RequestMapping("/api/v1/store")
 public class StoreController {
     private final StoreService storeService;
+    private final StoreLikeService storeLikeService;
     private final CloudFileUpload cloudFileUpload;
 
     // 팝업 스토어 등록
@@ -42,54 +45,29 @@ public class StoreController {
     // 팝업 스토어 단일 조회
     // @ExeTimer
     @GetMapping("/search")
-    public ResponseEntity<BaseResponse<GetStoreRes>> search(
-        @RequestParam Long storeIdx) throws BaseException {
-        GetStoreRes getStoreRes = storeService.search(storeIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, getStoreRes));
+    public ResponseEntity<BaseResponse<SearchStoreRes>> search(
+        @RequestParam(required = false) Long storeIdx,
+        @RequestParam(required = false) String storeName) throws BaseException {
+        SearchStoreRes searchStoreRes = storeService.search(storeIdx, storeName);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, searchStoreRes));
     }
-
-    // 팝업 스토어 전체 조회
-    // @ExeTimer
+    
+    // 팝업 스토어 목록 조건 조회
     @GetMapping("/search-all")
-    public ResponseEntity<BaseResponse<Page<GetStoreRes>>> searchAll (
-        @RequestParam int page,
-        @RequestParam int size) throws BaseException {
-        Page<GetStoreRes> popupStoreList = storeService.searchAll(page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, popupStoreList));
-    }
-
-
-    // 기업이 등록한 팝업 스토어 조회
-    // @ExeTimer
-    @GetMapping("/search-company")
-    public ResponseEntity<BaseResponse<Page<GetStoreRes>>> searchCompany(
+    public ResponseEntity<BaseResponse<Page<SearchStoreRes>>> searchAll(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam int page,
-        @RequestParam int size) throws BaseException {
-        Page<GetStoreRes> popupStoreResList = storeService.searchCompany(customUserDetails, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, popupStoreResList));
-    }
-
-    // 팝업스토어 키워드 기반 검색
-    // @ExeTimer
-    @GetMapping("/search-keyword")
-    public ResponseEntity<BaseResponse<Page<GetStoreRes>>> searchKeyword(
-            @RequestParam String keyword,
-            @RequestParam int page,
-            @RequestParam int size) throws BaseException {
-        Page<GetStoreRes> popupStoreResList = storeService.searchKeyword(keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, popupStoreResList));
-    }
-
-    // 팝업스토어 날짜 범위 기반 검색
-    @GetMapping("/search-daterange")
-    public ResponseEntity<BaseResponse<Page<GetStoreRes>>> searchStoreDate(
-            @RequestParam LocalDateTime storeStartDate,
-            @RequestParam LocalDateTime storeEndDate,
-            @RequestParam int page,
-            @RequestParam int size) throws BaseException {
-        Page<GetStoreRes> popupStoreResList = storeService.searchDateRange(storeStartDate, storeEndDate, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, popupStoreResList));
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false) LocalDateTime startDate,
+        @RequestParam(required = false) LocalDateTime endDate,
+        @RequestParam(required = false, defaultValue = "0") int page,
+        @RequestParam(required = false, defaultValue = "10") int size ) throws BaseException {
+        Page<SearchStoreRes> response = null;
+        if(customUserDetails != null && Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
+            response = storeService.searchAllAsCompany(customUserDetails, page, size);
+        } else if (customUserDetails == null){
+            response = storeService.searchAllAsGuest(keyword, startDate, endDate, page, size);
+        }
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, response));
     }
 
     // 팝업 스토어 수정
@@ -118,32 +96,7 @@ public class StoreController {
     public ResponseEntity<BaseResponse> like(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long storeIdx) throws BaseException {
-        storeService.like(customUserDetails, storeIdx);
+        storeLikeService.like(customUserDetails, storeIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_LIKE_SUCCESS));
-    }
-
-    @GetMapping("/search-category")
-    public ResponseEntity<BaseResponse<Page<GetStoreRes>>> searchCategory(
-            @RequestParam String category,
-            @RequestParam int page,
-            @RequestParam int size) throws BaseException {
-        Page<GetStoreRes> popupStoreResList = storeService.searchCategory(category, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, popupStoreResList));
-    }
-
-    @GetMapping("/search-store")
-    public ResponseEntity<BaseResponse<GetStoreRes>> searchStore(
-        @RequestParam String storeName) throws BaseException {
-        GetStoreRes getStoreRes = storeService.searchStore(storeName);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, getStoreRes));
-    }
-
-    @GetMapping("/search-address")
-    public ResponseEntity<BaseResponse<Page<GetStoreRes>>> searchAddress(
-        @RequestParam String storeAddress,
-        @RequestParam int page,
-        @RequestParam int size) throws BaseException {
-        Page<GetStoreRes> popupStoreResPage = storeService.searchAddress(storeAddress, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, popupStoreResPage));
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetStoreRes {
+public class SearchStoreRes {
     private Long storeIdx;
     private String companyEmail;
     private String storeName;
@@ -29,5 +29,5 @@ public class GetStoreRes {
     private LocalDateTime updatedAt;
     private List<GetReviewRes> getReviewResList = new ArrayList<>();
     private List<GetGoodsRes> getGoodsResList = new ArrayList<>();
-    private List<GetStoreImageRes> getStoreImageResList = new ArrayList<>();
+    private List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
 }

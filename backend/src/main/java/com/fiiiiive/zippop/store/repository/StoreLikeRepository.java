@@ -13,11 +13,11 @@ public interface StoreLikeRepository extends JpaRepository<StoreLike, Long> {
     @Query("SELECT psl FROM StoreLike psl " +
             "JOIN FETCH psl.customer " +
             "JOIN FETCH psl.store " +
-            "WHERE psl.customer.email = :customerEmail AND psl.store.storeIdx = :storeIdx")
-    Optional<StoreLike> findByCustomerEmailAndStoreIdx(String customerEmail, Long storeIdx);
+            "WHERE psl.customer.idx = :customerIdx AND psl.store.idx = :storeIdx")
+    Optional<StoreLike> findByCustomerIdxAndStoreIdx(Long customerIdx, Long storeIdx);
 
     @Modifying
     @Query("DELETE FROM StoreLike psl " +
-            "WHERE psl.customer.email = :customerEmail AND psl.store.storeIdx = :storeIdx")
-    void deleteByCustomerEmailAndStoreIdx(String customerEmail, Long storeIdx);
+            "WHERE psl.customer.idx = :customerIdx AND psl.store.idx = :storeIdx")
+    void deleteByCustomerIdxAndStoreIdx(Long customerIdx, Long storeIdx);
 }
