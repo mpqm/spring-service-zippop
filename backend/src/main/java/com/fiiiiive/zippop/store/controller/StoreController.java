@@ -4,7 +4,6 @@ import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.store.service.StoreLikeService;
 import com.fiiiiive.zippop.store.service.StoreService;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;

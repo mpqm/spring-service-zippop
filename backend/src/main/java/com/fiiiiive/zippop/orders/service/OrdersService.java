@@ -3,7 +3,7 @@ package com.fiiiiive.zippop.orders.service;
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
 import com.fiiiiive.zippop.member.repository.CompanyRepository;
 import com.fiiiiive.zippop.member.repository.CustomerRepository;
 import com.fiiiiive.zippop.member.model.entity.Company;
@@ -216,7 +216,7 @@ public class OrdersService {
             List<GetCustomerOrdersDetailRes> getCustomerOrdersDetailResList = new ArrayList<>();
             for(CustomerOrdersDetail customerOrdersDetail : customerOrdersDetailList){
                 PopupGoods popupGoods = customerOrdersDetail.getPopupGoods();
-                GetGoodsRes getGoodsRes = GetGoodsRes.builder()
+                SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
                         .productIdx(popupGoods.getProductIdx())
                         .productName(popupGoods.getProductName())
                         .productPrice(popupGoods.getProductPrice())
@@ -227,7 +227,7 @@ public class OrdersService {
                         .companyOrdersDetailIdx(customerOrdersDetail.getCustomerOrderDetailIdx())
                         .eachPrice(customerOrdersDetail.getEachPrice())
                         .trackingNumber(customerOrdersDetail.getTrackingNumber())
-                        .getGoodsRes(getGoodsRes)
+                        .searchGoodsRes(searchGoodsRes)
                         .build();
                 getCustomerOrdersDetailResList.add(getCustomerOrdersDetailRes);
             }

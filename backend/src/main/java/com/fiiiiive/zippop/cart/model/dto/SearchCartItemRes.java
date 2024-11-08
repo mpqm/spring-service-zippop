@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.cart.model.dto;
 
-import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
 import lombok.*;
 
 @Getter
@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetCartItemRes {
+public class SearchCartItemRes {
     private Integer count;
     private Integer price;
-    private GetGoodsRes getGoodsRes;
+    private SearchGoodsRes searchGoodsRes;
 }

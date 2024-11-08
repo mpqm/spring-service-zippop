@@ -7,10 +7,9 @@ import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.goods.repository.GoodsImageRepository;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
-import com.fiiiiive.zippop.goods.model.dto.GetGoodsImageRes;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsImageRes;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;
-import com.fiiiiive.zippop.store.model.entity.StoreImage;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -59,54 +58,54 @@ public class GoodsService {
     }
 
     // 팝업 굿즈 단일 조회
-    public GetGoodsRes search(Long goodIdx) throws BaseException {
+    public SearchGoodsRes search(Long goodIdx) throws BaseException {
         Goods goods = goodsRepository.findByGoodsIdx(goodIdx)
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND));
-        List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
+        List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();
         for(GoodsImage goodsImage : goods.getGoodsImageList()){
-            GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
+            SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
                     .goodsImageIdx(goodsImage.getIdx())
                     .imageUrl(goodsImage.getUrl())
                     .createdAt(goodsImage.getCreatedAt())
                     .updatedAt(goodsImage.getUpdatedAt())
                     .build();
-            getGoodsImageResList.add(getGoodsImageRes);
+            searchGoodsImageResList.add(searchGoodsImageRes);
         }
-        return GetGoodsRes.builder()
+        return SearchGoodsRes.builder()
                 .goodsIdx(goods.getIdx())
                 .goodsName(goods.getName())
                 .goodsPrice(goods.getPrice())
                 .goodsContent(goods.getContent())
                 .goodsAmount(goods.getAmount())
-                .getGoodsImageResList(getGoodsImageResList)
+                .searchGoodsImageResList(searchGoodsImageResList)
                 .build();
     }
 
     // 팝업 굿즈 목록 조회(storeIdx)
-    public Page<GetGoodsRes> searchAll(Long storeIdx, int page, int size) throws BaseException {
+    public Page<SearchGoodsRes> searchAll(Long storeIdx, int page, int size) throws BaseException {
         Page<Goods> result = goodsRepository.findByStoreIdx(storeIdx, PageRequest.of(page, size))
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND));
-        Page<GetGoodsRes> getGoodsResPage = result.map(goods -> {
-            List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
+        Page<SearchGoodsRes> searchGoodsResPage = result.map(goods -> {
+            List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();
             for(GoodsImage goodsImage : goods.getGoodsImageList()){
-                GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
+                SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
                         .goodsImageIdx(goodsImage.getIdx())
                         .imageUrl(goodsImage.getUrl())
                         .createdAt(goodsImage.getCreatedAt())
                         .updatedAt(goodsImage.getUpdatedAt())
                         .build();
-                getGoodsImageResList.add(getGoodsImageRes);
+                searchGoodsImageResList.add(searchGoodsImageRes);
             }
-            return GetGoodsRes.builder()
+            return SearchGoodsRes.builder()
                     .goodsIdx(goods.getIdx())
                     .goodsName(goods.getName())
                     .goodsPrice(goods.getPrice())
                     .goodsContent(goods.getContent())
                     .goodsAmount(goods.getAmount())
-                    .getGoodsImageResList(getGoodsImageResList)
+                    .searchGoodsImageResList(searchGoodsImageResList)
                     .build();
         });
-        return getGoodsResPage;
+        return searchGoodsResPage;
     }
 
     // 팝업 굿즈 수정

@@ -4,7 +4,7 @@ import com.fiiiiive.zippop.cart.service.CartService;
 import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
 import com.fiiiiive.zippop.cart.model.dto.CountCartItemRes;
 import com.fiiiiive.zippop.cart.model.dto.CreateCartRes;
-import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
+import com.fiiiiive.zippop.cart.model.dto.SearchCartRes;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
@@ -45,7 +45,7 @@ public class CartController {
     @GetMapping("/search-all")
     public ResponseEntity<BaseResponse> searchAll(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
-        GetCartRes response = cartService.searchAll(customUserDetails);
+        SearchCartRes response = cartService.searchAll(customUserDetails);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_SEARCH_LIST_SUCESS, response));
     }
 

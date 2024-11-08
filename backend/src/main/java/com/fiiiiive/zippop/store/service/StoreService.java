@@ -2,22 +2,24 @@ package com.fiiiiive.zippop.store.service;
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsImageRes;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
+import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.member.repository.CompanyRepository;
 import com.fiiiiive.zippop.member.repository.CustomerRepository;
 import com.fiiiiive.zippop.member.model.entity.Company;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
-import com.fiiiiive.zippop.goods.model.dto.GetGoodsImageRes;
-import com.fiiiiive.zippop.review.model.dto.GetReviewImageRes;
+import com.fiiiiive.zippop.review.model.dto.SearchReviewImageRes;
 import com.fiiiiive.zippop.review.model.entity.Review;
 import com.fiiiiive.zippop.review.model.entity.ReviewImage;
-import com.fiiiiive.zippop.review.model.dto.GetReviewRes;
+import com.fiiiiive.zippop.review.model.dto.SearchReviewRes;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.store.model.entity.StoreImage;
 import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
+import com.fiiiiive.zippop.store.model.entity.StoreLike;
 import com.fiiiiive.zippop.store.repository.StoreImageRepository;
 import com.fiiiiive.zippop.store.repository.StoreLikeRepository;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
@@ -37,8 +39,8 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final CompanyRepository companyRepository;
     private final StoreImageRepository storeImageRepository;
-    private final CustomerRepository customerRepository;
     private final StoreLikeRepository storeLikeRepository;
+    private final CustomerRepository customerRepository;
 
     // 팝업 스토어 등록
     @Transactional
@@ -101,21 +103,21 @@ public class StoreService {
         }
 
         // Goods Dto List 생성
-        List<GetGoodsRes> getGoodsResList = new ArrayList<>();
+        List<SearchGoodsRes> searchGoodsResList = new ArrayList<>();
         for (Goods goods : store.getGoodsList()) {
             // Goods Image Dto 생성
-            List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
+            List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();
             for(GoodsImage goodsImage : goods.getGoodsImageList()){
-                GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
+                SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
                         .goodsImageIdx(goodsImage.getIdx())
                         .imageUrl(goodsImage.getUrl())
                         .createdAt(goodsImage.getCreatedAt())
                         .updatedAt(goodsImage.getUpdatedAt())
                         .build();
-                getGoodsImageResList.add(getGoodsImageRes);
+                searchGoodsImageResList.add(searchGoodsImageRes);
             }
             // Goods Dto 생성
-            GetGoodsRes getGoodsRes = GetGoodsRes.builder()
+            SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
                     .goodsIdx(goods.getIdx())
                     .goodsName(goods.getName())
                     .goodsPrice(goods.getPrice())
@@ -123,36 +125,36 @@ public class StoreService {
                     .goodsAmount(goods.getAmount())
                     .createdAt(goods.getCreatedAt())
                     .updatedAt(goods.getUpdatedAt())
-                    .getGoodsImageResList(getGoodsImageResList)
+                    .searchGoodsImageResList(searchGoodsImageResList)
                     .build();
-            getGoodsResList.add(getGoodsRes);
+            searchGoodsResList.add(searchGoodsRes);
         }
 
         // Review Dto List 생성
-        List<GetReviewRes> getReviewResList = new ArrayList<>();
+        List<SearchReviewRes> searchReviewResList = new ArrayList<>();
         for (Review review :  store.getReviewList()) {
             // Review Image Dto 생성
-            List<GetReviewImageRes> getReviewImageResList = new ArrayList<>();
+            List<SearchReviewImageRes> searchReviewImageResList = new ArrayList<>();
             for(ReviewImage reviewImage : review.getReviewImageList()){
-                GetReviewImageRes getReviewImageRes = GetReviewImageRes.builder()
+                SearchReviewImageRes searchReviewImageRes = SearchReviewImageRes.builder()
                         .reviewImageIdx(reviewImage.getIdx())
                         .imageUrl(reviewImage.getUrl())
                         .createdAt(review.getCreatedAt())
                         .updatedAt(review.getUpdatedAt())
                         .build();
-                getReviewImageResList.add(getReviewImageRes);
+                searchReviewImageResList.add(searchReviewImageRes);
             }
             // Review Dto 생성
-            GetReviewRes getReviewRes = GetReviewRes.builder()
+            SearchReviewRes searchReviewRes = SearchReviewRes.builder()
                     .reviewIdx(review.getIdx())
                     .reviewTitle(review.getTitle())
                     .reviewContent(review.getContent())
-                    .rating(review.getRating())
+                    .reviewRating(review.getRating())
                     .createdAt(review.getCreatedAt())
                     .updatedAt(review.getUpdatedAt())
-                    .getReviewImageResList(getReviewImageResList)
+                    .searchReviewImageResList(searchReviewImageResList)
                     .build();
-            getReviewResList.add(getReviewRes);
+            searchReviewResList.add(searchReviewRes);
         }
 
         // GetStoreRes 반환
@@ -167,8 +169,8 @@ public class StoreService {
                 .totalPeople(store.getTotalPeople())
                 .storeStartDate(store.getStartDate())
                 .storeEndDate(store.getEndDate())
-                .getGoodsResList(getGoodsResList)
-                .getReviewResList(getReviewResList)
+                .searchGoodsResList(searchGoodsResList)
+                .searchReviewResList(searchReviewResList)
                 .searchStoreImageResList(searchStoreImageResList)
                 .build();
     }
@@ -256,7 +258,31 @@ public class StoreService {
         // GetStoreResList 반환
         return searchStoreResPage;
     }
-    
+
+    // 팝업 스토어 좋아요 증감
+    @Transactional
+    public void like(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
+        // 예외: 팝업 스토어가 존재하지 않을때, 사용자가 존재하지 않을때,
+        Store store = storeRepository.findByStoreIdx(storeIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_LIKE_FAIL_NOT_FOUND));
+        Customer customer = customerRepository.findById(customUserDetails.getIdx())
+                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_LIKE_FAIL_INVALID_MEMBER));
+        Optional<StoreLike> storeLikeOpt = storeLikeRepository.findByCustomerIdxAndStoreIdx(customer.getIdx(),storeIdx);
+        if (storeLikeOpt.isPresent()) {
+            // 이미 좋아요를 누른 상태면 좋아요 취소
+            storeLikeRepository.deleteByCustomerIdxAndStoreIdx(customer.getIdx(), storeIdx);
+            storeRepository.decrementLikeCount(storeIdx); // 좋아요 개수 감소 (직접 쿼리 활용)
+        } else {
+            // 좋아요 추가
+            StoreLike storeLike = StoreLike.builder()
+                    .store(store)
+                    .customer(customer)
+                    .build();
+            storeLikeRepository.save(storeLike);
+            storeRepository.incrementLikeCount(storeIdx); // 좋아요 개수 증가 (직접 쿼리 활용)
+        }
+    }
+
     // 팝업 스토어 수정
     @Transactional
     public UpdateStoreRes update(CustomUserDetails customUserDetails, Long storeIdx, UpdateStoreReq dto, List<String> fileNames) throws BaseException {

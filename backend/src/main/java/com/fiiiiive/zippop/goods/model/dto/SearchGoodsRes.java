@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GetGoodsRes {
+public class SearchGoodsRes {
     private Long goodsIdx;
     private String goodsName;
     private Integer goodsPrice;
@@ -19,5 +19,5 @@ public class GetGoodsRes {
     private Integer goodsAmount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();;
+    private List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();;
 }

@@ -7,7 +7,7 @@ import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.goods.service.GoodsService;
 import com.fiiiiive.zippop.goods.model.dto.*;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
 import com.fiiiiive.zippop.global.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -42,19 +42,19 @@ public class GoodsController {
 
     // 상품 이름으로 조회
     @GetMapping("/search")
-    public ResponseEntity<BaseResponse<Page<GetGoodsRes>>> search(
+    public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> search(
         @RequestParam Long goodsIdx) throws Exception {
-        GetGoodsRes popupGoodsPage = goodsService.search(goodsIdx);
+        SearchGoodsRes popupGoodsPage = goodsService.search(goodsIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, popupGoodsPage));
     }
 
     // 팝업스토어 인덱스로 목록 조회
     @GetMapping("/search-store")
-    public ResponseEntity<BaseResponse<Page<GetGoodsRes>>> searchAll(
+    public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> searchAll(
         @RequestParam Long storeIdx,
         @RequestParam int page,
         @RequestParam int size) throws BaseException {
-        Page<GetGoodsRes> popupGoodsPage = goodsService.searchAll(storeIdx, page, size);
+        Page<SearchGoodsRes> popupGoodsPage = goodsService.searchAll(storeIdx, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, popupGoodsPage));
     }
 

@@ -11,5 +11,5 @@ import lombok.*;
 public class CreateReviewReq {
     private String reviewTitle;
     private String reviewContent;
-    private Integer rating;
+    private Integer reviewRating;
 }

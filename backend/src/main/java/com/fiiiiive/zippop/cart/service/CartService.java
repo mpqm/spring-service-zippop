@@ -7,13 +7,13 @@ import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsImageRes;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
-import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.member.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.member.model.entity.Customer;
-import com.fiiiiive.zippop.goods.model.dto.GetGoodsImageRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,7 @@ public class CartService {
     private final CustomerRepository customerRepository;
     private final CartItemRepository cartItemRepository;
 
+    // 카트 등록
     @Transactional
     public CreateCartRes register(CustomUserDetails customUserDetails, CreateCartReq dto) throws BaseException {
         // 예외: 사용자의 카트를 찾지 못했을때, 등록된 상품이 없을때,
@@ -64,17 +65,18 @@ public class CartService {
         return CreateCartRes.builder().cartIdx(cart.getIdx()).cartItemIdx(cartItem.getIdx()).build();
     }
 
-    public GetCartRes searchAll(CustomUserDetails customUserDetails) throws BaseException {
+    // 카트아이템 목록 조회
+    public SearchCartRes searchAll(CustomUserDetails customUserDetails) throws BaseException {
         // 예외: 카트를 찾지 못했을때
         Cart cart = cartRepository.findByCustomerIdx(customUserDetails.getIdx())
         .orElseThrow(() -> new BaseException(BaseResponseMessage.CART_SEARCH_FAIL));
         // CartItem Dto List 생성
-        List<GetCartItemRes> getCartItemResList = new ArrayList<>();
+        List<SearchCartItemRes> searchCartItemResList = new ArrayList<>();
         for(CartItem cartItem: cart.getCartItemList()){
             Goods goods = cartItem.getGoods();
             // Goods Imge Dto List 생성
-            List<GetGoodsImageRes> imageResList = goods.getGoodsImageList().stream().map(image ->
-                    GetGoodsImageRes.builder()
+            List<SearchGoodsImageRes> searchGoodsImageResList = goods.getGoodsImageList().stream().map(image ->
+                    SearchGoodsImageRes.builder()
                         .goodsImageIdx(image.getIdx())
                         .imageUrl(image.getUrl())
                         .createdAt(image.getCreatedAt())
@@ -82,31 +84,32 @@ public class CartService {
                     .build())
             .collect(Collectors.toList());
             // Goods Dto 생성
-            GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                    .productIdx(goods.getIdx())
-                    .productName(goods.getName())
-                    .productPrice(goods.getPrice())
-                    .productContent(goods.getContent())
-                    .productAmount(goods.getAmount())
+            SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
+                    .goodsIdx(goods.getIdx())
+                    .goodsName(goods.getName())
+                    .goodsPrice(goods.getPrice())
+                    .goodsContent(goods.getContent())
+                    .goodsAmount(goods.getAmount())
                     .createdAt(goods.getCreatedAt())
                     .updatedAt(goods.getUpdatedAt())
-                    .getGoodsImageResList(imageResList)
+                    .searchGoodsImageResList(searchGoodsImageResList)
                     .build();
             // CartItem Dto 생성
-            GetCartItemRes getCartItemRes = GetCartItemRes.builder()
+            SearchCartItemRes searchCartItemRes = SearchCartItemRes.builder()
                     .count(cartItem.getCount())
                     .price(cartItem.getPrice())
-                    .getGoodsRes(getGoodsRes)
+                    .searchGoodsRes(searchGoodsRes)
                     .build();
-            getCartItemResList.add(getCartItemRes);
+            searchCartItemResList.add(searchCartItemRes);
         }
-        // GetCartRes 반환
-        return GetCartRes.builder()
+        // SearchCartRes 반환
+        return SearchCartRes.builder()
                 .cartIdx(cart.getIdx())
-                .getCartItemResList(getCartItemResList)
+                .searchCartItemResList(searchCartItemResList)
                 .build();
     }
 
+    // 카트아이템 수량조절
     @Transactional
     public CountCartItemRes count(CustomUserDetails customUserDetails, Long cartItemIdx, Long operation) throws BaseException {
         CartItem cartItem = cartItemRepository.findByCartItemIdx(cartItemIdx)
@@ -127,11 +130,13 @@ public class CartService {
         return CountCartItemRes.builder().cartItemIdx(cartItemIdx).count(currentCount).build();
     }
 
+    // 카트아이템 삭제
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long cartItemIdx) throws BaseException {
         cartItemRepository.deleteByCartItemIdx(cartItemIdx);
     }
 
+    // 카트삭제
     @Transactional(rollbackFor = Exception.class)
     public void deleteAll(CustomUserDetails customUserDetails) throws BaseException {
         cartRepository.deleteByCustomerIdx(customUserDetails.getIdx());

@@ -3,9 +3,9 @@
     <h2>내 리뷰</h2>
     <div v-if="reviews.length > 0" class="reviews-list">
       <div v-for="review in reviews" :key="review.reviewIdx" class="review-item">
-        <div v-if="review.getReviewImageResList.length > 0" class="review-images">
+        <div v-if="review.searchReviewImageResList.length > 0" class="review-images">
           <img
-            v-for="image in review.getReviewImageResList"
+            v-for="image in review.searchReviewImageResList"
             :key="image.reviewImageIdx"
             :src="image.imageUrl"
             :alt="review.reviewTitle"

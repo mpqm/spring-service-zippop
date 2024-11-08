@@ -15,8 +15,8 @@ public class CreateReviewRes {
     private String customerEmail;
     private String reviewTitle;
     private String reviewContent;
-    private Integer rating;
+    private Integer reviewRating;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<GetReviewImageRes> getReviewImageResList = new ArrayList<>();
+    private List<SearchReviewImageRes> searchReviewImageResList = new ArrayList<>();
 }
