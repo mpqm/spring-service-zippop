@@ -12,26 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart,Long> {
-    @Query("SELECT c FROM Cart c " +
-            "JOIN FETCH c.customer " +
-            "JOIN FETCH c.goods "+
-            "WHERE c.customer.email = :customerEmail")
-    Optional<List<Cart>> findAllByCustomerEmail(String customerEmail);
-
-    @Query("SELECT c FROM Cart c " +
-            "JOIN FETCH c.customer " +
-            "JOIN FETCH c.goods " +
-            "WHERE c.customer.email = :customerEmail and c.goods.productIdx = :productIdx")
-    Optional<Cart> findByCustomerEmailAndProductIdx(String customerEmail, Long productIdx);
-
-    @Query("SELECT c FROM Cart c WHERE c.customer.email = :customerEmail and c.cartIdx = :cartIdx")
-    Optional<Cart> findByIdAndCustomerEmail(Long cartIdx, String customerEmail);
+    @Query("SELECT c FROM Cart c WHERE c.customer.idx = :customerIdx")
+    Optional<Cart> findByCustomerIdx(Long customerIdx);
 
     @Modifying
-    @Query("DELETE FROM Cart c WHERE c.cartIdx = :cartIdx and c.customer.email = :customerEmail")
-    void deleteByIdAndCustomerEmail(Long cartIdx, String customerEmail);
-
-    @Modifying
-    @Query("DELETE FROM Cart c WHERE c.customer.email = :customerEmail")
-    void deleteAllByCustomerEmail(String customerEmail);
+    @Query("DELETE FROM Cart c WHERE c.customer.idx = :customerIdx")
+    void deleteByCustomerIdx(Long customerIdx);
 }
