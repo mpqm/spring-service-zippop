@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.comment.model.entity;
 
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.member.model.entity.Customer;
+import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.post.model.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;

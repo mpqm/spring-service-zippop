@@ -3,9 +3,9 @@ package com.fiiiiive.zippop.review.service;
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.member.repository.CustomerRepository;
+import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.member.model.entity.Customer;
+import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.review.model.dto.SearchReviewImageRes;
 import com.fiiiiive.zippop.review.model.entity.Review;
 import com.fiiiiive.zippop.review.model.entity.ReviewImage;

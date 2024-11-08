@@ -79,7 +79,7 @@
 //}
 package com.fiiiiive.zippop.global.security.oauth2;
 
-import com.fiiiiive.zippop.member.model.entity.Customer;
+import com.fiiiiive.zippop.auth.model.entity.Customer;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

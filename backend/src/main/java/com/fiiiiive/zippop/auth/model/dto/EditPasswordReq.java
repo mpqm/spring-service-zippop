@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.member.model.dto;
+package com.fiiiiive.zippop.auth.model.dto;
 
 
 import lombok.*;

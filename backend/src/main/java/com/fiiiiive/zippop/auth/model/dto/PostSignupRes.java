@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.member.model.dto;
+package com.fiiiiive.zippop.auth.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +10,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PostSignupRes {
     private Long idx;
-    private Boolean enabled;
-    private Boolean inactive;
+    private Boolean isEmailAuth;
+    private Boolean isInactive;
     private String role;
     private String email;
 }

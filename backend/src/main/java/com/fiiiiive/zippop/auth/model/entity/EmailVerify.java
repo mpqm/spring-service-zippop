@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.member.model.entity;
+package com.fiiiiive.zippop.auth.model.entity;
 
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import jakarta.persistence.*;

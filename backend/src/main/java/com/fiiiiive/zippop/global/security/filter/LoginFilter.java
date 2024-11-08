@@ -17,7 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
-import com.fiiiiive.zippop.member.model.dto.PostLoginReq;
+import com.fiiiiive.zippop.auth.model.dto.PostLoginReq;
 
 
 import java.io.IOException;
