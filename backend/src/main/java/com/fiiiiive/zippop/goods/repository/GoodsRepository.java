@@ -15,7 +15,6 @@ public interface GoodsRepository extends JpaRepository<Goods, Long> {
 
     Page<Goods> findAll(Pageable pageable);
 
-    @Query("SELECT g FROM Goods g JOIN FETCH g.store s WHERE s.storeIdx = :storeIdx")
     Optional<Page<Goods>> findByStoreIdx(Long storeIdx, Pageable pageable);
 
     // 비관적락 잠금 설정

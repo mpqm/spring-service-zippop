@@ -13,13 +13,13 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
             "JOIN FETCH pl.customer " +
             "JOIN FETCH pl.post " +
             "WHERE pl.customer.idx = :customerIdx " +
-            "AND pl.post.postIdx = :postIdx")
+            "AND pl.post.idx = :postIdx")
     Optional<PostLike> findByCustomerIdxAndPostIdx(Long customerIdx, Long postIdx);
 
     // 고객 인덱스 번호와 게시글의 인덱스 번호로 해당 게시글의 자신의 좋아요 삭제
     @Modifying
     @Query("DELETE FROM PostLike pl " +
-            "WHERE pl.customer.email = :customerEmail " +
-            "AND pl.post.postIdx = :postIdx")
+            "WHERE pl.customer.idx = :customerIdx " +
+            "AND pl.post.idx = :postIdx")
     void deleteByCustomerIdxAndPostIdx(Long customerIdx, Long postIdx);
 }

@@ -5,6 +5,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
@@ -12,15 +13,23 @@ import java.util.*;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
     // 팝업스토어 인덱스를 기반으로 팝업 스토어 조회
+    @Query("SELECT s FROM Store s WHERE s.idx = :storeIdx")
     Optional<Store> findByStoreIdx(Long storeIdx);
+
     // 팝업스토어 이름을 기반으로 팝업 스토어 조회
+    @Query("SELECT s FROM Store s WHERE s.name = :storeName")
     Optional<Store> findByStoreName(String storeName);
 
     // 팝업스토어 전체 조회
     Page<Store> findAll(Pageable pageable);
 
-    // 좋아요 증가/감소
+    // 좋아요 증가
+    @Modifying
+    @Query("UPDATE Store s SET s.likeCount = s.likeCount + 1 WHERE s.idx = :storeIdx")
     void incrementLikeCount(Long storeIdx);
+    // 좋아요 감소
+    @Modifying
+    @Query("UPDATE Store s SET s.likeCount = s.likeCount - 1 WHERE s.idx = :storeIdx AND s.likeCount > 0")
     void decrementLikeCount(Long storeIdx);
 
     // 기업 인덱스를 기반으로 팝업 스토어 조회

@@ -34,7 +34,7 @@ public class FavoriteService {
         .orElseThrow(() -> (new BaseException(BaseResponseMessage.FAVORITE_ACTIVE_FAIL_MEMBER_NOT_FOUND)));
         Store store = storeRepository.findById(storeIdx)
         .orElseThrow(() -> (new BaseException(BaseResponseMessage.FAVORITE_ACTIVE_FAIL_STORE_NOT_FOUND)));
-        Optional<Favorite> result = favoriteRepository.findByCustomerEmailAndStoreIdx(customUserDetails.getEmail(), storeIdx);
+        Optional<Favorite> result = favoriteRepository.findByCustomerIdxAndStoreIdx(customUserDetails.getIdx(), storeIdx);
         if(result.isPresent()){
             Favorite favorite = result.get();
             favoriteRepository.deleteById(favorite.getIdx());
@@ -48,7 +48,7 @@ public class FavoriteService {
     }
 
     public List<GetFavoriteRes> searchAll(CustomUserDetails customUserDetails) throws BaseException {
-        List<Favorite> favoriteList = favoriteRepository.findAllByCustomerEmail(customUserDetails.getEmail())
+        List<Favorite> favoriteList = favoriteRepository.findAllByCustomerIdx(customUserDetails.getIdx())
         .orElseThrow(()->new BaseException(BaseResponseMessage.FAVORITE_SEARCH_ALL_FAIL));
         List<GetFavoriteRes> getFavoriteResList = new ArrayList<>();
         for(Favorite favorite: favoriteList){
