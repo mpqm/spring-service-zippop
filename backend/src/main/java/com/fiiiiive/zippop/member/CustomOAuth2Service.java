@@ -4,6 +4,7 @@ import com.fiiiiive.zippop.member.model.CustomOauth2UserDetails;
 import com.fiiiiive.zippop.member.model.entity.Customer;
 import com.fiiiiive.zippop.member.model.KakaoUserDetails;
 import com.fiiiiive.zippop.member.model.OAuth2UserInfo;
+import com.fiiiiive.zippop.member.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

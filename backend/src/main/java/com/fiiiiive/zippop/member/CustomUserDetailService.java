@@ -3,6 +3,8 @@ package com.fiiiiive.zippop.member;
 import com.fiiiiive.zippop.member.model.entity.Company;
 import com.fiiiiive.zippop.member.model.CustomUserDetails;
 import com.fiiiiive.zippop.member.model.entity.Customer;
+import com.fiiiiive.zippop.member.repository.CompanyRepository;
+import com.fiiiiive.zippop.member.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
