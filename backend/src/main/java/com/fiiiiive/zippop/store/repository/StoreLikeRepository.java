@@ -10,14 +10,14 @@ import java.util.Optional;
 
 @Repository
 public interface StoreLikeRepository extends JpaRepository<StoreLike, Long> {
-    @Query("SELECT psl FROM StoreLike psl " +
-            "JOIN FETCH psl.customer " +
-            "JOIN FETCH psl.store " +
-            "WHERE psl.customer.idx = :customerIdx AND psl.store.idx = :storeIdx")
+    @Query("SELECT sl FROM StoreLike sl " +
+            "JOIN FETCH sl.customer " +
+            "JOIN FETCH sl.store " +
+            "WHERE sl.customer.idx = :customerIdx AND sl.store.idx = :storeIdx")
     Optional<StoreLike> findByCustomerIdxAndStoreIdx(Long customerIdx, Long storeIdx);
 
     @Modifying
-    @Query("DELETE FROM StoreLike psl " +
-            "WHERE psl.customer.idx = :customerIdx AND psl.store.idx = :storeIdx")
+    @Query("DELETE FROM StoreLike sl " +
+            "WHERE sl.customer.idx = :customerIdx AND sl.store.idx = :storeIdx")
     void deleteByCustomerIdxAndStoreIdx(Long customerIdx, Long storeIdx);
 }

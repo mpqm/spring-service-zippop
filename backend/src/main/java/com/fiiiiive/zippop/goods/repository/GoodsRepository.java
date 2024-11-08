@@ -15,30 +15,11 @@ public interface GoodsRepository extends JpaRepository<Goods, Long> {
 
     Page<Goods> findAll(Pageable pageable);
 
-    @Query("SELECT pg FROM PopupGoods pg JOIN FETCH pg.store ps WHERE ps.storeIdx = :storeIdx")
+    @Query("SELECT g FROM Goods g JOIN FETCH g.store s WHERE s.storeIdx = :storeIdx")
     Optional<Page<Goods>> findByStoreIdx(Long storeIdx, Pageable pageable);
-
-    @Query("SELECT pg FROM PopupGoods pg JOIN FETCH pg.store")
-    Page<Goods> findAllFetchJoin(Pageable pageable);
-
-    Page<Goods> findByProductPrice(Integer productPrice, Pageable pageable);
-
-    @Query("SELECT pg FROM PopupGoods pg JOIN FETCH pg.store WHERE pg.productPrice = :productPrice")
-    Page<Goods> findByProductPriceFetchJoin(Integer productPrice, Pageable pageable);
-
-    Optional<Page<Goods>> findByProductName(String productName, Pageable pageable);
-
-    Optional<Goods> findByProductIdx(Long productIdx);
-//    @Query("SELECT pg FROM PopupGoods pg JOIN FETCH pg.store WHERE pg.productName = :productName")
-//    Page<PopupGoods> findByProductNameFetchJoin(String productName, Pageable pageable);
-//
-//    public Page<PopupGoods> findByStoreName(String storeName, Pageable pageable);
-//
-//    @Query("SELECT pg FROM PopupGoods pg JOIN FETCH pg.store ps WHERE ps.storeName = :storeName")
-//    Page<PopupGoods> findByStoreNameFetchJoin(String storeName, Pageable pageable);
 
     // 비관적락 잠금 설정
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT pg FROM PopupGoods pg WHERE pg.productIdx = :productIdx")
-    Optional<Goods> findByIdx(@Param("productIdx") Long productIdx);
+    @Query("SELECT g FROM Goods g WHERE g.name = :goodsIdx")
+    Optional<Goods> findByGoodsIdx(Long goodsIdx);
 }

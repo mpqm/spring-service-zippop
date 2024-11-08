@@ -20,10 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Tag(name = "popup-goods-api", description = "PopupGoods")
+@Tag(name = "goods-api", description = "Goods")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/popup-goods")
+@RequestMapping("/api/v1/goods")
 public class GoodsController {
     private final GoodsService goodsService;
     private final CloudFileUpload cloudFileUpload;
@@ -43,20 +43,18 @@ public class GoodsController {
     // 상품 이름으로 조회
     @GetMapping("/search")
     public ResponseEntity<BaseResponse<Page<GetGoodsRes>>> search(
-            @RequestParam String productName,
-            @RequestParam int page,
-            @RequestParam int size) throws Exception {
-        Page<GetGoodsRes> popupGoodsPage = goodsService.search(productName, page, size);
+        @RequestParam Long goodsIdx) throws Exception {
+        GetGoodsRes popupGoodsPage = goodsService.search(goodsIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, popupGoodsPage));
     }
 
-    // 팝업스토어 인덱스로 조회
+    // 팝업스토어 인덱스로 목록 조회
     @GetMapping("/search-store")
-    public ResponseEntity<BaseResponse<Page<GetGoodsRes>>> searchStore(
+    public ResponseEntity<BaseResponse<Page<GetGoodsRes>>> searchAll(
         @RequestParam Long storeIdx,
         @RequestParam int page,
         @RequestParam int size) throws BaseException {
-        Page<GetGoodsRes> popupGoodsPage = goodsService.searchStore(storeIdx, page, size);
+        Page<GetGoodsRes> popupGoodsPage = goodsService.searchAll(storeIdx, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, popupGoodsPage));
     }
 
@@ -64,11 +62,11 @@ public class GoodsController {
     @PatchMapping("/update")
     public ResponseEntity<BaseResponse> update(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam Long productIdx,
+        @RequestParam Long goodsIdx,
         @RequestPart(name = "dto") UpdateGoodsReq dto,
         @RequestPart(name = "files") MultipartFile[] files) throws BaseException {
         List<String> fileNames = cloudFileUpload.multipleUpload(files);
-        UpdateGoodsRes response = goodsService.update(customUserDetails, productIdx, fileNames, dto);
+        UpdateGoodsRes response = goodsService.update(customUserDetails, goodsIdx, fileNames, dto);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_UPDATE_SUCCESS,response));
     }
 
@@ -76,8 +74,8 @@ public class GoodsController {
     @DeleteMapping("/delete")
     public ResponseEntity<BaseResponse> delete(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam Long productIdx) throws BaseException {
-        goodsService.delete(customUserDetails, productIdx);
+        @RequestParam Long goodsIdx) throws BaseException {
+        goodsService.delete(customUserDetails, goodsIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_DELETE_SUCCESS));
     }
 }

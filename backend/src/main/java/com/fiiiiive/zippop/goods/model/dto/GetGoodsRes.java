@@ -12,11 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class GetGoodsRes {
-    private Long productIdx;
-    private String productName;
-    private Integer productPrice;
-    private String productContent;
-    private Integer productAmount;
+    private Long goodsIdx;
+    private String goodsName;
+    private Integer goodsPrice;
+    private String goodsContent;
+    private Integer goodsAmount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();;

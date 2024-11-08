@@ -8,8 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UpdateGoodsReq {
-    private String productName;
-    private Integer productPrice;
-    private Integer productAmount;
-    private String productContent;
+    private String goodsName;
+    private Integer goodsPrice;
+    private Integer goodsAmount;
+    private String goodsContent;
 }

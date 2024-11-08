@@ -12,12 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class UpdateGoodsRes {
-    private Long productIdx;
-    private String productName;
-    private Integer productPrice;
-    private Integer productAmount;
-    private String productContent;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private List<GetGoodsImageRes> popupGoodsImageList = new ArrayList<>();;
+    private Long goodsIdx;
 }

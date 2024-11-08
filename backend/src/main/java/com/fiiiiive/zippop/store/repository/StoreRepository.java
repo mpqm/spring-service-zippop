@@ -24,19 +24,20 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     void decrementLikeCount(Long storeIdx);
 
     // 기업 인덱스를 기반으로 팝업 스토어 조회
+    @Query("SELECT s FROM Store s WHERE s.companyEmail = :companyEmail")
     Optional<Page<Store>> findByCompanyEmail(String companyEmail, Pageable pageable);
 
     // 검색어 기반으로 전체 조회
-    @Query("SELECT ps FROM Store ps " +
-            "WHERE ps.storeAddress LIKE %:keyword% " +
-            "OR ps.storeName LIKE %:keyword% " +
-            "OR ps.category LIKE %:keyword% " +
-            "OR ps.companyEmail LIKE %:keyword%")
+    @Query("SELECT s FROM Store s " +
+            "WHERE s.address LIKE %:keyword% " +
+            "OR s.name LIKE %:keyword% " +
+            "OR s.category LIKE %:keyword% " +
+            "OR s.companyEmail LIKE %:keyword%")
     Page<Store> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     // 날짜 범위 기반으로 전체 조회
-    @Query("SELECT ps FROM Store ps " +
-            "WHERE (:startDate IS NULL OR ps.storeStartDate >= :storeStartDate) " +
-            "AND (:endDate IS NULL OR ps.storeEndDate <= :storeEndDate)")
-    Page<Store> findByStoreDateRange (LocalDateTime storeStartDate, LocalDateTime storeEndDate, Pageable pageable);
+    @Query("SELECT s FROM Store s " +
+            "WHERE (:startDate IS NULL OR s.startDate >= :startDate) " +
+            "AND (:endDate IS NULL OR s.endDate <= :endDate)")
+    Page<Store> findByStoreDateRange (LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 }

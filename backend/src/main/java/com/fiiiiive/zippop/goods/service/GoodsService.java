@@ -10,11 +10,13 @@ import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsImageRes;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;
+import com.fiiiiive.zippop.store.model.entity.StoreImage;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,151 +29,135 @@ public class GoodsService {
     private final StoreRepository storeRepository;
     private final GoodsImageRepository goodsImageRepository;
 
+    // 팝업 굿즈 등록
+    @Transactional
     public CreateGoodsRes register(CustomUserDetails customUserDetails, Long storeIdx, List<String> fileNames, CreateGoodsReq dto) throws BaseException {
+        // 예외: 팝업 스토어가 존재하지 않을때, 팝업 스토어에 등록된 기업회원이메일이 다를때
         Store store = storeRepository.findByStoreIdx(storeIdx)
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_REGISTER_FAIL_STORE_NOT_FOUND));
         if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) {
             throw new BaseException(BaseResponseMessage.POPUP_STORE_UPDATE_FAIL_INVALID_MEMBER);
         }
+        // Goods 엔티티 생성 및 저장
         Goods goods = Goods.builder()
-                .name(dto.getProductName())
-                .productAmount(dto.getProductAmount())
-                .productPrice(dto.getProductPrice())
-                .productContent(dto.getProductContent())
+                .name(dto.getGoodsName())
+                .amount(dto.getGoodsAmount())
+                .price(dto.getGoodsPrice())
+                .content(dto.getGoodsContent())
                 .store(store)
                 .build();
-        goodsRepository.save(popupGoods);
-        List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
+        goodsRepository.save(goods);
+        // GoodsImage 엔티티 리스트 생성 및 저장
         for(String fileName: fileNames){
             GoodsImage goodsImage = GoodsImage.builder()
-                    .imageUrl(fileName)
-                    .popupGoods(popupGoods)
+                    .url(fileName)
+                    .goods(goods)
                     .build();
             goodsImageRepository.save(goodsImage);
+        }
+        return CreateGoodsRes.builder().goodsIdx(goods.getIdx()).build();
+    }
+
+    // 팝업 굿즈 단일 조회
+    public GetGoodsRes search(Long goodIdx) throws BaseException {
+        Goods goods = goodsRepository.findByGoodsIdx(goodIdx)
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND));
+        List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
+        for(GoodsImage goodsImage : goods.getGoodsImageList()){
             GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                    .productImageIdx(goodsImage.getPopupGoodsImageIdx())
-                    .imageUrl(goodsImage.getImageUrl())
+                    .goodsImageIdx(goodsImage.getIdx())
+                    .imageUrl(goodsImage.getUrl())
                     .createdAt(goodsImage.getCreatedAt())
                     .updatedAt(goodsImage.getUpdatedAt())
                     .build();
             getGoodsImageResList.add(getGoodsImageRes);
         }
-        return CreateGoodsRes.builder()
-                .productIdx(popupGoods.getProductIdx())
-                .productName(popupGoods.getProductName())
-                .productPrice(popupGoods.getProductPrice())
-                .productContent(popupGoods.getProductContent())
-                .productAmount(popupGoods.getProductAmount())
-                .popupGoodsImageList(getGoodsImageResList)
-                .createdAt(popupGoods.getCreatedAt())
-                .updatedAt(popupGoods.getUpdatedAt())
+        return GetGoodsRes.builder()
+                .goodsIdx(goods.getIdx())
+                .goodsName(goods.getName())
+                .goodsPrice(goods.getPrice())
+                .goodsContent(goods.getContent())
+                .goodsAmount(goods.getAmount())
+                .getGoodsImageResList(getGoodsImageResList)
                 .build();
     }
 
-    public Page<GetGoodsRes> search(String productName, int page, int size) throws BaseException {
-        Page<PopupGoods> result = goodsRepository.findByProductName(productName, PageRequest.of(page, size))
-                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND));
-        Page<GetGoodsRes> getPopupGoodsResPage = result.map(popupGoods ->{
-            List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-            List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
-            for(GoodsImage popupGoodsImage : goodsImageList){
-                GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                        .productImageIdx(popupGoodsImage.getPopupGoodsImageIdx())
-                        .imageUrl(popupGoodsImage.getImageUrl())
-                        .createdAt(popupGoodsImage.getCreatedAt())
-                        .updatedAt(popupGoodsImage.getUpdatedAt())
-                        .build();
-                getGoodsImageResList.add(getGoodsImageRes);
-            }
-            GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                    .productIdx(popupGoods.getProductIdx())
-                    .productName(popupGoods.getProductName())
-                    .productPrice(popupGoods.getProductPrice())
-                    .productContent(popupGoods.getProductContent())
-                    .productAmount(popupGoods.getProductAmount())
-                    .getGoodsImageResList(getGoodsImageResList)
-                    .build();
-            return getGoodsRes;
-        });
-        return getPopupGoodsResPage;
-    }
-
-    public Page<GetGoodsRes> searchStore(Long storeIdx, int page, int size) throws BaseException {
-        Page<PopupGoods> result = goodsRepository.findByStoreIdx(storeIdx, PageRequest.of(page, size))
+    // 팝업 굿즈 목록 조회(storeIdx)
+    public Page<GetGoodsRes> searchAll(Long storeIdx, int page, int size) throws BaseException {
+        Page<Goods> result = goodsRepository.findByStoreIdx(storeIdx, PageRequest.of(page, size))
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND));
-        Page<GetGoodsRes> getPopupGoodsResPage = result.map(popupGoods ->{
+        Page<GetGoodsRes> getGoodsResPage = result.map(goods -> {
             List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-            List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
-            for(GoodsImage popupGoodsImage : goodsImageList){
+            for(GoodsImage goodsImage : goods.getGoodsImageList()){
                 GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                        .productImageIdx(popupGoodsImage.getPopupGoodsImageIdx())
-                        .imageUrl(popupGoodsImage.getImageUrl())
-                        .createdAt(popupGoodsImage.getCreatedAt())
-                        .updatedAt(popupGoodsImage.getUpdatedAt())
+                        .goodsImageIdx(goodsImage.getIdx())
+                        .imageUrl(goodsImage.getUrl())
+                        .createdAt(goodsImage.getCreatedAt())
+                        .updatedAt(goodsImage.getUpdatedAt())
                         .build();
                 getGoodsImageResList.add(getGoodsImageRes);
             }
-            GetGoodsRes getGoodsRes = GetGoodsRes.builder()
-                    .productIdx(popupGoods.getProductIdx())
-                    .productName(popupGoods.getProductName())
-                    .productPrice(popupGoods.getProductPrice())
-                    .productContent(popupGoods.getProductContent())
-                    .productAmount(popupGoods.getProductAmount())
+            return GetGoodsRes.builder()
+                    .goodsIdx(goods.getIdx())
+                    .goodsName(goods.getName())
+                    .goodsPrice(goods.getPrice())
+                    .goodsContent(goods.getContent())
+                    .goodsAmount(goods.getAmount())
                     .getGoodsImageResList(getGoodsImageResList)
                     .build();
-            return getGoodsRes;
         });
-        return getPopupGoodsResPage;
+        return getGoodsResPage;
     }
 
-    public UpdateGoodsRes update(CustomUserDetails customUserDetails, Long productIdx, List<String> fileNames, UpdatePopupGoodsReq dto) throws BaseException{
-        PopupGoods popupGoods = goodsRepository.findByProductIdx(productIdx)
+    // 팝업 굿즈 수정
+    @Transactional
+    public UpdateGoodsRes update(CustomUserDetails customUserDetails, Long goodsIdx, List<String> fileNames, UpdateGoodsReq dto) throws BaseException{
+        Goods goods = goodsRepository.findByGoodsIdx(goodsIdx)
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_REGISTER_FAIL_STORE_NOT_FOUND));
-        if(!Objects.equals(popupGoods.getStore().getCompanyEmail(), customUserDetails.getEmail())) {
+        if(!Objects.equals(goods.getStore().getCompanyEmail(), customUserDetails.getEmail())) {
             throw new BaseException(BaseResponseMessage.POPUP_STORE_UPDATE_FAIL_INVALID_MEMBER);
         }
-        popupGoods.setProductName(dto.getProductName());
-        popupGoods.setProductAmount(dto.getProductAmount());
-        popupGoods.setProductPrice(dto.getProductPrice());
-        popupGoods.setProductContent(dto.getProductContent());
-        goodsRepository.save(popupGoods);
-        List<GetGoodsImageRes> getGoodsImageResList = new ArrayList<>();
-        List<GoodsImage> goodsImageList = popupGoods.getPopupGoodsImageList();
-        for(GoodsImage goodsImage : goodsImageList){
-            goodsImageRepository.deleteById(goodsImage.getPopupGoodsImageIdx());
+        goods.setName(dto.getGoodsName());
+        goods.setAmount(dto.getGoodsAmount());
+        goods.setPrice(dto.getGoodsPrice());
+        goods.setContent(dto.getGoodsContent());
+        goodsRepository.save(goods);
+        List<String> existingUrls = new ArrayList<>();
+        // Goods Image 업데이트
+        // 기존 이미지 URL 목록 불러오기
+        for(GoodsImage goodsImage : goods.getGoodsImageList()){
+            existingUrls.add(goodsImage.getUrl());
         }
-        for(String fileName: fileNames){
-            GoodsImage goodsImage = GoodsImage.builder()
-                    .imageUrl(fileName)
-                    .popupGoods(popupGoods)
-                    .build();
-            GetGoodsImageRes getGoodsImageRes = GetGoodsImageRes.builder()
-                    .productImageIdx(goodsImage.getPopupGoodsImageIdx())
-                    .imageUrl(goodsImage.getImageUrl())
-                    .createdAt(goodsImage.getCreatedAt())
-                    .updatedAt(goodsImage.getUpdatedAt())
-                    .build();
-            getGoodsImageResList.add(getGoodsImageRes);
+        // 삭제할 이미지 URL (기존에 있었으나 새 목록에 없는 것들)
+        for (GoodsImage goodsImage : goods.getGoodsImageList()) {
+            if (!fileNames.contains(goodsImage.getUrl())) {
+                goodsImageRepository.deleteById(goodsImage.getIdx());
+            }
         }
-        return UpdateGoodsRes.builder()
-                .productIdx(popupGoods.getProductIdx())
-                .productName(popupGoods.getProductName())
-                .productPrice(popupGoods.getProductPrice())
-                .productContent(popupGoods.getProductContent())
-                .productAmount(popupGoods.getProductAmount())
-                .createdAt(popupGoods.getCreatedAt())
-                .updatedAt(popupGoods.getUpdatedAt())
-                .popupGoodsImageList(getGoodsImageResList)
-                .build();
+
+        // 추가할 이미지 URL (새 목록에 있는데 기존 목록에는 없는 것들)
+        for (String fileName : fileNames) {
+            if (!existingUrls.contains(fileName)) {
+                GoodsImage goodsImage = GoodsImage.builder()
+                        .url(fileName)
+                        .goods(goods)
+                        .build();
+                goodsImageRepository.save(goodsImage);
+            }
+        }
+        // UpdateGoodsRes 반환
+        return UpdateGoodsRes.builder().goodsIdx(goods.getIdx()).build();
     }
 
-    public void delete(CustomUserDetails customUserDetails, Long productIdx) throws BaseException{
-        PopupGoods popupGoods = goodsRepository.findByProductIdx(productIdx)
+    // 팝업 굿즈 삭제
+    @Transactional
+    public void delete(CustomUserDetails customUserDetails, Long goodsIdx) throws BaseException{
+        Goods goods = goodsRepository.findByGoodsIdx(goodsIdx)
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_DELETE_FAIL_NOT_FOUND));
-        if(!Objects.equals(popupGoods.getStore().getCompanyEmail(), customUserDetails.getEmail())){
+        if(!Objects.equals(goods.getStore().getCompanyEmail(), customUserDetails.getEmail())){
             throw new BaseException(BaseResponseMessage.POPUP_STORE_DELETE_FAIL_INVALID_MEMBER);
         }
-        goodsRepository.deleteById(productIdx);
+        goodsRepository.deleteById(goodsIdx);
     }
 
 }
