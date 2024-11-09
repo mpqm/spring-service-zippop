@@ -52,6 +52,15 @@ public class RedisUtil {
         return zSetOperations.zCard(key);
     }
 
+    // SortedSet에서 값 갱신 (기존의 value에 대해 새로운 score로 갱신)
+    public void update(String key, String value, long newTimestamp) {
+        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+        boolean exists = zSetOperations.remove(key, value) > 0; // 먼저 기존 값을 삭제
+        if (exists) {
+            zSetOperations.add(key, value, newTimestamp);
+        }
+    }
+
     // SortedSet 내 값의 순위 조회
     public Long getzRank(String key, String value) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();

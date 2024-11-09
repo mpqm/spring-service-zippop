@@ -43,14 +43,14 @@ public class ChatService {
             List<ChatRoom> chatRooms;
             if ("ROLE_CUSTOMER".equals(role)) {
                 Customer customer = customerRepository.findByCustomerEmail(email)
-                        .orElseThrow(() -> new BaseException(BaseResponseMessage.USER_NOT_FOUND));
+                        .orElseThrow(() -> new BaseException(BaseResponseMessage.CHAT_USER_NOT_FOUND));
                 chatRooms = chatRoomRepository.findByCustomer(customer);
             } else if ("ROLE_COMPANY".equals(role)) {
                 Company company = companyRepository.findByCompanyEmail(email)
-                        .orElseThrow(() -> new BaseException(BaseResponseMessage.USER_NOT_FOUND));
+                        .orElseThrow(() -> new BaseException(BaseResponseMessage.CHAT_USER_NOT_FOUND));
                 chatRooms = chatRoomRepository.findByCompany(company);
             } else {
-                throw new BaseException(BaseResponseMessage.USER_NOT_FOUND);
+                throw new BaseException(BaseResponseMessage.CHAT_USER_NOT_FOUND);
             }
             List<ChatRoomDto> chatRoomDtos = chatRooms.stream()
                     .map(room -> new ChatRoomDto(room.getIdx(), room.getName()))
@@ -66,9 +66,9 @@ public class ChatService {
     public BaseResponse<ChatRoomDto> createChatRoom(ChatRoomReq chatRoomReq, String customerEmail, String companyEmail) throws BaseException {
         try {
             Customer customer = customerRepository.findByCustomerEmail(customerEmail)
-                    .orElseThrow(() -> new BaseException(BaseResponseMessage.USER_NOT_FOUND));
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.CHAT_USER_NOT_FOUND));
             Company company = companyRepository.findByCompanyEmail(companyEmail)
-                    .orElseThrow(() -> new BaseException(BaseResponseMessage.USER_NOT_FOUND));
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.CHAT_USER_NOT_FOUND));
 
             if (chatRoomRepository.findByCustomerAndCompany(customer, company).isPresent()) {
                 throw new BaseException(BaseResponseMessage.CHAT_ROOM_CREATE_FAIL);

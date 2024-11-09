@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.global.utils;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,39 @@ public class JwtUtil {
                 secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm()
         );
+    }
+
+    // 엑세스 토큰 생성
+    public String createAccessToken(Long id, String username, String role) {
+        return Jwts.builder()
+                .claim("idx", id)
+                .claim("username", username)
+                .claim("role", role)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 1)) // 1시간 1000 * 60 * 60 * 1
+                .signWith(secretKey)
+                .compact();
+    }
+
+    // 리프레시 토큰 생성
+    public String createRefreshToken(String email) {
+        return Jwts.builder()
+                .claim("email", email)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 5 )) // 5일 1000 * 60 * 60 * 24 * 5
+                .signWith(secretKey)
+                .compact();
+    }
+
+    // 예약 토큰 생성
+    public String createReserveToken(Long reserveIdx, String email) {
+        return Jwts.builder()
+                .claim("reserveIdx", reserveIdx)
+                .claim("email", email)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 100000))
+                .signWith(secretKey)
+                .compact();
     }
 
     // 멤버 인덱스 조회
@@ -43,34 +77,12 @@ public class JwtUtil {
 
     // 토큰 만료 시간 확인
     public Boolean isExpired(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try{
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        } catch (ExpiredJwtException expiredJwtException){
+            return true;
+        }
     }
 
-    // 멤버 토큰 생성
-    public String createToken(Long id, String username, String role) {
-        return Jwts.builder()
-                .claim("idx", id)
-                .claim("username", username)
-                .claim("role", role)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 100000))
-                .signWith(secretKey)
-                .compact();
-    }
 
-    // 예약 인덱스 조회
-    public String getReserveIdx(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("reserveIdx", String.class);
-    }
-
-    // 예약 토큰 생성
-    public String createToken(Long reserveIdx, String email) {
-        return Jwts.builder()
-                .claim("reserveIdx", reserveIdx)
-                .claim("email", email)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 100000))
-                .signWith(secretKey)
-                .compact();
-    }
 }

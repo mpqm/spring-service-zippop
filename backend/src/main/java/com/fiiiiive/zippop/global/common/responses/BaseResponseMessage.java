@@ -2,11 +2,22 @@ package com.fiiiiive.zippop.global.common.responses;
 
 public enum BaseResponseMessage {
     // ========================================================================================================================
-    // 요청 성공, 실패, 내부 서버 오류
+    // 200~500 Internal
     REQUEST_SUCCESS(true, 200, "요청이 정상적으로 처리되었습니다"),
-    REQUEST_FAIL(false, 404, "요청을 실패했습니다."),
-    INTERNAL_SERVER_ERROR(false, 500, "내부 서버 오류"),
-    FILE_UPLOAD_FAIL(false, 501, "파입 업로드에 실패했습니다."),
+    REQUEST_FAIL(false, 300, "요청을 실패했습니다."),
+    DATABASE_SERVER_ERROR(false, 301, "DATABASE 오류"),
+    INVALID_TOKEN(false, 302, "유효하지 않은 토큰입니다."),
+    JWT_TOKEN_EXPIRED(false, 303, "JWT 토큰이 만료되었습니다."),
+    JWT_TOKEN_UNSUPPORTED(false, 304, "JWT 토큰 형식이 아닙니다."),
+    JWT_TOKEN_WRONG(false, 305, "JWT 토큰이 잘못됬습니다."),
+    ACCESS_DENIED(false, 306, "접근이 거부되었습니다. 권한이 없습니다."),
+    BAD_CREDENTIAL(false, 307, "아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해 주세요"),
+    USER_NOT_FOUND(false, 308, "계정이 존재하지 않습니다. 회원가입 진행 후 로그인 해주세요."),
+    FILE_UPLOAD_FAIL(false, 309,"이미지 업로드에 실패했습니다."),
+    AUTH_FAIL(false, 310, "사용자 인증에 실패하였습니다."),
+    EMAIL_SEND_FAIL(false, 311, "이메일 전송에 실패했습니다."),
+    UNPARSE_JSON(false, 312, "json 형식을 매핑할 수 없습니다."),
+    INTERNAL_SERVER_ERROR(false, 500, "내부 서버 오류가 발생해서 처리할 수 없습니다."),
     // ========================================================================================================================
     // 회원 기능(2000)
     // 회원가입 2000
@@ -27,13 +38,13 @@ public enum BaseResponseMessage {
     MEMBER_EMAIL_VERIFY_FAIL(false, 2011, "이메일 인증에 실패했습니다."),
     MEMBER_EMAIL_SEND_FAIL(false, 2012, "이메일 전송에 실패했습니다."),
     MEMBER_EMAIL_VERIFY_SAVE_FAIL(false, 2013, "이메일 인증 값 저장에 실패했습니다."),
-    // 엑세스 토큰 2020
+    // 토큰 만료 2020
     MEMBER_ACCESS_TOKEN_EXPIRED(false, 2021, "JWT 토큰이 만료되었습니다."),
     MEMBER_TOKEN_NULL(false, 2022, "JWT 토큰이 없습니다."),
     MEMBER_ACCESS_TOKEN_INVALID(false, 2023, "JWT 토큰이 유효하지 않습니다."),
     // 로그인 2030
     MEMBER_LOGIN_SUCCESS(true, 2030, "로그인에 성공했습니다."),
-    MEMBER_LOGIN_FAIL(false, 2031, "아이디 또는 비밀번호를 확인해주세요"),
+    MEMBER_LOGIN_FAIL(false, 2031, "로그인에 실패했습니다."),
     MEMBER_LOGIN_FAIL_NOT_FOUND(false, 2032, "사용자를 찾을 수 없습니다"),
     // 계정 비활성화 2040
     MEMBER_INACTIVE_SUCCESS(true, 2040, "계정 비활성화에 성공했습니다."),
@@ -284,7 +295,7 @@ public enum BaseResponseMessage {
 
     //채팅 유저 확인 8500
     CHAT_USER_FOUND(true,8500,"사용자가 존재합니다."),
-    USER_NOT_FOUND(false,8401 ,"사용자가 존재하지 않습니다" );
+    CHAT_USER_NOT_FOUND(false,8401 ,"사용자가 존재하지 않습니다" );
 
     // ========================================================================================================================
     private Boolean success;
