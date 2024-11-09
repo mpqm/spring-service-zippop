@@ -22,30 +22,40 @@ public class CloudFileUpload  {
     private final AmazonS3 amazonS3;
 
     public String upload(MultipartFile file) throws BaseException {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(file.getSize());
-        metadata.setContentType(file.getContentType());
-        try {
-            String saveFileName = UUID.randomUUID()+ "_" + file.getOriginalFilename();
-            amazonS3.putObject(bucketName, saveFileName, file.getInputStream(), metadata);
-            return "https://"+bucketName+".s3.ap-northeast-2.amazonaws.com/"+saveFileName;
-        }
-        catch (IOException e) { throw new BaseException(BaseResponseMessage.FILE_UPLOAD_FAIL, e.getMessage()); }
-    }
-
-    public List<String> multipleUpload(MultipartFile[] files) throws BaseException {
-        List<String> fileNames = new ArrayList<>();
-        for(MultipartFile file : files){
+        if(file.getOriginalFilename() != "") {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
             try {
-                String saveFileName = UUID.randomUUID()+ "_" + file.getOriginalFilename();
+                String saveFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                 amazonS3.putObject(bucketName, saveFileName, file.getInputStream(), metadata);
-                fileNames.add("https://"+bucketName+".s3.ap-northeast-2.amazonaws.com/"+saveFileName);
+                return "https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + saveFileName;
+            } catch (IOException e) {
+                throw new BaseException(BaseResponseMessage.FILE_UPLOAD_FAIL, e.getMessage());
             }
-            catch (IOException e) { throw new BaseException(BaseResponseMessage.FILE_UPLOAD_FAIL, e.getMessage()); }
+        }else {
+            return null;
         }
-        return fileNames;
+    }
+
+    public List<String> multipleUpload(MultipartFile[] files) throws BaseException {
+        if(files[0].getOriginalFilename() != "") {
+            List<String> fileNames = new ArrayList<>();
+            for (MultipartFile file : files) {
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(file.getSize());
+                metadata.setContentType(file.getContentType());
+                try {
+                    String saveFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                    amazonS3.putObject(bucketName, saveFileName, file.getInputStream(), metadata);
+                    fileNames.add("https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + saveFileName);
+                } catch (IOException e) {
+                    throw new BaseException(BaseResponseMessage.FILE_UPLOAD_FAIL, e.getMessage());
+                }
+            }
+            return fileNames;
+        }else {
+            return null;
+        }
     }
 }
