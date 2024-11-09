@@ -34,21 +34,21 @@
 <details>
 	<summary><b> 📋 프로젝트 소개</b></summary>
     <ul>
-    <li>
-        최근 화장품이나 의류를 넘어 드라마, 음악, 게임, 영화, 애니메이션 등 상관없이 각 업계에서 팝업스토어를 활용하고 있다. <br>
-        <strong>팝업스토어에서는 기존 매장과의 차별점을 두기 위해 한정판 굿즈를 판매</strong>하기 때문에, 
-        이를 구매하기 위해 <strong>장시간 대기하는 현상이 급증하는 추세</strong>다.
-    </li>
-    <br>
-    <li>
-        <strong>🏠ZIP_POP 이 제공하는 서비스</strong><br>
-        사전예약을 통해 기존의 팝업스토어 대기 시스템을 개선하고 밤샘 대기 또는 장시간 대기로 인한 고객과 해당 팝업 주변 거주민의 불편을 해소<br>
-        매장 입성에 성공했음에도 재고 소진 등의 이유로 원하는 물품을 구하지 못하는 상황을 방지할 수 있도록 사전예약자에 한 해 굿즈를 선구매
-    </li>
-    <br>
-    <li>
-        예약 기능 없이 정보 제공을 목적으로 하는 유사 사이트와 달리, <strong>🏠ZIP_POP</strong>은 하나의 사이트에서 <storng>팝업스토어와 관련된 정보 파악뿐만 아니라 예약 및 굿즈 구매까지 가능하다는 차별점</strong>이 있다.
-    </li>
+        <li>
+            최근 화장품이나 의류를 넘어 드라마, 음악, 게임, 영화, 애니메이션 등 상관없이 각 업계에서 팝업스토어를 활용하고 있다. <br>
+            <strong>팝업스토어에서는 기존 매장과의 차별점을 두기 위해 한정판 굿즈를 판매</strong>하기 때문에, 
+            이를 구매하기 위해 <strong>장시간 대기하는 현상이 급증하는 추세</strong>다.
+        </li>
+        <br>
+        <li>
+            <strong>🏠ZIP_POP 이 제공하는 서비스</strong><br>
+            사전예약을 통해 기존의 팝업스토어 대기 시스템을 개선하고 밤샘 대기 또는 장시간 대기로 인한 고객과 해당 팝업 주변 거주민의 불편을 해소<br>
+            매장 입성에 성공했음에도 재고 소진 등의 이유로 원하는 물품을 구하지 못하는 상황을 방지할 수 있도록 사전예약자에 한 해 굿즈를 선구매
+        </li>
+        <br>
+        <li>
+            예약 기능 없이 정보 제공을 목적으로 하는 유사 사이트와 달리, <strong>🏠ZIP_POP</strong>은 하나의 사이트에서 <strong>팝업스토어와 관련된 정보 파악뿐만 아니라 예약 및 굿즈 구매까지 가능하다는 차별점</strong>이 있다.
+        </li>
     </ul>
 </details>
 
@@ -56,56 +56,55 @@
 
 <details>
 	<summary><b> 💡 프로젝트 배경</b></summary>
-    <div align="center">
-        <figure class="half"><img src="./docs/img/기사1.png" width=500, height=310></figure>
-        <a>https://news.mt.co.kr/mtview.php?no=2024051609573785999</a>
-        <p>대학원생 한지선씨(30)는 인기 유튜버 '침착맨'의 팝업스토어에 방문하기 위해 치열한 예약 경쟁을 뚫었다. 침착맨 팬 커뮤니티에서 예약 팁도 전수받았지만 "인기 상품이 모두 품절돼 아쉬워 아침 일찍 다시 방문해 볼까 생각 중이다"라고 말했다.</p>
-        <figure class="half"><img src="./docs/img/기사2.png" width=500, height=300></figure>
-        <a>https://www.donga.com/news/Economy/article/all/20231201/122446644/1</a>
-        <p>더현대서울은 2021년 2월 개점 후 2023년 11월 중순까지 약 460회의 팝업스토어를 운영했다. 이틀에 한 개꼴로 새로운 팝업스토어를 연 셈이다. <br>‘임시 매장’의 이미지였던 팝업스토어가 ‘한정판 전문 매장’으로 진화했다고 본다. 운영 기간 제한이라는 팝업스토어의 특징이 ‘이때 아니면 못 산다’는 인식을 주게 되었다.</p>
-    </div>
+    <ul>
+        <li>
+             <p>대학원생 한지선씨(30)는 인기 유튜버 '침착맨'의 팝업스토어에 방문하기 위해 치열한 예약 경쟁을 뚫었다. 침착맨 팬 커뮤니티에서 예약 팁도 전수받았지만 "인기 상품이 모두 품절돼 아쉬워 아침 일찍 다시 방문해 볼까 생각 중이다"라고 말했다.</p><br>
+            <div align="left">
+                <img src="./docs/img/기사1.png" width=500, height=310><br>
+                <a>https://news.mt.co.kr/mtview.php?no=2024051609573785999</a>
+            </div>
+        </li>
+        <br>
+        <li>
+            <p>더현대서울은 2021년 2월 개점 후 2023년 11월 중순까지 약 460회의 팝업스토어를 운영했다. 이틀에 한 개꼴로 새로운 팝업스토어를 연 셈이다. <br>‘임시 매장’의 이미지였던 팝업스토어가 ‘한정판 전문 매장’으로 진화했다고 본다. 운영 기간 제한이라는 팝업스토어의 특징이 ‘이때 아니면 못 산다’는 인식을 주게 되었다.</p><br>
+            <div align="left">
+                <img src="./docs/img/기사2.png" width=500, height=300><br>
+                <a>https://www.donga.com/news/Economy/article/all/20231201/122446644/1</a>
+            </div>
+        </li>
+    </ul>
 </details>
 
 <br>
 
+<details>
+	<summary><b> 🌱 프로젝트 v2 시작</b></summary>
+    <ul>
+        <li> 전 프로젝트는 끝났지만 미구현한 기능 및 프론트엔드가 미완성되어있었습니다.</li>
+        <br>
+        <li> 부실한 문서들을 개발문서들을 정리하고, GithubAction CICD를 추가해 시작했습니다.</li>
+        <br>
+        <li> 이에 리프레쉬 토큰 및 대기열을 추가한 프로젝트 v2를 개인으로 구성하고 시작했습니다.</li>
+        <br>
+    </ul>
+</details>
+
+<br>
 
 ## 💻 기술 스택
-<ul>
-    <li>
-        <strong>[Frontend] &nbsp;</strong><br>
-        <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
-        <img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white">
-        <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white">
-        <img alt="vuedotjs" src ="https://img.shields.io/badge/vue.js-4FC08D.svg?&style=for-the-badge&logo=vuedotjs&logoColor=white"/>
-        <img src="https://img.shields.io/badge/pinia-F99F1C?style=for-the-badge&logo=pinia&logoColor=white">
-    </li>
-    <li>
-        <strong>[Backend] &nbsp;</strong><br>
-        <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
-        <img src="https://img.shields.io/badge/springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
-        <img src="https://img.shields.io/badge/springjpa-6DB33F?style=for-the-badge&logo=spring&logoColor=white">
-    </li>
-    <li>
-        <strong>[DataBase] &nbsp;</strong><br>
-        <img src="https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white">
-        <img src="https://img.shields.io/badge/amazon s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white">
-    </li>
-    <li>
-        <strong>[Collaborations] &nbsp;</strong><br>
-        <img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=github&logoColor=white"/>
-        <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"/>
-        <img alt="Discord" src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white">
-    </li>
-    <li>
-        <strong>[CI/CD] &nbsp;</strong><br>
-        <img alt="AWS" src="https://img.shields.io/badge/AWS-232F3E.svg?style=for-the-badge&logo=amazonwebservices&logoColor=white">
-    </li>
-</ul>
+| **Category**       | **Skills**                                                                                                                                                                                                                                               |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Frontend**       | ![HTML5](https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=white) ![Vue.js](https://img.shields.io/badge/vue.js-4FC08D.svg?&style=for-the-badge&logo=vuedotjs&logoColor=white) ![Pinia](https://img.shields.io/badge/pinia-F99F1C?style=for-the-badge&logo=pinia&logoColor=white) |
+| **Backend**        | ![Spring Boot](https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white) ![Spring Security](https://img.shields.io/badge/springsecurity-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white) ![Spring JPA](https://img.shields.io/badge/springjpa-6DB33F?style=for-the-badge&logo=spring&logoColor=white) |
+| **Database**       | ![MariaDB](https://img.shields.io/badge/mariadb-003545?style=for-the-badge&logo=mariadb&logoColor=white) ![Amazon S3](https://img.shields.io/badge/amazon%20s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)                             |
+| **Collaboration**  | ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=github&logoColor=white) ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white) |
+| **CI/CD**          | ![AWS](https://img.shields.io/badge/AWS-232F3E.svg?style=for-the-badge&logo=amazonwebservices&logoColor=white)                                                                                                                                            |
 
 ## ⚙ ERD
 <div align="center">
     
 </div>
+
 <br>
 
 ## 🎡 Architecture
@@ -117,19 +116,21 @@
 
 ## 🗄️ v2 개발 문서 및 링크
 
+<br>
+
 ## 🗄️ v1 개발 문서 및 링크
-<ul>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%901.-%EC%B4%88%EA%B8%B0%EC%84%A4%EA%B3%84">📖 초기 설계</a></li>
-    <li> <a href="https://docs.google.com/spreadsheets/d/1Oy9dhMyVrUTMVNd5EqTX9RuNqQDUb2-Y/edit?usp=sharing&ouid=117935972514311680024&rtpof=true&sd=true">➰ 요구사항 정의서</a></li>
-    <li> <a href="https://jazzy-bumper-d95.notion.site/ZIPPOP-API-b8578829d1b140a6825b8880aa47e5ee">📃 API 명세서</a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%904.-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98">📡 아키텍처</a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%905.-%EA%B8%B0%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8">✔️ 기능 테스트 </a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%906-%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5-%EC%84%A4%EB%AA%85">🔎 핵심 기능 설명</a></li>
-    <li><a href="https://www.figma.com/design/Lsk0T0J6oH3GSzmzInUJPZ/%ED%99%94%EB%A9%B4%EC%84%A4%EA%B3%84%EC%84%9C?node-id=0-1&t=lKoGim9PCwtw4xTA-0">🌱 화면설계서</a></li>
-    <li><a href="https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%907.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81">🎥 프로젝트 시연 영상</a></li>
-    <li> <a href="https://github.com/mpqm/spring-service-zippop/wiki/4.-%EC%BD%94%EB%94%A9-%EC%BB%A8%EB%B2%A4%EC%85%98">🔗 코딩 컨벤션</a></li>
-    <li><a href="https://github.com/beyond-sw-camp/be06-1st-FIIIIIVE-ZIP_POP">📖 초기 설계 프로젝트 이동</a></li>
-    <li><a href="https://github.com/beyond-sw-camp/be06-2nd-FIIIIIVE-ZIP_POP">📖 백엔드 프로젝트 이동</a></li>
-    <li><a href="https://github.com/beyond-sw-camp/be06-3rd-FIIIIIVE-ZIP_POP">📖 프론트엔드 프로젝트 이동</a></li>
-</ul>
+| **문서**           | **링크**                                                                                                                                       |
+|------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 📖 초기 설계         | [초기 설계 문서](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%901.-%EC%B4%88%EA%B8%B0%EC%84%A4%EA%B3%84)                        |
+| ➰ 요구사항 정의서       | [요구사항 정의서](https://docs.google.com/spreadsheets/d/1Oy9dhMyVrUTMVNd5EqTX9RuNqQDUb2-Y/edit?usp=sharing&ouid=117935972514311680024&rtpof=true&sd=true) |
+| 📃 API 명세서       | [API 명세서](https://jazzy-bumper-d95.notion.site/ZIPPOP-API-b8578829d1b140a6825b8880aa47e5ee)                                                |
+| 📡 아키텍처          | [아키텍처 문서](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%904.-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)                          |
+| ✔️ 기능 테스트        | [기능 테스트](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%905.-%EA%B8%B0%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8)                   |
+| 🔎 핵심 기능 설명      | [핵심 기능 설명](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%906-%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5-%EC%84%A4%EB%AA%85)         |
+| 🌱 화면설계서         | [화면설계서](https://www.figma.com/design/Lsk0T0J6oH3GSzmzInUJPZ/%ED%99%94%EB%A9%B4%EC%84%A4%EA%B3%84%EC%84%9C?node-id=0-1&t=lKoGim9PCwtw4xTA-0)|
+| 🎥 프로젝트 시연 영상    | [프로젝트 시연 영상](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%907.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81) |
+| 🔗 코딩 컨벤션        | [코딩 컨벤션](https://github.com/mpqm/spring-service-zippop/wiki/%EC%BB%A8%EB%B2%A4%EC%85%98)                                                   |
+| 📖 초기 설계 프로젝트 링크 | [초기 설계 프로젝트 링크](https://github.com/beyond-sw-camp/be06-1st-FIIIIIVE-ZIP_POP)                                                      |
+| 📖 백엔드 프로젝트 링크   | [백엔드 프로젝트 링크](https://github.com/beyond-sw-camp/be06-2nd-FIIIIIVE-ZIP_POP)                                                          |
+| 📖 프론트엔드 프로젝트 링크 | [프론트엔드 프로젝트 링크](https://github.com/beyond-sw-camp/be06-3rd-FIIIIIVE-ZIP_POP)                                                    |
 
