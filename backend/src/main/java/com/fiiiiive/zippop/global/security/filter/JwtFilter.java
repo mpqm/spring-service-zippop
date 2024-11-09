@@ -36,7 +36,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-//            String token = authorization.split(" ")[1];
             String token = authorization;
             if(jwtUtil.isExpired(token)){
                 filterChain.doFilter(request, response);
@@ -45,7 +44,6 @@ public class JwtFilter extends OncePerRequestFilter {
             Long idx = jwtUtil.getIdx(token);
             String email = jwtUtil.getUsername(token);
             String role = jwtUtil.getRole(token);
-            log.info(idx + " " + email + " " + role);
             CustomUserDetails customUserDetails = new CustomUserDetails(idx, email, role);
             Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);

@@ -59,14 +59,14 @@ public class SecurityConfig {
         });
         http.logout((auth) ->
                 auth
-                        .logoutUrl("/api/v1/member/logout")
+                        .logoutUrl("/api/v1/auth/logout")
                         .deleteCookies("ATOKEN", "UTOKEN")
                         .logoutSuccessHandler(((request, response, authentication) -> {response.sendRedirect("http://localhost:8081/");}))
         );
         http.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
         http.addFilterBefore(new ExceptionFilter(), LoginFilter.class);
         LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager(authenticationConfiguration));
-        loginFilter.setFilterProcessesUrl("/api/v1/member/login");
+        loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

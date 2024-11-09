@@ -16,6 +16,7 @@ import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.auth.repository.EmailVerifyRepository;
 import com.fiiiiive.zippop.global.utils.MailUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -34,6 +36,7 @@ public class AuthService {
     private final CustomerRepository customerRepository;
     private final EmailVerifyRepository emailVerifyRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Transactional
     public PostSignupRes signup(PostSignupReq dto, String url) throws BaseException {
@@ -44,7 +47,7 @@ public class AuthService {
             Optional<Company> result = companyRepository.findByCompanyEmail(dto.getEmail());
             if(result.isPresent()){
                 Company company = result.get();
-                if(!company.getIsEmailAuth() && company.getIsInActive()) {
+                if(!company.getIsEmailAuth()) {
                     PostSignupRes postSignupRes = PostSignupRes.builder()
                             .idx(company.getIdx())
                             .email(company.getEmail())
@@ -88,7 +91,7 @@ public class AuthService {
             Optional<Customer> result = customerRepository.findByCustomerEmail(dto.getEmail());
             if(result.isPresent()){
                 Customer customer = result.get();
-                if(!customer.getIsEmailAuth() && customer.getIsInActive()){
+                if(!customer.getIsEmailAuth()) {
                     PostSignupRes postSignupRes = PostSignupRes.builder()
                             .idx(customer.getIdx())
                             .role(customer.getRole())
@@ -131,7 +134,9 @@ public class AuthService {
 
     @Transactional
     public void emailVerify(PostSignupRes dto) {
+        // Redis에 UUID와 이메일을 저장하고 TTL(Time-To-Live)을 설정 (예: 10분)
         String uuid = UUID.randomUUID().toString();
+        redisTemplate.opsForValue().set("emailVerify:" + dto.getEmail(), uuid, 3, TimeUnit.MINUTES);
         mailUtil.sendSignupEmail(uuid, dto);
         EmailVerify emailVerify = EmailVerify.builder()
                 .email(dto.getEmail())
@@ -143,9 +148,13 @@ public class AuthService {
     @Transactional
     public void activeMember(String email, String role, String uuid) throws BaseException {
         // EmailVerify 존재 여부 및 UUID 일치 확인
-        EmailVerify emailVerify = emailVerifyRepository.findByEmail(email)
-                .filter(verify -> verify.getUuid().equals(uuid))
-                .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL));
+        // EmailVerify emailVerify = emailVerifyRepository.findByEmail(email)
+        //        .filter(verify -> verify.getUuid().equals(uuid))
+        //        .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL));
+        String redisUuid = (String) redisTemplate.opsForValue().get("emailVerify:" + email);
+        if (redisUuid == null || !redisUuid.equals(uuid)) {
+            throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL);
+        }
         // 역할(role)에 따라 Company 또는 Customer 활성화
         if (Objects.equals(role, "ROLE_COMPANY")) {
             Company company = companyRepository.findByCompanyEmail(email)
@@ -160,6 +169,8 @@ public class AuthService {
             customer.setIsInActive(false);
             customerRepository.save(customer);
         }
+        // 인증 성공 후 Redis에서 해당 이메일 관련 UUID 삭제
+        redisTemplate.delete("emailVerify:" + email);
     }
 
     @Transactional
