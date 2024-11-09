@@ -1,5 +1,6 @@
-package com.fiiiiive.zippop.global.security.oauth2;
+package com.fiiiiive.zippop.global.security.filter;
 
+import com.fiiiiive.zippop.global.security.oauth2.CustomOauth2UserDetails;
 import com.fiiiiive.zippop.global.utils.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -25,7 +26,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Long idx = oAuth2Member.getIdx();
         String username = oAuth2Member.getUsername();
         String role = oAuth2Member.getCustomer().getRole();
-        String token = jwtUtil.createToken(idx, username, role);
+        String token = jwtUtil.createAccessToken(idx, username, role);
         log.info(idx + " " + role + " " + username);
         Cookie aToken = new Cookie("ATOKEN", token);
         aToken.setHttpOnly(true);

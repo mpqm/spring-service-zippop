@@ -78,7 +78,7 @@ public class ReserveService {
                 redisUtil.save(onDoingUUID, email, System.currentTimeMillis());
             }
              // accessToken 만들어줌
-            String token = jwtUtil.createToken(reserveIdx, email);
+            String token = jwtUtil.createReserveToken(reserveIdx, email);
             res.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
             Cookie aToken = new Cookie("ReserveToken", token);
             aToken.setHttpOnly(true);

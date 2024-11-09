@@ -30,21 +30,20 @@ public class CustomUserDetailService implements UserDetailsService {
                     .role(customer.getRole())
                     .isEmailAuth(customer.getIsEmailAuth())
                     .build();
+        }
+        Optional<Company> resultCompany = companyRepository.findByCompanyEmail(email);
+        if (resultCompany.isPresent()) {
+            Company company = resultCompany.get();
+            return CustomUserDetails.builder()
+                    .idx(company.getIdx())
+                    .name(company.getName())
+                    .email(company.getEmail())
+                    .password(company.getPassword())
+                    .role(company.getRole())
+                    .isEmailAuth(company.getIsEmailAuth())
+                    .build();
         } else {
-            Optional<Company> resultCompany = companyRepository.findByCompanyEmail(email);
-            if (resultCompany.isPresent()) {
-                Company company = resultCompany.get();
-                return CustomUserDetails.builder()
-                        .idx(company.getIdx())
-                        .name(company.getName())
-                        .email(company.getEmail())
-                        .password(company.getPassword())
-                        .role(company.getRole())
-                        .isEmailAuth(company.getIsEmailAuth())
-                        .build();
-            } else {
-                return null;
-            }
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
         }
     }
 }

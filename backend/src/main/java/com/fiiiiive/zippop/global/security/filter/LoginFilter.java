@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,12 +23,15 @@ import com.fiiiiive.zippop.auth.model.dto.PostLoginReq;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         PostLoginReq dto;
@@ -51,21 +55,44 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String email = member.getEmail();
         String name = member.getName();
         String role = member.getRole();
-        log.info(idx + " " + role + " " + email);
-        String aTokenString = jwtUtil.createToken(idx, email, role);
-        Cookie aToken = new Cookie("ATOKEN", aTokenString);
+        log.info(role);
+        // 새로운 accessToken, refreshToken 발급
+        String accessToken = jwtUtil.createAccessToken(idx, email, role);
+        String refreshToken = jwtUtil.createRefreshToken(email);
+
+        // Redis에 리프레시 토큰 저장
+        redisTemplate.opsForValue().set("refreshToken:" + email, refreshToken);
+
+        // accessToken, refreshToken, userToken 쿠키 설정
+        Cookie aToken = new Cookie("ATOKEN", accessToken);
         aToken.setHttpOnly(true);
         aToken.setSecure(true);
         aToken.setPath("/");
-        aToken.setMaxAge(60 * 60 * 1);
         response.addCookie(aToken);
-        String combinedValue = name + "|" + role;
-        log.info(combinedValue);
-        Cookie uToken = new Cookie("UTOKEN", combinedValue);
+
+        Cookie rToken = new Cookie("RTOKEN", refreshToken);
+        rToken.setHttpOnly(true);
+        rToken.setSecure(true);
+        rToken.setPath("/");
+        response.addCookie(rToken);
+
+        Cookie uToken = new Cookie("UTOKEN", name + "|" + role);
         uToken.setHttpOnly(false);
         uToken.setSecure(false);
         uToken.setPath("/");
-        uToken.setMaxAge(60 * 60 * 1); // 여기도 1시간으로 설정
+        uToken.setMaxAge(1000 * 60 * 60 * 1);
         response.addCookie(uToken);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().write(
+                "{"
+                        + "\"success\": true,"
+                        + "\"code\": 2030,"
+                        + "\"message\": \"로그인에 성공했습니다.\","
+                        + "\"result\": null"
+                + "}"
+        );
+        response.getWriter().flush();
     }
 }

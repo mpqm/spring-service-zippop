@@ -1,14 +1,13 @@
 package com.fiiiiive.zippop.global.config;
 
-import com.fiiiiive.zippop.global.security.filter.ExceptionFilter;
-import com.fiiiiive.zippop.global.security.filter.JwtFilter;
-import com.fiiiiive.zippop.global.security.filter.LoginFilter;
-import com.fiiiiive.zippop.global.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import com.fiiiiive.zippop.global.security.CustomUserDetailService;
+import com.fiiiiive.zippop.global.security.filter.*;
 import com.fiiiiive.zippop.global.security.oauth2.CustomOAuth2Service;
 import com.fiiiiive.zippop.global.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +28,12 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CustomOAuth2Service customOAuth2Service;
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final CustomLoginFailureHandler customLoginFailureHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomUserDetailService customUserDetailService;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Bean
     public CorsFilter corsFilter() {
@@ -46,27 +51,28 @@ public class SecurityConfig {
         http.csrf((auth) -> auth.disable());
         http.httpBasic((auth) -> auth.disable());
         http.sessionManagement((auth) -> auth.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.addFilter(corsFilter());
         http.authorizeHttpRequests((auth) ->
                         auth
 //                            .requestMatchers("/api/v1/test/**").authenticated()
-//                            .requestMatchers("/api/v1/member/**").permitAll()
-                                .anyRequest().permitAll()
+                            .requestMatchers("/api/v1/test/ex01").hasAuthority("ROLE_COMPANY") //RBAC 테스트
+                            .anyRequest().permitAll()
         );
         http.addFilter(corsFilter());
         http.oauth2Login((config) -> {
             config.successHandler(oAuth2AuthenticationSuccessHandler);
             config.userInfoEndpoint((endpoint) -> endpoint.userService(customOAuth2Service));
         });
-        http.logout((auth) ->
-                auth
-                        .logoutUrl("/api/v1/auth/logout")
-                        .deleteCookies("ATOKEN", "UTOKEN")
-                        .logoutSuccessHandler(((request, response, authentication) -> {response.sendRedirect("http://localhost:8081/");}))
+        http.logout((auth) -> auth
+                .logoutUrl("/api/v1/auth/logout")
+                .deleteCookies("JSESSIONID", "ATOKEN", "UTOKEN")
+                .logoutSuccessHandler(customLogoutSuccessHandler)
         );
-        http.addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
-        http.addFilterBefore(new ExceptionFilter(), LoginFilter.class);
-        LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager(authenticationConfiguration));
+        http.exceptionHandling(e ->e.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler));
+        http.addFilterBefore(new JwtFilter(jwtUtil, redisTemplate, customUserDetailService), LoginFilter.class);
+        LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager(authenticationConfiguration), redisTemplate);
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
+        loginFilter.setAuthenticationFailureHandler(customLoginFailureHandler);
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
