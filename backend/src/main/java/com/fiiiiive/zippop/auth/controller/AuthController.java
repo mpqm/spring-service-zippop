@@ -9,12 +9,14 @@ import com.fiiiiive.zippop.auth.model.dto.PostSignupReq;
 import com.fiiiiive.zippop.auth.model.dto.SearchProfileRes;
 import com.fiiiiive.zippop.auth.model.dto.PostSignupRes;
 import com.fiiiiive.zippop.auth.service.AuthService;
+import com.fiiiiive.zippop.global.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Tag(name = "auth-api", description = "Auth")
@@ -24,25 +26,24 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final CloudFileUpload cloudFileUpload;
 
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<PostSignupRes>> signup(
-    @RequestBody PostSignupReq dto) throws Exception {
-        PostSignupRes response = authService.signup(dto);
-        String uuid = authService.sendEmail(response);
-        authService.save(dto.getEmail(), uuid);
+        @RequestPart(name = "dto") PostSignupReq dto,
+        @RequestPart(name = "file") MultipartFile file) throws Exception {
+        String url = cloudFileUpload.upload(file);
+        PostSignupRes response = authService.signup(dto, url);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_REGISTER_SUCCESS, response));
     }
 
     @GetMapping("/verify")
     public ResponseEntity<BaseResponse> verify(
-        String email, String role, String uuid) throws Exception, BaseException {
-        if(authService.isExist(email, uuid)){
-            authService.activeMember(email, role);
-            return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EMAIL_VERIFY_SUCCESS));
-        } else {
-            return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL));
-        }
+        @RequestParam String email,
+        @RequestParam String role,
+        @RequestParam String uuid) throws Exception, BaseException {
+        authService.activeMember(email, role, uuid);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EMAIL_VERIFY_SUCCESS));
     }
 
     @GetMapping("/inactive")
@@ -71,7 +72,7 @@ public class AuthController {
     @GetMapping("/search-profile")
     public ResponseEntity<BaseResponse<SearchProfileRes>> getProfile(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException{
-        SearchProfileRes profile = authService.getProfile(customUserDetails);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_PROFILE_SUCCESS,profile));
+        SearchProfileRes response = authService.getProfile(customUserDetails);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_PROFILE_SUCCESS, response));
     }
 }

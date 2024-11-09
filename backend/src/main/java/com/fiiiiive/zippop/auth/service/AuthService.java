@@ -14,9 +14,9 @@ import com.fiiiiive.zippop.auth.model.entity.EmailVerify;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.auth.repository.EmailVerifyRepository;
+import com.fiiiiive.zippop.global.utils.MailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +29,14 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final JavaMailSender emailSender;
+    private final MailUtil mailUtil;
     private final CompanyRepository companyRepository;
     private final CustomerRepository customerRepository;
     private final EmailVerifyRepository emailVerifyRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public PostSignupRes signup(PostSignupReq dto) throws BaseException {
+    @Transactional
+    public PostSignupRes signup(PostSignupReq dto, String url) throws BaseException {
         if(dto.getCrn() != null && Objects.equals(dto.getRole(), "ROLE_COMPANY")){
             if(customerRepository.findByCustomerEmail(dto.getEmail()).isPresent()) {
                 throw new BaseException(BaseResponseMessage.MEMBER_REGISTER_FAIL_ALREADY_REGISTER_AS_CUSTOMER);
@@ -44,13 +45,15 @@ public class AuthService {
             if(result.isPresent()){
                 Company company = result.get();
                 if(!company.getIsEmailAuth() && company.getIsInActive()) {
-                    return PostSignupRes.builder()
+                    PostSignupRes postSignupRes = PostSignupRes.builder()
                             .idx(company.getIdx())
                             .email(company.getEmail())
                             .isEmailAuth(company.getIsEmailAuth())
                             .isInactive(company.getIsInActive())
                             .role(company.getRole())
                             .build();
+                    emailVerify(postSignupRes);
+                    return postSignupRes;
                 } else {
                     throw new BaseException(BaseResponseMessage.MEMBER_REGISTER_FAIL_ALREADY_EXIST);
                 }
@@ -65,15 +68,18 @@ public class AuthService {
                         .phoneNumber(dto.getPhoneNumber())
                         .isEmailAuth(false)
                         .isInActive(false)
+                        .profileImageUrl(url)
                         .build();
                 companyRepository.save(company);
-                return PostSignupRes.builder()
+                PostSignupRes postSignupRes = PostSignupRes.builder()
                         .idx(company.getIdx())
                         .role(dto.getRole())
                         .isEmailAuth(company.getIsEmailAuth())
                         .isInactive(company.getIsInActive())
                         .email(dto.getEmail())
                         .build();
+                emailVerify(postSignupRes);
+                return postSignupRes;
             }
         } else {
             if(companyRepository.findByCompanyEmail(dto.getEmail()).isPresent()) {
@@ -83,13 +89,15 @@ public class AuthService {
             if(result.isPresent()){
                 Customer customer = result.get();
                 if(!customer.getIsEmailAuth() && customer.getIsInActive()){
-                    return PostSignupRes.builder()
+                    PostSignupRes postSignupRes = PostSignupRes.builder()
                             .idx(customer.getIdx())
                             .role(customer.getRole())
                             .isEmailAuth(customer.getIsEmailAuth())
                             .isInactive(customer.getIsInActive())
                             .email(customer.getEmail())
                             .build();
+                    emailVerify(postSignupRes);
+                    return postSignupRes;
                 }
                 else {
                     throw new BaseException(BaseResponseMessage.MEMBER_REGISTER_FAIL_ALREADY_EXIST);
@@ -105,64 +113,53 @@ public class AuthService {
                         .point(3000)
                         .isEmailAuth(false)
                         .isInActive(false)
+                        .profileImageUrl(url)
                         .build();
                 customerRepository.save(customer);
-                return PostSignupRes.builder()
+                PostSignupRes postSignupRes = PostSignupRes.builder()
                         .idx(customer.getIdx())
                         .role(customer.getRole())
                         .isEmailAuth(customer.getIsEmailAuth())
                         .isInactive(customer.getIsInActive())
                         .email(customer.getEmail())
                         .build();
+                emailVerify(postSignupRes);
+                return postSignupRes;
             }
         }
     }
 
-    public void activeMember(String email, String role) throws BaseException {
-        if(Objects.equals(role, "ROLE_COMPANY")){
-            Optional<Company> result = companyRepository.findByCompanyEmail(email);
-            if(result.isPresent()){
-                Company company = result.get();
-                company.setIsEmailAuth(true);
-                company.setIsInActive(false);
-                companyRepository.save(company);
-            } else {
-                throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL);
-            }
-        } else {
-            Optional<Customer> result = customerRepository.findByCustomerEmail(email);
-            if(result.isPresent()) {
-                Customer customer = result.get();
-                customer.setIsEmailAuth(true);
-                customer.setIsInActive(false);
-                customerRepository.save(customer);
-            } else {
-                throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL);
-            }
-        }
-    }
-
-    public String sendEmail(PostSignupRes response) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(response.getEmail());
-        if(Objects.equals(response.getRole(), "ROLE_COMPANY")){
-            if(!response.getIsEmailAuth() && !response.getIsInactive()){
-                message.setSubject("ZIPPOP - 기업으로 가입하신걸 환영합니다.");
-            } else {
-                message.setSubject("ZIPPOP - 기업회원계정 복구 이메일");
-            }
-        }
-        else {
-            if(!response.getIsEmailAuth() && !response.getIsInactive()){
-                message.setSubject("ZIPPOP - 고객으로 가입하신걸 환영합니다.");
-            } else {
-                message.setSubject("ZIPPOP - 고객회원계정 복구 이메일");
-            }
-        }
+    @Transactional
+    public void emailVerify(PostSignupRes dto) {
         String uuid = UUID.randomUUID().toString();
-        message.setText("http://localhost:8080/api/v1/member/verify?email="+response.getEmail()+"&role="+response.getRole()+"&uuid="+uuid);
-        emailSender.send(message);
-        return uuid;
+        mailUtil.sendSignupEmail(uuid, dto);
+        EmailVerify emailVerify = EmailVerify.builder()
+                .email(dto.getEmail())
+                .uuid(uuid)
+                .build();
+        emailVerifyRepository.save(emailVerify);
+    };
+
+    @Transactional
+    public void activeMember(String email, String role, String uuid) throws BaseException {
+        // EmailVerify 존재 여부 및 UUID 일치 확인
+        EmailVerify emailVerify = emailVerifyRepository.findByEmail(email)
+                .filter(verify -> verify.getUuid().equals(uuid))
+                .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL));
+        // 역할(role)에 따라 Company 또는 Customer 활성화
+        if (Objects.equals(role, "ROLE_COMPANY")) {
+            Company company = companyRepository.findByCompanyEmail(email)
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL));
+            company.setIsEmailAuth(true);
+            company.setIsInActive(false);
+            companyRepository.save(company);
+        } else {
+            Customer customer = customerRepository.findByCustomerEmail(email)
+            .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL));
+            customer.setIsEmailAuth(true);
+            customer.setIsInActive(false);
+            customerRepository.save(customer);
+        }
     }
 
     @Transactional
@@ -197,23 +194,6 @@ public class AuthService {
                 throw new BaseException(BaseResponseMessage.MEMBER_INACTIVE_FAIL);
             }
         }
-    }
-
-    public Boolean isExist(String email, String uuid) throws BaseException {
-        Optional<EmailVerify> result = emailVerifyRepository.findByEmail(email);
-        if (result.isPresent()) {
-            EmailVerify emailVerify = result.get();
-            return emailVerify.getUuid().equals(uuid);
-        } else { throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL); }
-    }
-
-    @Transactional
-    public void save(String email, String uuid) throws BaseException{
-        EmailVerify emailVerify = EmailVerify.builder()
-                .email(email)
-                .uuid(uuid)
-                .build();
-        emailVerifyRepository.save(emailVerify);
     }
 
     @Transactional

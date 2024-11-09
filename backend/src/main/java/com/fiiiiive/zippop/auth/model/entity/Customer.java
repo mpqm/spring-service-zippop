@@ -33,6 +33,7 @@ public class Customer extends BaseEntity {
     private String role;
     private Boolean isEmailAuth;
     private Boolean isInActive;
+    private String profileImageUrl;
 
     // OneToMany
     @BatchSize(size=10)

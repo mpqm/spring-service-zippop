@@ -28,6 +28,7 @@ public class Company extends BaseEntity {
     private Boolean isEmailAuth;
     private Boolean isInActive;
     private String role;
+    private String profileImageUrl;
 
     // OneToMany
     @OneToMany(mappedBy = "company")
