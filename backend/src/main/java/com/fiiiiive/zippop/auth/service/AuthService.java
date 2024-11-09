@@ -10,14 +10,11 @@ import com.fiiiiive.zippop.auth.model.dto.EditPasswordReq;
 import com.fiiiiive.zippop.auth.model.dto.PostSignupReq;
 import com.fiiiiive.zippop.auth.model.dto.SearchProfileRes;
 import com.fiiiiive.zippop.auth.model.dto.PostSignupRes;
-import com.fiiiiive.zippop.auth.model.entity.EmailVerify;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
-import com.fiiiiive.zippop.auth.repository.EmailVerifyRepository;
 import com.fiiiiive.zippop.global.utils.MailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +31,6 @@ public class AuthService {
     private final MailUtil mailUtil;
     private final CompanyRepository companyRepository;
     private final CustomerRepository customerRepository;
-    private final EmailVerifyRepository emailVerifyRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -55,7 +51,7 @@ public class AuthService {
                             .isInactive(company.getIsInActive())
                             .role(company.getRole())
                             .build();
-                    emailVerify(postSignupRes);
+                    verifyEmail(postSignupRes);
                     return postSignupRes;
                 } else {
                     throw new BaseException(BaseResponseMessage.MEMBER_REGISTER_FAIL_ALREADY_EXIST);
@@ -81,7 +77,7 @@ public class AuthService {
                         .isInactive(company.getIsInActive())
                         .email(dto.getEmail())
                         .build();
-                emailVerify(postSignupRes);
+                verifyEmail(postSignupRes);
                 return postSignupRes;
             }
         } else {
@@ -99,7 +95,7 @@ public class AuthService {
                             .isInactive(customer.getIsInActive())
                             .email(customer.getEmail())
                             .build();
-                    emailVerify(postSignupRes);
+                    verifyEmail(postSignupRes);
                     return postSignupRes;
                 }
                 else {
@@ -126,23 +122,18 @@ public class AuthService {
                         .isInactive(customer.getIsInActive())
                         .email(customer.getEmail())
                         .build();
-                emailVerify(postSignupRes);
+                verifyEmail(postSignupRes);
                 return postSignupRes;
             }
         }
     }
 
     @Transactional
-    public void emailVerify(PostSignupRes dto) {
+    public void verifyEmail(PostSignupRes dto) {
         // Redis에 UUID와 이메일을 저장하고 TTL(Time-To-Live)을 설정 (예: 10분)
         String uuid = UUID.randomUUID().toString();
         redisTemplate.opsForValue().set("emailVerify:" + dto.getEmail(), uuid, 3, TimeUnit.MINUTES);
         mailUtil.sendSignupEmail(uuid, dto);
-        EmailVerify emailVerify = EmailVerify.builder()
-                .email(dto.getEmail())
-                .uuid(uuid)
-                .build();
-        emailVerifyRepository.save(emailVerify);
     };
 
     @Transactional
@@ -185,7 +176,6 @@ public class AuthService {
                 company.setIsEmailAuth(false);
                 company.setIsInActive(true);
                 companyRepository.save(company);
-                emailVerifyRepository.deleteByEmail(email);
             } else {
                 throw new BaseException(BaseResponseMessage.MEMBER_INACTIVE_FAIL);
             }
@@ -199,7 +189,6 @@ public class AuthService {
                     customerRepository.save(customer);
                 } else {
                     customerRepository.save(customer);
-                    emailVerifyRepository.deleteByEmail(email);
                 }
             } else {
                 throw new BaseException(BaseResponseMessage.MEMBER_INACTIVE_FAIL);
