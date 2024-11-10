@@ -137,14 +137,14 @@ public class AuthService {
     };
 
     @Transactional
-    public void activeMember(String email, String role, String uuid) throws BaseException {
+    public Boolean activeMember(String email, String role, String uuid) throws BaseException {
         // EmailVerify 존재 여부 및 UUID 일치 확인
         // EmailVerify emailVerify = emailVerifyRepository.findByEmail(email)
         //        .filter(verify -> verify.getUuid().equals(uuid))
         //        .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL));
         String redisUuid = (String) redisTemplate.opsForValue().get("emailVerify:" + email);
         if (redisUuid == null || !redisUuid.equals(uuid)) {
-            throw new BaseException(BaseResponseMessage.MEMBER_EMAIL_VERIFY_FAIL);
+            return false;
         }
         // 역할(role)에 따라 Company 또는 Customer 활성화
         if (Objects.equals(role, "ROLE_COMPANY")) {
@@ -162,6 +162,7 @@ public class AuthService {
         }
         // 인증 성공 후 Redis에서 해당 이메일 관련 UUID 삭제
         redisTemplate.delete("emailVerify:" + email);
+        return true;
     }
 
     @Transactional

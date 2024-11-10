@@ -2,12 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import MainPage from "@/pages/MainPage.vue";
 
-import CompanySignupComponent from "@/components/signup/CompanySignupComponent.vue";
-import CustomerSignupComponent from "@/components/signup/CustomerSignupComponent.vue";
 import CommunityPage from "@/pages/CommunityPage.vue";
-import LoginPage from "@/pages/LoginPage.vue";
 import PaymentPage from "@/pages/PaymentPage.vue";
-import SignupPage from "@/pages/SignupPage.vue";
 
 import PostAllComponent from "@/components/community/post-all/PostAllComponent.vue";
 import PostCreateComponent from "@/components/community/post-edit/PostCreateComponent.vue";
@@ -22,20 +18,18 @@ import ChargeListComponent from "@/components/companymypage/ChargeListComponent.
 import ProductRegisterComponent from "@/components/companymypage/ProductRegisterComponent.vue";
 import PopupRegisterComponent from "@/components/companymypage/PopupRegisterComponent.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
+import LoginPage from "@/pages/auth/LoginPage.vue";
+import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
+import CompanySignupPage from "@/pages/auth/CompanySignupPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component: MainPage },
     { path: "/login", component: LoginPage },
-    {
-      path: "/signup",
-      children: [
-        { path: "customer", component: CustomerSignupComponent },
-        { path: "company", component: CompanySignupComponent },
-      ],
-      component: SignupPage,
-    },
+    { path: "/signup/customer", component: CustomerSignupPage },
+    { path: "/signup/company", component: CompanySignupPage },
+
     { path: '/cart', component: CartComponent },
     {
       path: '/mypage',
@@ -67,7 +61,6 @@ const router = createRouter({
           path: "post-edit",
           children: [
             { path: "create", component: PostCreateComponent },
-            { path: "update/:postIdx", component: CustomerSignupComponent }
           ],
         }
       ],
