@@ -161,14 +161,14 @@
 
 
 <script>
-import { useMemberStore } from '@/stores/useMemberStore'; // Adjust the import path
+import { useAuthStore } from '@/stores/useAuthStore';
 import { mapStores } from 'pinia';
 
 export default {
   name: "HeaderComponent",
   props: ["userStatus"],
   computed: {
-    ...mapStores(useMemberStore)
+    ...mapStores(useAuthStore)
   },
   methods: {
     async handleLogout() {

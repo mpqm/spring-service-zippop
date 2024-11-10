@@ -60,7 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String newAccessToken = jwtUtil.createAccessToken(userDetails.getIdx(), userDetails.getEmail(), userDetails.getRole());
             String newRefreshToken = jwtUtil.createRefreshToken(userDetails.getEmail());
             redisTemplate.opsForValue().set("refreshToken:" + email, newRefreshToken);
-            setTokenCookie(response, "ATOEKN", newAccessToken);
+            setTokenCookie(response, "ATOKEN", newAccessToken);
             setTokenCookie(response, "RTOKEN", newRefreshToken);
         // Access Token이 유효한 경우
         } else {

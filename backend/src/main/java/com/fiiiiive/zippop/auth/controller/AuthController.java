@@ -13,10 +13,14 @@ import com.fiiiiive.zippop.global.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URI;
 
 
 @Tag(name = "auth-api", description = "Auth")
@@ -38,12 +42,16 @@ public class AuthController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<BaseResponse> verify(
+    public ResponseEntity<Void> verify(
         @RequestParam String email,
         @RequestParam String role,
         @RequestParam String uuid) throws Exception, BaseException {
-        authService.activeMember(email, role, uuid);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EMAIL_VERIFY_SUCCESS));
+        Boolean flag = authService.activeMember(email, role, uuid);
+        if(flag){
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://localhost:8081/login?success=true")).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://localhost:8081/login?error=true")).build();
+        }
     }
 
     @GetMapping("/inactive")

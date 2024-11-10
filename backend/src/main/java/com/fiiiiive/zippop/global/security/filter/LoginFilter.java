@@ -53,9 +53,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomUserDetails member = (CustomUserDetails)authResult.getPrincipal();
         Long idx = member.getIdx();
         String email = member.getEmail();
-        String name = member.getName();
         String role = member.getRole();
-        log.info(role);
+
         // 새로운 accessToken, refreshToken 발급
         String accessToken = jwtUtil.createAccessToken(idx, email, role);
         String refreshToken = jwtUtil.createRefreshToken(email);
@@ -75,13 +74,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         rToken.setSecure(true);
         rToken.setPath("/");
         response.addCookie(rToken);
-
-        Cookie uToken = new Cookie("UTOKEN", name + "|" + role);
-        uToken.setHttpOnly(false);
-        uToken.setSecure(false);
-        uToken.setPath("/");
-        uToken.setMaxAge(1000 * 60 * 60 * 1);
-        response.addCookie(uToken);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");
