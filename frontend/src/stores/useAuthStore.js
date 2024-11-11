@@ -3,7 +3,15 @@ import axios from "axios";
 import { backend } from "@/const";
 
 export const useAuthStore = defineStore("auth", {
-    state: () => ({ isLoggedIn: false }),
+    state: () => ({ 
+        userInfo: {
+            email: '',
+            name: '',
+            role: '',
+            profileImage: '',
+        },
+        isLoggedIn: false 
+    }),
     persist: { storage: sessionStorage, },
     actions: {
         async signup(req) {
@@ -18,25 +26,45 @@ export const useAuthStore = defineStore("auth", {
             }
         },
         async login(req) {
-            const request_url = backend + "/auth/login"
-            console.log(request_url)
-            let response = await axios.post("/api/api/v1" + "/auth/login", req);
-            if (response.status === 200) {
+            try{
+                const res = await axios.post(
+                    `${backend}/auth/login`, req,
+                    { headers: { 'Content-Type': 'application/json' }, }
+                );
                 this.isLoggedIn = true;
-                return true;
-            } else {
-                return false;
+                await this.getInfo()
+                return res.data;
+            } catch (error) {
+                this.isLoggedIn = false;
+                return error.response.data
             }
         },
         async logout() {
-            let response = await axios.post(backend + "/auth/logout");
-            console.log(response);
-            if (response.status === 200) {
+            try {
+                const res = await axios.post(backend + "/auth/logout");
+                this.userInfo.email = null;
+                this.userInfo.name = null;
+                this.userInfo.role = null;
+                this.userInfo.profileImage = null;
                 this.isLoggedIn = false;
-                return true;
-            } else {
-                return false;
+                return res.data;
+            } catch (error) {
+                return error.response.data   
             }
         },
+        async getInfo() {
+            try{
+                const res = await axios.get(
+                    `${backend}/auth/get-info`, 
+                    { 
+                        headers: { 'Content-Type': 'application/json', },
+                        withCredentials: true
+                    }
+                );
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        }
     },
 });

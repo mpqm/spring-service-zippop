@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import MainPage from "@/pages/MainPage.vue";
 
 import CommunityPage from "@/pages/CommunityPage.vue";
 import PaymentPage from "@/pages/PaymentPage.vue";
@@ -21,11 +20,12 @@ import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
 import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
 import CompanySignupPage from "@/pages/auth/CompanySignupPage.vue";
+import StoreMainPage from "@/pages/store/StoreMainPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", component: MainPage },
+    { path: "/", component: StoreMainPage },
     { path: "/login", component: LoginPage },
     { path: "/signup/customer", component: CustomerSignupPage },
     { path: "/signup/company", component: CompanySignupPage },

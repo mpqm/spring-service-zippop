@@ -56,6 +56,7 @@ public class StoreService {
                 .content(dto.getStoreContent())
                 .address(dto.getStoreAddress())
                 .category(dto.getCategory())
+                .totalPeople(dto.getTotalPeople())
                 .startDate(dto.getStoreStartDate())
                 .endDate(dto.getStoreEndDate())
                 .likeCount(0)
@@ -176,10 +177,18 @@ public class StoreService {
     }
     
     // 기업 사용자가 등록한 팝업 스토어 조회
-    public Page<SearchStoreRes> searchAllAsCompany(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
+    public Page<SearchStoreRes> searchAllAsCompany(CustomUserDetails customUserDetails, String keyword, int page, int size) throws BaseException {
         // 예외: 기업 사용자 이메일로 조회된 팝업 스토어가 없을때,
-        Page<Store> result = storeRepository.findByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size))
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
+        Page<Store> result = null;
+        if(keyword != null) {
+            result = storeRepository.findByKeywordAndCompanyEmail(customUserDetails.getEmail(), keyword, PageRequest.of(page, size));
+        } else {
+            result = storeRepository.findByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size));
+        }
+        // 예외: 값이 없다면
+        if (!result.hasContent()) {
+            throw new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST);
+        }
         Page<SearchStoreRes> searchStoreResPage = result.map(store -> {
             List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
             for (StoreImage storeImage : store.getStoreImageList()) {
@@ -209,13 +218,11 @@ public class StoreService {
     }
     
     // 팝업 스토어 목록 조회 (page)
-    public Page<SearchStoreRes> searchAllAsGuest(String keyword, LocalDateTime startDate, LocalDateTime endDate, int page, int size) throws BaseException {
+    public Page<SearchStoreRes> searchAllAsGuest(String keyword, int page, int size) throws BaseException {
 
         Page<Store> result = null;
         if(keyword != null) {
             result = storeRepository.findByKeyword(keyword, PageRequest.of(page, size));
-        } else if(startDate != null && endDate != null){
-            result = storeRepository.findByStoreDateRange(startDate, endDate, PageRequest.of(page, size));
         } else {
             result = storeRepository.findAll(PageRequest.of(page, size));
         }

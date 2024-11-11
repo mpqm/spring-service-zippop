@@ -51,20 +51,23 @@ public class StoreController {
     }
     
     // 팝업 스토어 목록 조건 조회
-    @GetMapping("/search-all")
+    @GetMapping("/search-all/as-guest")
+    public ResponseEntity<BaseResponse<Page<SearchStoreRes>>> searchAll(
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false, defaultValue = "0") int page,
+        @RequestParam(required = false, defaultValue = "10") int size ) throws BaseException {
+        Page<SearchStoreRes> response = storeService.searchAllAsGuest(keyword, page, size);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, response));
+    }
+
+    // 팝업 스토어 목록 조건 조회(기업)
+    @GetMapping("/search-all/as-company")
     public ResponseEntity<BaseResponse<Page<SearchStoreRes>>> searchAll(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam(required = false) String keyword,
-        @RequestParam(required = false) LocalDateTime startDate,
-        @RequestParam(required = false) LocalDateTime endDate,
         @RequestParam(required = false, defaultValue = "0") int page,
         @RequestParam(required = false, defaultValue = "10") int size ) throws BaseException {
-        Page<SearchStoreRes> response = null;
-        if(customUserDetails != null && Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
-            response = storeService.searchAllAsCompany(customUserDetails, page, size);
-        } else if (customUserDetails == null){
-            response = storeService.searchAllAsGuest(keyword, startDate, endDate, page, size);
-        }
+        Page<SearchStoreRes> response = storeService.searchAllAsCompany(customUserDetails, keyword, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, response));
     }
 

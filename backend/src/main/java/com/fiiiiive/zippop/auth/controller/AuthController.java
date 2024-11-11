@@ -6,14 +6,13 @@ import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.auth.model.dto.EditInfoReq;
 import com.fiiiiive.zippop.auth.model.dto.EditPasswordReq;
 import com.fiiiiive.zippop.auth.model.dto.PostSignupReq;
-import com.fiiiiive.zippop.auth.model.dto.SearchProfileRes;
+import com.fiiiiive.zippop.auth.model.dto.GetInfoRes;
 import com.fiiiiive.zippop.auth.model.dto.PostSignupRes;
 import com.fiiiiive.zippop.auth.service.AuthService;
 import com.fiiiiive.zippop.global.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -77,10 +76,10 @@ public class AuthController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EDIT_PASSWORD_SUCCESS));
     }
 
-    @GetMapping("/search-profile")
-    public ResponseEntity<BaseResponse<SearchProfileRes>> getProfile(
+    @GetMapping("/get-info")
+    public ResponseEntity<BaseResponse<GetInfoRes>> getInfo(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException{
-        SearchProfileRes response = authService.getProfile(customUserDetails);
+        GetInfoRes response = authService.getInfo(customUserDetails);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_PROFILE_SUCCESS, response));
     }
 }
