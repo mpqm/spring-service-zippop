@@ -6,7 +6,7 @@
 
 <script>
 import PopupItemComponent from './PopupItemComponent.vue';
-import { usePopupStore } from '@/stores/usePopupStore';
+import { usePopupStore } from '@/stores/useStoreStore';
 import { mapStores } from 'pinia';
 export default {
   name: "PostListComponent",

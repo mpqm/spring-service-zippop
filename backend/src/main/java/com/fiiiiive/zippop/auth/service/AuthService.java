@@ -8,7 +8,7 @@ import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.auth.model.dto.EditInfoReq;
 import com.fiiiiive.zippop.auth.model.dto.EditPasswordReq;
 import com.fiiiiive.zippop.auth.model.dto.PostSignupReq;
-import com.fiiiiive.zippop.auth.model.dto.SearchProfileRes;
+import com.fiiiiive.zippop.auth.model.dto.GetInfoRes;
 import com.fiiiiive.zippop.auth.model.dto.PostSignupRes;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
@@ -260,13 +260,15 @@ public class AuthService {
         }
     }
 
-    public SearchProfileRes getProfile(CustomUserDetails customUserDetails) throws BaseException {
+    public GetInfoRes getInfo(CustomUserDetails customUserDetails) throws BaseException {
         if(Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx())
             .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_PROFILE_FAIL));
-            return SearchProfileRes.builder()
+            return GetInfoRes.builder()
                     .name(customer.getName())
                     .point(customer.getPoint())
+                    .role(customer.getRole())
+                    .profileImageUrl(customer.getProfileImageUrl())
                     .email(customer.getEmail())
                     .phoneNumber(customer.getPhoneNumber())
                     .address(customer.getAddress())
@@ -274,10 +276,11 @@ public class AuthService {
         } else{
             Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx())
             .orElseThrow(() -> new BaseException(BaseResponseMessage.MEMBER_PROFILE_FAIL));
-            return SearchProfileRes.builder()
+            return GetInfoRes.builder()
                     .name(company.getName())
                     .crn(company.getCrn())
                     .email(company.getEmail())
+                    .role(company.getRole())
                     .phoneNumber(company.getPhoneNumber())
                     .address(company.getAddress())
                     .build();

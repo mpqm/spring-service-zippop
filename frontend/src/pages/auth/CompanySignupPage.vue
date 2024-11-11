@@ -3,8 +3,12 @@
     <HeaderComponent></HeaderComponent>
     <div class="signup-page">
         <div class="signup-container">
+            <img class="logo-img" src="../../assets/img/zippopbanner.png">
+            <div class="set-user">
+                <a class="customer" href="/signup/customer">고객 가입</a>
+                <div class="company"> 기업 가입</div>
+            </div>
             <form class="signup-form" @submit.prevent="signup">
-                <img class="logo-img" src="../../assets/img/zippopbanner.png">
                 <div>
                     <label>이메일</label>
                     <input class="signup-input" v-model="email" type="email" placeholder="ex) example@example.com"/>
@@ -121,7 +125,7 @@ const signup = async () => {
 <style scoped>
 .signup-page {
     padding: 3rem 0;
-    background-color: #fafafa;
+    background-color: #fff;
 }
 
 .signup-container {
@@ -137,18 +141,19 @@ const signup = async () => {
     margin: 0 auto;
     border: 1px solid #f2f2f2;
     border-radius: 8px;
-    box-shadow: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .signup-form {
     display: flex;
-    margin-top: 0em;
     unicode-bidi: isolate;
+    width: 100%;
     flex-wrap: wrap;
     flex-direction: column;
     justify-content: center;
     row-gap: 1rem;
 }
+
 
 .signup-btn {
     display: inline-block;
@@ -209,6 +214,7 @@ const signup = async () => {
     font-size: 1rem;
     line-height: 1.5;
     border-radius: 0.25rem;
+    box-sizing: border-box;
 }
 
 .signup-btn:hover, .file-upload-btn:hover {
@@ -227,18 +233,17 @@ const signup = async () => {
 }
 
 .signup-input {
-    padding: 1rem;
     border: 1px solid #e1e1e1;
     border-radius: 4px;
     display: block;
-    padding: 0.6875rem 1rem;
+    padding: 1rem;
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    width: 100%;
+    width: 100%; 
+    box-sizing: border-box;
     color: #323232;
     background-color: #fff;
-    background-clip: padding-box;
 }
 
 .logo-img {
@@ -263,5 +268,54 @@ const signup = async () => {
     display: flex;
     column-gap: 10px;
     flex-direction: row;
+}
+
+.set-user {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-self: center;
+    width: auto;
+    margin-bottom: 12px;
+    
+    background-color: #fff;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    column-gap: 10px;
+}
+
+.customer {
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+    font-weight: 600;
+    line-height: 26px;
+    font-size: 1rem;
+    color: black;
+    text-decoration: none;
+}
+
+.company {
+    background-color: #00c7ae;
+    border-radius: 8px;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    display: flex;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    font-weight: 600;
+    line-height: 26px;
+    font-size: 1rem;
 }
 </style>

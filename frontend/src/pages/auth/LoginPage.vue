@@ -59,7 +59,7 @@ const login = async () => {
         email: email.value,
         password: password.value,
     }
-    const res = await authStore.login(req.value);
+    const res = await authStore.login(req);
     if (res.success) {
         router.push("/");
         toast.success("로그인에 성공했습니다.")
@@ -72,7 +72,7 @@ const login = async () => {
 <style scoped>
 .login-page {
     padding: 3rem 0;
-    background-color: #fafafa;
+    background-color: #fff;
 }
 
 .login-container {
@@ -88,7 +88,7 @@ const login = async () => {
     margin: 0 auto;
     border: 1px solid #f2f2f2;
     border-radius: 8px;
-    box-shadow: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .login-form {
@@ -119,6 +119,8 @@ const login = async () => {
     font-size: 1rem;
     line-height: 1.5;
     border-radius: 0.25rem;
+    text-decoration: none;
+    box-sizing: border-box;
 }
 
 .kakao-login-btn {
@@ -140,6 +142,7 @@ const login = async () => {
     font-size: 1rem;
     line-height: 1.5;
     border-radius: 0.25rem;
+    text-decoration: none;
 }
 
 .login-btn:hover, .kakao-login-btn:hover {
@@ -159,6 +162,7 @@ const login = async () => {
     color: #323232;
     background-color: #fff;
     background-clip: padding-box;
+    box-sizing: border-box;
 }
 
 .logo-img {

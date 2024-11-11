@@ -97,7 +97,7 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { usePopupStore } from '@/stores/usePopupStore';
+import { useStoreStore } from '@/stores/useStoreStore';
 export default {
   name: "PopupRegisterComponent",
   data() {
@@ -113,7 +113,7 @@ export default {
     };
   },
   computed: {
-    ...mapStores(usePopupStore)
+    ...mapStores(useStoreStore)
   },
   methods: {
     async register() {

@@ -1,5 +1,5 @@
 <template>
-  <h2 data-v-713cd9e8="" class="hero-text">여러가지 팝업 정보를 단 한 곳에서</h2>
+  <h2 class="hero-text">여러가지 팝업 정보를 단 한 곳에서</h2>
   <div data-v-71844fb9="" data-v-713cd9e8="" class="observer-container">
     <div data-v-607addbc="" data-v-713cd9e8="" class="service-search-container container" data-observe="search"
       data-v-71844fb9="" id="search">
@@ -32,4 +32,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.hero-text {
+  
+}
+
+</style>
