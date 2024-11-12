@@ -2,7 +2,15 @@ package com.fiiiiive.zippop.store.repository;
 
 import com.fiiiiive.zippop.store.model.entity.StoreImage;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface StoreImageRepository extends JpaRepository<StoreImage, Long> { }
+public interface StoreImageRepository extends JpaRepository<StoreImage, Long> {
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM StoreImage si WHERE si.store.idx = :storeIdx")
+    void deleteAllByStoreIdx(Long storeIdx);
+}

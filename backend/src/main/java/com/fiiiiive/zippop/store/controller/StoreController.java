@@ -33,8 +33,8 @@ public class StoreController {
     @PostMapping("/register")
     public ResponseEntity<BaseResponse> register(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestPart("files") MultipartFile[] files,
-        @RequestPart("dto") CreateStoreReq dto) throws BaseException {
+        @RequestPart(name = "files", required = false) MultipartFile[] files,
+        @RequestPart(name = "dto") CreateStoreReq dto) throws BaseException {
         List<String> fileNames = cloudFileUpload.multipleUpload(files);
         CreateStoreRes response = storeService.register(customUserDetails, dto, fileNames);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_REGISTER_SUCCESS, response));
@@ -77,7 +77,7 @@ public class StoreController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long storeIdx,
         @RequestPart(name = "dto") UpdateStoreReq dto,
-        @RequestPart(name = "files") MultipartFile[] files) throws BaseException {
+        @RequestPart(name = "files", required = false) MultipartFile[] files) throws BaseException {
         List<String> fileNames = cloudFileUpload.multipleUpload(files);
         UpdateStoreRes response = storeService.update(customUserDetails, storeIdx, dto, fileNames);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_UPDATE_SUCCESS,response));

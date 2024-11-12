@@ -8,7 +8,7 @@ export const useAuthStore = defineStore("auth", {
             email: '',
             name: '',
             role: '',
-            profileImage: '',
+            profileImageUrl: '',
         },
         isLoggedIn: false 
     }),
@@ -61,6 +61,10 @@ export const useAuthStore = defineStore("auth", {
                         withCredentials: true
                     }
                 );
+                this.userInfo.email = res.data.result.email;
+                this.userInfo.name = res.data.result.name;
+                this.userInfo.role = res.data.result.role;
+                this.userInfo.profileImageUrl = res.data.result.profileImageUrl;
                 return res.data
             } catch (error) {
                 return error.response.data

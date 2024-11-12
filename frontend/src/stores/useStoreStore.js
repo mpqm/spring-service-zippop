@@ -7,27 +7,35 @@ import { backend } from "@/const";
 export const useStoreStore = defineStore("store", {
   state: () => ({
     storeList: [],
+    store: {},
     totalElements: null,
     totalPages: null,
   }),
   persist: { storage: sessionStorage, },
   actions: {
-    async register(formData) {
+    async register(req) {
       try {
-        let response = await axios.post(
-          backend + "/popup-store/register",
-          formData,
+        const res = await axios.post(
+          `${backend}/store/register`, req,
           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            headers: { "Content-Type": "multipart/form-data", },
+            withCredentials: true
           },
-          { withCredentials: true }
         );
-        console.log(response);
+        return res.data
       } catch (error) {
-        console.error("Error", error);
-        return false;
+        return error.response.data;
+      }
+    },
+    async search(storeIdx) {
+      try {
+        const res = await axios.get(
+          `${backend}/store/search?storeIdx=${storeIdx}`
+        );
+        this.store = res.data.result;
+        return res.data;
+      } catch (error) {
+        return error.response.data;
       }
     },
     async searchAll(page, size) {
@@ -56,5 +64,58 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+    async searchAllAsCompany(page, size) {
+      try {
+        const res = await axios.get(
+          `${backend}/store/search-all/as-company?page=${page}&size=${size}`,
+          { withCredentials: true },
+        );
+        this.storeList = res.data.result.content;
+        this.totalElements = res.data.result.totalElements;
+        this.totalPages = res.data.result.totalPages;
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }
+    },
+    async searchAllByKeywordAsCompany(keyword, page, size) {
+      try {
+        const res = await axios.get(
+          `${backend}/store/search-all/as-company?keyword=${keyword}&page=${page}&size=${size}`,
+          { withCredentials: true },
+        );
+        this.storeList = res.data.result.content;
+        this.totalElements = res.data.result.totalElements;
+        this.totalPages = res.data.result.totalPages;
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }
+    },
+    async update(storeIdx, req) {
+      try {
+        const res = await axios.patch(
+          `${backend}/store/update?storeIdx=${storeIdx}`, req,
+          {
+            headers: { "Content-Type": "multipart/form-data", },
+            withCredentials: true
+          },
+        );
+        return res.data
+      } catch (error) {
+        return error.response.data;
+      }
+    },
+    async delete(storeIdx) {
+      try {
+        const res = await axios.delete(
+          `${backend}/store/delete?storeIdx=${storeIdx}`,
+          { withCredentials: true },
+        );
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }
+    }
   },
 });

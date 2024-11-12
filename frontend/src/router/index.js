@@ -12,15 +12,17 @@ import MypageMainComponent from "@/components/customermypage/MypageMainComponent
 import PopupGoodsComponent from "@/components/customermypage/PopupGoodsComponent.vue";
 import EditProfileComponent from "@/components/customermypage/EditProfileComponent.vue";
 import MyReviewsComponent from "@/components/customermypage/MyReviewsComponent.vue";
-import CompanyMypageMainComponent from "@/components/companymypage/CompanyMypageMainComponent.vue";
 import ChargeListComponent from "@/components/companymypage/ChargeListComponent.vue";
-import ProductRegisterComponent from "@/components/companymypage/ProductRegisterComponent.vue";
-import PopupRegisterComponent from "@/components/companymypage/PopupRegisterComponent.vue";
+import StoreRegisterPage from "@/pages/company/StoreRegisterPage.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
 import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
 import CompanySignupPage from "@/pages/auth/CompanySignupPage.vue";
 import StoreMainPage from "@/pages/store/StoreMainPage.vue";
+import CompanyMyPage from "@/pages/company/CompanyMyPage.vue";
+import StoreManagementPage from "@/pages/company/StoreManagementPage.vue";
+import ProductRegisterPage from "@/pages/ProductRegisterPage.vue";
+import StoreUpdatePage from "@/pages/company/StoreUpdatePage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -29,10 +31,21 @@ const router = createRouter({
     { path: "/login", component: LoginPage },
     { path: "/signup/customer", component: CustomerSignupPage },
     { path: "/signup/company", component: CompanySignupPage },
-
+    {
+      path: '/mypage/company',
+      component: CompanyMyPage ,
+      children: [
+        { path: 'goods', component: ProductRegisterPage },
+        { path: 'store', component: StoreManagementPage },
+        { path: 'store/register', component: StoreRegisterPage },
+        { path: 'store/update/:storeIdx', component: StoreUpdatePage },
+        { path: 'charge', component: ChargeListComponent },
+        { path: 'account-edit', component: EditProfileComponent },
+      ]
+    },
     { path: '/cart', component: CartComponent },
     {
-      path: '/mypage',
+      path: '/mypage/customer',
       component: MypageMainComponent,
       children: [
         { path: 'popup', component: PopupGoodsComponent },
@@ -40,16 +53,7 @@ const router = createRouter({
         { path: 'reviews', component: MyReviewsComponent }
       ]
     },
-    {
-      path: '/managermypage',
-      component: CompanyMypageMainComponent,
-      children: [
-        { path: 'charge', component: ChargeListComponent },
-        { path: 'goods', component: ProductRegisterComponent },
-        { path: 'account-edit', component: EditProfileComponent },
-        { path: 'popup-register', component: PopupRegisterComponent }
-      ]
-    },
+
     { path: '/chats', component: MainChatComponent },
    
     { path: "/payment", component: PaymentPage },
