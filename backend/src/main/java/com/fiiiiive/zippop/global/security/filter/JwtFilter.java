@@ -62,6 +62,9 @@ public class JwtFilter extends OncePerRequestFilter {
             redisTemplate.opsForValue().set("refreshToken:" + email, newRefreshToken);
             setTokenCookie(response, "ATOKEN", newAccessToken);
             setTokenCookie(response, "RTOKEN", newRefreshToken);
+            // 새로운 Access Token을 기반으로 인증 정보 설정
+            Authentication authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         // Access Token이 유효한 경우
         } else {
             try {
@@ -71,11 +74,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 CustomUserDetails customUserDetails = new CustomUserDetails(idx, email, role);
                 Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                filterChain.doFilter(request, response);
             } catch (ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException | UsernameNotFoundException e) {
                 request.setAttribute("exception", e);
             }
         }
+        filterChain.doFilter(request, response);
     }
 
     // 쿠키 설정

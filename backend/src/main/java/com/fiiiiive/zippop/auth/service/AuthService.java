@@ -282,6 +282,7 @@ public class AuthService {
                     .email(company.getEmail())
                     .role(company.getRole())
                     .phoneNumber(company.getPhoneNumber())
+                    .profileImageUrl(company.getProfileImageUrl())
                     .address(company.getAddress())
                     .build();
         }

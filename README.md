@@ -100,14 +100,9 @@
 | **Collaboration**  | ![GitHub](https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=github&logoColor=white) ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white) |
 | **CI/CD**          | ![AWS](https://img.shields.io/badge/AWS-232F3E.svg?style=for-the-badge&logo=amazonwebservices&logoColor=white)                                                                                                                                            |
 
-## ⚙ ERD
-<div align="center">
-    
-</div>
-
 <br>
 
-## 🎡 Architecture
+## 🎡 ERD & Architecture
 <div align="center">
     
 </div>
@@ -115,22 +110,20 @@
 <br>
 
 ## 🗄️ v2 개발 문서 및 링크
-
-<br>
-
-## 🗄️ v1 개발 문서 및 링크
-| **문서**           | **링크**                                                                                                                                       |
-|------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| 📖 초기 설계         | [초기 설계 문서](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%901.-%EC%B4%88%EA%B8%B0%EC%84%A4%EA%B3%84)                        |
-| ➰ 요구사항 정의서       | [요구사항 정의서](https://docs.google.com/spreadsheets/d/1Oy9dhMyVrUTMVNd5EqTX9RuNqQDUb2-Y/edit?usp=sharing&ouid=117935972514311680024&rtpof=true&sd=true) |
-| 📃 API 명세서       | [API 명세서](https://jazzy-bumper-d95.notion.site/ZIPPOP-API-b8578829d1b140a6825b8880aa47e5ee)                                                |
-| 📡 아키텍처          | [아키텍처 문서](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%904.-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)                          |
-| ✔️ 기능 테스트        | [기능 테스트](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%905.-%EA%B8%B0%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8)                   |
-| 🔎 핵심 기능 설명      | [핵심 기능 설명](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%906-%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5-%EC%84%A4%EB%AA%85)         |
-| 🌱 화면설계서         | [화면설계서](https://www.figma.com/design/Lsk0T0J6oH3GSzmzInUJPZ/%ED%99%94%EB%A9%B4%EC%84%A4%EA%B3%84%EC%84%9C?node-id=0-1&t=lKoGim9PCwtw4xTA-0)|
-| 🎥 프로젝트 시연 영상    | [프로젝트 시연 영상](https://github.com/mpqm/spring-service-zippop/wiki/v1%E2%80%907.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81) |
-| 🔗 코딩 컨벤션        | [코딩 컨벤션](https://github.com/mpqm/spring-service-zippop/wiki/%EC%BB%A8%EB%B2%A4%EC%85%98)                                                   |
-| 📖 초기 설계 프로젝트 링크 | [초기 설계 프로젝트 링크](https://github.com/beyond-sw-camp/be06-1st-FIIIIIVE-ZIP_POP)                                                      |
-| 📖 백엔드 프로젝트 링크   | [백엔드 프로젝트 링크](https://github.com/beyond-sw-camp/be06-2nd-FIIIIIVE-ZIP_POP)                                                          |
-| 📖 프론트엔드 프로젝트 링크 | [프론트엔드 프로젝트 링크](https://github.com/beyond-sw-camp/be06-3rd-FIIIIIVE-ZIP_POP)                                                    |
+| **문서**              | **링크**                                                                                                                                                              |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 🎡 ERD & 아키텍처       | [ERD & 아키텍처 ](https://github.com/mpqm/spring-service-zippop/wiki/v2%E2%80%901.-ERD-&-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98)                                                    |
+| ➰ 요구사항 정의서          | [요구사항 정의서](https://docs.google.com/spreadsheets/d/1Oy9dhMyVrUTMVNd5EqTX9RuNqQDUb2-Y/edit?usp=sharing&ouid=117935972514311680024&rtpof=true&sd=true)                 |
+| 📃 백엔드 API 명세서      | [백엔드 API 명세서](https://jazzy-bumper-d95.notion.site/ZIPPOP-API-b8578829d1b140a6825b8880aa47e5ee)                                                                     |
+| ✔️ 백엔드 기능 테스트       | [백엔드 기능 테스트](https://github.com/mpqm/spring-service-zippop/wiki/v2%E2%80%904-%EB%B0%B1%EC%97%94%EB%93%9C-%EA%B8%B0%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8)            |
+| 🌱 프론트엔드 화면설계서      | [프론트엔드 화면설계서](https://www.figma.com/design/Lsk0T0J6oH3GSzmzInUJPZ/%ED%99%94%EB%A9%B4%EC%84%A4%EA%B3%84%EC%84%9C?node-id=0-1&t=lKoGim9PCwtw4xTA-0)                   |
+| 🎥 프론트엔드 시연 영상      | [프론트엔드 시연 영상](https://github.com/mpqm/spring-service-zippop/wiki/v2%E2%80%906.-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81) |
+| 🔎 기능 및 성능 개선       | [기능 및 성능 개선](https://github.com/mpqm/spring-service-zippop/wiki/v2%E2%80%907.-%EA%B8%B0%EB%8A%A5-%EB%B0%8F-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0)                   |
+| 🔎 핵심 기능 설명         | [핵심 기능 설명](https://github.com/mpqm/spring-service-zippop/wiki/v2%E2%80%908.-%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5-%EC%84%A4%EB%AA%85)                               |
+| 🖥️ CICD 프로세스       | [CICD 프로세스](https://github.com/mpqm/spring-service-zippop/wiki/v2%E2%80%909.-CICD-%EA%B3%BC%EC%A0%95)                                                               |
+| 🔗 컨벤션              | [컨벤션](https://github.com/mpqm/spring-service-zippop/wiki/v2%E2%80%9099.-%EC%BB%A8%EB%B2%A4%EC%85%98)                                                                |
+| 📖 v1 개발문서          | [v1 개발문서](https://github.com/mpqm/spring-service-zippop/wiki)                                                                                                       |
+| 📖 v1 설계 프로젝트 링크    | [v1 초기 설계 프로젝트 링크](https://github.com/beyond-sw-camp/be06-1st-FIIIIIVE-ZIP_POP)                                                                                     |
+| 📖 v1 백엔드 프로젝트 링크   | [v1 백엔드 프로젝트 링크](https://github.com/beyond-sw-camp/be06-2nd-FIIIIIVE-ZIP_POP)                                                                                       |
+| 📖 v1 프론트엔드 프로젝트 링크 | [v1 프론트엔드 프로젝트 링크](https://github.com/beyond-sw-camp/be06-3rd-FIIIIIVE-ZIP_POP)                                                                                     |
 

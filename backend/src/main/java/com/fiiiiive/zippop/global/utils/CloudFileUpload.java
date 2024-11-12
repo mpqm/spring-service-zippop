@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -22,7 +23,7 @@ public class CloudFileUpload  {
     private final AmazonS3 amazonS3;
 
     public String upload(MultipartFile file) throws BaseException {
-        if(file.getOriginalFilename() != "") {
+        if(file != null) {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
@@ -39,7 +40,7 @@ public class CloudFileUpload  {
     }
 
     public List<String> multipleUpload(MultipartFile[] files) throws BaseException {
-        if(files[0].getOriginalFilename() != "") {
+        if(files != null) {
             List<String> fileNames = new ArrayList<>();
             for (MultipartFile file : files) {
                 ObjectMetadata metadata = new ObjectMetadata();

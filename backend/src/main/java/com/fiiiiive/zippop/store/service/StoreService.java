@@ -181,7 +181,7 @@ public class StoreService {
         // 예외: 기업 사용자 이메일로 조회된 팝업 스토어가 없을때,
         Page<Store> result = null;
         if(keyword != null) {
-            result = storeRepository.findByKeywordAndCompanyEmail(customUserDetails.getEmail(), keyword, PageRequest.of(page, size));
+            result = storeRepository.findByKeywordAndCompanyEmail(keyword, customUserDetails.getEmail(), PageRequest.of(page, size));
         } else {
             result = storeRepository.findByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size));
         }
@@ -308,24 +308,9 @@ public class StoreService {
         store.setEndDate(dto.getStoreEndDate());
         store.setStartDate(dto.getStoreStartDate());
         storeRepository.save(store);
-        
-        // Store Image 업데이트
-        // 기존 이미지 URL 목록 불러오기
-        List<String> existingUrls = new ArrayList<>();
-        for (StoreImage storeImage : store.getStoreImageList()) {
-            existingUrls.add(storeImage.getUrl());
-        }
-
-        // 삭제할 이미지 URL (기존에 있었으나 새 목록에 없는 것들)
-        for (StoreImage storeImage : store.getStoreImageList()) {
-            if (!fileNames.contains(storeImage.getUrl())) {
-                storeImageRepository.deleteById(storeImage.getIdx());
-            }
-        }
-
-        // 추가할 이미지 URL (새 목록에 있는데 기존 목록에는 없는 것들)
-        for (String fileName : fileNames) {
-            if (!existingUrls.contains(fileName)) {
+        if(fileNames != null){
+            storeImageRepository.deleteAllByStoreIdx(storeIdx);
+            for (String fileName : fileNames) {
                 StoreImage storeImage = StoreImage.builder()
                         .url(fileName)
                         .store(store)
@@ -333,6 +318,8 @@ public class StoreService {
                 storeImageRepository.save(storeImage);
             }
         }
+        // 추가할 이미지 URL (새 목록에 있는데 기존 목록에는 없는 것들)
+
 
         // UpdateStoreRes 반환
         return UpdateStoreRes.builder().storeIdx(store.getIdx()).build();

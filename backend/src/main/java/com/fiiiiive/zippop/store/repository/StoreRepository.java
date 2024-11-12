@@ -48,11 +48,10 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     // 검색어 기반으로 전체 조회(기업용)
     @Query("SELECT s FROM Store s " +
             "WHERE s.companyEmail = :companyEmail " +
-            "OR s.address LIKE %:keyword% " +
+            "AND (s.address LIKE %:keyword% " +
             "OR s.name LIKE %:keyword% " +
             "OR s.category LIKE %:keyword% " +
-            "OR s.startDate LIKE %:keyword% " +
-            "OR s.companyEmail LIKE %:keyword%")
-    Page<Store> findByKeywordAndCompanyEmail(@Param("keyword") String keyword, String companyEmail, Pageable pageable);
+            "OR s.startDate LIKE %:keyword%)")
+    Page<Store> findByKeywordAndCompanyEmail(@Param("keyword") String keyword, @Param("companyEmail") String companyEmail, Pageable pageable);
 
 }

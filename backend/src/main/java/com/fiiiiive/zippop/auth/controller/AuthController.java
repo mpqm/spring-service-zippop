@@ -34,7 +34,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<PostSignupRes>> signup(
         @RequestPart(name = "dto") PostSignupReq dto,
-        @RequestPart(name = "file") MultipartFile file) throws Exception {
+        @RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
         String url = cloudFileUpload.upload(file);
         PostSignupRes response = authService.signup(dto, url);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_REGISTER_SUCCESS, response));

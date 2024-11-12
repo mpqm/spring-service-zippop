@@ -73,11 +73,16 @@ const addressDetail = ref("")
 const file = ref(null);
 const fileUrl = ref(null);
 
-onMounted(() => {
-  const script = document.createElement('script');
-  script.src = 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-  document.head.appendChild(script);
+onMounted(async() => {
+    await loadMapjsApi()
 });
+
+
+const loadMapjsApi = async() => {
+    const script = document.createElement("script");
+    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    document.head.appendChild(script);
+}
 
 // 주소 검색
 const openAddressSearch = () => {
