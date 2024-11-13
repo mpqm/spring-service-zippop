@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.store.model.entity;
 
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.favorite.model.entity.Favorite;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
@@ -39,9 +38,6 @@ public class Store extends BaseEntity {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Goods> goodsList;
-
-    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Favorite> favoriteList;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true )
     private List<StoreImage> storeImageList;

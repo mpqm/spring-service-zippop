@@ -38,10 +38,6 @@ public enum BaseResponseMessage {
     MEMBER_EMAIL_VERIFY_FAIL(false, 2011, "이메일 인증에 실패했습니다."),
     MEMBER_EMAIL_SEND_FAIL(false, 2012, "이메일 전송에 실패했습니다."),
     MEMBER_EMAIL_VERIFY_SAVE_FAIL(false, 2013, "이메일 인증 값 저장에 실패했습니다."),
-    // 토큰 만료 2020
-    MEMBER_ACCESS_TOKEN_EXPIRED(false, 2021, "JWT 토큰이 만료되었습니다."),
-    MEMBER_TOKEN_NULL(false, 2022, "JWT 토큰이 없습니다."),
-    MEMBER_ACCESS_TOKEN_INVALID(false, 2023, "JWT 토큰이 유효하지 않습니다."),
     // 로그인 2030
     MEMBER_LOGIN_SUCCESS(true, 2030, "로그인에 성공했습니다."),
     MEMBER_LOGIN_FAIL(false, 2031, "로그인에 실패했습니다."),
@@ -52,7 +48,6 @@ public enum BaseResponseMessage {
     // 계정 정보 수정 2050
     MEMBER_EDIT_INFO_SUCCESS(true, 2050, "계정 프로필 정보 변경에 성공했습니다."),
     MEMBER_EDIT_INFO_FAIL(false, 2051, "계정 프로필 정보 변경에 실패했습니다."),
-
     // 계정 패스워드 수정 2060
     MEMBER_EDIT_PASSWORD_SUCCESS(true, 2050, "계정 비밀번호 변경에 성공했습니다."),
     MEMBER_EDIT_PASSWORD_FAIL(false, 2051, "계정 비밀번호 변경에 실패했습니다."),
@@ -79,11 +74,11 @@ public enum BaseResponseMessage {
     POPUP_STORE_DELETE_SUCCESS(true, 3300, "팝업 스토어 삭제에 성공했습니다."),
     POPUP_STORE_DELETE_FAIL_NOT_FOUND(false, 3301, "팝업 스토어를 찾을 수 없어 삭제에 실패했습니다."),
     POPUP_STORE_DELETE_FAIL_INVALID_MEMBER(false, 3302, "해당 팝업 스토어를 등록한 기업 회원이 아닙니다."),
-    // 팝업 스토어 추천 3400
+    // 팝업 스토어 좋아요 3400
     POPUP_STORE_LIKE_SUCCESS(true, 3400, "팝업 스토어 좋아요 성공"),
     POPUP_STORE_LIKE_FAIL_NOT_FOUND(false, 3400, "해당 팝업 스토어를 찾을 수 없습니다."),
     POPUP_STORE_LIKE_FAIL_INVALID_MEMBER(false, 3401, "인증된 사용자 만이 추천을 누를 수 있습니다."),
-
+    POPUP_STORE_LIKE_SEARCH_ALL_SUCCESS(true, 3402, "팝업 스토어 좋아요 목록을 불러오는데 성공했습니다."),
 
     // ========================================================================================================================
     // 팝업 스토어 리뷰 4000

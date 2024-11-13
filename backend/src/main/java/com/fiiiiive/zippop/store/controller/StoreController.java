@@ -4,6 +4,7 @@ import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.store.service.StoreLikeService;
 import com.fiiiiive.zippop.store.service.StoreService;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
@@ -27,6 +28,7 @@ import java.util.Objects;
 @RequestMapping("/api/v1/store")
 public class StoreController {
     private final StoreService storeService;
+    private final StoreLikeService storeLikeService;
     private final CloudFileUpload cloudFileUpload;
 
     // 팝업 스토어 등록
@@ -97,7 +99,14 @@ public class StoreController {
     public ResponseEntity<BaseResponse> like(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long storeIdx) throws BaseException {
-        storeService.like(customUserDetails, storeIdx);
+        storeLikeService.like(customUserDetails, storeIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_LIKE_SUCCESS));
+    }
+
+    @GetMapping("/like/search-all")
+    public ResponseEntity<BaseResponse> likeSearchAll(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
+        List<SearchStoreLikeRes> response = storeLikeService.searchAll(customUserDetails);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_LIKE_SEARCH_ALL_SUCCESS, response));
     }
 }

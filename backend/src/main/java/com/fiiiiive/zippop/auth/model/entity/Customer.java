@@ -3,7 +3,6 @@ package com.fiiiiive.zippop.auth.model.entity;
 import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.comment.model.entity.Comment;
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.favorite.model.entity.Favorite;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
 import com.fiiiiive.zippop.review.model.entity.Review;
 import com.fiiiiive.zippop.post.model.entity.Post;
@@ -42,9 +41,6 @@ public class Customer extends BaseEntity {
 
     @OneToMany(mappedBy = "customer")
     private List<Cart> cartList;
-
-    @OneToMany(mappedBy = "customer")
-    private List<Favorite> favoriteList;
 
     @BatchSize(size=10)
     @OneToMany(mappedBy = "customer")
