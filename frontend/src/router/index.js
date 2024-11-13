@@ -13,17 +13,20 @@ import PopupGoodsComponent from "@/components/customermypage/PopupGoodsComponent
 import EditProfileComponent from "@/components/customermypage/EditProfileComponent.vue";
 import MyReviewsComponent from "@/components/customermypage/MyReviewsComponent.vue";
 import ChargeListComponent from "@/components/companymypage/ChargeListComponent.vue";
-import StoreRegisterPage from "@/pages/company/StoreRegisterPage.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
 import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
 import CompanySignupPage from "@/pages/auth/CompanySignupPage.vue";
 import StoreMainPage from "@/pages/store/StoreMainPage.vue";
-import CompanyMyPage from "@/pages/company/CompanyMyPage.vue";
-import StoreManagementPage from "@/pages/company/StoreManagementPage.vue";
-import ProductRegisterPage from "@/pages/ProductRegisterPage.vue";
-import StoreUpdatePage from "@/pages/company/StoreUpdatePage.vue";
+import StoreRegisterPage from "@/pages/mypage/StoreRegisterPage.vue";
+import CompanyMyPage from "@/pages/mypage/CompanyMyPage.vue";
+import StoreManagePage from "@/pages/mypage/StoreManagePage.vue";
+import StoreUpdatePage from "@/pages/mypage/StoreUpdatePage.vue";
 import StoreDetailPage from "@/pages/store/StoreDetailPage.vue";
+import GoodsManage1Page from "@/pages/mypage/GoodsManage1Page.vue";
+import GoodsManage2Page from "@/pages/mypage/GoodsManage2Page.vue";
+import GoodsRegisterPage from "@/pages/mypage/GoodsRegisterPage.vue";
+import GoodsUpdatePage from "@/pages/mypage/GoodsUpdatePage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -37,11 +40,14 @@ const router = createRouter({
       path: '/mypage/company',
       component: CompanyMyPage ,
       children: [
-        { path: 'store', component: StoreManagementPage },
+        { path: 'store', component: StoreManagePage },
         { path: 'store/register', component: StoreRegisterPage },
         { path: 'store/update/:storeIdx', component: StoreUpdatePage },
-        { path: '/store/:storeIdx', component: StoreDetailPage },
-        { path: 'goods', component: ProductRegisterPage },
+        { path: 'store/:storeIdx', component: StoreDetailPage },
+        { path: 'goods', component: GoodsManage1Page },
+        { path: 'goods/:storeIdx', component: GoodsManage2Page },
+        { path: 'goods/:storeIdx/register', component: GoodsRegisterPage },
+        { path: 'goods/:storeIdx/update/:goodsIdx', component: GoodsUpdatePage },
         { path: 'charge', component: ChargeListComponent },
         { path: 'account-edit', component: EditProfileComponent },
       ]

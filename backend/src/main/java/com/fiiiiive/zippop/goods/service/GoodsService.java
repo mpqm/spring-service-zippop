@@ -67,7 +67,7 @@ public class GoodsService {
         for(GoodsImage goodsImage : goods.getGoodsImageList()){
             SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
                     .goodsImageIdx(goodsImage.getIdx())
-                    .imageUrl(goodsImage.getUrl())
+                    .goodsImageUrl(goodsImage.getUrl())
                     .createdAt(goodsImage.getCreatedAt())
                     .updatedAt(goodsImage.getUpdatedAt())
                     .build();
@@ -83,41 +83,19 @@ public class GoodsService {
                 .build();
     }
 
-    // 팝업 굿즈 목록 조회(storeIdx)
-    public Page<SearchGoodsRes> searchAll(Long storeIdx, int page, int size) throws BaseException {
-        Page<Goods> result = goodsRepository.findByStoreIdx(storeIdx, PageRequest.of(page, size))
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND));
-        Page<SearchGoodsRes> searchGoodsResPage = result.map(goods -> {
-            List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();
-            for(GoodsImage goodsImage : goods.getGoodsImageList()){
-                SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
-                        .goodsImageIdx(goodsImage.getIdx())
-                        .imageUrl(goodsImage.getUrl())
-                        .createdAt(goodsImage.getCreatedAt())
-                        .updatedAt(goodsImage.getUpdatedAt())
-                        .build();
-                searchGoodsImageResList.add(searchGoodsImageRes);
-            }
-            return SearchGoodsRes.builder()
-                    .goodsIdx(goods.getIdx())
-                    .goodsName(goods.getName())
-                    .goodsPrice(goods.getPrice())
-                    .goodsContent(goods.getContent())
-                    .goodsAmount(goods.getAmount())
-                    .searchGoodsImageResList(searchGoodsImageResList)
-                    .build();
-        });
-        return searchGoodsResPage;
-    }
-
-    // 팝업 재고 굿즈 목록 조회(검색어, 일반)
-    public Page<SearchGoodsRes> searchAllAsGuest(String keyword, int page, int size) throws BaseException {
+    // 팝업 굿즈 목록 조회(storeIdx, 검색어, 일반)
+    public Page<SearchGoodsRes> searchAll(Long storeIdx, String keyword, int page, int size) throws BaseException {
         Page<Goods> result = null;
-        if(keyword != null) {
+        if(keyword != null && storeIdx == null) {
             result = goodsRepository.findByKeyword(keyword, PageRequest.of(page, size));
+        } else if (storeIdx != null && keyword == null) {
+            result = goodsRepository.findByStoreIdx(storeIdx, PageRequest.of(page, size));
+        } else if (storeIdx != null) {
+            result = goodsRepository.findByStoreIdxAndKeyword(storeIdx, keyword, PageRequest.of(page, size));
         } else {
             result = goodsRepository.findAll(PageRequest.of(page, size));
         }
+
         if (result.isEmpty()) {
             throw new BaseException(BaseResponseMessage.POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND);
         }
@@ -126,7 +104,7 @@ public class GoodsService {
             for(GoodsImage goodsImage : goods.getGoodsImageList()){
                 SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
                         .goodsImageIdx(goodsImage.getIdx())
-                        .imageUrl(goodsImage.getUrl())
+                        .goodsImageUrl(goodsImage.getUrl())
                         .createdAt(goodsImage.getCreatedAt())
                         .updatedAt(goodsImage.getUpdatedAt())
                         .build();

@@ -6,11 +6,10 @@
             <button class="search-btn" @click="keywordSearchAll"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
             <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
         </div>
-        <router-link class="store-register-btn" to="/mypage/company/store/register">팝업스토어 등록</router-link>
     </div>
-    <div class="store-management-page">
+    <div class="store-manage-page">
         <div class="store-list" v-if="storeList && storeList.length">
-            <StoreListComponent v-for="store in storeList" :key="store.storeIdx" :store="store" />
+            <StoreListComponent v-for="store in storeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
         </div>
         <div v-else>
             <p>등록된 팝업 스토어가 없습니다.</p>
@@ -34,6 +33,7 @@
   const storeStore = useStoreStore();
   const searchQuery = ref("");
   
+  const showControl = ref(false);
   const storeList = ref([]);
   const currentPage = ref(0);
   const pageSize = ref(8);
@@ -86,7 +86,7 @@
   </script>
   
   <style scoped>
-  .store-management-page {
+  .store-manage-page {
     flex-direction: row;
     width: 65rem;
   }
@@ -135,21 +135,6 @@
     color: #fff;
   }
 
-  .store-register-btn{
-    display: block;
-    text-align: center;
-    width: auto;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-decoration: #000;
-  }
 
 .search-container {
     display: flex;

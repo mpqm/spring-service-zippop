@@ -4,32 +4,32 @@ import axios from "axios";
 import { backend } from "@/const";
 
 // 전역 저장소 생성
-export const useStoreStore = defineStore("store", {
-  state: () => ({
-    storeList: [],
-    store: {},
+export const useGoodsStore = defineStore("goods", {
+  state: () => ({ 
+    goodsList: [],
+    goods: {},
     totalElements: null,
     totalPages: null,
   }),
   persist: { storage: sessionStorage, },
   actions: {
-    async register(req) {
+    async register(storeIdx, req) {
       try {
         const res = await axios.post(
-          `${backend}/store/register`, req,
-          { headers: { "Content-Type": "multipart/form-data", }, withCredentials: true },
+          `${backend}/goods/register?storeIdx=${storeIdx}`, req,
+          { headers: { "Content-Type": "multipart/form-data", }, withCredentials: true }
         );
-        return res.data
+        return res.data;
       } catch (error) {
         return error.response.data;
       }
     },
-    async search(storeIdx) {
+    async search(goodsIdx) {
       try {
         const res = await axios.get(
-          `${backend}/store/search?storeIdx=${storeIdx}`
+          `${backend}/goods/search?goodsIdx=${goodsIdx}`
         );
-        this.store = res.data.result;
+        this.goods = res.data.result;
         return res.data;
       } catch (error) {
         return error.response.data;
@@ -38,9 +38,9 @@ export const useStoreStore = defineStore("store", {
     async searchAll(page, size) {
       try {
         const res = await axios.get(
-          `${backend}/store/search-all/as-guest?page=${page}&size=${size}`
+          `${backend}/goods/search-all?page=${page}&size=${size}`
         );
-        this.storeList = res.data.result.content;
+        this.goodsList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;
         return res.data;
@@ -48,12 +48,12 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllByKeyword(keyword, page, size) {
+    async searchAllByStoreIdx(storeIdx, page, size) {
       try {
         const res = await axios.get(
-          `${backend}/store/search-all/as-guest?keyword=${keyword}&page=${page}&size=${size}`
+          `${backend}/goods/search-all?storeIdx=${storeIdx}&page=${page}&size=${size}`
         );
-        this.storeList = res.data.result.content;
+        this.goodsList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;
         return res.data;
@@ -61,13 +61,12 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllAsCompany(page, size) {
+    async searchAllByKeywordAndStoreIdx(keyword, storeIdx, page, size) {
       try {
         const res = await axios.get(
-          `${backend}/store/search-all/as-company?page=${page}&size=${size}`,
-          { withCredentials: true },
+          `${backend}/goods/search-all?keyword=${keyword}&storeIdx=${storeIdx}&page=${page}&size=${size}`
         );
-        this.storeList = res.data.result.content;
+        this.goodsList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;
         return res.data;
@@ -75,24 +74,10 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllByKeywordAsCompany(keyword, page, size) {
-      try {
-        const res = await axios.get(
-          `${backend}/store/search-all/as-company?keyword=${keyword}&page=${page}&size=${size}`,
-          { withCredentials: true },
-        );
-        this.storeList = res.data.result.content;
-        this.totalElements = res.data.result.totalElements;
-        this.totalPages = res.data.result.totalPages;
-        return res.data;
-      } catch (error) {
-        return error.response.data;
-      }
-    },
-    async update(storeIdx, req) {
+    async update(goodsIdx, req) {
       try {
         const res = await axios.patch(
-          `${backend}/store/update?storeIdx=${storeIdx}`, req,
+          `${backend}/goods/update?goodsIdx=${goodsIdx}`, req,
           { headers: { "Content-Type": "multipart/form-data", }, withCredentials: true },
         );
         return res.data
@@ -100,10 +85,10 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async delete(storeIdx) {
+    async delete(goodsIdx) {
       try {
         const res = await axios.delete(
-          `${backend}/store/delete?storeIdx=${storeIdx}`,
+          `${backend}/goods/delete?goodsIdx=${goodsIdx}`,
           { withCredentials: true },
         );
         return res.data;
@@ -112,4 +97,5 @@ export const useStoreStore = defineStore("store", {
       }
     }
   },
+
 });

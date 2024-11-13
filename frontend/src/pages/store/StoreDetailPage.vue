@@ -7,23 +7,23 @@
                 <h2>{{ storeName }}</h2>
                 <p>{{ category }}</p>
             </div>
-            <p class="t2">
-                <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ likeCount }}
-                <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ totalPeople }}
-            </p>
             <p> {{ storeStartDate }} ~ {{ storeEndDate }}</p>
             <div v-if="fileUrls.length" class="file-preview">
                 <div v-for="(fileUrl, index) in fileUrls" :key="index" class="file-preview-item">
                     <img :src="fileUrl" alt="file preview" />
                 </div>
             </div>
+            <p class="t2">
+                <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ likeCount }}
+                <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ totalPeople }}
+            </p>
             <p> {{ storeContent }}</p>
             <CountDownTimer>
                 
             </CountDownTimer>
             진행중인 예약
             <div class="reserve-container">
-                
+
             </div>
             리뷰 보기
             <div class="review-container">
@@ -66,6 +66,7 @@ const storeStartDate = ref("");
 const storeEndDate = ref("");
 const fileUrls = ref([]);
 const store = ref({});
+
 onMounted(async () => {
     await search(route.params.storeIdx);
     await autoSet();

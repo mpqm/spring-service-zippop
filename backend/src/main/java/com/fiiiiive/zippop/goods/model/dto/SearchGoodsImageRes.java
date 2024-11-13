@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class SearchGoodsImageRes {
     private Long goodsImageIdx;
-    private String imageUrl;
+    private String goodsImageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
