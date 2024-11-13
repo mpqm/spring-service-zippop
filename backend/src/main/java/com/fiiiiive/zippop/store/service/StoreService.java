@@ -61,6 +61,7 @@ public class StoreService {
                 .endDate(dto.getStoreEndDate())
                 .likeCount(0)
                 .company(company)
+                .status("OPEN")
                 .build();
         storeRepository.save(store);
 
