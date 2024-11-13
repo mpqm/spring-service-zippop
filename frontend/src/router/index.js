@@ -23,6 +23,7 @@ import CompanyMyPage from "@/pages/company/CompanyMyPage.vue";
 import StoreManagementPage from "@/pages/company/StoreManagementPage.vue";
 import ProductRegisterPage from "@/pages/ProductRegisterPage.vue";
 import StoreUpdatePage from "@/pages/company/StoreUpdatePage.vue";
+import StoreDetailPage from "@/pages/store/StoreDetailPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -31,14 +32,16 @@ const router = createRouter({
     { path: "/login", component: LoginPage },
     { path: "/signup/customer", component: CustomerSignupPage },
     { path: "/signup/company", component: CompanySignupPage },
+    { path: '/store/:storeIdx', component: StoreDetailPage },
     {
       path: '/mypage/company',
       component: CompanyMyPage ,
       children: [
-        { path: 'goods', component: ProductRegisterPage },
         { path: 'store', component: StoreManagementPage },
         { path: 'store/register', component: StoreRegisterPage },
         { path: 'store/update/:storeIdx', component: StoreUpdatePage },
+        { path: '/store/:storeIdx', component: StoreDetailPage },
+        { path: 'goods', component: ProductRegisterPage },
         { path: 'charge', component: ChargeListComponent },
         { path: 'account-edit', component: EditProfileComponent },
       ]

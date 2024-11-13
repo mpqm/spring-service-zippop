@@ -1,5 +1,5 @@
 <template>
-  <div class="store-card">
+  <div class="store-card" @click="goStoreDetail">
     <p class="t1">{{ store.storeName }}</p>
     <p class="t2">{{ store.category }}</p>
     <p class="t2">
@@ -18,10 +18,15 @@
   
   <script setup>
 import { defineProps } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter(); 
 
-defineProps({
+const props = defineProps({
   store: Object,
 });
+const goStoreDetail = () => {
+  router.push(`/store/${props.store.storeIdx}`);
+}
 </script>
   
 <style scoped>
