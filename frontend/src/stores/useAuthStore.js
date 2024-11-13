@@ -56,10 +56,7 @@ export const useAuthStore = defineStore("auth", {
             try{
                 const res = await axios.get(
                     `${backend}/auth/get-info`, 
-                    { 
-                        headers: { 'Content-Type': 'application/json', },
-                        withCredentials: true
-                    }
+                    { headers: { 'Content-Type': 'application/json', }, withCredentials: true}
                 );
                 this.userInfo.email = res.data.result.email;
                 this.userInfo.name = res.data.result.name;

@@ -48,23 +48,14 @@ public class GoodsController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, response));
     }
 
-    // 팝업스토어 인덱스로 목록 조회
-    @GetMapping("/search/by-store")
-    public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> searchAll(
-        @RequestParam Long storeIdx,
-        @RequestParam int page,
-        @RequestParam int size) throws BaseException {
-        Page<SearchGoodsRes> response = goodsService.searchAll(storeIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, response));
-    }
-
     // 팝업 재고 굿즈 목록 조회(검색어)
-    @GetMapping("/search-all/as-guest")
+    @GetMapping("/search-all")
     public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> searchAllAsGuest(
+        @RequestParam(required = false) Long storeIdx,
         @RequestParam(required = false) String keyword,
         @RequestParam int page,
         @RequestParam int size) throws BaseException {
-        Page<SearchGoodsRes> response = goodsService.searchAllAsGuest(keyword, page, size);
+        Page<SearchGoodsRes> response = goodsService.searchAll(storeIdx, keyword, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, response));
     }
 

@@ -15,9 +15,13 @@
         <img class="like-img" src="../assets/img/like-fill.png" alt="" />&nbsp;{{ store.likeCount }}
         <img class="people-img" src="../assets/img/people.png" alt="" />&nbsp;{{ store.totalPeople }}
       </div>
-    <div class="btn-container">
+    <div v-if="showControl == true" class="btn-container">
+        <router-link class="ud-btn" :to="store ? `/store/${store.storeIdx}` : '#'">보기</router-link>
         <router-link class="ud-btn" :to="store ? `/mypage/company/store/update/${store.storeIdx}` : '#'">수정</router-link>
         <button class="ud-btn" @click="deleteStore">삭제</button>
+    </div>
+    <div v-if="showControl == false" class="btn-container">
+        <router-link class="ud-btn" :to="store ? `/mypage/company/goods/${store.storeIdx}` : '#'">굿즈 보기</router-link>
     </div>
   </div>
 </template>
@@ -31,9 +35,9 @@ import { useRouter } from "vue-router";
 const toast = useToast();
 const router = useRouter();
 const storeStore = useStoreStore();
-
 const props = defineProps({
   store: Object,
+  showControl: Boolean,
 });
 
 const deleteStore = async() => {

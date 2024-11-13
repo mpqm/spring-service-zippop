@@ -78,7 +78,7 @@ public class CartService {
             List<SearchGoodsImageRes> searchGoodsImageResList = goods.getGoodsImageList().stream().map(image ->
                     SearchGoodsImageRes.builder()
                         .goodsImageIdx(image.getIdx())
-                        .imageUrl(image.getUrl())
+                        .goodsImageUrl(image.getUrl())
                         .createdAt(image.getCreatedAt())
                         .updatedAt(image.getUpdatedAt())
                     .build())

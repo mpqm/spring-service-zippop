@@ -112,7 +112,7 @@ public class StoreService {
             for(GoodsImage goodsImage : goods.getGoodsImageList()){
                 SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
                         .goodsImageIdx(goodsImage.getIdx())
-                        .imageUrl(goodsImage.getUrl())
+                        .goodsImageUrl(goodsImage.getUrl())
                         .createdAt(goodsImage.getCreatedAt())
                         .updatedAt(goodsImage.getUpdatedAt())
                         .build();
