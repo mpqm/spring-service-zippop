@@ -14,8 +14,8 @@
       alt="store image"
     />
     <div class="btn-container">
-      <button class="search-btn" @click="goStoreDetail"><img class="search-img" src="../assets/img/search-none.png" alt=""></button>
-      <button class="search-btn" @click="goStoreDetail"><img class="search-img" src="../assets/img/search-none.png" alt=""></button>
+      <button class="normal-btn" @click="goStoreDetail"><img class="search-img" src="../assets/img/search-none.png" alt=""></button>
+      <button class="normal-btn" @click="like"><img class="search-img" src="../assets/img/like-none.png" alt=""></button>
     </div>
   </div>
 </template>
@@ -23,14 +23,33 @@
   <script setup>
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
+import { useStoreStore } from "@/stores/useStoreStore";
+import { useToast } from "vue-toastification";
+import { useAuthStore } from "@/stores/useAuthStore";
 const router = useRouter(); 
-
+const storeStore = useStoreStore();
+const authStore = useAuthStore();
+const toast = useToast();
 const props = defineProps({
   store: Object,
 });
 const goStoreDetail = () => {
   router.push(`/store/${props.store.storeIdx}`);
 }
+
+const like = async() => {
+  const res = await storeStore.like(props.store.storeIdx);
+  if(res.success){
+    toast.success("좋아요 성공");
+  } else {
+    if(authStore.userInfo.role == "ROLE_COMPANY"){
+      toast.error("기업 회원은 좋아요 기능이 제한됩니다.");
+    } else {
+      toast.error("좋아요 실패");
+    }
+  }
+}
+
 </script>
   
 <style scoped>
@@ -66,6 +85,11 @@ const goStoreDetail = () => {
   margin-top: 4px;
 }
 
+.search-img {
+  width: 20px;
+  height: auto;
+}
+
 .like-img {
   object-fit: cover;
   width: auto;
@@ -86,8 +110,7 @@ const goStoreDetail = () => {
   width: auto;
   gap: 10px;
 }
-
-.search-btn {
+.normal-btn {
   margin-top: 10px;
   display: block;
     text-align: center;

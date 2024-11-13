@@ -29,11 +29,13 @@ import GoodsRegisterPage from "@/pages/mypage/GoodsRegisterPage.vue";
 import GoodsUpdatePage from "@/pages/mypage/GoodsUpdatePage.vue";
 import GoodsMainPage from "@/pages/goods/GoodsMainPage.vue";
 import GoodsDetailPage from "@/pages/goods/GoodsDetailPage.vue";
+import ErrorPage from "@/pages/error/ErrorPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/login", component: LoginPage },
+    { path: '/error', component: ErrorPage },
     { path: "/signup/customer", component: CustomerSignupPage },
     { path: "/signup/company", component: CompanySignupPage },
 
@@ -41,7 +43,7 @@ const router = createRouter({
     { path: '/store/:storeIdx', component: StoreDetailPage },
 
     {path: "/goods", component: GoodsMainPage},
-    {path: '/goods/:storeIdx', component: GoodsDetailPage},
+    {path: '/goods/:goodsIdx', component: GoodsDetailPage},
 
     {
       path: '/mypage/company',

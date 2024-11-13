@@ -3,155 +3,160 @@
         <HeaderComponent></HeaderComponent>
         <div class="detail-page">
             <div class="detail-container">
-                <div class="title">
-                <h2>{{ storeName }}</h2>
-                <p>{{ category }}</p>
-            </div>
-            <p> {{ storeStartDate }} ~ {{ storeEndDate }}</p>
-            <div v-if="fileUrls.length" class="file-preview">
-                <div v-for="(fileUrl, index) in fileUrls" :key="index" class="file-preview-item">
-                    <img :src="fileUrl" alt="file preview" />
+                <div class="left-panel">
+                <div v-if="fileUrls.length" class="file-preview">
+                    <div v-for="(fileUrl, index) in fileUrls" :key="index" class="file-preview-item">
+                        <img :src="fileUrl" alt="file preview" />
+                    </div>
                 </div>
             </div>
-            <p class="t2">
-                <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ likeCount }}
-                <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ totalPeople }}
-            </p>
-            <p> {{ storeContent }}</p>
-            <CountDownTimer>
-                
-            </CountDownTimer>
-            진행중인 예약
-            <div class="reserve-container">
-
+            <div class="right-panel">
+                    <div class="title">
+                        <h2>{{ storeName }}</h2>
+                        <p>{{ goodsName }}</p>
+                    </div>
+                    <p class="t2">
+                        <img class="people-img" src="../../assets/img/coin.png" alt="" />{{ goodsPrice }}원
+                        <img class="like-img" src="../../assets/img/stock.png" alt="" />{{ goodsAmount }}개
+                    </p>
+                    <p> {{ goodsContent }}</p>
+                    <div class="btn-container">
+                        <button class="normal-btn" @click="goStoreDetail"><img class="search-img" src="../../assets/img/cart-none.png" alt="">&nbsp;<p>카트추가</p></button>
+                        <button class="normal-btn" @click="like"><img class="search-img" src="../../assets/img/payment-none.png" alt="">&nbsp;<p>결제하기</p></button>
+                    </div>
             </div>
-            리뷰 보기
-            <div class="review-container">
-
             </div>
-            굿즈 보기
-            <div class="goods-container">
-
-            </div>
-        </div>
         </div>
         <FooterComponent></FooterComponent>
     </div>
 </template>
 
-
 <script setup>
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
-import CountDownTimer from "@/components/CountDownTimer.vue";
 import { ref, onMounted } from "vue";
-import { useStoreStore } from "@/stores/useStoreStore";
+import { useGoodsStore } from "@/stores/useGoodsStore";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
-const storeStore = useStoreStore();
+const goodsStore = useGoodsStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 
-const storeIdx = ref(null);
+const goodsIdx = ref(null);
 const storeName = ref("");
-const storeContent = ref("");
-const category = ref("");
-const totalPeople = ref(0);
-const likeCount = ref(0);
-const address = ref("");
-const addressDetail = ref("");
-const storeStartDate = ref("");
-const storeEndDate = ref("");
+const goodsName = ref("");
+const goodsPrice = ref("");
+const goodsContent = ref("");
+const goodsAmount = ref(0);
 const fileUrls = ref([]);
-const store = ref({});
+const goods = ref({});
 
 onMounted(async () => {
-    await search(route.params.storeIdx);
+    await search(route.params.goodsIdx);
     await autoSet();
 });
 
-const search = async (storeIdx) => {
-    const res = await storeStore.search(storeIdx);
+const search = async (goodsIdx) => {
+    const res = await goodsStore.search(goodsIdx);
     if (res.success) {
-        store.value = storeStore.store;
+        goods.value = goodsStore.goods;
         await autoSet();
     } else {
         router.push("/")
-        toast.error("해당 팝업스토어를 찾을 수 없습니다.")
+        toast.error("해당 굿즈를 찾을 수 없습니다.")
     }
 }
 
 const autoSet = async () => {
-    storeIdx.value = storeStore.store.storeIdx;
-    storeName.value = storeStore.store.storeName;
-    storeContent.value = storeStore.store.storeContent;
-    category.value = storeStore.store.category;
-    totalPeople.value = storeStore.store.totalPeople;
-    likeCount.value = storeStore.store.likeCount;
-    address.value = storeStore.store.storeAddress.split(',')[0];
-    addressDetail.value = storeStore.store.storeAddress.split(',')[1] || '';
-    storeStartDate.value = storeStore.store.storeStartDate;
-    storeEndDate.value = storeStore.store.storeEndDate;
-    if (storeStore.store.searchStoreImageResList && storeStore.store.searchStoreImageResList.length) {
-        fileUrls.value = storeStore.store.searchStoreImageResList.map(image => image.storeImageUrl);
+    storeName.value = goodsStore.goods.storeName;
+    goodsIdx.value = goodsStore.goods.goodsIdx;
+    goodsName.value = goodsStore.goods.goodsName;
+    goodsContent.value = goodsStore.goods.goodsContent;
+    storeName.value = goodsStore.goods.storeName;
+    goodsPrice.value = goodsStore.goods.goodsPrice;
+    goodsAmount.value = goodsStore.goods.goodsAmount;
+    if (goodsStore.goods.searchGoodsImageResList && goodsStore.goods.searchGoodsImageResList.length) {
+        fileUrls.value = goodsStore.goods.searchGoodsImageResList.map(image => image.goodsImageUrl);
     }
 }
-
 </script>
 
 <style scoped>
 .detail-page {
-    margin: 0 auto;
     display: flex;
-    flex-direction: column;
-    width: 65rem;
+    margin: 0 auto;
     padding: 1rem;
+    width: 65rem;
+    gap: 2rem;
 }
 .detail-container {
+    display: flex;
+    flex-direction: row;
     margin: 10px auto;
     border-radius: 8px;
     border: 1px solid #00c7ae;
     width: 65rem;
     padding: 5px;
 }
+
+.left-panel, .right-panel {
+    width: 50%;
+}
+.right-panel {
+    width: 50%;
+    padding: 1rem;
+    border: 1px solid #00c7ae;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.file-preview {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 1rem 0;
+}
+.file-preview-item img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
 .title {
     display: flex;
     align-items: center;
     gap: 10px;
 }
-.file-preview {
+.t2 {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
-    margin-top: 1rem;
+    margin: 1rem 0;
 }
-
-.file-preview-item img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-}
-.store-img {
-  width: 100%;
-  height: fit-content;
-  border-radius: 8px;
-  margin-top: 4px;
-}
-
-.like-img {
-  object-fit: cover;
+.btn-container{
+  display: flex;
   width: auto;
-  height: 24px;
-  margin-right: 5px;
-  vertical-align: middle;
+  gap: 10px;
 }
-
-.people-img {
-  object-fit: cover;
-  width: auto;
-  height: 30px;
-  vertical-align: middle;
+.normal-btn {
+  display: flex;
+    text-align: center;
+    width: 100%;
+    font-weight: 400;
+    transition: opacity 0.2s ease-in-out;
+    color: #fff;
+    cursor: pointer;
+    background-color: #00c7ae;
+    border-color: #00c7ae;
+    border: 0.0625rem solid transparent;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    text-decoration: #000;
+    align-items: center;
+    justify-content: center;
 }
 </style>

@@ -13,19 +13,26 @@
         <img class="coin-img" src="../assets/img/coin.png" alt="" />&nbsp;{{ goods.goodsPrice }}
         <img class="stock-img" src="../assets/img/stock.png" alt="" />&nbsp;{{ goods.goodsAmount }}
       </div>
-    <div v-if="showControl" class="btn-container">
+    <div v-if="showControl == true" class="btn-container">
       <router-link class="ud-btn" :to="goods ? `/goods/${goods.goodsIdx}` : '#'">보기</router-link>
       <router-link class="ud-btn" :to="goods ? `/mypage/company/goods/${route.params.storeIdx}/update/${goods.goodsIdx}` : '#'">수정</router-link>
       <button class="ud-btn" @click="deleteGoods">삭제</button>
     </div>
+    <div v-if="showControl == false" class="btn-container">
+      <button class="ud-btn" @click="openModal">상세 보기</button>
+    </div>
   </div>
+
+  <!-- 모달 컴포넌트 사용 -->
+  <GoodsModalComponent v-if="isModalOpen" :goods="goods" :isModalOpen="isModalOpen" :closeModal="closeModal" />
 </template>
 
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from "vue-router";
+import GoodsModalComponent from "@/components/GoodsModalComponent.vue"; // 모달 컴포넌트 임포트
 
 const toast = useToast();
 const router = useRouter();
@@ -37,6 +44,8 @@ const props = defineProps({
   showControl: Boolean,
 });
 
+const isModalOpen = ref(false);
+
 const deleteGoods = async () => {
   const res = await goodsStore.delete(props.goods.goodsIdx);
   if (res.success) {
@@ -46,9 +55,18 @@ const deleteGoods = async () => {
     toast.error("굿즈 삭제에 실패했습니다.");
   }
 };
+
+const openModal = () => {
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 </script>
 
 <style scoped>
+/* 기존 스타일 그대로 유지 */
 .goods-list-item {
   display: flex;
   align-items: center;

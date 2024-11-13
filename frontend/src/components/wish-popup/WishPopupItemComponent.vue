@@ -52,7 +52,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .btn-delete {
     margin-top: 7px;
     padding: 1px 10px;
