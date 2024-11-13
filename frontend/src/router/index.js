@@ -1,11 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-
-import CommunityPage from "@/pages/CommunityPage.vue";
 import PaymentPage from "@/pages/PaymentPage.vue";
-
-import PostAllComponent from "@/components/community/post-all/PostAllComponent.vue";
-import PostCreateComponent from "@/components/community/post-edit/PostCreateComponent.vue";
 import CartComponent from "@/components/cart/CartComponent.vue";
 import WishPopupPage from "@/pages/WishPopupPage.vue";
 import MypageMainComponent from "@/components/customermypage/MypageMainComponent.vue";
@@ -75,19 +70,6 @@ const router = createRouter({
     { path: '/chats', component: MainChatComponent },
    
     { path: "/payment", component: PaymentPage },
-    {
-      path: "/community",
-      children: [
-        { path: "post-all", component: PostAllComponent },
-        {
-          path: "post-edit",
-          children: [
-            { path: "create", component: PostCreateComponent },
-          ],
-        }
-      ],
-      component: CommunityPage
-    },
     {
       path: "/wish_popup",
       component: WishPopupPage
