@@ -1,11 +1,9 @@
 package com.fiiiiive.zippop.auth.model.entity;
 
 import com.fiiiiive.zippop.cart.model.entity.Cart;
-import com.fiiiiive.zippop.comment.model.entity.Comment;
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
 import com.fiiiiive.zippop.review.model.entity.Review;
-import com.fiiiiive.zippop.post.model.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.BatchSize;
@@ -34,17 +32,10 @@ public class Customer extends BaseEntity {
     private Boolean isInActive;
     private String profileImageUrl;
 
-    // OneToMany
-    @BatchSize(size=10)
-    @OneToMany(mappedBy = "customer")
-    private List<Post> postList;
 
     @OneToMany(mappedBy = "customer")
     private List<Cart> cartList;
 
-    @BatchSize(size=10)
-    @OneToMany(mappedBy = "customer")
-    private List<Comment> commentList;
 
     @OneToMany(mappedBy = "customer")
     private List<Review> reviewList;
