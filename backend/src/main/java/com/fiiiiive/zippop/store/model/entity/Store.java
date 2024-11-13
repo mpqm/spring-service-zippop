@@ -31,6 +31,7 @@ public class Store extends BaseEntity {
     private String category;
     private Integer totalPeople;
     private Integer likeCount;
+    private String status;
 
     // OneToMany
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)

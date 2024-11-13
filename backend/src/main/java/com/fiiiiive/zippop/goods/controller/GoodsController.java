@@ -40,22 +40,32 @@ public class GoodsController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_REGISTER_SUCCESS, response));
     }
 
-    // 상품 이름으로 조회
+    // 상품 인덱스 조회
     @GetMapping("/search")
     public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> search(
         @RequestParam Long goodsIdx) throws Exception {
-        SearchGoodsRes popupGoodsPage = goodsService.search(goodsIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, popupGoodsPage));
+        SearchGoodsRes response = goodsService.search(goodsIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, response));
     }
 
     // 팝업스토어 인덱스로 목록 조회
-    @GetMapping("/search-store")
+    @GetMapping("/search/by-store")
     public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> searchAll(
         @RequestParam Long storeIdx,
         @RequestParam int page,
         @RequestParam int size) throws BaseException {
-        Page<SearchGoodsRes> popupGoodsPage = goodsService.searchAll(storeIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, popupGoodsPage));
+        Page<SearchGoodsRes> response = goodsService.searchAll(storeIdx, page, size);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, response));
+    }
+
+    // 팝업 재고 굿즈 목록 조회(검색어)
+    @GetMapping("/search-all/as-guest")
+    public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> searchAllAsGuest(
+        @RequestParam(required = false) String keyword,
+        @RequestParam int page,
+        @RequestParam int size) throws BaseException {
+        Page<SearchGoodsRes> response = goodsService.searchAllAsGuest(keyword, page, size);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, response));
     }
 
     // 팝업 굿즈 수정

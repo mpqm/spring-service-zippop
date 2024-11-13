@@ -25,6 +25,7 @@ public class Goods extends BaseEntity {
     private String content;
     private Integer price;
     private Integer amount;
+    private String status;
 
     // OneToMany
     @OneToMany(mappedBy = "goods")
