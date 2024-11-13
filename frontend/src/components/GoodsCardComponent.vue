@@ -1,17 +1,16 @@
 <template>
-  <div class="store-card">
-    <p class="t1">{{ store.storeName }}</p>
-    <p class="t2">{{ store.category }}</p>
+  <div class="goods-card" @click="goGoodsDetail">
+    <p class="t1">{{ goods.goodsName }}</p>
+    <p class="t2">{{ goods.storeName }}</p>
     <p class="t2">
-      <img class="like-img" src="../assets/img/like-fill.png" alt="" />{{ store.likeCount }}
-      <img class="people-img" src="../assets/img/people.png" alt="" />{{ store.totalPeople }}
+      <img class="coin-img" src="../assets/img/coin.png" alt="" />{{ goods.goodsPrice }}원
+      <img class="stock-img" src="../assets/img/stock.png" alt="" />{{ goods.goodsAmount }}개
     </p>
-    <p class="t3">{{ store.storeStartDate }} ~ {{ store.storeEndDate }}</p>
     <img
-      class="store-img"
-      v-if="store.searchStoreImageResList && store.searchStoreImageResList.length"
-      :src="store.searchStoreImageResList[0].storeImageUrl"
-      alt="store image"
+      class="goods-img"
+      v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length"
+      :src="goods.searchGoodsImageResList[0].goodsImageUrl"
+      alt="goods image"
     />
     <div class="btn-container">
       <button class="search-btn" @click="goStoreDetail"><img class="search-img" src="../assets/img/search-none.png" alt=""></button>
@@ -26,15 +25,15 @@ import { useRouter } from "vue-router";
 const router = useRouter(); 
 
 const props = defineProps({
-  store: Object,
+  goods: Object,
 });
-const goStoreDetail = () => {
-  router.push(`/store/${props.store.storeIdx}`);
+const goGoodsDetail = () => {
+  router.push(`/goods/${props.goods.goodsIdx}`);
 }
 </script>
   
 <style scoped>
-.store-card {
+.goods-card {
   width: auto;
   max-width: auto;
   border: 1px solid #ddd;
@@ -56,37 +55,39 @@ const goStoreDetail = () => {
 }
 
 .t3 {
-  font-size: 11px;
+  margin: 4px 0;
+  color: red;
 }
 
-.store-img {
+.goods-img {
   width: 100%;
   height: 100%;
   border-radius: 8px;
   margin-top: 4px;
 }
+.goods-info {
+  display: flex;
+  gap: 10px;
+}
 
-.like-img {
+.coin-img {
   object-fit: cover;
   width: auto;
   height: 20px;
   vertical-align: middle;
-  padding-right: 5px;
 }
 
-.people-img {
+.stock-img {
   object-fit: cover;
   width: auto;
-  height: 30px;
+  height: 20px;
   vertical-align: middle;
 }
-
 .btn-container{
   display: flex;
   width: auto;
   gap: 10px;
 }
-
 .search-btn {
   margin-top: 10px;
   display: block;

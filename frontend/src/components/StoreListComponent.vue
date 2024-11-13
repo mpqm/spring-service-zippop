@@ -102,11 +102,18 @@ const deleteStore = async() => {
     color: #666;
 }
 
-.like-img,
-.people-img {
-  width: 20px;
+.like-img {
+  object-fit: cover;
+  width: auto;
   height: 20px;
-  margin-right: 5px;
+  padding: 5px;
+  vertical-align: middle;
+}
+
+.people-img {
+  object-fit: cover;
+  width: auto;
+  height: 30px;
   vertical-align: middle;
 }
 

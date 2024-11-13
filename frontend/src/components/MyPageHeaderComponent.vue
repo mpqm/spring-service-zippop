@@ -5,7 +5,7 @@
       <router-link class="menu-link" to="/mypage/company/goods">굿즈 관리</router-link>
       <router-link class="menu-link" to="/managermypage/account-edit">회원정보 수정</router-link>
       <router-link class="menu-link" to="/managermypage/charge">수수료 결제 내역</router-link>
-      <router-link class="menu-link" to="/chats">문의 내역</router-link>
+      <router-link class="menu-link" to="/chats">문의 채팅</router-link>
     </div>
   </div>
 </template>
