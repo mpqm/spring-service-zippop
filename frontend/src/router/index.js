@@ -27,15 +27,22 @@ import GoodsManage1Page from "@/pages/mypage/GoodsManage1Page.vue";
 import GoodsManage2Page from "@/pages/mypage/GoodsManage2Page.vue";
 import GoodsRegisterPage from "@/pages/mypage/GoodsRegisterPage.vue";
 import GoodsUpdatePage from "@/pages/mypage/GoodsUpdatePage.vue";
+import GoodsMainPage from "@/pages/goods/GoodsMainPage.vue";
+import GoodsDetailPage from "@/pages/goods/GoodsDetailPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", component: StoreMainPage },
     { path: "/login", component: LoginPage },
     { path: "/signup/customer", component: CustomerSignupPage },
     { path: "/signup/company", component: CompanySignupPage },
+
+    { path: "/", component: StoreMainPage },
     { path: '/store/:storeIdx', component: StoreDetailPage },
+
+    {path: "/goods", component: GoodsMainPage},
+    {path: '/goods/:storeIdx', component: GoodsDetailPage},
+
     {
       path: '/mypage/company',
       component: CompanyMyPage ,

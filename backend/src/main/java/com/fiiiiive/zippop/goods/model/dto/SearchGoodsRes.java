@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class SearchGoodsRes {
+    private String storeName;
     private Long goodsIdx;
     private String goodsName;
     private Integer goodsPrice;

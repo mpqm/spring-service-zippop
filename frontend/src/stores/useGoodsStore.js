@@ -48,6 +48,19 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
+    async searchAllByKeyword(keyword, page, size) {
+      try {
+        const res = await axios.get(
+          `${backend}/goods/search-all?keyword=${keyword}&page=${page}&size=${size}`
+        );
+        this.goodsList = res.data.result.content;
+        this.totalElements = res.data.result.totalElements;
+        this.totalPages = res.data.result.totalPages;
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }
+    },
     async searchAllByStoreIdx(storeIdx, page, size) {
       try {
         const res = await axios.get(

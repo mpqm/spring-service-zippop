@@ -8,9 +8,11 @@
     />
     <div class="goods-info1">
       <p class="t1">{{ goods.goodsName }}</p>
-      <p class="t2">{{ goods.goodsPrice }}원</p>
-      <p class="t3">재고: {{ goods.goodsAmount }}개</p>
     </div>
+    <div class="goods-info2">
+        <img class="coin-img" src="../assets/img/coin.png" alt="" />&nbsp;{{ goods.goodsPrice }}
+        <img class="stock-img" src="../assets/img/stock.png" alt="" />&nbsp;{{ goods.goodsAmount }}
+      </div>
     <div v-if="showControl" class="btn-container">
       <router-link class="ud-btn" :to="goods ? `/goods/${goods.goodsIdx}` : '#'">보기</router-link>
       <router-link class="ud-btn" :to="goods ? `/mypage/company/goods/${route.params.storeIdx}/update/${goods.goodsIdx}` : '#'">수정</router-link>
@@ -123,5 +125,19 @@ const deleteGoods = async () => {
   padding: 0.5rem;
   border-radius: 0.25rem;
   text-decoration: none;
+}
+
+.coin-img {
+  object-fit: cover;
+  width: auto;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.stock-img {
+  object-fit: cover;
+  width: auto;
+  height: 20px;
+  vertical-align: middle;
 }
 </style>
