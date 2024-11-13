@@ -104,61 +104,6 @@ public class StoreService {
             searchStoreImageResList.add(searchStoreImageRes);
         }
 
-        // Goods Dto List 생성
-        List<SearchGoodsRes> searchGoodsResList = new ArrayList<>();
-        for (Goods goods : store.getGoodsList()) {
-            // Goods Image Dto 생성
-            List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();
-            for(GoodsImage goodsImage : goods.getGoodsImageList()){
-                SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
-                        .goodsImageIdx(goodsImage.getIdx())
-                        .goodsImageUrl(goodsImage.getUrl())
-                        .createdAt(goodsImage.getCreatedAt())
-                        .updatedAt(goodsImage.getUpdatedAt())
-                        .build();
-                searchGoodsImageResList.add(searchGoodsImageRes);
-            }
-            // Goods Dto 생성
-            SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
-                    .goodsIdx(goods.getIdx())
-                    .goodsName(goods.getName())
-                    .goodsPrice(goods.getPrice())
-                    .goodsContent(goods.getContent())
-                    .goodsAmount(goods.getAmount())
-                    .createdAt(goods.getCreatedAt())
-                    .updatedAt(goods.getUpdatedAt())
-                    .searchGoodsImageResList(searchGoodsImageResList)
-                    .build();
-            searchGoodsResList.add(searchGoodsRes);
-        }
-
-        // Review Dto List 생성
-        List<SearchReviewRes> searchReviewResList = new ArrayList<>();
-        for (Review review :  store.getReviewList()) {
-            // Review Image Dto 생성
-            List<SearchReviewImageRes> searchReviewImageResList = new ArrayList<>();
-            for(ReviewImage reviewImage : review.getReviewImageList()){
-                SearchReviewImageRes searchReviewImageRes = SearchReviewImageRes.builder()
-                        .reviewImageIdx(reviewImage.getIdx())
-                        .imageUrl(reviewImage.getUrl())
-                        .createdAt(review.getCreatedAt())
-                        .updatedAt(review.getUpdatedAt())
-                        .build();
-                searchReviewImageResList.add(searchReviewImageRes);
-            }
-            // Review Dto 생성
-            SearchReviewRes searchReviewRes = SearchReviewRes.builder()
-                    .reviewIdx(review.getIdx())
-                    .reviewTitle(review.getTitle())
-                    .reviewContent(review.getContent())
-                    .reviewRating(review.getRating())
-                    .createdAt(review.getCreatedAt())
-                    .updatedAt(review.getUpdatedAt())
-                    .searchReviewImageResList(searchReviewImageResList)
-                    .build();
-            searchReviewResList.add(searchReviewRes);
-        }
-
         // GetStoreRes 반환
         return SearchStoreRes.builder()
                 .storeIdx(store.getIdx())
@@ -171,8 +116,6 @@ public class StoreService {
                 .totalPeople(store.getTotalPeople())
                 .storeStartDate(store.getStartDate())
                 .storeEndDate(store.getEndDate())
-                .searchGoodsResList(searchGoodsResList)
-                .searchReviewResList(searchReviewResList)
                 .searchStoreImageResList(searchStoreImageResList)
                 .build();
     }

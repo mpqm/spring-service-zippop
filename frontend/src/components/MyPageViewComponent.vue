@@ -8,7 +8,7 @@
 
 </script>
 
-<style>
+<style scoped>
 .component-display{
     margin: 10px auto;
     border-radius: 8px;

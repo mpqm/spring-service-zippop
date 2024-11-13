@@ -89,6 +89,29 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+    async like(storeIdx) {
+      try {
+        const res = await axios.get(
+          `${backend}/store/like?storeIdx=${storeIdx}`, 
+          {withCredentials: true,}
+        );
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }
+    },
+    async likeSearchAll() {
+      try {
+        const res = await axios.get(
+          `${backend}/store/like/search-all`, 
+          {withCredentials: true,}
+        );
+        this.storeList = res.data.result;
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }
+    },
     async update(storeIdx, req) {
       try {
         const res = await axios.patch(

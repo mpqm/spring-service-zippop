@@ -45,7 +45,7 @@ export const useAuthStore = defineStore("auth", {
                 this.userInfo.email = null;
                 this.userInfo.name = null;
                 this.userInfo.role = null;
-                this.userInfo.profileImage = null;
+                this.userInfo.profileImageUrl = null;
                 this.isLoggedIn = false;
                 return res.data;
             } catch (error) {
@@ -64,6 +64,9 @@ export const useAuthStore = defineStore("auth", {
                 this.userInfo.profileImageUrl = res.data.result.profileImageUrl;
                 return res.data
             } catch (error) {
+                if (error.response.status == 401) {
+                    await this.logout();
+                }
                 return error.response.data
             }
         }
