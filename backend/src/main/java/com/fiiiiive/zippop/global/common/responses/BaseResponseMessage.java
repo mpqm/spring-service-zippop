@@ -85,7 +85,7 @@ public enum BaseResponseMessage {
     POPUP_STORE_LIKE_FAIL_INVALID_MEMBER(false, 3401, "인증된 사용자 만이 추천을 누를 수 있습니다."),
     POPUP_STORE_LIKE_FAIL_INVALID_ROLE(false, 3403, "기업 회원은 좋아요 기능이 제한됩니다."),
     POPUP_STORE_LIKE_SEARCH_ALL_SUCCESS(true, 3402, "팝업 스토어 좋아요 목록을 불러오는데 성공했습니다."),
-
+    POPUP_STORE_REVIEW_SEARCH_SUCCESS(true, 3403, "팝업 스토어 전체 리뷰를 불러왔습니다."),
     // ========================================================================================================================
     // 팝업 스토어 리뷰 4000
     // 팝업 스토어 리뷰 등록 4000
@@ -93,6 +93,7 @@ public enum BaseResponseMessage {
     POPUP_STORE_REVIEW_FAIL_CONTENTS_EMPTY(false, 4001, "팝업 스토어 리뷰 내용을 작성해주세요"),
     POPUP_STORE_REVIEW_FAIL_STORE_NOT_EXIST(false, 4002, "해당 팝업 스토어를 찾을 수 없습니다."),
     POPUP_STORE_REVIEW_FAIL_INVALID_MEMBER(false, 4003, "인증된 사용자만이 리뷰를 등록할 수 있습니다."),
+    POPUP_STORE_REVIEW_FAIL_DUPLICATED(false, 4004,"리뷰는 팝업스토어당 한 글씩만 적을 수 있습니다."),
     // ========================================================================================================================
     // 팝업 예약 9000
     // 팝업 예약 생성 9000

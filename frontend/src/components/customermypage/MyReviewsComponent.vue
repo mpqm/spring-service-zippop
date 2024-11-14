@@ -2,19 +2,19 @@
   <div class="reviews-container">
     <h2>내 리뷰</h2>
     <div v-if="reviews.length > 0" class="reviews-list">
-      <div v-for="review in reviews" :key="review.reviewIdx" class="review-item">
-        <div v-if="review.searchReviewImageResList.length > 0" class="review-images">
+      <div v-for="storeReview in reviews" :key="storeReview.reviewIdx" class="storeReview-item">
+        <div v-if="storeReview.searchReviewImageResList.length > 0" class="storeReview-images">
           <img
-            v-for="image in review.searchReviewImageResList"
+            v-for="image in storeReview.searchReviewImageResList"
             :key="image.reviewImageIdx"
             :src="image.imageUrl"
-            :alt="review.reviewTitle"
-            class="review-image"
+            :alt="storeReview.reviewTitle"
+            class="storeReview-image"
           />
         </div>
-        <h3 class="review-title">{{ review.reviewTitle }}</h3>
-        <p class="review-content">{{ review.reviewContent }}</p>
-        <p class="review-rating">Rating: {{ review.rating }}</p>
+        <h3 class="storeReview-title">{{ storeReview.reviewTitle }}</h3>
+        <p class="storeReview-content">{{ storeReview.reviewContent }}</p>
+        <p class="storeReview-rating">Rating: {{ storeReview.rating }}</p>
        
       </div>
     </div>
@@ -40,7 +40,7 @@ export default {
   methods: {
     async fetchReviews(page = 0) {
       try {
-        const apiUrl = 'http://localhost:8080/api/v1/review/search-customer';
+        const apiUrl = 'http://localhost:8080/api/v1/storeReview/search-customer';
         const response = await axios.get(apiUrl, {
           params: {
             page: page,
@@ -72,36 +72,36 @@ export default {
   gap: 20px;
 }
 
-.review-item {
+.storeReview-item {
   border: 1px solid #ddd;
   padding: 15px;
   border-radius: 5px;
   background-color: #fafafa;
 }
 
-.review-title {
+.storeReview-title {
   font-size: 1.5em;
   margin-bottom: 10px;
 }
 
-.review-content {
+.storeReview-content {
   font-size: 1.2em;
   margin-bottom: 10px;
 }
 
-.review-rating {
+.storeReview-rating {
   font-size: 1em;
   font-weight: bold;
   margin-bottom: 10px;
 }
 
-.review-images {
+.storeReview-images {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.review-image {
+.storeReview-image {
   max-width: 200px;
   max-height: 200px;
   border-radius: 5px;

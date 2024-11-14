@@ -58,7 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String userId = jwtUtil.getUserId(refreshToken);
             CustomUserDetails userDetails = (CustomUserDetails) customUserDetailService.loadUserByUsername(userId);
             String newAccessToken = jwtUtil.createAccessToken(userDetails.getIdx(), userDetails.getEmail(), userDetails.getRole(), userDetails.getUserId());
-            String newRefreshToken = jwtUtil.createRefreshToken(userDetails.getEmail());
+            String newRefreshToken = jwtUtil.createRefreshToken(userDetails.getUserId());
             redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken);
             setTokenCookie(response, "ATOKEN", newAccessToken);
             setTokenCookie(response, "RTOKEN", newRefreshToken);
@@ -95,10 +95,6 @@ public class JwtFilter extends OncePerRequestFilter {
     // Refresh Token 검증
     private boolean validateRefreshToken(String refreshToken) {
         String storedRefreshToken = (String) redisTemplate.opsForValue().get("refreshToken:" + jwtUtil.getUserId(refreshToken));
-        if(storedRefreshToken != null && storedRefreshToken.equals(refreshToken)){
-            return true;
-        }else{
-            return false;
-        }
+        return storedRefreshToken != null && storedRefreshToken.equals(refreshToken);
     }
 }

@@ -18,7 +18,7 @@
       <div class="goods-list" v-if="goodsList && goodsList.length">
         <GoodsListComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" />
       </div>
-      <div v-else>
+      <div class="notice" v-else>
         <p>등록된 굿즈가 없습니다.</p>
       </div>
       <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns"
@@ -95,7 +95,9 @@ const keywordSearchAll = async () => {
   flex-direction: row;
   width: 65rem;
 }
-
+.notice{
+    text-align: center;
+  }
 .goods-control {
   padding: 5px;
   display: flex;

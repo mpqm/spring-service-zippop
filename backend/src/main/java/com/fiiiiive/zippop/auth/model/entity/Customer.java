@@ -3,10 +3,9 @@ package com.fiiiiive.zippop.auth.model.entity;
 import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
-import com.fiiiiive.zippop.review.model.entity.Review;
+import com.fiiiiive.zippop.store.model.entity.StoreReview;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.BatchSize;
 
 import java.util.*;
 
@@ -37,9 +36,8 @@ public class Customer extends BaseEntity {
     @OneToMany(mappedBy = "customer")
     private List<Cart> cartList;
 
-
     @OneToMany(mappedBy = "customer")
-    private List<Review> reviewList;
+    private List<StoreReview> storeReviewList;
 
     @OneToMany(mappedBy = "customer")
     private List<CustomerOrders> customerOrdersList;

@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-card" @click="goGoodsDetail">
+  <div class="goods-card">
     <p class="t1">{{ goods.goodsName }}</p>
     <p class="t2">{{ goods.storeName }}</p>
     <p class="t2">
@@ -13,7 +13,7 @@
       alt="goods image"
     />
     <div class="btn-container">
-      <button class="normal-btn" @click="goStoreDetail"><img class="search-img" src="../assets/img/search-none.png" alt=""></button>
+      <button class="normal-btn" @click="goGoodsDetail"><img class="search-img" src="../assets/img/search-none.png" alt=""></button>
       <button class="normal-btn" @click="registerCart"><img src="../assets/img/cart-none.png" alt=""></button>
     </div>
   </div>
@@ -29,24 +29,32 @@ const router = useRouter();
 const toast = useToast();
 const storeStore = useStoreStore();
 const authStore = useAuthStore();
+
 const props = defineProps({
   goods: Object,
 });
-const goGoodsDetail = () => {
+
+
+const goGoodsDetail = async() => {
   router.push(`/goods/${props.goods.goodsIdx}`);
 }
 
 const registerCart = async() => {
-  const res = await storeStore.like(props.store.storeIdx);
-  if(res.success){
-    toast.success(res.message);
-  } else {
-    if(authStore.userInfo.role == "ROLE_COMPANY"){
-      toast.error(res.message);
+  if(authStore.isLoggedIn && authStore.userInfo.role == "ROLE_COMPANY"){
+      const res = await storeStore.like(props.store.storeIdx);
+    if(res.success){
+      toast.success(res.message);
     } else {
-      toast.error(res.message);
+      if(authStore.userInfo.role == "ROLE_COMPANY"){
+        toast.error(res.message);
+      } else {
+        toast.error(res.message);
+      }
     }
+  } else {
+    toast.error("로그인이 필요합니다.");
   }
+
 }
 
 </script>

@@ -4,7 +4,6 @@ import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
-import com.fiiiiive.zippop.review.model.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,11 +29,10 @@ public class Store extends BaseEntity {
     private String category;
     private Integer totalPeople;
     private Integer likeCount;
-    private String status;
 
     // OneToMany
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviewList;
+    private List<StoreReview> storeReviewList;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Goods> goodsList;

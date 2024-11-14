@@ -67,6 +67,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 const toast = useToast();
 
+const userId = ref("");
 const email = ref("");
 const password = ref("");
 const name = ref("")
@@ -107,6 +108,7 @@ const signup = async () => {
     const formData = new FormData();
     const req = {
         role: "ROLE_CUSTOMER",
+        userId: userId.value,
         email: email.value,
         password: password.value,
         name: name.value,
@@ -117,7 +119,7 @@ const signup = async () => {
     formData.append('dto', new Blob([JSON.stringify(req)], { type: 'application/json' }));
     if (file.value) { formData.append('file', file.value); }
 
-    const res = await authStore.signup(req);
+    const res = await authStore.signup(formData);
     if (res.success) {
         router.push("/");
         toast.success(res.message);

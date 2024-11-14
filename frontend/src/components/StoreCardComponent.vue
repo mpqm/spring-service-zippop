@@ -38,16 +38,22 @@ const goStoreDetail = () => {
 }
 
 const like = async() => {
-  const res = await storeStore.like(props.store.storeIdx);
-  if(res.success){
-    toast.error(res.message);
-  } else {
-    if(authStore.userInfo.role == "ROLE_COMPANY"){
+  if(authStore.isLoggedIn){
+    const res = await storeStore.like(props.store.storeIdx);
+    if(res.success){
       toast.error(res.message);
     } else {
-      toast.error(res.message);
+      if(authStore.userInfo.role == "ROLE_COMPANY"){
+        toast.error(res.message);
+      } else {
+        toast.error(res.message);
+      }
     }
+  } else {
+    router.push("/");
+    toast.error("로그인이 필요합니다.");
   }
+
 }
 
 </script>

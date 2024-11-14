@@ -1408,15 +1408,15 @@ export default {
     }
 }
 
-.review-rate-wrapper[data-v-aa9331b2] {
+.storeReview-rate-wrapper[data-v-aa9331b2] {
     display: flex
 }
 
-.review-rate[data-v-aa9331b2] {
+.storeReview-rate[data-v-aa9331b2] {
     align-self: center
 }
 
-.review-rate-desc[data-v-aa9331b2] {
+.storeReview-rate-desc[data-v-aa9331b2] {
     font-size: 1rem;
     font-weight: 500;
     line-height: 1.5;

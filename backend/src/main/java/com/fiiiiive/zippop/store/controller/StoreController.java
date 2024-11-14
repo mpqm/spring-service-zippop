@@ -5,6 +5,7 @@ import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.store.service.StoreLikeService;
+import com.fiiiiive.zippop.store.service.StoreReviewService;
 import com.fiiiiive.zippop.store.service.StoreService;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
@@ -17,7 +18,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +29,7 @@ import java.util.Objects;
 public class StoreController {
     private final StoreService storeService;
     private final StoreLikeService storeLikeService;
+    private final StoreReviewService storeReviewService;
     private final CloudFileUpload cloudFileUpload;
 
     // 팝업 스토어 등록
@@ -43,7 +44,6 @@ public class StoreController {
     }
 
     // 팝업 스토어 단일 조회
-    // @ExeTimer
     @GetMapping("/search")
     public ResponseEntity<BaseResponse<SearchStoreRes>> search(
         @RequestParam(required = false) Long storeIdx,
@@ -52,7 +52,7 @@ public class StoreController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, searchStoreRes));
     }
     
-    // 팝업 스토어 목록 조건 조회
+    // 팝업 스토어 목록 + 조건 조회(전체)
     @GetMapping("/search-all/as-guest")
     public ResponseEntity<BaseResponse<Page<SearchStoreRes>>> searchAll(
         @RequestParam(required = false) String keyword,
@@ -62,7 +62,7 @@ public class StoreController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, response));
     }
 
-    // 팝업 스토어 목록 조건 조회(기업)
+    // 팝업 스토어 목록 + 조건 조회(기업)
     @GetMapping("/search-all/as-company")
     public ResponseEntity<BaseResponse<Page<SearchStoreRes>>> searchAll(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -103,10 +103,42 @@ public class StoreController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_LIKE_SUCCESS));
     }
 
+    // 팝업 스토어 좋아요 목록 조회(고객)
     @GetMapping("/like/search-all")
     public ResponseEntity<BaseResponse> likeSearchAll(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
         List<SearchStoreLikeRes> response = storeLikeService.searchAll(customUserDetails);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_LIKE_SEARCH_ALL_SUCCESS, response));
+    }
+
+    // 팝업 스토어 리뷰 등록
+    @PostMapping("/review/register")
+    public ResponseEntity<BaseResponse> register(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long storeIdx,
+        @RequestBody CreateStoreReviewReq dto) throws BaseException {
+        CreateStoreReviewRes response = storeReviewService.register(customUserDetails, storeIdx, dto);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_REVIEW_SUCCESS, response));
+    }
+
+    // 팝업 스토어 리뷰 목록 조회(스토어)
+    @GetMapping("/review/search-all/as-guest")
+    public ResponseEntity<BaseResponse<Page<SearchStoreReviewRes>>> searchStoreAsGuest(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long storeIdx,
+        @RequestParam int page,
+        @RequestParam int size) throws BaseException {
+        Page<SearchStoreReviewRes> response = storeReviewService.searchAllAsGuest(storeIdx, page, size);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.POPUP_STORE_REVIEW_SEARCH_SUCCESS, response));
+    }
+
+    // 팝업 스토어 리뷰 목록 조회(고객)
+    @GetMapping("/review/search-all/as-customer")
+    public ResponseEntity<BaseResponse<Page<SearchStoreReviewRes>>> searchStoreAsCustomer(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam int page,
+        @RequestParam int size) throws BaseException {
+        Page<SearchStoreReviewRes> response = storeReviewService.searchAllAsCustomer(customUserDetails, page, size);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.POPUP_STORE_REVIEW_SEARCH_SUCCESS, response));
     }
 }
