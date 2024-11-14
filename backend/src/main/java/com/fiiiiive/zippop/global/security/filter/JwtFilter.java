@@ -55,11 +55,11 @@ public class JwtFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            String email = jwtUtil.getEmail(refreshToken);
-            CustomUserDetails userDetails = (CustomUserDetails) customUserDetailService.loadUserByUsername(email);
-            String newAccessToken = jwtUtil.createAccessToken(userDetails.getIdx(), userDetails.getEmail(), userDetails.getRole());
+            String userId = jwtUtil.getUserId(refreshToken);
+            CustomUserDetails userDetails = (CustomUserDetails) customUserDetailService.loadUserByUsername(userId);
+            String newAccessToken = jwtUtil.createAccessToken(userDetails.getIdx(), userDetails.getEmail(), userDetails.getRole(), userDetails.getUserId());
             String newRefreshToken = jwtUtil.createRefreshToken(userDetails.getEmail());
-            redisTemplate.opsForValue().set("refreshToken:" + email, newRefreshToken);
+            redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken);
             setTokenCookie(response, "ATOKEN", newAccessToken);
             setTokenCookie(response, "RTOKEN", newRefreshToken);
             // 새로운 Access Token을 기반으로 인증 정보 설정
@@ -71,7 +71,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 Long idx = jwtUtil.getIdx(accessToken);
                 String email = jwtUtil.getUsername(accessToken);
                 String role = jwtUtil.getRole(accessToken);
-                CustomUserDetails customUserDetails = new CustomUserDetails(idx, email, role);
+                String userId = jwtUtil.getUserId(accessToken);
+                CustomUserDetails customUserDetails = new CustomUserDetails(idx, email, role, userId);
                 Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } catch (ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException | UsernameNotFoundException e) {
@@ -93,7 +94,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     // Refresh Token 검증
     private boolean validateRefreshToken(String refreshToken) {
-        String storedRefreshToken = (String) redisTemplate.opsForValue().get("refreshToken:" + jwtUtil.getEmail(refreshToken));
+        String storedRefreshToken = (String) redisTemplate.opsForValue().get("refreshToken:" + jwtUtil.getUserId(refreshToken));
         if(storedRefreshToken != null && storedRefreshToken.equals(refreshToken)){
             return true;
         }else{

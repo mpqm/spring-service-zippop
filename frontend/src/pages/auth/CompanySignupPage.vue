@@ -10,12 +10,16 @@
             </div>
             <form class="signup-form" @submit.prevent="signup">
                 <div>
-                    <label>이메일</label>
-                    <input class="signup-input" v-model="email" type="email" placeholder="ex) example@example.com"/>
+                    <label>아이디</label>
+                    <input class="signup-input" v-model="userId" type="id" placeholder="ex) example@example.com"/>
                 </div>
                 <div>
                     <label >비밀번호</label>
                     <input class="signup-input" v-model="password" type="password" placeholder="비밀번호를 입력해 주세요."/>
+                </div>
+                <div>
+                    <label>이메일</label>
+                    <input class="signup-input" v-model="email" type="email" placeholder="ex) example@example.com"/>
                 </div>
                 <div>
                     <label >회원 이름</label>
@@ -32,11 +36,10 @@
                 <div>
                     <label >주소/상세주소</label>
                     <div class="address">
-                    <input class="signup-input" v-model="address" type="text" placeholder="주소" @click="openAddressSearch">
-                    <input class="signup-input" v-model="addressDetail" type="text" placeholder="상세 주소">
+                        <input class="signup-input" v-model="address" type="text" placeholder="주소" @click="openAddressSearch">
+                        <input class="signup-input" v-model="addressDetail" type="text" placeholder="상세 주소">
+                    </div>
                 </div>
-                </div>
-
                 <label for="file">
                     <div class="file-upload-btn">프로필 파일 업로드</div>
                 </label>
@@ -68,6 +71,7 @@ const router = useRouter();
 const toast = useToast();
 
 const email = ref("");
+const userId = ref("");
 const password = ref("");
 const name = ref("")
 const phoneNumber = ref("")
@@ -107,6 +111,7 @@ const signup = async () => {
     const formData = new FormData();
     const dto = {
         role: "ROLE_COMPANY",
+        userId: userId.value,
         email: email.value,
         password: password.value,
         name: name.value,
@@ -120,7 +125,11 @@ const signup = async () => {
     const res = await authStore.signup(formData);
     if (res.success) {
         router.push("/");
-        toast.success("가입 후 이메일 인증까지 완료하여야 계정이 활성화됩니다.");
+        if(res.code == 2000) {
+            toast.success("가입 후 이메일 인증까지 완료하여야 계정이 활성화됩니다.");
+        } else {
+            toast.success("비활성화된 계정입니다. 이메일 인증을 완료해 복구하세요, 유효시간은 3분입니다.")
+        }
     } else {
         toast.error("회원가입에 실패했습니다.")
     }

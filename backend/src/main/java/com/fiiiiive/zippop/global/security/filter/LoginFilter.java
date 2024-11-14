@@ -40,7 +40,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
             dto = objectMapper.readValue(messageBody, PostLoginReq.class);
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword(), null);
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(dto.getUserId(), dto.getPassword(), null);
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -54,13 +54,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Long idx = member.getIdx();
         String email = member.getEmail();
         String role = member.getRole();
+        String userId = member.getUserId();
 
         // 새로운 accessToken, refreshToken 발급
-        String accessToken = jwtUtil.createAccessToken(idx, email, role);
-        String refreshToken = jwtUtil.createRefreshToken(email);
+        String accessToken = jwtUtil.createAccessToken(idx, email, role, userId);
+        String refreshToken = jwtUtil.createRefreshToken(userId);
 
         // Redis에 리프레시 토큰 저장
-        redisTemplate.opsForValue().set("refreshToken:" + email, refreshToken);
+        redisTemplate.opsForValue().set("refreshToken:" + userId, refreshToken);
 
         // accessToken, refreshToken, userToken 쿠키 설정
         Cookie aToken = new Cookie("ATOKEN", accessToken);

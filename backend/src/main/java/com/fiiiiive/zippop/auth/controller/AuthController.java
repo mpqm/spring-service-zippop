@@ -1,13 +1,9 @@
 package com.fiiiiive.zippop.auth.controller;
+import com.fiiiiive.zippop.auth.model.dto.*;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.auth.model.dto.EditInfoReq;
-import com.fiiiiive.zippop.auth.model.dto.EditPasswordReq;
-import com.fiiiiive.zippop.auth.model.dto.PostSignupReq;
-import com.fiiiiive.zippop.auth.model.dto.GetInfoRes;
-import com.fiiiiive.zippop.auth.model.dto.PostSignupRes;
 import com.fiiiiive.zippop.auth.service.AuthService;
 import com.fiiiiive.zippop.global.utils.CloudFileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,11 +40,11 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/verify")
+    @GetMapping("/email-verify")
     public ResponseEntity<Void> verify(
         @RequestParam String email,
         @RequestParam String role,
-        @RequestParam String uuid) throws Exception, BaseException {
+        @RequestParam String uuid) throws BaseException {
         Boolean flag = authService.activeMember(email, role, uuid);
         if(flag){
             return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://localhost:8081/login?success=true")).build();
@@ -59,16 +55,30 @@ public class AuthController {
 
     @GetMapping("/inactive")
     public ResponseEntity<BaseResponse> inactive(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception, BaseException {
+        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
         authService.inActiveMember(customUserDetails);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_INACTIVE_SUCCESS));
+    }
+
+    @PostMapping("/find-id")
+    public ResponseEntity<BaseResponse> findId(
+        @RequestBody FindUserIdReq dto) throws BaseException {
+        authService.findId(dto);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_FIND_ID_SUCCESS));
+    }
+
+    @PostMapping("find-password")
+    public ResponseEntity<BaseResponse> findPassword(
+        @RequestBody FindPasswordReq dto) throws BaseException {
+        authService.findPassword(dto);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_FIND_PASSWORD_SUCCESS));
     }
 
     @PatchMapping("/edit-info")
     public ResponseEntity<BaseResponse> editInfo(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestPart(name = "dto") EditInfoReq dto,
-        @RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
+        @RequestPart(name = "file", required = false) MultipartFile file) throws BaseException {
         String url = cloudFileUpload.upload(file);
         authService.editInfo(customUserDetails, dto, url);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EDIT_INFO_SUCCESS));

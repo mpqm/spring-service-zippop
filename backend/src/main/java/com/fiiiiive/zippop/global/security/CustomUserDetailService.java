@@ -18,12 +18,13 @@ public class CustomUserDetailService implements UserDetailsService {
     private final CustomerRepository customerRepository;
     private final CompanyRepository companyRepository;
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Customer> resultCustomer = customerRepository.findByCustomerEmail(email);
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        Optional<Customer> resultCustomer = customerRepository.findByUserId(userId);
         if (resultCustomer.isPresent()) {
             Customer customer = resultCustomer.get();
             return CustomUserDetails.builder()
                     .idx(customer.getIdx())
+                    .userId(customer.getUserId())
                     .name(customer.getName())
                     .email(customer.getEmail())
                     .password(customer.getPassword())
@@ -31,11 +32,12 @@ public class CustomUserDetailService implements UserDetailsService {
                     .isEmailAuth(customer.getIsEmailAuth())
                     .build();
         }
-        Optional<Company> resultCompany = companyRepository.findByCompanyEmail(email);
+        Optional<Company> resultCompany = companyRepository.findByUserId(userId);
         if (resultCompany.isPresent()) {
             Company company = resultCompany.get();
             return CustomUserDetails.builder()
                     .idx(company.getIdx())
+                    .userId(company.getUserId())
                     .name(company.getName())
                     .email(company.getEmail())
                     .password(company.getPassword())

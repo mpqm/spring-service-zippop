@@ -20,6 +20,7 @@ public class Company extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
     private String email;
+    private String userId;
     private String password;
     private String name;
     private String crn; // 사업자 등록 번호

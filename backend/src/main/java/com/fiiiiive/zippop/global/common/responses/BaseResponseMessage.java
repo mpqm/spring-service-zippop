@@ -58,6 +58,10 @@ public enum BaseResponseMessage {
     MEMBER_PROFILE_FAIL(true,2071,"프로필 조회에 실패했습니다"),
     // 멤버 로그아웃 2080
     MEMBER_LOGOUT_SUCCESS(true, 2080, "로그아웃에 성공했습니다."),
+    MEMBER_FIND_ID_SUCCESS(true, 2082, "이메일로 아이디 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
+    MEMBER_FIND_ID_FAIL_EMAIL_VERIFY(false, 2081, "이메일 인증이 되지않은 사용자는 아이디 찾기를 진행할 수 없습니다."),
+    MEMBER_FIND_PASSWORD_SUCCESS(true, 2082, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
+    MEMBER_FIND_PASSWORD_FAIL_EMAIL_VERIFY(false, 2081, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
     // ========================================================================================================================
     // 팝업 스토어 3000
     // 팝업 스토어 등록 3000

@@ -10,6 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PostSignupRes {
     private Long idx;
+    private String userId;
     private Boolean isEmailAuth;
     private Boolean isInactive;
     private String role;
