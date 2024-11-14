@@ -39,12 +39,12 @@ const goGoodsDetail = () => {
 const registerCart = async() => {
   const res = await storeStore.like(props.store.storeIdx);
   if(res.success){
-    toast.success("장바구니에 추가했습니다.");
+    toast.success(res.message);
   } else {
     if(authStore.userInfo.role == "ROLE_COMPANY"){
-      toast.error("기업 회원은 장바구니 기능이 제한됩니다.");
+      toast.error(res.message);
     } else {
-      toast.error("장바구니에 추가하는데 실패했습니다.");
+      toast.error(res.message);
     }
   }
 }

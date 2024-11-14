@@ -78,10 +78,10 @@ const logout = async () => {
   if (res.success) {
     userStatus.value = false;
     router.push('/');
-    toast.success('로그아웃 성공');
+    toast.success(res.message);
     isDropdownVisible.value = false;
   } else {
-    toast.error('로그아웃 실패');
+    toast.error(res.message);
   }
 };
 

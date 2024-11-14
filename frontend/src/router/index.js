@@ -25,15 +25,16 @@ import GoodsMainPage from "@/pages/goods/GoodsMainPage.vue";
 import GoodsDetailPage from "@/pages/goods/GoodsDetailPage.vue";
 import ErrorPage from "@/pages/error/ErrorPage.vue";
 import EditProfilePage from "@/pages/mypage/EditProfilePage.vue";
+import FindIdPwPage from "@/pages/auth/FindIdPwPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/login", component: LoginPage },
-    { path: '/error', component: ErrorPage },
+    { path: '/find-idpw', component: FindIdPwPage},
     { path: "/signup/customer", component: CustomerSignupPage },
     { path: "/signup/company", component: CompanySignupPage },
-
+    
     { path: "/", component: StoreMainPage },
     { path: '/store/:storeIdx', component: StoreDetailPage },
 
@@ -65,14 +66,16 @@ const router = createRouter({
         { path: 'reviews', component: MyReviewsComponent }
       ]
     },
-
+    
     { path: '/chats', component: MainChatComponent },
-   
+    
     { path: "/payment", component: PaymentPage },
     {
       path: "/wish_popup",
       component: WishPopupPage
     },
+    
+    { path: '/error', component: ErrorPage },
     {
       path: '/:catchAll(.*)',
       redirect: '/error',

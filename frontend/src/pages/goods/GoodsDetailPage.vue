@@ -65,7 +65,7 @@ const search = async (goodsIdx) => {
         await autoSet();
     } else {
         router.push("/")
-        toast.error("해당 굿즈를 찾을 수 없습니다.")
+        toast.error(res.message);
     }
 }
 

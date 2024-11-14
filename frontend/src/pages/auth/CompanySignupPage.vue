@@ -125,13 +125,9 @@ const signup = async () => {
     const res = await authStore.signup(formData);
     if (res.success) {
         router.push("/");
-        if(res.code == 2000) {
-            toast.success("가입 후 이메일 인증까지 완료하여야 계정이 활성화됩니다.");
-        } else {
-            toast.success("비활성화된 계정입니다. 이메일 인증을 완료해 복구하세요, 유효시간은 3분입니다.")
-        }
+        toast.success(res.message);
     } else {
-        toast.error("회원가입에 실패했습니다.")
+        toast.error(res.message);
     }
 };
 </script>

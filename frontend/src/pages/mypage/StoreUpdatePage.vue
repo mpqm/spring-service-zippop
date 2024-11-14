@@ -85,7 +85,7 @@
         await autoSet();
     }else {
         router.push("/mypage/company/store")
-        toast.error("해당 팝업스토어를 찾을 수 없습니다.")
+        toast.error(res.message);
     }
   }
 
@@ -146,10 +146,10 @@
   
     const res = await storeStore.update(storeIdx.value, formData);
     if (res.success) {
-        toast.success("팝업 스토어 수정에 성공했습니다.");
+      toast.success(res.message);
         router.push("/mypage/company/store");
     } else {
-        toast.error("팝업 스토어 수정에 실패했습니다.");
+      toast.error(res.message);
     }
   };
   </script>
