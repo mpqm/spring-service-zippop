@@ -5,7 +5,6 @@
         <img class="logo-img" src="../assets/img/zippopbanner.png" />
         <a :class="{ 'nav-link': true, active: isActive('/') }" href="/">팝업찾기</a>
         <a :class="{ 'nav-link': true, active: isActive('/goods') }" href="/goods">굿즈마켓</a>
-        <a :class="{ 'nav-link': true, active: isActive('/community') }" href="/post">커뮤니티</a>
       </div>
 
       <div class="right-section" v-if="userStatus && userRole === 'ROLE_CUSTOMER'">

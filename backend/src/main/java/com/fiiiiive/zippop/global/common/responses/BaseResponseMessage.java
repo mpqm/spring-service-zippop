@@ -22,6 +22,7 @@ public enum BaseResponseMessage {
     // 회원 기능(2000)
     // 회원가입 2000
     MEMBER_REGISTER_SUCCESS(true, 2000, "이메일 인증을 완료해주세요 유효시간은 3분입니다."),
+    MEMBER_REGISTER_SUCCESS_INACTIVE_MEMBER(true, 2014, "비활성화된 계정입니다. 이메일 인증을 완료해 복구하세요, 유효시간은 3분입니다."),
     MEMBER_REGISTER_FAIL(false, 2001, "회원가입에 실패했습니다."),
     MEMBER_REGISTER_FAIL_ALREADY_REGISTER_AS_CUSTOMER(false, 2002, "이미 고객 회원으로 가입된 계정입니다. 고객 회원은 기업 회원으로 회원가입 할 수 없습니다."),
     MEMBER_REGISTER_FAIL_ALREADY_REGISTER_AS_COMPANY(false, 2003, "이미 기업 회원으로 가입된 계정입니다. 기업 회원은 고객 회원으로 회원가입할 수 없습니다."),

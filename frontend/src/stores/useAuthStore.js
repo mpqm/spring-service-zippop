@@ -8,6 +8,10 @@ export const useAuthStore = defineStore("auth", {
             email: '',
             name: '',
             role: '',
+            address: '',
+            point: '',
+            phoneNumber: '',
+            crn: '',
             profileImageUrl: '',
         },
         isLoggedIn: false 
@@ -62,13 +66,50 @@ export const useAuthStore = defineStore("auth", {
                 this.userInfo.name = res.data.result.name;
                 this.userInfo.role = res.data.result.role;
                 this.userInfo.profileImageUrl = res.data.result.profileImageUrl;
-                return res.data
+                this.userInfo.address = res.data.result.address;
+                this.userInfo.point = res.data.result.point;
+                this.userInfo.phoneNumber = res.data.result.phoneNumber;
+                this.userInfo.crn = res.data.result.crn;
+                return res.data;
             } catch (error) {
                 if (error.response.status == 401) {
                     await this.logout();
                 }
                 return error.response.data
             }
-        }
+        },
+        async editInfo(req) {
+            try{
+                const res = await axios.patch(
+                    `${backend}/auth/edit-info`, req, 
+                    { headers: { 'Content-Type': 'multipart/form-data' }, withCredentials: true }
+                );
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        },
+        async editPassword(req) {
+            try{
+                const res = await axios.patch(
+                    `${backend}/auth/edit-password`, req, 
+                    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+                );
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        },
+        async inActive() {
+            try{
+                const res = await axios.get(
+                    `${backend}/auth/inactive`,
+                    { withCredentials: true }
+                );
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        },
     },
 });

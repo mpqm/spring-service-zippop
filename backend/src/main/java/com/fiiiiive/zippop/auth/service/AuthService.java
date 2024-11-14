@@ -198,7 +198,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void editInfo(CustomUserDetails customUserDetails, EditInfoReq dto) throws BaseException {
+    public void editInfo(CustomUserDetails customUserDetails, EditInfoReq dto, String fileName) throws BaseException {
         if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
             Optional<Company> result = companyRepository.findByCompanyIdx(customUserDetails.getIdx());
             if(result.isPresent()){
@@ -207,6 +207,7 @@ public class AuthService {
                 company.setAddress(dto.getAddress());
                 company.setCrn(dto.getCrn());
                 company.setPhoneNumber(dto.getPhoneNumber());
+                company.setProfileImageUrl(fileName);
                 companyRepository.save(company);
             } else {
                 throw new BaseException(BaseResponseMessage.MEMBER_EDIT_INFO_FAIL);
@@ -218,6 +219,7 @@ public class AuthService {
                 customer.setName(dto.getName());
                 customer.setAddress(dto.getAddress());
                 customer.setPhoneNumber(dto.getPhoneNumber());
+                customer.setProfileImageUrl(fileName);
                 customerRepository.save(customer);
             } else {
                 throw new BaseException(BaseResponseMessage.MEMBER_EDIT_INFO_FAIL);
