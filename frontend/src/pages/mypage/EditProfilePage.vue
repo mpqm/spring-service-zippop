@@ -1,5 +1,6 @@
 <template>
     <div>
+        <hr>
         <div class="edit-profile-container">
             <h3 class="t1">회원정보 수정</h3>
             <form @submit.prevent="editInfo" class="edit-profile-form">
@@ -50,6 +51,7 @@
             <h3 class="t1">계정 비활성화</h3>
             <button class="inActive-btn" @click="inActive">계정 비활성화</button>
         </div>
+        <hr>
     </div>
 </template>
 

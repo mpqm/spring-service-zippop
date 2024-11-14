@@ -12,10 +12,10 @@
  </template>
  
  <script setup>
-import HeaderComponent from "@/components/HeaderComponent.vue";
-import FooterComponent from "@/components/FooterComponent.vue";
-import MyPageHeaderComponent from "@/components/MyPageHeaderComponent.vue";
-import MyPageViewComponent from "@/components/MyPageViewComponent.vue";
+import HeaderComponent from "@/components/common/HeaderComponent.vue";
+import FooterComponent from "@/components/common/FooterComponent.vue";
+import MyPageHeaderComponent from "@/components/mypage/MyPageHeaderComponent.vue";
+import MyPageViewComponent from "@/components/mypage/MyPageViewComponent.vue";
 import { onMounted, ref } from "vue";
 import { useAuthStore } from "@/stores/useAuthStore";
 const authStore = useAuthStore();

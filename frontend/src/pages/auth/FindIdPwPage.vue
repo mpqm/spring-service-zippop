@@ -25,8 +25,8 @@
 </template>
 
 <script setup>
-import FooterComponent from "@/components/FooterComponent.vue";
-import HeaderComponent from '@/components/HeaderComponent.vue';
+import FooterComponent from "@/components/common/FooterComponent.vue";
+import HeaderComponent from '@/components/common/HeaderComponent.vue';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ref } from "vue";
 import { useToast } from "vue-toastification";

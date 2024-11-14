@@ -1,47 +1,49 @@
 <template>
-  <div class="store-card">
-    <p class="t1">{{ store.storeName }}</p>
-    <p class="t2">{{ store.category }}</p>
+  <div class="goods-card">
+    <p class="t1">{{ goods.goodsName }}</p>
+    <p class="t2">{{ goods.storeName }}</p>
     <p class="t2">
-      <img class="like-img" src="../assets/img/like-fill.png" alt="" />{{ store.likeCount }}
-      <img class="people-img" src="../assets/img/people.png" alt="" />{{ store.totalPeople }}
+      <img class="coin-img" src="../../assets/img/coin.png" alt="" />{{ goods.goodsPrice }}원
+      <img class="stock-img" src="../../assets/img/stock.png" alt="" />{{ goods.goodsAmount }}개
     </p>
-    <p class="t3">{{ store.storeStartDate }} ~ {{ store.storeEndDate }}</p>
     <img
-      class="store-img"
-      v-if="store.searchStoreImageResList && store.searchStoreImageResList.length"
-      :src="store.searchStoreImageResList[0].storeImageUrl"
-      alt="store image"
+      class="goods-img"
+      v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length"
+      :src="goods.searchGoodsImageResList[0].goodsImageUrl"
+      alt="goods image"
     />
     <div class="btn-container">
-      <button class="normal-btn" @click="goStoreDetail"><img class="search-img" src="../assets/img/search-none.png" alt=""></button>
-      <button class="normal-btn" @click="like"><img class="search-img" src="../assets/img/like-none.png" alt=""></button>
+      <button class="normal-btn" @click="goGoodsDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+      <button class="normal-btn" @click="registerCart"><img src="../../assets/img/cart-none.png" alt=""></button>
     </div>
   </div>
 </template>
   
   <script setup>
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useStoreStore } from "@/stores/useStoreStore";
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
-import { useStoreStore } from "@/stores/useStoreStore";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/useAuthStore";
 const router = useRouter(); 
+const toast = useToast();
 const storeStore = useStoreStore();
 const authStore = useAuthStore();
-const toast = useToast();
+
 const props = defineProps({
-  store: Object,
+  goods: Object,
 });
-const goStoreDetail = () => {
-  router.push(`/store/${props.store.storeIdx}`);
+
+
+const goGoodsDetail = async() => {
+  router.push(`/goods/${props.goods.goodsIdx}`);
 }
 
-const like = async() => {
-  if(authStore.isLoggedIn){
-    const res = await storeStore.like(props.store.storeIdx);
+const registerCart = async() => {
+  if(authStore.isLoggedIn && authStore.userInfo.role == "ROLE_COMPANY"){
+      const res = await storeStore.like(props.store.storeIdx);
     if(res.success){
-      toast.error(res.message);
+      toast.success(res.message);
     } else {
       if(authStore.userInfo.role == "ROLE_COMPANY"){
         toast.error(res.message);
@@ -50,7 +52,6 @@ const like = async() => {
       }
     }
   } else {
-    router.push("/");
     toast.error("로그인이 필요합니다.");
   }
 
@@ -59,7 +60,7 @@ const like = async() => {
 </script>
   
 <style scoped>
-.store-card {
+.goods-card {
   width: auto;
   max-width: auto;
   border: 1px solid #ddd;
@@ -81,36 +82,37 @@ const like = async() => {
 }
 
 .t3 {
-  font-size: 11px;
+  margin: 4px 0;
+  color: red;
 }
-
-.store-img {
+.search-img {
+  width: 20px;
+  height: auto;
+}
+.goods-img {
   width: 100%;
   height: 100%;
   border-radius: 8px;
   margin-top: 4px;
 }
-
-.search-img {
-  width: 20px;
-  height: auto;
+.goods-info {
+  display: flex;
+  gap: 10px;
 }
 
-.like-img {
+.coin-img {
   object-fit: cover;
   width: auto;
   height: 20px;
   vertical-align: middle;
-  padding-right: 5px;
 }
 
-.people-img {
+.stock-img {
   object-fit: cover;
   width: auto;
-  height: 30px;
+  height: 20px;
   vertical-align: middle;
 }
-
 .btn-container{
   display: flex;
   width: auto;

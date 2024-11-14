@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class SearchStoreReviewRes {
     private Long reviewIdx;
     private String customerEmail;
+    private String customerName;
     private String reviewTitle;
     private String reviewContent;
     private Integer reviewRating;

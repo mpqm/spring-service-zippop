@@ -25,8 +25,8 @@
   </template>
   
   <script setup>
-  import StoreListComponent from "@/components/StoreListComponent.vue";
-  import PaginationComponent from "@/components/PaginationComponent.vue";
+  import StoreListComponent from "@/components/store/StoreListComponent.vue";
+  import PaginationComponent from "@/components/common/PaginationComponent.vue";
   import { useStoreStore } from "@/stores/useStoreStore";
   import { onMounted, ref } from "vue";
   
@@ -53,7 +53,7 @@
   };
   
   const searchAll = async (page) => {
-    const res = await storeStore.searchAllAsCompany(page, pageSize.value);
+    const res = await storeStore.searchAllStoreAsCompany(page, pageSize.value);
     if(res.success){
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;
@@ -69,7 +69,7 @@
 
   const keywordSearchAll = async () => {
   currentPage.value = 0;
-  const res = await storeStore.searchAllByKeywordAsCompany(searchQuery.value, currentPage.value, pageSize.value);
+  const res = await storeStore.searchAllStoreByKeywordAsCompany(searchQuery.value, currentPage.value, pageSize.value);
   if(res.success){
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;

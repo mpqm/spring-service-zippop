@@ -37,8 +37,8 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/useAuthStore';
-import HeaderComponent from '@/components/HeaderComponent.vue';
-import FooterComponent from "@/components/FooterComponent.vue";
+import HeaderComponent from '@/components/common/HeaderComponent.vue';
+import FooterComponent from "@/components/common/FooterComponent.vue";
 import { useToast } from "vue-toastification";
 
 const authStore = useAuthStore();

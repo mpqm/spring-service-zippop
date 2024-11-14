@@ -72,7 +72,7 @@ const register = async () => {
   const formData = new FormData();
   formData.append("dto", new Blob([JSON.stringify(req)], { type: "application/json" }));
   Array.from(files.value).forEach((file) => {formData.append("files", file);});
-  const res = await goodsStore.register(route.params.storeIdx,formData);
+  const res = await goodsStore.registerGoods(route.params.storeIdx,formData);
   if (res.success) {
     router.push(`/mypage/company/goods/${route.params.storeIdx}`);
     toast.success(res.message);

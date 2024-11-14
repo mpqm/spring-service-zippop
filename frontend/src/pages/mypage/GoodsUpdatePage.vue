@@ -58,7 +58,7 @@ const files = ref([]);
   });
   
   const search = async(goodsIdx) => {
-    const res = await goodsStore.search(goodsIdx);
+    const res = await goodsStore.searchGoods(goodsIdx);
     if(res.success){
       goods.value = goodsStore.goods;
       await autoSet();
@@ -102,7 +102,7 @@ const files = ref([]);
       formData.append("files", file); 
     });
   
-    const res = await goodsStore.update(route.params.goodsIdx, formData);
+    const res = await goodsStore.updateGoods(route.params.goodsIdx, formData);
     if (res.success) {
       toast.success(res.message);
       router.push(`/mypage/company/goods/${route.params.goodsIdx}`);

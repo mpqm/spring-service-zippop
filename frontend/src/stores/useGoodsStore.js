@@ -13,7 +13,7 @@ export const useGoodsStore = defineStore("goods", {
   }),
   persist: { storage: sessionStorage, },
   actions: {
-    async register(storeIdx, req) {
+    async registerGoods(storeIdx, req) {
       try {
         const res = await axios.post(
           `${backend}/goods/register?storeIdx=${storeIdx}`, req,
@@ -24,7 +24,7 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
-    async search(goodsIdx) {
+    async searchGoods(goodsIdx) {
       try {
         const res = await axios.get(
           `${backend}/goods/search?goodsIdx=${goodsIdx}`
@@ -35,7 +35,7 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
-    async searchAll(page, size) {
+    async searchAllGoods(page, size) {
       try {
         const res = await axios.get(
           `${backend}/goods/search-all?page=${page}&size=${size}`
@@ -48,7 +48,7 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
-    async searchAllByKeyword(keyword, page, size) {
+    async searchAllGoodsByKeyword(keyword, page, size) {
       try {
         const res = await axios.get(
           `${backend}/goods/search-all?keyword=${keyword}&page=${page}&size=${size}`
@@ -61,7 +61,7 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
-    async searchAllByStoreIdx(storeIdx, page, size) {
+    async searchAllGoodsByStoreIdx(storeIdx, page, size) {
       try {
         const res = await axios.get(
           `${backend}/goods/search-all?storeIdx=${storeIdx}&page=${page}&size=${size}`
@@ -74,7 +74,7 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
-    async searchAllByKeywordAndStoreIdx(keyword, storeIdx, page, size) {
+    async searchAllGoodsByKeywordAndStoreIdx(keyword, storeIdx, page, size) {
       try {
         const res = await axios.get(
           `${backend}/goods/search-all?keyword=${keyword}&storeIdx=${storeIdx}&page=${page}&size=${size}`
@@ -87,7 +87,7 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
-    async update(goodsIdx, req) {
+    async updateGoods(goodsIdx, req) {
       try {
         const res = await axios.patch(
           `${backend}/goods/update?goodsIdx=${goodsIdx}`, req,
@@ -98,7 +98,7 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
-    async delete(goodsIdx) {
+    async deleteGoods(goodsIdx) {
       try {
         const res = await axios.delete(
           `${backend}/goods/delete?goodsIdx=${goodsIdx}`,

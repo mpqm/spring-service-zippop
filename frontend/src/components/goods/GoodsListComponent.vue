@@ -10,8 +10,8 @@
       <p class="t1">{{ goods.goodsName }}</p>
     </div>
     <div class="goods-info2">
-        <img class="coin-img" src="../assets/img/coin.png" alt="" />&nbsp;{{ goods.goodsPrice }}
-        <img class="stock-img" src="../assets/img/stock.png" alt="" />&nbsp;{{ goods.goodsAmount }}
+        <img class="coin-img" src="../../assets/img/coin.png" alt="" />&nbsp;{{ goods.goodsPrice }}
+        <img class="stock-img" src="../../assets/img/stock.png" alt="" />&nbsp;{{ goods.goodsAmount }}
       </div>
     <div v-if="showControl == true" class="btn-container">
       <router-link class="ud-btn" :to="goods ? `/goods/${goods.goodsIdx}` : '#'">보기</router-link>
@@ -30,7 +30,7 @@ import { defineProps, ref } from "vue";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from "vue-router";
-import GoodsModalComponent from "@/components/GoodsModalComponent.vue"; 
+import GoodsModalComponent from "@/components/goods/GoodsModalComponent.vue"; 
 
 const toast = useToast();
 const router = useRouter();
@@ -45,7 +45,7 @@ const props = defineProps({
 const isModalOpen = ref(false);
 
 const deleteGoods = async () => {
-  const res = await goodsStore.delete(props.goods.goodsIdx);
+  const res = await goodsStore.deleteGoods(props.goods.goodsIdx);
   if (res.success) {
     toast.success(res.message);
     router.go(0);

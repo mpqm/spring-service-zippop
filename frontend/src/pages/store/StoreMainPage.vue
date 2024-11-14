@@ -20,10 +20,10 @@
   </div>
 </template>
 <script setup>
-import HeaderComponent from "@/components/HeaderComponent.vue";
-import FooterComponent from "@/components/FooterComponent.vue";
-import StoreCardComponent from "@/components/StoreCardComponent.vue";
-import PaginationComponent from "@/components/PaginationComponent.vue";
+import HeaderComponent from "@/components/common/HeaderComponent.vue";
+import FooterComponent from "@/components/common/FooterComponent.vue";
+import StoreCardComponent from "@/components/store/StoreCardComponent.vue";
+import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
 
@@ -54,7 +54,7 @@ const changePage = (newPage) => {
 };
 
 const searchAll = async (page) => {
-  await storeStore.searchAll(page, pageSize.value);
+  await storeStore.searchAllStore(page, pageSize.value);
   totalElements.value = storeStore.totalElements;
   totalPages.value = storeStore.totalPages;
   storeList.value = storeStore.storeList;
@@ -63,7 +63,7 @@ const searchAll = async (page) => {
 
 const keywordSearchAll = async () => {
   currentPage.value = 0;
-  const res = await storeStore.searchAllByKeyword(searchQuery.value, currentPage.value, pageSize.value);
+  const res = await storeStore.searchAllStoreByKeyword(searchQuery.value, currentPage.value, pageSize.value);
   if(res.success){
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;
@@ -102,7 +102,6 @@ const keywordSearchAll = async () => {
   gap: 10px;
   justify-content: center;
   padding-bottom: 16px;
-  border-bottom: .0625rem solid #e1e1e1;
 }
 
 .search-input {

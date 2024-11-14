@@ -2,17 +2,17 @@
   <div class="header">
     <div class="header-container">
       <div class="left-section">
-        <img class="logo-img" src="../assets/img/zippopbanner.png" />
+        <img class="logo-img" src="../../assets/img/zippopbanner.png" />
         <a :class="{ 'nav-link': true, active: isActive('/') }" href="/">팝업찾기</a>
         <a :class="{ 'nav-link': true, active: isActive('/goods') }" href="/goods">굿즈마켓</a>
       </div>
 
       <div class="right-section" v-if="userStatus && userRole === 'ROLE_CUSTOMER'">
         <div class="user-info" @click="toggleDropdown">
-          <img src="../assets/img/customer.png" alt="Customer Icon" />
+          <img src="../../assets/img/customer.png" alt="Customer Icon" />
           <span>{{ userName }}</span>
           <img class="profile-img" :src="userProfileImageUrl" />
-          <img src="../assets/img/drop-down.png"/>
+          <img src="../../assets/img/drop-down.png"/>
           <div class="dropdown" v-if="isDropdownVisible" >
             <a class="dropdown-link" href="/mypage/customer">마이페이지</a>
             <a class="dropdown-link" href="/cart">장바구니</a>
@@ -23,10 +23,10 @@
 
       <div class="right-section" v-if="userStatus && userRole === 'ROLE_COMPANY'">
         <div class="user-info" @click="toggleDropdown">
-          <img class="company-img" src="../assets/img/company.png" alt="Company Icon" />
+          <img class="company-img" src="../../assets/img/company.png" alt="Company Icon" />
           <span>{{ userName }}</span>
           <img class="profile-img" :src="userProfileImageUrl" />
-          <img src="../assets/img/drop-down.png"/>
+          <img src="../../assets/img/drop-down.png"/>
           <div class="dropdown" v-if="isDropdownVisible" >
               <a class="dropdown-link" href="/mypage/company/store">관리페이지</a>
               <a class="dropdown-link"  @click="logout">로그아웃</a>

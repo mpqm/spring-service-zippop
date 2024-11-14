@@ -57,31 +57,33 @@ public class StoreReviewService {
     public Page<SearchStoreReviewRes> searchAllAsGuest(Long storeIdx, int page, int size) throws BaseException {
         Page<StoreReview> result = storeReviewRepository.findByStoreIdx(storeIdx, PageRequest.of(page, size))
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_STORE_NOT_EXIST));
-        Page<SearchStoreReviewRes> getPopupReviewResPage = result.map(popupReview -> SearchStoreReviewRes.builder()
-                .reviewIdx(popupReview.getIdx())
-                .customerEmail(popupReview.getCustomerEmail())
-                .reviewTitle(popupReview.getTitle())
-                .reviewContent(popupReview.getContent())
-                .reviewRating(popupReview.getRating())
-                .createdAt(popupReview.getCreatedAt())
-                .updatedAt(popupReview.getUpdatedAt())
+        Page<SearchStoreReviewRes> getReviewResPage = result.map(review -> SearchStoreReviewRes.builder()
+                .reviewIdx(review.getIdx())
+                .customerName(review.getCustomerName())
+                .customerEmail(review.getCustomerEmail())
+                .reviewTitle(review.getTitle())
+                .reviewContent(review.getContent())
+                .reviewRating(review.getRating())
+                .createdAt(review.getCreatedAt())
+                .updatedAt(review.getUpdatedAt())
                 .build());
-        return getPopupReviewResPage;
+        return getReviewResPage;
     }
 
     // 고객이 작성한 팝업 스토어 리뷰 목록 조회
     public Page<SearchStoreReviewRes> searchAllAsCustomer(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
         Page<StoreReview> result = storeReviewRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size))
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_STORE_NOT_EXIST));
-        Page<SearchStoreReviewRes> getPopupReviewResPage = result.map(popupReview -> SearchStoreReviewRes.builder()
-                .reviewIdx(popupReview.getIdx())
-                .customerEmail(popupReview.getCustomerEmail())
-                .reviewTitle(popupReview.getTitle())
-                .reviewContent(popupReview.getContent())
-                .reviewRating(popupReview.getRating())
-                .createdAt(popupReview.getCreatedAt())
-                .updatedAt(popupReview.getUpdatedAt())
+        Page<SearchStoreReviewRes> getReviewResPage = result.map(review -> SearchStoreReviewRes.builder()
+                .reviewIdx(review.getIdx())
+                .customerEmail(review.getCustomerEmail())
+                .customerName(review.getCustomerName())
+                .reviewTitle(review.getTitle())
+                .reviewContent(review.getContent())
+                .reviewRating(review.getRating())
+                .createdAt(review.getCreatedAt())
+                .updatedAt(review.getUpdatedAt())
                 .build());
-        return getPopupReviewResPage;
+        return getReviewResPage;
     }
 }

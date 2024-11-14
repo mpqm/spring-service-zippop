@@ -20,10 +20,10 @@
   </div>
 </template>
 <script setup>
-import HeaderComponent from "@/components/HeaderComponent.vue";
-import FooterComponent from "@/components/FooterComponent.vue";
-import GoodsCardComponent from "@/components/GoodsCardComponent.vue";
-import PaginationComponent from "@/components/PaginationComponent.vue";
+import HeaderComponent from "@/components/common/HeaderComponent.vue";
+import FooterComponent from "@/components/common/FooterComponent.vue";
+import GoodsCardComponent from "@/components/goods/GoodsCardComponent.vue";
+import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { onMounted, ref } from "vue";
 
@@ -54,7 +54,7 @@ const changePage = (newPage) => {
 };
 
 const searchAll = async (page) => {
-  await goodsStore.searchAll(page, pageSize.value);
+  await goodsStore.searchAllGoods(page, pageSize.value);
   totalElements.value = goodsStore.totalElements;
   totalPages.value = goodsStore.totalPages;
   goodsList.value = goodsStore.goodsList;
@@ -63,7 +63,7 @@ const searchAll = async (page) => {
 
 const searchAllByKeyword = async () => {
   currentPage.value = 0;
-  const res = await goodsStore.searchAllByKeyword(searchQuery.value, currentPage.value, pageSize.value);
+  const res = await goodsStore.searchAllGoodsByKeyword(searchQuery.value, currentPage.value, pageSize.value);
   if(res.success){
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
@@ -102,7 +102,6 @@ const searchAllByKeyword = async () => {
   gap: 10px;
   justify-content: center;
   padding-bottom: 16px;
-  border-bottom: .0625rem solid #e1e1e1;
 }
 
 .search-input {

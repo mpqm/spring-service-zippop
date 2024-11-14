@@ -12,8 +12,8 @@
       <p class="t3">{{ store.storeStartDate }} ~ {{ store.storeEndDate }}</p>
     </div>
     <div class="store-info2">
-        <img class="like-img" src="../assets/img/like-fill.png" alt="" />&nbsp;{{ store.likeCount }}
-        <img class="people-img" src="../assets/img/people.png" alt="" />&nbsp;{{ store.totalPeople }}
+        <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ store.likeCount }}
+        <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ store.totalPeople }}
       </div>
     <div v-if="showControl == true" class="btn-container">
         <router-link class="ud-btn" :to="store ? `/store/${store.storeIdx}` : '#'">보기</router-link>
@@ -41,7 +41,7 @@ const props = defineProps({
 });
 
 const deleteStore = async() => {
-    const res = await storeStore.delete(props.store.storeIdx);
+    const res = await storeStore.deleteStore(props.store.storeIdx);
     if(res.success){
         toast.success(res.message)
         router.go(0)

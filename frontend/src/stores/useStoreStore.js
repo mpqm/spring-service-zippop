@@ -8,12 +8,14 @@ export const useStoreStore = defineStore("store", {
   state: () => ({
     storeList: [],
     store: {},
+    likeList: {},
+    reviewList: [],
     totalElements: null,
     totalPages: null,
   }),
   persist: { storage: sessionStorage, },
   actions: {
-    async register(req) {
+    async registerStore(req) {
       try {
         const res = await axios.post(
           `${backend}/store/register`, req,
@@ -24,7 +26,7 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async search(storeIdx) {
+    async searchStore(storeIdx) {
       try {
         const res = await axios.get(
           `${backend}/store/search?storeIdx=${storeIdx}`
@@ -35,7 +37,7 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAll(page, size) {
+    async searchAllStore(page, size) {
       try {
         const res = await axios.get(
           `${backend}/store/search-all/as-guest?page=${page}&size=${size}`
@@ -48,7 +50,7 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllByKeyword(keyword, page, size) {
+    async searchAllStoreByKeyword(keyword, page, size) {
       try {
         const res = await axios.get(
           `${backend}/store/search-all/as-guest?keyword=${keyword}&page=${page}&size=${size}`
@@ -61,7 +63,7 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllAsCompany(page, size) {
+    async searchAllStoreAsCompany(page, size) {
       try {
         const res = await axios.get(
           `${backend}/store/search-all/as-company?page=${page}&size=${size}`,
@@ -75,7 +77,7 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllByKeywordAsCompany(keyword, page, size) {
+    async searchAllStoreByKeywordAsCompany(keyword, page, size) {
       try {
         const res = await axios.get(
           `${backend}/store/search-all/as-company?keyword=${keyword}&page=${page}&size=${size}`,
@@ -89,7 +91,29 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async like(storeIdx) {
+    async updateStore(storeIdx, req) {
+      try {
+        const res = await axios.patch(
+          `${backend}/store/update?storeIdx=${storeIdx}`, req,
+          { headers: { "Content-Type": "multipart/form-data", }, withCredentials: true },
+        );
+        return res.data
+      } catch (error) {
+        return error.response.data;
+      }
+    },
+    async deleteStore(storeIdx) {
+      try {
+        const res = await axios.delete(
+          `${backend}/store/delete?storeIdx=${storeIdx}`,
+          { withCredentials: true },
+        );
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }
+    },
+    async registerLike(storeIdx) {
       try {
         const res = await axios.get(
           `${backend}/store/like?storeIdx=${storeIdx}`, 
@@ -100,7 +124,7 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async likeSearchAll() {
+    async searchAllLike() {
       try {
         const res = await axios.get(
           `${backend}/store/like/search-all`, 
@@ -112,27 +136,43 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async update(storeIdx, req) {
+    async registerReview(storeIdx, req){
       try {
-        const res = await axios.patch(
-          `${backend}/store/update?storeIdx=${storeIdx}`, req,
-          { headers: { "Content-Type": "multipart/form-data", }, withCredentials: true },
-        );
-        return res.data
-      } catch (error) {
-        return error.response.data;
-      }
-    },
-    async delete(storeIdx) {
-      try {
-        const res = await axios.delete(
-          `${backend}/store/delete?storeIdx=${storeIdx}`,
+        const res = await axios.post(
+          `${backend}/store/review/registe?storeIdx=${storeIdx}`, req,
           { withCredentials: true },
         );
         return res.data;
       } catch (error) {
         return error.response.data;
       }
+    },
+    async searchAllReview(storeIdx, page, size){
+      try {
+        const res = await axios.get(
+          `${backend}/store/review/search-all/as-guest?storeIdx=${storeIdx}&page=${page}&size=${size}`,
+        );
+        this.reviewList = res.data.result.content;
+        this.totalElements = res.data.result.totalElements;
+        this.totalPages = res.data.result.totalPages;
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }      
+    },
+    async searchAllReviewAsCustomer(page, size){
+      try {
+        const res = await axios.get(
+          `${backend}/store/review/search-all/as-customer?&page=${page}&size=${size}`,
+          { withCredentials: true },
+        );
+        this.reviewList = res.data.content;
+        this.totalElements = res.data.result.totalElements;
+        this.totalPages = res.data.result.totalPages;
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }      
     }
   },
 });
