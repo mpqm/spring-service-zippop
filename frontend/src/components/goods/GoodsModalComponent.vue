@@ -8,7 +8,7 @@
           </div>
           <div class="modal-body">
             <div class="left-panel">
-              <img v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length" :src="goods.searchGoodsImageResList[0].goodsImageUrl" alt="goods image" />
+              <ImageSlider class="image-slider" :fileUrls="fileUrls"></ImageSlider>
             </div>
             <div class="right-panel">
                 <div class="title">
@@ -16,8 +16,8 @@
                     <p>{{ goods.goodsName }}</p>
                 </div>
                 <p class="t2">
-                    <img class="people-img" src="../assets/img/coin.png" alt="" />{{ goods.goodsPrice }}원
-                    <img class="like-img" src="../assets/img/stock.png" alt="" />{{ goods.goodsAmount }}개
+                    <img class="people-img" src="../../assets/img/coin.png" alt="" />{{ goods.goodsPrice }}원
+                    <img class="like-img" src="../../assets/img/stock.png" alt="" />{{ goods.goodsAmount }}개
                 </p>
                 <p> {{ goods.goodsContent }}</p>
             </div>
@@ -28,14 +28,22 @@
   </template>
   
   <script setup>
-  import { defineProps } from "vue";
+  import {ref, defineProps, onMounted } from "vue";
+  import ImageSlider from "@/components/common/ImageSlider.vue";
   
-defineProps({
+  const props = defineProps({
     goods: Object,
     isModalOpen: Boolean,
     closeModal: Function,
   });
   
+  const fileUrls = ref([]);
+  
+  onMounted(async () => {
+    if (props.goods.searchGoodsImageResList && props.goods.searchGoodsImageResList.length) {
+      fileUrls.value = props.goods.searchGoodsImageResList.map(image => image.goodsImageUrl);
+    }
+  });
   </script>
   
   <style scoped>
@@ -61,7 +69,12 @@ defineProps({
     overflow-y: auto;
     max-height: 80vh;
   }
-  
+
+  .image-slider {
+    width: 100%;
+    height: 100%;
+}
+
   .modal-content {
     display: flex;
     flex-direction: column;

@@ -4,11 +4,7 @@
         <div class="detail-page">
             <div class="detail-container">
                 <div class="left-panel">
-                <div v-if="fileUrls.length" class="file-preview">
-                    <div v-for="(fileUrl, index) in fileUrls" :key="index" class="file-preview-item">
-                        <img :src="fileUrl" alt="file preview" />
-                    </div>
-                </div>
+                    <ImageSlider class="image-slider" :fileUrls="fileUrls"></ImageSlider>
             </div>
             <div class="right-panel">
                     <div class="title">
@@ -20,7 +16,7 @@
                         <img class="like-img" src="../../assets/img/stock.png" alt="" />{{ goodsAmount }}개
                     </p>
                     <p> {{ goodsContent }}</p>
-                    <div class="btn-container">
+                    <div v-if="hideBtns==true" class="btn-container">
                         <button class="normal-btn" @click="goStoreDetail"><img class="search-img" src="../../assets/img/cart-none.png" alt="">&nbsp;<p>카트추가</p></button>
                         <button class="normal-btn" @click="like"><img class="search-img" src="../../assets/img/payment-none.png" alt="">&nbsp;<p>결제하기</p></button>
                     </div>
@@ -32,14 +28,17 @@
 </template>
 
 <script setup>
-import HeaderComponent from "@/components/HeaderComponent.vue";
-import FooterComponent from "@/components/FooterComponent.vue";
+import HeaderComponent from "@/components/common/HeaderComponent.vue";
+import FooterComponent from "@/components/common/FooterComponent.vue";
+import ImageSlider from "@/components/common/ImageSlider.vue";
 import { ref, onMounted } from "vue";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const goodsStore = useGoodsStore();
+const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -52,14 +51,17 @@ const goodsContent = ref("");
 const goodsAmount = ref(0);
 const fileUrls = ref([]);
 const goods = ref({});
-
+const hideBtns = ref(true);
 onMounted(async () => {
     await search(route.params.goodsIdx);
     await autoSet();
+    if(authStore.userInfo.role === "ROLE_CUSTOMER"){
+        hideBtns.value = true;
+    }
 });
 
 const search = async (goodsIdx) => {
-    const res = await goodsStore.search(goodsIdx);
+    const res = await goodsStore.searchGoods(goodsIdx);
     if (res.success) {
         goods.value = goodsStore.goods;
         await autoSet();
@@ -91,6 +93,12 @@ const autoSet = async () => {
     width: 65rem;
     gap: 2rem;
 }
+
+.image-slider {
+    width: 100%;
+    height: 100%;
+}
+
 .detail-container {
     display: flex;
     flex-direction: row;
@@ -107,11 +115,8 @@ const autoSet = async () => {
 .right-panel {
     width: 50%;
     padding: 1rem;
-    border: 1px solid #00c7ae;
-    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 .file-preview {
     display: flex;
@@ -139,6 +144,7 @@ const autoSet = async () => {
 }
 .btn-container{
   display: flex;
+  flex-direction: column;
   width: auto;
   gap: 10px;
 }

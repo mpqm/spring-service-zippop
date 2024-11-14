@@ -74,6 +74,7 @@ public class GoodsService {
             searchGoodsImageResList.add(searchGoodsImageRes);
         }
         return SearchGoodsRes.builder()
+                .storeName(goods.getStore().getName())
                 .goodsIdx(goods.getIdx())
                 .goodsName(goods.getName())
                 .goodsPrice(goods.getPrice())

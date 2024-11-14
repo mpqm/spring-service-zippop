@@ -28,8 +28,8 @@
 </template>
 
 <script setup>
-import GoodsListComponent from "@/components/GoodsListComponent.vue";
-import PaginationComponent from "@/components/PaginationComponent.vue";
+import GoodsListComponent from "@/components/goods/GoodsListComponent.vue";
+import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -58,7 +58,7 @@ const changePage = (newPage) => {
 };
 
 const searchAll = async (storeIdx, page) => {
-  const res = await goodsStore.searchAllByStoreIdx(storeIdx, page, pageSize.value);
+  const res = await goodsStore.searchAllGoodsByStoreIdx(storeIdx, page, pageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
@@ -74,7 +74,7 @@ const searchAll = async (storeIdx, page) => {
 
 const keywordSearchAll = async () => {
   currentPage.value = 0;
-  const res = await goodsStore.searchAllByKeywordAndStoreIdx(searchQuery.value, route.params.storeIdx, currentPage.value, pageSize.value);
+  const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(searchQuery.value, route.params.storeIdx, currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;

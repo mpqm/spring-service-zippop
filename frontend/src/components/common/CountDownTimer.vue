@@ -1,6 +1,6 @@
 <template>
     <div class="countdown-timer">
-      남은 시간: {{ days }}일 {{ hours }}시간 {{ minutes }}분 {{ seconds }}초
+      종료까지 남은 시간: {{ days }}일 {{ hours }}시간 {{ minutes }}분 {{ seconds }}초
     </div>
   </template>
   

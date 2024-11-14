@@ -79,7 +79,7 @@
   });
   
   const search = async(storeIdx) => {
-    const res = await storeStore.search(storeIdx);
+    const res = await storeStore.searchStore(storeIdx);
     if(res.success){
         store.value = storeStore.store;
         await autoSet();
@@ -144,7 +144,7 @@
       formData.append("files", file); 
     });
   
-    const res = await storeStore.update(storeIdx.value, formData);
+    const res = await storeStore.updateStore(storeIdx.value, formData);
     if (res.success) {
       toast.success(res.message);
         router.push("/mypage/company/store");

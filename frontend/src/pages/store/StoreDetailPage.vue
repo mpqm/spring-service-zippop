@@ -4,11 +4,7 @@
         <div class="detail-page">
             <div class="detail-container">
                 <div class="left-panel">
-                    <div v-if="fileUrls.length" class="file-preview">
-                        <div v-for="(fileUrl, index) in fileUrls" :key="index" class="file-preview-item">
-                            <img :src="fileUrl" alt="file preview" />
-                        </div>
-                    </div>
+                  <ImageSlider class="image-slider" :fileUrls="fileUrls"/>
                 </div>
                 <div class="right-panel">
                     <div class="title">
@@ -37,8 +33,8 @@
             <div v-if="activeMenu=='goods'" class="goods-list-container">
                 <div class="goods-control">
                     <div class="search-container">
-                        <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="goodskeywordSearchAll" />
-                        <button class="search-btn" @click="goodskeywordSearchAll"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+                        <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllGoodsByKeyword" />
+                        <button class="search-btn" @click="searchAllGoodsByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
                         <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
                     </div>
                 </div>
@@ -50,8 +46,14 @@
                 </div>
                 <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
             </div>
-            <div v-if="activeMenu=='review'">
-                dd
+            <div v-if="activeMenu=='review'" class="review-list-container">
+                <div class="review-list" v-if="reviewList && reviewList.length">
+                    <ReviewListComponent v-for="review in reviewList" :key="review.reviewIdx" :review="review" />
+                </div>
+                <div class="notice" v-else>
+                    <p>등록된 리뷰가 없습니다.</p>
+                </div>
+                <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
             </div>
             <div v-if="activeMenu=='chat'">
                 dd
@@ -63,11 +65,13 @@
 
 
 <script setup>
-import HeaderComponent from "@/components/HeaderComponent.vue";
-import FooterComponent from "@/components/FooterComponent.vue";
-import CountDownTimer from "@/components/CountDownTimer.vue";
-import GoodsListComponent from "@/components/GoodsListComponent.vue";
-import PaginationComponent from "@/components/PaginationComponent.vue";
+import ImageSlider from "@/components/common/ImageSlider.vue";
+import HeaderComponent from "@/components/common/HeaderComponent.vue";
+import FooterComponent from "@/components/common/FooterComponent.vue";
+import CountDownTimer from "@/components/common/CountDownTimer.vue";
+import GoodsListComponent from "@/components/goods/GoodsListComponent.vue";
+import ReviewListComponent from "@/components/store/ReviewListComponent.vue";
+import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { ref, onMounted } from "vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { useRoute, useRouter } from "vue-router";
@@ -105,13 +109,18 @@ const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
 
+
+// review
+const reviewList = ref([]);
+const reviewPageSize = ref(8);
+
 onMounted(async () => {
     await search(route.params.storeIdx);
     await autoSet();
 });
 
 const search = async (storeIdx) => {
-    const res = await storeStore.search(storeIdx);
+    const res = await storeStore.searchStore(storeIdx);
     if (res.success) {
         store.value = storeStore.store;
         await autoSet();
@@ -141,21 +150,24 @@ const autoSet = async () => {
 const setActiveMenu = (menu) => {
     activeMenu.value = menu;
     if(menu == 'goods') {
-        goodsSearchAll(route.params.storeIdx, currentPage.value, goodsPageSize.value);
+        searchAllGoods(route.params.storeIdx, currentPage.value, goodsPageSize.value);
+    } else if(menu == 'review') {
+      searchAllReview(route.params.storeIdx, currentPage.value, reviewPageSize.value);
+      console.log(reviewList.value)
     }
 }
 
 const changePage = (newPage) => {
   if (newPage >= 0 && activeMenu.value == 'goods') {
     currentPage.value = newPage;
-    goodsSearchAll(currentPage.value, goodsPageSize.value);
+    searchAllGoods(currentPage.value, goodsPageSize.value);
   } else if (newPage >= 0 && activeMenu.value == 'review') {
     // reviewSearchAll(currentPage.value, reviewPageSize.value);
   }
 };
 
-const goodsSearchAll = async (storeIdx, page) => {
-  const res = await goodsStore.searchAllByStoreIdx(storeIdx, page, goodsPageSize.value);
+const searchAllGoods = async (storeIdx, page) => {
+  const res = await goodsStore.searchAllGoodsByStoreIdx(storeIdx, page, goodsPageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
@@ -169,9 +181,9 @@ const goodsSearchAll = async (storeIdx, page) => {
   }
 };
 
-const goodskeywordSearchAll = async () => {
+const searchAllGoodsByKeyword = async () => {
   currentPage.value = 0;
-  const res = await goodsStore.searchAllByKeywordAndStoreIdx(searchQuery.value, route.params.storeIdx, currentPage.value, goodsPageSize.value);
+  const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(searchQuery.value, route.params.storeIdx, currentPage.value, goodsPageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
@@ -185,7 +197,19 @@ const goodskeywordSearchAll = async () => {
   }
 };
 
+const searchAllReview = async (storeIdx, page) => {
+  const res = await storeStore.searchAllReview(storeIdx, page, reviewPageSize.value);
+  if (res.success) {
+    reviewList.value = storeStore.reviewList;
+    totalElements.value = storeStore.totalElements;
+    totalPages.value = storeStore.totalPages;
+  } else {
+    reviewList.value = null;
+    totalElements.value = 0;
+    totalPages.value = 0;
+  }
 
+}
 </script>
 
 <style scoped>
@@ -195,19 +219,25 @@ const goodskeywordSearchAll = async () => {
     width: 65rem;
     flex-direction: column;
     margin: 10px auto;
-    border-radius: 8px;
-    border: 1px solid #00c7ae;
     width: 65rem;
+    gap: 10px;
 }
 .detail-container {
     display: flex;
-    flex-direction: row;
-    margin: 10px auto;
+    column-gap: 10px;
+    background-color: #fff;
     border-radius: 8px;
     border: 1px solid #00c7ae;
+    margin: 0;
     width: 65rem;
-    padding: 5px;
 }
+
+.image-slider {
+    width: 100%;
+    height: 98%;
+    padding: 5px;;
+}
+
 .notice{
     text-align: center;
   }
@@ -217,8 +247,6 @@ const goodskeywordSearchAll = async () => {
 .right-panel {
     width: 50%;
     padding: 1rem;
-    border: 1px solid #00c7ae;
-    border-radius: 8px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -319,6 +347,21 @@ const goodskeywordSearchAll = async () => {
   border-radius: 8px;
 }
 
+.review-list-container {
+  flex-direction: row;
+  width: 65rem;
+  border: 1px solid #00c7ae;
+  margin: 10px auto;
+  border-radius: 8px;
+}
+
+.goods-control {
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .goods-control {
   padding: 5px;
   display: flex;
@@ -327,6 +370,14 @@ const goodskeywordSearchAll = async () => {
 }
 
 .goods-list {
+  width: auto;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.review-list {
   width: auto;
   padding: 5px;
   display: flex;
