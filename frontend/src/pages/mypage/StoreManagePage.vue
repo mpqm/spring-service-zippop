@@ -12,7 +12,7 @@
         <div class="store-list" v-if="storeList && storeList.length">
             <StoreListComponent v-for="store in storeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
         </div>
-        <div v-else>
+        <div class="notice" v-else>
             <p>등록된 팝업 스토어가 없습니다.</p>
         </div>
         <PaginationComponent
@@ -97,7 +97,10 @@
     justify-content: space-between;
     align-items: center;
 }
-
+.notice{
+    text-align: center;
+  }
+  
   .store-list {
     width: auto;
     padding: 5px;

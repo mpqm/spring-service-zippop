@@ -22,8 +22,6 @@
       <button class="ud-btn" @click="openModal">상세 보기</button>
     </div>
   </div>
-
-  <!-- 모달 컴포넌트 사용 -->
   <GoodsModalComponent v-if="isModalOpen" :goods="goods" :isModalOpen="isModalOpen" :closeModal="closeModal" />
 </template>
 
@@ -32,7 +30,7 @@ import { defineProps, ref } from "vue";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from "vue-router";
-import GoodsModalComponent from "@/components/GoodsModalComponent.vue"; // 모달 컴포넌트 임포트
+import GoodsModalComponent from "@/components/GoodsModalComponent.vue"; 
 
 const toast = useToast();
 const router = useRouter();

@@ -2,24 +2,14 @@ package com.fiiiiive.zippop.store.service;
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
-import com.fiiiiive.zippop.goods.model.dto.SearchGoodsImageRes;
-import com.fiiiiive.zippop.goods.model.entity.Goods;
-import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
-import com.fiiiiive.zippop.review.model.dto.SearchReviewImageRes;
-import com.fiiiiive.zippop.review.model.entity.Review;
-import com.fiiiiive.zippop.review.model.entity.ReviewImage;
-import com.fiiiiive.zippop.review.model.dto.SearchReviewRes;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.store.model.entity.StoreImage;
 import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
-import com.fiiiiive.zippop.store.model.entity.StoreLike;
 import com.fiiiiive.zippop.store.repository.StoreImageRepository;
 import com.fiiiiive.zippop.store.repository.StoreLikeRepository;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
@@ -29,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.*;
 
@@ -61,7 +50,6 @@ public class StoreService {
                 .endDate(dto.getStoreEndDate())
                 .likeCount(0)
                 .company(company)
-                .status("OPEN")
                 .build();
         storeRepository.save(store);
 
@@ -160,13 +148,13 @@ public class StoreService {
         });
         return searchStoreResPage;
     }
-    
+
     // 팝업 스토어 목록 조회 (page)
     public Page<SearchStoreRes> searchAllAsGuest(String keyword, int page, int size) throws BaseException {
 
         Page<Store> result = null;
         if(keyword != null) {
-            result = storeRepository.findByKeyword(keyword, PageRequest.of(page, size));
+            result = storeRepository.findAllByKeyword(keyword, PageRequest.of(page, size));
         } else {
             result = storeRepository.findAll(PageRequest.of(page, size));
         }
@@ -176,7 +164,7 @@ public class StoreService {
             throw new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST);
         }
 
-        // 페이징 적용
+        // 페이징 적용 수수료 결제가 되지 않은 팝업 스토어는 메인에 표시하지않는다.
         Page<SearchStoreRes> searchStoreResPage = result.map(store -> {
             List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
 
@@ -190,7 +178,7 @@ public class StoreService {
                         .build();
                 searchStoreImageResList.add(searchStoreImageRes);
             }
-            
+
             // GetStoreRes 반환
             return SearchStoreRes.builder()
                     .storeIdx(store.getIdx())

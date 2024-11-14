@@ -222,6 +222,7 @@ public class AuthService {
             }
         }
     }
+
     @Transactional
     public void findPassword(FindPasswordReq dto) throws BaseException {
         Optional<Customer> resultCustomer = customerRepository.findByUserId(dto.getUserId());

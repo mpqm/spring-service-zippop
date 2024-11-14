@@ -1,16 +1,15 @@
-package com.fiiiiive.zippop.review.model.dto;
+package com.fiiiiive.zippop.store.model.dto;
 
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateReviewRes {
+public class SearchStoreReviewRes {
     private Long reviewIdx;
     private String customerEmail;
     private String reviewTitle;
@@ -18,5 +17,4 @@ public class CreateReviewRes {
     private Integer reviewRating;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<SearchReviewImageRes> searchReviewImageResList = new ArrayList<>();
 }

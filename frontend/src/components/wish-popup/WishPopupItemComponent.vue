@@ -7,7 +7,7 @@
                 </div>
                 <p data-v-11ae1556="" class="pro-introduction text-truncate">{{ store.storeContent }}</p>
                 <div data-v-959ba008="" data-v-11ae1556="" class="profile-badges">
-                    <div data-v-959ba008="" class="review-rate">
+                    <div data-v-959ba008="" class="storeReview-rate">
                         <img data-v-959ba008="" />
                         <span data-v-959ba008="" class="rate">좋아요 {{ store.likeCount }}</span>
                         <span data-v-959ba008="" class="count">{{ store.category }}</span>

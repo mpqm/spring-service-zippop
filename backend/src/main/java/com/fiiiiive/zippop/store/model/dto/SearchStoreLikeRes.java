@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.store.model.dto;
 
 import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
-import com.fiiiiive.zippop.review.model.dto.SearchReviewRes;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -25,7 +24,7 @@ public class SearchStoreLikeRes {
     private String storeEndDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<SearchReviewRes> searchReviewResList = new ArrayList<>();
+    private List<SearchStoreReviewRes> searchStoreReviewResList = new ArrayList<>();
     private List<SearchGoodsRes> searchGoodsResList = new ArrayList<>();
     private List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
 }

@@ -30,15 +30,15 @@ public class JwtUtil {
                 .claim("role", role)
                 .claim("userId", userId)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60  * 1)) // 1시간 1000 * 60 * 60 * 1
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1)) // 1시간 1000 * 60 * 60 * 1
                 .signWith(secretKey)
                 .compact();
     }
 
     // 리프레시 토큰 생성
-    public String createRefreshToken(String email) {
+    public String createRefreshToken(String userId) {
         return Jwts.builder()
-                .claim("userId", email)
+                .claim("userId", userId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 5 )) // 5일 1000 * 60 * 60 * 24 * 5
                 .signWith(secretKey)

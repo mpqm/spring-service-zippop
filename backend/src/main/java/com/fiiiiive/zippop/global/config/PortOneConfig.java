@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class PortoneConfig {
+public class PortOneConfig {
     @Value("${imp.imp_key}")
     private String impKey;
     @Value("${imp.imp_secret}")

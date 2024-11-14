@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.review.model.dto;
+package com.fiiiiive.zippop.store.model.dto;
 
 
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateReviewReq {
+public class CreateStoreReviewReq {
     private String reviewTitle;
     private String reviewContent;
     private Integer reviewRating;
