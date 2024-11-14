@@ -103,13 +103,23 @@ export const useAuthStore = defineStore("auth", {
                 return error.response.data
             }
         },
-        async inActive() {
+        async findId(req) {
             try{
-                const res = await axios.get(
-                    `${backend}/auth/inactive`,
+                const res = await axios.post(
+                    `${backend}/auth/find-id`, req,
                     { withCredentials: true }
                 );
-                this.logout()
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        },
+        async findPw(req) {
+            try{
+                const res = await axios.post(
+                    `${backend}/auth/find-password`, req,
+                    { withCredentials: true }
+                );
                 return res.data
             } catch (error) {
                 return error.response.data

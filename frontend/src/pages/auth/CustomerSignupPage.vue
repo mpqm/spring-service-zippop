@@ -11,15 +11,15 @@
             <form class="signup-form" @submit.prevent="signup">
                 <div>
                     <label>아이디</label>
-                    <input class="signup-input" v-model="userId" type="id" placeholder="ex) example@example.com"/>
-                </div>
-                <div>
-                    <label>이메일</label>
-                    <input class="signup-input" v-model="email" type="email" placeholder="ex) example@example.com"/>
+                    <input class="signup-input" v-model="userId" type="id" placeholder="아이디를 입력해주세요"/>
                 </div>
                 <div>
                     <label >비밀번호</label>
                     <input class="signup-input" v-model="password" type="password" placeholder="비밀번호를 입력해 주세요."/>
+                </div>
+                <div>
+                    <label>이메일</label>
+                    <input class="signup-input" v-model="email" type="email" placeholder="ex) example@example.com"/>
                 </div>
                 <div>
                     <label >회원 이름</label>
@@ -120,9 +120,9 @@ const signup = async () => {
     const res = await authStore.signup(req);
     if (res.success) {
         router.push("/");
-        toast.success("가입 후 이메일 인증까지 완료하여야 계정이 활성화됩니다.");
+        toast.success(res.message);
     } else {
-        toast.error("회원가입에 실패했습니다.")
+        toast.error(res.message);
     }
 };
 

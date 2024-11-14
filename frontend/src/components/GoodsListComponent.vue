@@ -49,10 +49,10 @@ const isModalOpen = ref(false);
 const deleteGoods = async () => {
   const res = await goodsStore.delete(props.goods.goodsIdx);
   if (res.success) {
-    toast.success("굿즈 삭제에 성공했습니다.");
+    toast.success(res.message);
     router.go(0);
   } else {
-    toast.error("굿즈 삭제에 실패했습니다.");
+    toast.error(res.message);
   }
 };
 

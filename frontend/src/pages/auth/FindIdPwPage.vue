@@ -1,82 +1,68 @@
 <template>
-<div>
-    <HeaderComponent></HeaderComponent>
-    <div class="login-page">
-        <div class="login-container">
-            <form class="login-form" @submit.prevent="login">
-                <img class="logo-img" src="../../assets/img/zippopbanner.png">
-                <div>
-                    <label>아이디</label>
-                    <input class="login-input" v-model="userId" type="id" placeholder="아이디를 입력해 주세요."/>
-                </div>
-                <div>
-                    <label>비밀번호</label>
-                    <input class="login-input" v-model="password" type="password" placeholder="비밀번호를 입력해 주세요."/>
-                </div>
-                <div class="relate-container">
-                    <a class="find-id-pw" href="/find-idpw">ID/PW 찾기</a>
-                    <label class="auto-login">
-                        <input type="checkbox"/> 자동 로그인
-                    </label>
-                </div>
-                <div>
-                    <button class="login-btn" type="submit">로그인</button>
-                    <a class="login-btn" href="/signup/customer">회원가입</a>
-                    <button class="kakao-login-btn">
-                        <img src="../../assets/img/social-login-kakao.png" alt="카카오" />&nbsp;카카오 로그인
-                    </button>
-                </div>
-            </form>
+    <div>
+        <HeaderComponent></HeaderComponent>
+        <div class="find-idpw-page">
+            <div class="find-idpw-container">
+                <h1>ID/PW 찾기</h1>
+                <form class="find-idpw-form" @submit.prevent="findId">
+                    <div>
+                        <label>이메일</label>
+                        <input class="find-idpw-input" v-model="userEmail" type="email" placeholder="이메일을 입력해 주세요." />
+                    </div>
+                    <button class="find-idpw-btn" type="submit">아이디 찾기</button>
+                </form>
+                <form class="find-idpw-form" @submit.prevent="findPw">
+                    <div>
+                        <label>아이디</label>
+                        <input class="find-idpw-input" v-model="userId" type="userId" placeholder="아이디를 입력해 주세요." />
+                    </div>
+                    <button class="find-idpw-btn" type="submit">비밀번호 찾기</button>
+                </form>
+            </div>
         </div>
+        <FooterComponent></FooterComponent>
     </div>
-    <FooterComponent></FooterComponent>
-</div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useAuthStore } from '@/stores/useAuthStore';
-import HeaderComponent from '@/components/HeaderComponent.vue';
 import FooterComponent from "@/components/FooterComponent.vue";
+import HeaderComponent from '@/components/HeaderComponent.vue';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { ref } from "vue";
 import { useToast } from "vue-toastification";
 
 const authStore = useAuthStore();
-const router = useRouter();
 const toast = useToast();
-
+const userEmail = ref("");
 const userId = ref("");
-const password = ref("");
 
-onMounted(async() => { await emailVerify(); })
-
-const emailVerify = async() => {
-    const query = router.currentRoute.value.query;
-    if (query.success) { 
-        toast.success("이메일 인증에 성공했습니다.");
+const findId = async () => {
+    const req = {
+        email: userEmail.value
     }
-    if (query.error) {
-        toast.error("이메일 인증에 실패했습니다. 다시 시도해주세요.");
+    const res = await authStore.findId(req)
+    if (res.success) {
+        toast.success(res.message)
+    } else {
+        toast.error(res.message)
+    }
+}
+const findPw = async () => {
+    const req = {
+        userId: userId.value
+    }
+    const res = await authStore.findPw(req)
+    if (res.success) {
+        toast.success(res.message)
+    } else {
+        toast.error(res.message)
     }
 }
 
-const login = async () => {
-    const req = {
-        userId: userId.value,
-        password: password.value,
-    }
-    const res = await authStore.login(req);
-    if (res.success) {
-        router.push("/");
-        toast.success("로그인에 성공했습니다.")
-    }else{
-        toast.error("로그인에 실패했습니다.")
-    }
-};
 </script>
 
 <style scoped>
-.login-page {
+.find-idpw-page {
     padding: 3rem 0;
     background-color: #fff;
 }
@@ -93,18 +79,21 @@ const login = async () => {
     color: #000;
     cursor: pointer;
 }
-.auto-login {
+
+.auto-find-idpw {
     cursor: pointer;
 }
 
-.find-id-pw:hover, .auto-login:hover{
+.find-id-pw:hover,
+.auto-find-idpw:hover {
     cursor: pointer;
-    color:#00c7ae;
+    color: #00c7ae;
 }
 
-.login-container {
+.find-idpw-container {
     position: relative;
     display: flex;
+    gap: 20px;
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
@@ -118,7 +107,7 @@ const login = async () => {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.login-form {
+.find-idpw-form {
     display: flex;
     margin-top: 0em;
     unicode-bidi: isolate;
@@ -128,7 +117,7 @@ const login = async () => {
     row-gap: 1rem;
 }
 
-.login-btn {
+.find-idpw-btn {
     display: inline-block;
     text-align: center;
     vertical-align: middle;
@@ -150,7 +139,7 @@ const login = async () => {
     box-sizing: border-box;
 }
 
-.kakao-login-btn {
+.kakao-find-idpw-btn {
     display: inline-block;
     text-align: center;
     vertical-align: middle;
@@ -172,11 +161,12 @@ const login = async () => {
     text-decoration: none;
 }
 
-.login-btn:hover, .kakao-login-btn:hover {
+.find-idpw-btn:hover,
+.kakao-find-idpw-btn:hover {
     opacity: 0.8;
 }
 
-.login-input {
+.find-idpw-input {
     padding: 1rem;
     border: 1px solid #e1e1e1;
     border-radius: 4px;
@@ -197,5 +187,4 @@ const login = async () => {
     width: 300px;
     height: 100px;
 }
-
 </style>

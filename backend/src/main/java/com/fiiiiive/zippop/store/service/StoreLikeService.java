@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -33,7 +34,10 @@ public class StoreLikeService {
     // 팝업 스토어 좋아요 증감
     @Transactional
     public void like(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
-        // 예외: 팝업 스토어가 존재하지 않을때, 사용자가 존재하지 않을때,
+        // 예외: 팝업 스토어가 존재하지 않을때, 사용자가 존재하지 않을때, 기업 회원일때
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
+            throw new BaseException(BaseResponseMessage.POPUP_STORE_LIKE_FAIL_INVALID_ROLE);
+        }
         Store store = storeRepository.findByStoreIdx(storeIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_LIKE_FAIL_NOT_FOUND));
         Customer customer = customerRepository.findById(customUserDetails.getIdx())

@@ -43,10 +43,10 @@ const props = defineProps({
 const deleteStore = async() => {
     const res = await storeStore.delete(props.store.storeIdx);
     if(res.success){
-        toast.success("팝업 스토어 삭제에 성공했습니다.")
+        toast.success(res.message)
         router.go(0)
     }else {
-        toast.error("팝업 스토어 삭제에 실패했습니다.");
+        toast.error(res.message);
     }
 }
 </script>

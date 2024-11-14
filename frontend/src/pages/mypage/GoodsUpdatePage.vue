@@ -64,7 +64,7 @@ const files = ref([]);
       await autoSet();
     }else {
         router.push(`/mypage/company/goods/${route.params.storeIdx}`);
-        toast.error("해당 팝업 굿즈를 찾을 수 없습니다.")
+        toast.error(res.message);
     }
   }
 
@@ -104,10 +104,10 @@ const files = ref([]);
   
     const res = await goodsStore.update(route.params.goodsIdx, formData);
     if (res.success) {
-        toast.success("팝업 스토어 수정에 성공했습니다.");
-        router.push(`/mypage/company/goods/${route.params.goodsIdx}`);
+      toast.success(res.message);
+      router.push(`/mypage/company/goods/${route.params.goodsIdx}`);
     } else {
-        toast.error("팝업 스토어 수정에 실패했습니다.");
+      toast.error(res.message);
     }
   };
   </script>

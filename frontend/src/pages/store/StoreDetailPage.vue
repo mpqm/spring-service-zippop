@@ -117,7 +117,7 @@ const search = async (storeIdx) => {
         await autoSet();
     } else {
         router.push("/")
-        toast.error("해당 팝업스토어를 찾을 수 없습니다.")
+        toast.error(res.message);
     }
 }
 

@@ -75,9 +75,9 @@ const register = async () => {
   const res = await goodsStore.register(route.params.storeIdx,formData);
   if (res.success) {
     router.push(`/mypage/company/goods/${route.params.storeIdx}`);
-    toast.success("팝업 굿즈 등록에 성공했습니다.");
+    toast.success(res.message);
   } else {
-    toast.error("팝업 굿즈 등록에 실패했습니다.");
+    toast.error(res.message);
   }
 };
 </script>

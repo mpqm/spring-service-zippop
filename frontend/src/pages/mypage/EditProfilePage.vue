@@ -125,10 +125,10 @@ const handleFileUpload = (event) => {
     }
     const res = await authStore.editInfo(req)
     if (res.success) {
-        toast.success("회원정보 수정에 성공했습니다.");
+        toast.success(res.message);
         router.push("/");
     } else {
-        toast.error("회원정보 수정에 실패했습니다.");
+        toast.error(res.message);
     }
 }
 const editPassword = async( ) => {
@@ -138,20 +138,20 @@ const editPassword = async( ) => {
     }
     const res = await authStore.editPassword(req)
     if (res.success) {
-        toast.success("비밀번호 변경에 성공했습니다.");
+        toast.success(res.message);
         router.push("/");
     } else {
-        toast.error("비밀번호 변경에 실패했습니다.");
+        toast.error(res.message);
     }
 }
 
 const inActive = async( ) => {
     const res = await authStore.inActive()
     if (res.success) {
-        toast.success("계정 비활성화에 성공했습니다.");
+        toast.success(res.message);
         router.push("/");
     } else {
-        toast.error("계정 비활성화에 실패했습니다.");
+        toast.error(res.message);
     }
 }
 </script>

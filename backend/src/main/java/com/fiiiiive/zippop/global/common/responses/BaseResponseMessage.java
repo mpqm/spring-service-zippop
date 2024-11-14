@@ -83,6 +83,7 @@ public enum BaseResponseMessage {
     POPUP_STORE_LIKE_SUCCESS(true, 3400, "팝업 스토어 좋아요 성공"),
     POPUP_STORE_LIKE_FAIL_NOT_FOUND(false, 3400, "해당 팝업 스토어를 찾을 수 없습니다."),
     POPUP_STORE_LIKE_FAIL_INVALID_MEMBER(false, 3401, "인증된 사용자 만이 추천을 누를 수 있습니다."),
+    POPUP_STORE_LIKE_FAIL_INVALID_ROLE(false, 3403, "기업 회원은 좋아요 기능이 제한됩니다."),
     POPUP_STORE_LIKE_SEARCH_ALL_SUCCESS(true, 3402, "팝업 스토어 좋아요 목록을 불러오는데 성공했습니다."),
 
     // ========================================================================================================================

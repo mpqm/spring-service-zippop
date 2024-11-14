@@ -40,12 +40,12 @@ const goStoreDetail = () => {
 const like = async() => {
   const res = await storeStore.like(props.store.storeIdx);
   if(res.success){
-    toast.success("좋아요 성공");
+    toast.error(res.message);
   } else {
     if(authStore.userInfo.role == "ROLE_COMPANY"){
-      toast.error("기업 회원은 좋아요 기능이 제한됩니다.");
+      toast.error(res.message);
     } else {
-      toast.error("좋아요 실패");
+      toast.error(res.message);
     }
   }
 }
