@@ -5,7 +5,6 @@ import CartComponent from "@/components/cart/CartComponent.vue";
 import WishPopupPage from "@/pages/WishPopupPage.vue";
 import MypageMainComponent from "@/components/customermypage/MypageMainComponent.vue";
 import PopupGoodsComponent from "@/components/customermypage/PopupGoodsComponent.vue";
-import EditProfileComponent from "@/components/customermypage/EditProfileComponent.vue";
 import MyReviewsComponent from "@/components/customermypage/MyReviewsComponent.vue";
 import ChargeListComponent from "@/components/companymypage/ChargeListComponent.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
@@ -25,6 +24,7 @@ import GoodsUpdatePage from "@/pages/mypage/GoodsUpdatePage.vue";
 import GoodsMainPage from "@/pages/goods/GoodsMainPage.vue";
 import GoodsDetailPage from "@/pages/goods/GoodsDetailPage.vue";
 import ErrorPage from "@/pages/error/ErrorPage.vue";
+import EditProfilePage from "@/pages/mypage/EditProfilePage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -52,8 +52,8 @@ const router = createRouter({
         { path: 'goods/:storeIdx', component: GoodsManage2Page },
         { path: 'goods/:storeIdx/register', component: GoodsRegisterPage },
         { path: 'goods/:storeIdx/update/:goodsIdx', component: GoodsUpdatePage },
+        { path: 'account-edit', component: EditProfilePage },
         { path: 'charge', component: ChargeListComponent },
-        { path: 'account-edit', component: EditProfileComponent },
       ]
     },
     { path: '/cart', component: CartComponent },
@@ -62,7 +62,6 @@ const router = createRouter({
       component: MypageMainComponent,
       children: [
         { path: 'popup', component: PopupGoodsComponent },
-        { path: 'account-edit', component: EditProfileComponent },
         { path: 'reviews', component: MyReviewsComponent }
       ]
     },
@@ -73,7 +72,12 @@ const router = createRouter({
     {
       path: "/wish_popup",
       component: WishPopupPage
-    }],
+    },
+    {
+      path: '/:catchAll(.*)',
+      redirect: '/error',
+    },
+  ],
 });
 
 export default router;

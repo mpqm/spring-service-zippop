@@ -37,7 +37,11 @@ public class AuthController {
         @RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
         String url = cloudFileUpload.upload(file);
         PostSignupRes response = authService.signup(dto, url);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_REGISTER_SUCCESS, response));
+        if(response.getIsInactive()){
+            return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_REGISTER_SUCCESS_INACTIVE_MEMBER, response));
+        } else {
+            return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_REGISTER_SUCCESS, response));
+        }
     }
 
     @GetMapping("/verify")
@@ -63,8 +67,10 @@ public class AuthController {
     @PatchMapping("/edit-info")
     public ResponseEntity<BaseResponse> editInfo(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestBody EditInfoReq dto) throws BaseException {
-        authService.editInfo(customUserDetails, dto);
+        @RequestPart(name = "dto") EditInfoReq dto,
+        @RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
+        String url = cloudFileUpload.upload(file);
+        authService.editInfo(customUserDetails, dto, url);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EDIT_INFO_SUCCESS));
     }
 
