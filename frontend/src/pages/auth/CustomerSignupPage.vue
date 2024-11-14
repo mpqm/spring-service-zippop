@@ -10,6 +10,10 @@
             </div>
             <form class="signup-form" @submit.prevent="signup">
                 <div>
+                    <label>아이디</label>
+                    <input class="signup-input" v-model="userId" type="id" placeholder="ex) example@example.com"/>
+                </div>
+                <div>
                     <label>이메일</label>
                     <input class="signup-input" v-model="email" type="email" placeholder="ex) example@example.com"/>
                 </div>

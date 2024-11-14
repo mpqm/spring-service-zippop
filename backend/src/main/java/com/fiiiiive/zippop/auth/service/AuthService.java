@@ -1,15 +1,11 @@
 package com.fiiiiive.zippop.auth.service;
 
+import com.fiiiiive.zippop.auth.model.dto.*;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
-import com.fiiiiive.zippop.auth.model.dto.EditInfoReq;
-import com.fiiiiive.zippop.auth.model.dto.EditPasswordReq;
-import com.fiiiiive.zippop.auth.model.dto.PostSignupReq;
-import com.fiiiiive.zippop.auth.model.dto.GetInfoRes;
-import com.fiiiiive.zippop.auth.model.dto.PostSignupRes;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.utils.MailUtil;
@@ -46,6 +42,7 @@ public class AuthService {
                 if(!company.getIsEmailAuth()) {
                     PostSignupRes postSignupRes = PostSignupRes.builder()
                             .idx(company.getIdx())
+                            .userId(company.getUserId())
                             .email(company.getEmail())
                             .isEmailAuth(company.getIsEmailAuth())
                             .isInactive(company.getIsInActive())
@@ -61,6 +58,7 @@ public class AuthService {
                         .email(dto.getEmail())
                         .password(passwordEncoder.encode(dto.getPassword()))
                         .name(dto.getName())
+                        .userId(dto.getUserId())
                         .crn(dto.getCrn())
                         .role(dto.getRole())
                         .address(dto.getAddress())
@@ -72,6 +70,7 @@ public class AuthService {
                 companyRepository.save(company);
                 PostSignupRes postSignupRes = PostSignupRes.builder()
                         .idx(company.getIdx())
+                        .userId(dto.getUserId())
                         .role(dto.getRole())
                         .isEmailAuth(company.getIsEmailAuth())
                         .isInactive(company.getIsInActive())
@@ -91,6 +90,7 @@ public class AuthService {
                     PostSignupRes postSignupRes = PostSignupRes.builder()
                             .idx(customer.getIdx())
                             .role(customer.getRole())
+                            .userId(customer.getUserId())
                             .isEmailAuth(customer.getIsEmailAuth())
                             .isInactive(customer.getIsInActive())
                             .email(customer.getEmail())
@@ -105,6 +105,7 @@ public class AuthService {
                 Customer customer = Customer.builder()
                         .email(dto.getEmail())
                         .password(passwordEncoder.encode(dto.getPassword()))
+                        .userId(dto.getUserId())
                         .name(dto.getName())
                         .role(dto.getRole())
                         .address(dto.getAddress())
@@ -193,6 +194,63 @@ public class AuthService {
                 }
             } else {
                 throw new BaseException(BaseResponseMessage.MEMBER_INACTIVE_FAIL);
+            }
+        }
+    }
+
+    public void findId(FindUserIdReq dto) throws BaseException {
+        Optional<Customer> resultCustomer = customerRepository.findByCustomerEmail(dto.getEmail());
+        if(resultCustomer.isPresent()){
+            Customer customer = resultCustomer.get();
+            if(!customer.getIsInActive() && customer.getIsEmailAuth()) {
+                mailUtil.sendFindUserId(customer.getEmail(), customer.getUserId(), false);
+            } else if (customer.getIsInActive() && !customer.getIsEmailAuth()){
+                mailUtil.sendFindUserId(customer.getEmail(), customer.getUserId(), true);
+            } else {
+                throw new BaseException(BaseResponseMessage.MEMBER_FIND_ID_FAIL_EMAIL_VERIFY);
+            }
+        }
+        Optional<Company> resultCompany = companyRepository.findByCompanyEmail(dto.getEmail());
+        if(resultCompany.isPresent()){
+            Company company = resultCompany.get();
+            if(!company.getIsInActive() && company.getIsEmailAuth()) {
+                mailUtil.sendFindUserId(company.getEmail(), company.getUserId(), false);
+            } else if (company.getIsInActive() && !company.getIsEmailAuth()){
+                mailUtil.sendFindUserId(company.getEmail(), company.getUserId(), true);
+            } else {
+                throw new BaseException(BaseResponseMessage.MEMBER_FIND_ID_FAIL_EMAIL_VERIFY);
+            }
+        }
+    }
+    @Transactional
+    public void findPassword(FindPasswordReq dto) throws BaseException {
+        Optional<Customer> resultCustomer = customerRepository.findByUserId(dto.getUserId());
+        if(resultCustomer.isPresent()){
+            Customer customer = resultCustomer.get();
+            String uuid = UUID.randomUUID().toString();
+            String rawPassword = UUID.randomUUID().toString();
+            String encodedPassword = passwordEncoder.encode(rawPassword);
+            customer.setPassword(encodedPassword);
+            if(!customer.getIsInActive() && customer.getIsEmailAuth()) {
+                mailUtil.sendFindUserPassword(customer.getEmail(), uuid, false);
+            } else if (customer.getIsInActive() && !customer.getIsEmailAuth()){
+                mailUtil.sendFindUserPassword(customer.getEmail(), uuid, true);
+            } else {
+                throw new BaseException(BaseResponseMessage.MEMBER_FIND_PASSWORD_FAIL_EMAIL_VERIFY);
+            }
+        }
+        Optional<Company> resultCompany = companyRepository.findByUserId(dto.getUserId());
+        if(resultCompany.isPresent()){
+            Company company = resultCompany.get();
+            String rawPassword = UUID.randomUUID().toString();
+            String encodedPassword = passwordEncoder.encode(rawPassword);
+            company.setPassword(encodedPassword);
+            if(!company.getIsInActive() && company.getIsEmailAuth()) {
+                mailUtil.sendFindUserPassword(company.getEmail(), rawPassword, false);
+            } else if (company.getIsInActive() && !company.getIsEmailAuth()){
+                mailUtil.sendFindUserPassword(company.getEmail(), rawPassword, true);
+            } else {
+                throw new BaseException(BaseResponseMessage.MEMBER_FIND_PASSWORD_FAIL_EMAIL_VERIFY);
             }
         }
     }

@@ -14,14 +14,18 @@ public class CustomUserDetails implements UserDetails {
 
     @Getter
     private final Long idx;
+    @Getter
+    private final String userId;
     private final String email;
+    @Getter
     private final String name;
     private final String password;
     private final String role;
     private final Boolean isEmailAuth;
 
-    public CustomUserDetails(Long idx, String email, String role) {
+    public CustomUserDetails(Long idx, String email, String role, String userId) {
         this.idx = idx;
+        this.userId = userId;
         this.email = email;
         this.role = role;
         this.name = null;
@@ -40,7 +44,6 @@ public class CustomUserDetails implements UserDetails {
         });
         return collection;
     }
-    public String getName(){ return name; }
 
     @Override
     public String getPassword() {

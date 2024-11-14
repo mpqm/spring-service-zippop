@@ -23,11 +23,12 @@ public class JwtUtil {
     }
 
     // 엑세스 토큰 생성
-    public String createAccessToken(Long id, String username, String role) {
+    public String createAccessToken(Long id, String username, String role, String userId) {
         return Jwts.builder()
                 .claim("idx", id)
                 .claim("username", username)
                 .claim("role", role)
+                .claim("userId", userId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60  * 1)) // 1시간 1000 * 60 * 60 * 1
                 .signWith(secretKey)
@@ -37,7 +38,7 @@ public class JwtUtil {
     // 리프레시 토큰 생성
     public String createRefreshToken(String email) {
         return Jwts.builder()
-                .claim("email", email)
+                .claim("userId", email)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 5 )) // 5일 1000 * 60 * 60 * 24 * 5
                 .signWith(secretKey)
@@ -58,6 +59,11 @@ public class JwtUtil {
     // 멤버 인덱스 조회
     public Long getIdx(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("idx", Long.class);
+    }
+
+    // 멤버 Id 조회
+    public String getUserId(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", String.class);
     }
 
     // 멤버 이름 조회

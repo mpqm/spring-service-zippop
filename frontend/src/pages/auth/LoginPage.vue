@@ -6,8 +6,8 @@
             <form class="login-form" @submit.prevent="login">
                 <img class="logo-img" src="../../assets/img/zippopbanner.png">
                 <div>
-                    <label>이메일</label>
-                    <input class="login-input" v-model="email" type="email" placeholder="ex) example@example.com"/>
+                    <label>아이디</label>
+                    <input class="login-input" v-model="userId" type="id" placeholder="아이디를 입력해 주세요."/>
                 </div>
                 <div>
                     <label>비밀번호</label>
@@ -39,7 +39,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 const toast = useToast();
 
-const email = ref("");
+const userId = ref("");
 const password = ref("");
 
 onMounted(async() => { await emailVerify(); })
@@ -56,7 +56,7 @@ const emailVerify = async() => {
 
 const login = async () => {
     const req = {
-        email: email.value,
+        userId: userId.value,
         password: password.value,
     }
     const res = await authStore.login(req);

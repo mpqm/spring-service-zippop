@@ -5,6 +5,7 @@ import { backend } from "@/const";
 export const useAuthStore = defineStore("auth", {
     state: () => ({ 
         userInfo: {
+            userId: '',
             email: '',
             name: '',
             role: '',
@@ -46,6 +47,7 @@ export const useAuthStore = defineStore("auth", {
         async logout() {
             try {
                 const res = await axios.post(backend + "/auth/logout");
+                this.userInfo.userId = null;
                 this.userInfo.email = null;
                 this.userInfo.name = null;
                 this.userInfo.role = null;
@@ -62,6 +64,7 @@ export const useAuthStore = defineStore("auth", {
                     `${backend}/auth/get-info`, 
                     { headers: { 'Content-Type': 'application/json', }, withCredentials: true}
                 );
+                this.userInfo.userId = res.data.result.userId;
                 this.userInfo.email = res.data.result.email;
                 this.userInfo.name = res.data.result.name;
                 this.userInfo.role = res.data.result.role;
@@ -106,6 +109,7 @@ export const useAuthStore = defineStore("auth", {
                     `${backend}/auth/inactive`,
                     { withCredentials: true }
                 );
+                this.logout()
                 return res.data
             } catch (error) {
                 return error.response.data
