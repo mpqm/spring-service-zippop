@@ -9,7 +9,7 @@
     </div>
     <div v-if="userRole === 'ROLE_CUSTOMER'" class="menu-list">
       <router-link class="menu-link" to="/chats">장바구니</router-link>
-      <router-link class="menu-link" to="/chats">좋아요</router-link>
+      <router-link class="menu-link" to="/mypage/customer/like">좋아요</router-link>
       <router-link class="menu-link" to="/mypage/customer/review">리뷰</router-link>
       <router-link class="menu-link" to="/mypage/customer/goods-charge">결제 내역</router-link>
       <router-link class="menu-link" to="/mypage/customer/account-edit">회원정보 관리</router-link>

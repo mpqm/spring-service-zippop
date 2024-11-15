@@ -41,7 +41,7 @@ const like = async() => {
   if(authStore.isLoggedIn){
     const res = await storeStore.registerLike(props.store.storeIdx);
     if(res.success){
-      toast.error(res.message);
+      toast.success(res.message);
     } else {
       if(authStore.userInfo.role == "ROLE_COMPANY"){
         toast.error(res.message);

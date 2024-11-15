@@ -106,8 +106,10 @@ public class StoreController {
     // 팝업 스토어 좋아요 목록 조회(고객)
     @GetMapping("/like/search-all")
     public ResponseEntity<BaseResponse> likeSearchAll(
+        @RequestParam int page,
+        @RequestParam int size,
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
-        List<SearchStoreLikeRes> response = storeLikeService.searchAll(customUserDetails);
+        Page<SearchStoreLikeRes> response = storeLikeService.searchAll(customUserDetails, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_LIKE_SEARCH_ALL_SUCCESS, response));
     }
 

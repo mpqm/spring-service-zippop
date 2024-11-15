@@ -1,11 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import PaymentPage from "@/pages/PaymentPage.vue";
-import CartComponent from "@/components/cart/CartComponent.vue";
-import WishPopupPage from "@/pages/WishPopupPage.vue";
-import MypageMainComponent from "@/components/customermypage/MypageMainComponent.vue";
-import PopupGoodsComponent from "@/components/customermypage/PopupGoodsComponent.vue";
-import ChargeListComponent from "@/components/companymypage/ChargeListComponent.vue";
+import CartComponent from "@/components/payment/CartComponent.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
 import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
@@ -27,6 +23,7 @@ import EditProfilePage from "@/pages/mypage/EditProfilePage.vue";
 import FindIdPwPage from "@/pages/auth/FindIdPwPage.vue";
 import CustomerMyPage from "@/pages/mypage/CustomerMyPage.vue";
 import ReviewSearchPage from "@/pages/mypage/ReviewSearchPage.vue";
+import LikeManagePage from "@/pages/mypage/LikeManagePage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -55,7 +52,6 @@ const router = createRouter({
         { path: 'goods/:storeIdx/register', component: GoodsRegisterPage },
         { path: 'goods/:storeIdx/update/:goodsIdx', component: GoodsUpdatePage },
         { path: 'account-edit', component: EditProfilePage },
-        { path: 'charge', component: ChargeListComponent },
       ]
     },
 
@@ -65,25 +61,14 @@ const router = createRouter({
       children: [
         { path: 'review', component: ReviewSearchPage },
         { path: 'account-edit', component: EditProfilePage },
-        { path: 'charge', component: ChargeListComponent },
+        { path: 'like', component: LikeManagePage },
       ]
     },
     { path: '/cart', component: CartComponent },
-    {
-      path: '/mypage/customer',
-      component: MypageMainComponent,
-      children: [
-        { path: 'popup', component: PopupGoodsComponent },
-      ]
-    },
     
     { path: '/chats', component: MainChatComponent },
     
     { path: "/payment", component: PaymentPage },
-    {
-      path: "/wish_popup",
-      component: WishPopupPage
-    },
     
     { path: '/error', component: ErrorPage },
     {

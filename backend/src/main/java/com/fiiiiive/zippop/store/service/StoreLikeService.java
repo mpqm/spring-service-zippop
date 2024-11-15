@@ -17,6 +17,8 @@ import com.fiiiiive.zippop.store.repository.StoreLikeRepository;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -58,14 +60,12 @@ public class StoreLikeService {
         }
     }
 
-    public List<SearchStoreLikeRes> searchAll(CustomUserDetails customUserDetails) throws BaseException {
-        List<StoreLike> storeLikeList = storeLikeRepository.findAllByCustomerIdx(customUserDetails.getIdx())
+    public Page<SearchStoreLikeRes> searchAll(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
+        Page<StoreLike> result = storeLikeRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size))
         .orElseThrow(()->new BaseException(BaseResponseMessage.FAVORITE_SEARCH_ALL_FAIL));
-        List<SearchStoreLikeRes> searchStoreLikeResList = new ArrayList<>();
-        for(StoreLike storeLike: storeLikeList){
-            Store store = storeLike.getStore();
+        Page<SearchStoreLikeRes> searchStoreLikeResPage = result.map(storeLike -> {
             List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
-            for(StoreImage storeImage : store.getStoreImageList()){
+            for(StoreImage storeImage : storeLike.getStore().getStoreImageList()){
                 SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
                         .storeImageIdx(storeImage.getIdx())
                         .storeImageUrl(storeImage.getUrl())
@@ -74,23 +74,22 @@ public class StoreLikeService {
                         .build();
                 searchStoreImageResList.add(searchStoreImageRes);
             }
-            SearchStoreLikeRes searchStoreLikeRes = SearchStoreLikeRes.builder()
-                    .storeIdx(store.getIdx())
-                    .companyEmail(store.getCompanyEmail())
-                    .storeName(store.getName())
-                    .storeContent(store.getContent())
-                    .storeAddress(store.getAddress())
-                    .category(store.getCategory())
-                    .likeCount(store.getLikeCount())
-                    .totalPeople(store.getTotalPeople())
-                    .storeStartDate(store.getStartDate())
-                    .storeEndDate(store.getEndDate())
-                    .createdAt(store.getCreatedAt())
-                    .updatedAt(store.getUpdatedAt())
+            return SearchStoreLikeRes.builder()
+                    .storeIdx(storeLike.getStore().getIdx())
+                    .companyEmail(storeLike.getStore().getCompanyEmail())
+                    .storeName(storeLike.getStore().getName())
+                    .storeContent(storeLike.getStore().getContent())
+                    .storeAddress(storeLike.getStore().getAddress())
+                    .category(storeLike.getStore().getCategory())
+                    .likeCount(storeLike.getStore().getLikeCount())
+                    .totalPeople(storeLike.getStore().getTotalPeople())
+                    .storeStartDate(storeLike.getStore().getStartDate())
+                    .storeEndDate(storeLike.getStore().getEndDate())
+                    .createdAt(storeLike.getCreatedAt())
+                    .updatedAt(storeLike.getUpdatedAt())
                     .searchStoreImageResList(searchStoreImageResList)
                     .build();
-            searchStoreLikeResList.add(searchStoreLikeRes);
-        }
-        return searchStoreLikeResList;
+        });
+        return searchStoreLikeResPage;
     }
 }
