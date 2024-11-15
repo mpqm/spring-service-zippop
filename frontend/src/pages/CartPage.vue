@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import CartComponent from '@/components/Cart/CartComponent.vue';
+import CartComponent from '@/components/payment/CartComponent.vue';
 
 
 export default {

@@ -124,13 +124,15 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllLike() {
+    async searchAllLike(page, size) {
       try {
         const res = await axios.get(
-          `${backend}/store/like/search-all`, 
+          `${backend}/store/like/search-all?page=${page}&size=${size}`,
           {withCredentials: true,}
         );
-        this.storeList = res.data.result;
+        this.likeList = res.data.result.content;
+        this.totalElements = res.data.result.totalElements;
+        this.totalPages = res.data.result.totalPages;
         return res.data;
       } catch (error) {
         return error.response.data;

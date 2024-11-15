@@ -1,6 +1,8 @@
 package com.fiiiiive.zippop.store.repository;
 
 import com.fiiiiive.zippop.store.model.entity.StoreLike;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +23,7 @@ public interface StoreLikeRepository extends JpaRepository<StoreLike, Long> {
             "JOIN FETCH sl.customer " +
             "JOIN FETCH sl.store " +
             "WHERE sl.customer.idx = :customerIdx")
-    Optional<List<StoreLike>> findAllByCustomerIdx(Long customerIdx);
+    Optional<Page<StoreLike>> findAllByCustomerIdx(Long customerIdx, Pageable pageable);
 
     @Modifying
     @Query("DELETE FROM StoreLike sl " +
