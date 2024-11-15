@@ -166,7 +166,7 @@ export const useStoreStore = defineStore("store", {
           `${backend}/store/review/search-all/as-customer?&page=${page}&size=${size}`,
           { withCredentials: true },
         );
-        this.reviewList = res.data.content;
+        this.reviewList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;
         return res.data;

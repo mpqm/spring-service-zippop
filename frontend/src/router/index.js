@@ -5,7 +5,6 @@ import CartComponent from "@/components/cart/CartComponent.vue";
 import WishPopupPage from "@/pages/WishPopupPage.vue";
 import MypageMainComponent from "@/components/customermypage/MypageMainComponent.vue";
 import PopupGoodsComponent from "@/components/customermypage/PopupGoodsComponent.vue";
-import MyReviewsComponent from "@/components/customermypage/MyReviewsComponent.vue";
 import ChargeListComponent from "@/components/companymypage/ChargeListComponent.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
@@ -26,6 +25,8 @@ import GoodsDetailPage from "@/pages/goods/GoodsDetailPage.vue";
 import ErrorPage from "@/pages/error/ErrorPage.vue";
 import EditProfilePage from "@/pages/mypage/EditProfilePage.vue";
 import FindIdPwPage from "@/pages/auth/FindIdPwPage.vue";
+import CustomerMyPage from "@/pages/mypage/CustomerMyPage.vue";
+import ReviewSearchPage from "@/pages/mypage/ReviewSearchPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -57,13 +58,22 @@ const router = createRouter({
         { path: 'charge', component: ChargeListComponent },
       ]
     },
+
+    {
+      path: '/mypage/customer',
+      component: CustomerMyPage ,
+      children: [
+        { path: 'review', component: ReviewSearchPage },
+        { path: 'account-edit', component: EditProfilePage },
+        { path: 'charge', component: ChargeListComponent },
+      ]
+    },
     { path: '/cart', component: CartComponent },
     {
       path: '/mypage/customer',
       component: MypageMainComponent,
       children: [
         { path: 'popup', component: PopupGoodsComponent },
-        { path: 'reviews', component: MyReviewsComponent }
       ]
     },
     
