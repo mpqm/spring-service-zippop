@@ -4,8 +4,15 @@
       <router-link class="menu-link" to="/mypage/company/store">팝업 관리</router-link>
       <router-link class="menu-link" to="/mypage/company/goods">굿즈 관리</router-link>
       <router-link class="menu-link" to="/mypage/company/account-edit">회원정보 관리</router-link>
-      <router-link class="menu-link" to="/mypage/company/charge">수수료 결제 내역</router-link>
+      <router-link class="menu-link" to="/mypage/company/charge">결제 내역</router-link>
       <router-link class="menu-link" to="/chats">문의 채팅</router-link>
+    </div>
+    <div v-if="userRole === 'ROLE_CUSTOMER'" class="menu-list">
+      <router-link class="menu-link" to="/chats">장바구니</router-link>
+      <router-link class="menu-link" to="/chats">좋아요</router-link>
+      <router-link class="menu-link" to="/mypage/customer/review">리뷰</router-link>
+      <router-link class="menu-link" to="/mypage/customer/goods-charge">결제 내역</router-link>
+      <router-link class="menu-link" to="/mypage/customer/account-edit">회원정보 관리</router-link>
     </div>
   </div>
 </template>

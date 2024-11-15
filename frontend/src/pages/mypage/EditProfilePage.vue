@@ -119,13 +119,17 @@ const handleFileUpload = (event) => {
 };
 
   const editInfo = async( ) => {
+    const formData = new FormData();
     const req = {
         name: name.value,
         phoneNumber: phoneNumber.value,
         address: address.value + ',' + addressDetail.value,
         crn: crn.value,
     }
-    const res = await authStore.editInfo(req)
+    formData.append('dto', new Blob([JSON.stringify(req)], { type: 'application/json' }));
+    if (file.value) { formData.append('file', file.value); }
+
+    const res = await authStore.editInfo(formData)
     if (res.success) {
         toast.success(res.message);
         router.push("/");

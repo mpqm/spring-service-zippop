@@ -1,6 +1,7 @@
 <template>
     <div class="review-list-item">
       <div class="review-info1">
+        <p v-if="hideStoreName" class="t1">{{review.storeName}}</p>
         <p class="t1">{{ review.reviewTitle }}</p>
         <p class="t2">{{ review.reviewContent }}</p>
       </div>
@@ -22,6 +23,7 @@
   
 defineProps({
     review: Object,
+    hideStoreName: Boolean,
   });
   </script>
   

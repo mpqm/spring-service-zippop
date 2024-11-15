@@ -76,6 +76,7 @@ public class StoreReviewService {
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_STORE_NOT_EXIST));
         Page<SearchStoreReviewRes> getReviewResPage = result.map(review -> SearchStoreReviewRes.builder()
                 .reviewIdx(review.getIdx())
+                .storeName(review.getStore().getName())
                 .customerEmail(review.getCustomerEmail())
                 .customerName(review.getCustomerName())
                 .reviewTitle(review.getTitle())

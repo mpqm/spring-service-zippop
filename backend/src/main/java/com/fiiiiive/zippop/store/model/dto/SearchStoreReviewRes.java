@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class SearchStoreReviewRes {
     private Long reviewIdx;
+    private String storeName;
     private String customerEmail;
     private String customerName;
     private String reviewTitle;
