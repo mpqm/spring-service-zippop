@@ -8,8 +8,6 @@
       </div>
 
       <div class="right-section" v-if="userStatus && userRole === 'ROLE_CUSTOMER'">
-        <a :class="{ 'nav-link': true, active: isActive('/mypage/customer/like') }" href="/mypage/customer/like">좋아요</a>
-        <a :class="{ 'nav-link': true, active: isActive('/mypage/customer/cart') }" href="/">장바구니</a>
         <div class="user-info" @click="toggleDropdown">
           <img src="../../assets/img/customer.png" alt="Customer Icon" />
           <span>{{ userName }}</span>
@@ -17,7 +15,6 @@
           <img src="../../assets/img/drop-down.png"/>
           <div class="dropdown" v-if="isDropdownVisible" >
             <a class="dropdown-link" href="/mypage/customer">마이페이지</a>
-            <a class="dropdown-link" href="/cart">장바구니</a>
             <a class="dropdown-link"  @click="logout">로그아웃</a>
           </div>
         </div>

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import PaymentPage from "@/pages/PaymentPage.vue";
-import CartComponent from "@/components/payment/CartComponent.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
 import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
@@ -24,6 +23,7 @@ import FindIdPwPage from "@/pages/auth/FindIdPwPage.vue";
 import CustomerMyPage from "@/pages/mypage/CustomerMyPage.vue";
 import ReviewSearchPage from "@/pages/mypage/ReviewSearchPage.vue";
 import LikeManagePage from "@/pages/mypage/LikeManagePage.vue";
+import CartPage from "@/pages/payment/CartPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -64,7 +64,9 @@ const router = createRouter({
         { path: 'like', component: LikeManagePage },
       ]
     },
-    { path: '/cart', component: CartComponent },
+    {
+      path: '/test', component: CartPage,
+    },
     
     { path: '/chats', component: MainChatComponent },
     

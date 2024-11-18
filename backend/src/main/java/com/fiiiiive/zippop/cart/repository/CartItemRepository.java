@@ -25,7 +25,21 @@ public interface CartItemRepository extends JpaRepository<CartItem,Long> {
     @Query("SELECT ci FROM CartItem ci WHERE ci.idx = :cartItemIdx")
     Optional<CartItem> findByCartItemIdx(Long cartItemIdx);
 
+    @Query("SELECT ci FROM CartItem ci " +
+            "JOIN FETCH ci.cart ca " +
+            "JOIN FETCH ca.customer cu " +
+            "WHERE ci.idx = :cartItemIdx AND cu.idx = :customerIdx")
+    Optional<CartItem> findByCartItemIdxAndCustomerIdx(Long cartItemIdx, Long customerIdx);
+
+    @Query("SELECT ci FROM CartItem ci JOIN FETCH ci.goods g WHERE g.idx = :goodsIdx")
+    Optional<CartItem> findByGoodsIdx(Long goodsIdx);
+
     @Modifying
-    @Query("DELETE FROM CartItem ci WHERE ci.idx = :cartItemIdx")
-    void deleteByCartItemIdx(Long cartItemIdx);
+    @Query("DELETE FROM CartItem ci WHERE ci.idx = :cartItemIdx AND ci.cart.customer.idx = :customerIdx")
+    void deleteByCartItemIdxAndCustomerIdx(Long cartItemIdx, Long customerIdx);
+
+    @Modifying
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.idx = :cartIdx")
+    void deleteAllByCartIdx(Long cartIdx);
+
 }
