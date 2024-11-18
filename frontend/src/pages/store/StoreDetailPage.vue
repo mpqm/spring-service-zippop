@@ -35,7 +35,7 @@
                     <div class="search-container">
                         <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllGoodsByKeyword" />
                         <button class="search-btn" @click="searchAllGoodsByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
-                        <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
+                        <button class="search-btn" @click="searchAllGoods(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
                     </div>
                 </div>
                 <div class="goods-list" v-if="goodsList && goodsList.length">
@@ -115,12 +115,13 @@ const reviewList = ref([]);
 const reviewPageSize = ref(8);
 
 onMounted(async () => {
-    await search(route.params.storeIdx);
+  storeIdx.value = route.params.storeIdx;
+    await search();
     await autoSet();
 });
 
-const search = async (storeIdx) => {
-    const res = await storeStore.searchStore(storeIdx);
+const search = async () => {
+    const res = await storeStore.searchStore(storeIdx.value);
     if (res.success) {
         store.value = storeStore.store;
         await autoSet();
@@ -150,24 +151,33 @@ const autoSet = async () => {
 const setActiveMenu = (menu) => {
     activeMenu.value = menu;
     if(menu == 'goods') {
-        searchAllGoods(route.params.storeIdx, currentPage.value, goodsPageSize.value);
+        currentPage.value = 0;
+        searchAllGoods();
     } else if(menu == 'review') {
-      searchAllReview(route.params.storeIdx, currentPage.value, reviewPageSize.value);
-      console.log(reviewList.value)
+      searchAllReview();
     }
 }
 
 const changePage = (newPage) => {
+  currentPage.value = newPage;
+  console.log("A")
   if (newPage >= 0 && activeMenu.value == 'goods') {
-    currentPage.value = newPage;
-    searchAllGoods(currentPage.value, goodsPageSize.value);
+    if(searchQuery.value === ""){
+      searchAllGoods();
+    } else {
+      searchAllGoodsByKeyword();
+    }
   } else if (newPage >= 0 && activeMenu.value == 'review') {
-    // reviewSearchAll(currentPage.value, reviewPageSize.value);
+    searchAllReview();
   }
 };
 
-const searchAllGoods = async (storeIdx, page) => {
-  const res = await goodsStore.searchAllGoodsByStoreIdx(storeIdx, page, goodsPageSize.value);
+const searchAllGoods = async (flag) => {
+  if(flag == 0) {
+    currentPage.value = 0;
+    searchQuery.value = "";
+  }
+  const res = await goodsStore.searchAllGoodsByStoreIdx(storeIdx.value, currentPage.value, goodsPageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
@@ -182,8 +192,7 @@ const searchAllGoods = async (storeIdx, page) => {
 };
 
 const searchAllGoodsByKeyword = async () => {
-  currentPage.value = 0;
-  const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(searchQuery.value, route.params.storeIdx, currentPage.value, goodsPageSize.value);
+  const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(searchQuery.value, storeIdx.value, currentPage.value, goodsPageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
@@ -197,8 +206,8 @@ const searchAllGoodsByKeyword = async () => {
   }
 };
 
-const searchAllReview = async (storeIdx, page) => {
-  const res = await storeStore.searchAllReview(storeIdx, page, reviewPageSize.value);
+const searchAllReview = async () => {
+  const res = await storeStore.searchAllReview(storeIdx.value, currentPage.value, reviewPageSize.value);
   if (res.success) {
     reviewList.value = storeStore.reviewList;
     totalElements.value = storeStore.totalElements;
