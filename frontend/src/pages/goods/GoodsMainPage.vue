@@ -82,6 +82,8 @@ const searchAllByKeyword = async () => {
     hideBtns.value = true;
   }
 };
+
+
 </script>
 
 <style scoped>

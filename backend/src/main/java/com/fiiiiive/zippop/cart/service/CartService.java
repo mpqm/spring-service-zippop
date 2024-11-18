@@ -77,7 +77,7 @@ public class CartService {
     }
 
     // 카트아이템 목록 조회
-    public SearchCartRes searchAll(CustomUserDetails customUserDetails) throws BaseException {
+    public List<SearchCartItemRes> searchAll(CustomUserDetails customUserDetails) throws BaseException {
         // 예외: 카트를 찾지 못했을때
         Cart cart = cartRepository.findByCustomerIdx(customUserDetails.getIdx())
         .orElseThrow(() -> new BaseException(BaseResponseMessage.CART_SEARCH_FAIL));
@@ -107,6 +107,7 @@ public class CartService {
                     .build();
             // CartItem Dto 생성
             SearchCartItemRes searchCartItemRes = SearchCartItemRes.builder()
+                    .cartItemIdx(cartItem.getIdx())
                     .count(cartItem.getCount())
                     .price(cartItem.getPrice())
                     .searchGoodsRes(searchGoodsRes)
@@ -114,10 +115,7 @@ public class CartService {
             searchCartItemResList.add(searchCartItemRes);
         }
         // SearchCartRes 반환
-        return SearchCartRes.builder()
-                .cartIdx(cart.getIdx())
-                .searchCartItemResList(searchCartItemResList)
-                .build();
+        return searchCartItemResList;
     }
 
     // 카트아이템 수량조절

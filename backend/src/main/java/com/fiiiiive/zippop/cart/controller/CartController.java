@@ -1,10 +1,10 @@
 package com.fiiiiive.zippop.cart.controller;
 
+import com.fiiiiive.zippop.cart.model.dto.SearchCartItemRes;
 import com.fiiiiive.zippop.cart.service.CartService;
 import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
 import com.fiiiiive.zippop.cart.model.dto.CountCartItemRes;
 import com.fiiiiive.zippop.cart.model.dto.CreateCartRes;
-import com.fiiiiive.zippop.cart.model.dto.SearchCartRes;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Tag(name = "cart-api", description = "Cart")
@@ -45,7 +47,7 @@ public class CartController {
     @GetMapping("/search-all")
     public ResponseEntity<BaseResponse> searchAll(
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
-        SearchCartRes response = cartService.searchAll(customUserDetails);
+        List<SearchCartItemRes> response = cartService.searchAll(customUserDetails);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_SEARCH_LIST_SUCESS, response));
     }
 
