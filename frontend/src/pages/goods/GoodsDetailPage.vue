@@ -17,7 +17,7 @@
                     </p>
                     <p> {{ goodsContent }}</p>
                     <div v-if="hideBtns==true" class="btn-container">
-                        <button class="normal-btn" @click="goStoreDetail"><img class="search-img" src="../../assets/img/cart-none.png" alt="">&nbsp;<p>카트추가</p></button>
+                        <button class="normal-btn" @click="registerCart"><img class="search-img" src="../../assets/img/cart-none.png" alt="">&nbsp;<p>카트추가</p></button>
                         <button class="normal-btn" @click="like"><img class="search-img" src="../../assets/img/payment-none.png" alt="">&nbsp;<p>결제하기</p></button>
                     </div>
             </div>
@@ -36,9 +36,12 @@ import { useGoodsStore } from "@/stores/useGoodsStore";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useCartStore } from "@/stores/useCartStore";
 
 const goodsStore = useGoodsStore();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
+
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -52,6 +55,7 @@ const goodsAmount = ref(0);
 const fileUrls = ref([]);
 const goods = ref({});
 const hideBtns = ref(true);
+
 onMounted(async () => {
     await search(route.params.goodsIdx);
     await autoSet();
@@ -83,6 +87,16 @@ const autoSet = async () => {
         fileUrls.value = goodsStore.goods.searchGoodsImageResList.map(image => image.goodsImageUrl);
     }
 }
+
+const registerCart = async () => {
+    const res = await cartStore.register(goodsIdx.value);
+    if (res.success) {
+        toast.success(res.message);
+    } else {
+        toast.error(res.message);
+    }
+}
+
 </script>
 
 <style scoped>

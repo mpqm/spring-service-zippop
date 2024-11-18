@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class SearchCartItemRes {
+    private Long cartItemIdx;
     private Integer count;
     private Integer price;
     private SearchGoodsRes searchGoodsRes;

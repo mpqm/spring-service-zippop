@@ -62,6 +62,7 @@ const router = createRouter({
         { path: 'review', component: ReviewSearchPage },
         { path: 'account-edit', component: EditProfilePage },
         { path: 'like', component: LikeManagePage },
+        { path: 'cart', component: CartPage, },
       ]
     },
     {

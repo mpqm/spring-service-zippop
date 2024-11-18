@@ -20,15 +20,13 @@
 </template>
   
   <script setup>
-import { useAuthStore } from "@/stores/useAuthStore";
-import { useStoreStore } from "@/stores/useStoreStore";
+import { useCartStore } from "@/stores/useCartStore";
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 const router = useRouter(); 
 const toast = useToast();
-const storeStore = useStoreStore();
-const authStore = useAuthStore();
+const cartStore = useCartStore();
 
 const props = defineProps({
   goods: Object,
@@ -39,22 +37,16 @@ const goGoodsDetail = async() => {
   router.push(`/goods/${props.goods.goodsIdx}`);
 }
 
-const registerCart = async() => {
-  if(authStore.isLoggedIn && authStore.userInfo.role == "ROLE_COMPANY"){
-      const res = await storeStore.like(props.store.storeIdx);
-    if(res.success){
-      toast.success(res.message);
-    } else {
-      if(authStore.userInfo.role == "ROLE_COMPANY"){
-        toast.error(res.message);
-      } else {
-        toast.error(res.message);
-      }
+const registerCart = async () => {
+    const req = {
+      goodsIdx: props.goods.goodsIdx,
     }
-  } else {
-    toast.error("로그인이 필요합니다.");
-  }
-
+    const res = await cartStore.register(req);
+    if (res.success) {
+        toast.success(res.message);
+    } else {
+        toast.error(res.message);
+    }
 }
 
 </script>
