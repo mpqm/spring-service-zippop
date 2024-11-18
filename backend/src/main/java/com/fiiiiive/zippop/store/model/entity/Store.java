@@ -20,7 +20,6 @@ public class Store extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
     private String companyEmail;
-    @Column(unique = true)
     private String name;
     private String address;
     private String content;

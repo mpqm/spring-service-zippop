@@ -91,10 +91,13 @@ const registerCart = async() => {
 }
 .goods-img {
   width: 100%;
-  height: 100%;
+  height: 200px; 
   border-radius: 8px;
   margin-top: 4px;
+  object-fit: cover; 
 }
+
+
 .goods-info {
   display: flex;
   gap: 10px;

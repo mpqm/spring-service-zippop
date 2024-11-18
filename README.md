@@ -1,6 +1,6 @@
 <!-- 제목 -->
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com/?lines=%F0%9F%8F%A0+%ED%8C%9D%EC%97%85%EC%8A%A4%ED%86%A0%EC%96%B4+%EC%82%AC%EC%A0%84+%EC%98%88%EC%95%BD+%EC%84%9C%EB%B9%84%EC%8A%A4+ZIP_POP&font=Gothic+A1&size=23%&center=true&width=430&height=50&duration=4000&pause=1000&color=ffffff" alt="Example Usage - README Typing SVG">
+  <img src="https://readme-typing-svg.demolab.com/?lines=%F0%9F%8F%A0+%ED%8C%9D%EC%97%85%EC%8A%A4%ED%86%A0%EC%96%B4+%EC%82%AC%EC%A0%84+%EC%98%88%EC%95%BD+%EC%84%9C%EB%B9%84%EC%8A%A4+ZIPPOP&font=Gothic+A1&size=23%&center=true&width=430&height=50&duration=4000&pause=1000&color=ffffff" alt="Example Usage - README Typing SVG">
 </p>
 
 <!-- 배너 -->

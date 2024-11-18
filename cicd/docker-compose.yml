@@ -48,7 +48,10 @@ services:
       - MARIADB_DATABASE=${MARIADB_DATABASE}
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
     volumes:
-      - ../cicd/mariadb:/var/lib/mysql
+      - ../cicd/mariadb/data/:/var/lib/mysql
+      - ../cicd/mariadb/mariadb.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+    mem_limit: 2g        # 메모리 제한 (2GB)
+    cpus: 2.0           # CPU 할당 (2 CPU 코어)
 
   redis:
     container_name: zippop-redis

@@ -86,10 +86,12 @@ const like = async() => {
 
 .store-img {
   width: 100%;
-  height: 100%;
+  height: 200px; 
   border-radius: 8px;
   margin-top: 4px;
+  object-fit: cover; 
 }
+
 
 .search-img {
   width: 20px;

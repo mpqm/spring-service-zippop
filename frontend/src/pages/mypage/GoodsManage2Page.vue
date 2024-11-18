@@ -45,20 +45,24 @@ const pageSize = ref(8);
 const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
+const storeIdx = ref(null);
 
 onMounted(async () => {
-  await searchAll(route.params.storeIdx, currentPage.value, pageSize.value);
+  storeIdx.value = route.params.storeIdx;
+  await searchAll(storeIdx.value, currentPage.value, pageSize.value);
 });
 
-const changePage = (newPage) => {
-  if (newPage >= 0) {
-    currentPage.value = newPage;
-    searchAll(currentPage.value, pageSize.value);
+const changePage = async(newPage) => {
+  currentPage.value = newPage;
+  if (newPage >= 0 && searchQuery.value === "") {
+    await searchAll();
+  } else {
+    await searchAllByKeyword();
   }
 };
 
-const searchAll = async (storeIdx, page) => {
-  const res = await goodsStore.searchAllGoodsByStoreIdx(storeIdx, page, pageSize.value);
+const searchAll = async () => {
+  const res = await goodsStore.searchAllGoodsByStoreIdx(storeIdx.value, currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
@@ -72,9 +76,9 @@ const searchAll = async (storeIdx, page) => {
   }
 };
 
-const keywordSearchAll = async () => {
+const searchAllByKeyword = async () => {
   currentPage.value = 0;
-  const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(searchQuery.value, route.params.storeIdx, currentPage.value, pageSize.value);
+  const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(searchQuery.value, storeIdx.value, currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;

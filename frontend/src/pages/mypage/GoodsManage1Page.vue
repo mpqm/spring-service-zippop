@@ -14,12 +14,7 @@
         <div class="notice" v-else>
             <p>등록된 팝업 스토어가 없습니다.</p>
         </div>
-        <PaginationComponent
-            :currentPage="currentPage"
-            :totalPages="totalPages"
-            :hideBtns="hideBtns"
-            @page-changed="changePage"
-        />
+        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
 </div>
   </template>
@@ -45,30 +40,35 @@
     await searchAll(currentPage.value, pageSize.value);
   });
   
-  const changePage = (newPage) => {
-    if (newPage >= 0) {
-      currentPage.value = newPage;
-      searchAll(currentPage.value, pageSize.value);
-    }
-  };
-  
-  const searchAll = async (page) => {
-    const res = await storeStore.searchAllStoreAsCompany(page, pageSize.value);
-    if(res.success){
-    totalElements.value = storeStore.totalElements;
-    totalPages.value = storeStore.totalPages;
-    storeList.value = storeStore.storeList;
-    hideBtns.value = false;
+  const changePage = async(newPage) => {
+    currentPage.value = newPage;
+    if (newPage >= 0 && searchQuery.value === "") {
+    await searchAll();
   } else {
-    storeList.value = null;
-    totalElements.value = 0;
-    totalPages.value = 0;
-    hideBtns.value = true;
+    await searchAllByKeyword();
   }
   };
+  
+  const searchAll = async (flag) => {
+    if(flag === 0){
+      currentPage.value = 0;
+      searchQuery.value = "";
+    }
+    const res = await storeStore.searchAllStoreAsCompany(currentPage.value, pageSize.value);
+    if(res.success){
+      totalElements.value = storeStore.totalElements;
+      totalPages.value = storeStore.totalPages;
+      storeList.value = storeStore.storeList;
+      hideBtns.value = false;
+    } else {
+      storeList.value = null;
+      totalElements.value = 0;
+      totalPages.value = 0;
+      hideBtns.value = true;
+    }
+  };
 
-  const keywordSearchAll = async () => {
-  currentPage.value = 0;
+  const searchAllByKeyword = async () => {
   const res = await storeStore.searchAllStoreByKeywordAsCompany(searchQuery.value, currentPage.value, pageSize.value);
   if(res.success){
     totalElements.value = storeStore.totalElements;

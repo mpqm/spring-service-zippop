@@ -34,7 +34,7 @@ const searchQuery = ref("");
 // 페이지네이션
 const goodsList = ref([]);
 const currentPage = ref(0);
-const pageSize = ref(10);
+const pageSize = ref(12);
 const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
@@ -46,15 +46,21 @@ onMounted(async () => {
   totalPages.value = goodsStore.totalPages;
 });
 
-const changePage = (newPage) => {
-  if (newPage >= 0) {
-    currentPage.value = newPage;
-    searchAll(currentPage.value, pageSize.value);
+const changePage = async(newPage) => {
+  currentPage.value = newPage;
+  if (newPage >= 0 && searchQuery.value === "") {
+    await searchAll();
+  }  else {
+    await  searchAllByKeyword();
   }
 };
 
-const searchAll = async (page) => {
-  await goodsStore.searchAllGoods(page, pageSize.value);
+const searchAll = async (flag) => {
+  if(flag === 0){
+    currentPage.value = 0;
+    searchQuery.value = "";
+  }
+  await goodsStore.searchAllGoods(currentPage.value, pageSize.value);
   totalElements.value = goodsStore.totalElements;
   totalPages.value = goodsStore.totalPages;
   goodsList.value = goodsStore.goodsList;

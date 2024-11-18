@@ -32,15 +32,15 @@
     await searchAll(currentPage.value, pageSize.value);
   });
   
-  const changePage = (newPage) => {
+  const changePage = async(newPage) => {
     if (newPage >= 0) {
       currentPage.value = newPage;
-      searchAll(currentPage.value, pageSize.value);
+      await searchAll();
     }
   };
   
-  const searchAll = async (page) => {
-    const res = await storeStore.searchAllReviewAsCustomer(page, pageSize.value);
+  const searchAll = async () => {
+    const res = await storeStore.searchAllReviewAsCustomer(currentPage.value, pageSize.value);
     if (res.success) {
       totalElements.value = storeStore.totalElements;
       totalPages.value = storeStore.totalPages;

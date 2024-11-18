@@ -112,7 +112,7 @@ const signup = async () => {
         email: email.value,
         password: password.value,
         name: name.value,
-        phone_number: phoneNumber.value,
+        phoneNumber: phoneNumber.value,
         address: address.value + ',' + addressDetail.value
     }
     
