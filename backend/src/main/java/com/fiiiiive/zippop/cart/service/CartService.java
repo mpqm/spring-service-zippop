@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -39,30 +40,40 @@ public class CartService {
         .orElseThrow(() -> new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_MEMBER_NOT_FOUND));
         Goods goods = goodsRepository.findById(dto.getGoodsIdx())
         .orElseThrow(() -> (new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_GOODS_NOT_FOUND)));
-        // Cart 조회 및 존재하지 않을 경우 새로 생성
-        Cart cart = cartRepository.findByCustomerIdx(customUserDetails.getIdx())
-        .orElseGet(() -> {
-            Cart newCart = Cart.builder().customer(customer).build();
-            cartRepository.save(newCart);
-            return newCart;
-        });
-        // 카트에 이미 동일한 상품이 있는지 확인
-        boolean isExist = cart.getCartItemList().stream()
-        .anyMatch(cartItem -> cartItem.getGoods().getIdx().equals(dto.getGoodsIdx()));
-        if(isExist){
-            throw new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_EXIST);
+        // Cart 조회
+        Optional<Cart> resultCart = cartRepository.findByCustomerIdx(customUserDetails.getIdx());
+        Cart cart;
+        CartItem cartItem;
+        if(resultCart.isEmpty()){ // 카트가 없으면 새로 생성
+            cart = Cart.builder().customer(customer).build();
+            cartRepository.save(cart);
+            cartItem = CartItem.builder()
+                    .cart(cart)
+                    .goods(goods)
+                    .count(1)
+                    .price(goods.getPrice())
+                    .build();
+            cartItemRepository.save(cartItem);
+        } else { // 카트가 있으면 동일한 상품이 있는지 확인 있으면 예외 없으면 새로 추가
+            cart = resultCart.get();
+            Optional<CartItem> resultCartItem = cartItemRepository.findByGoodsIdx(goods.getIdx());
+            if(resultCartItem.isEmpty()){
+                cartItem = CartItem.builder()
+                        .cart(cart)
+                        .goods(goods)
+                        .count(1)
+                        .price(goods.getPrice())
+                        .build();
+                cartItemRepository.save(cartItem);
+            } else {
+                throw  new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_ITEM_EXIST);
+            }
         }
-        // CartItem 생성 후 카트에 추가
-        CartItem cartItem = CartItem.builder()
-                .cart(cart)
-                .goods(goods)
-                .count(dto.getCount())
-                .price(goods.getPrice())
-                .build();
-        cartItemRepository.save(cartItem);
-
         // CreateCartRes 반환
-        return CreateCartRes.builder().cartIdx(cart.getIdx()).cartItemIdx(cartItem.getIdx()).build();
+        return CreateCartRes.builder()
+                .cartIdx(cart.getIdx())
+                .cartItemIdx(cartItem.getIdx())
+                .build();
     }
 
     // 카트아이템 목록 조회
@@ -112,8 +123,8 @@ public class CartService {
     // 카트아이템 수량조절
     @Transactional
     public CountCartItemRes count(CustomUserDetails customUserDetails, Long cartItemIdx, Long operation) throws BaseException {
-        CartItem cartItem = cartItemRepository.findByCartItemIdx(cartItemIdx)
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.CART_COUNT_FAIL_NOT_FOUND));
+        CartItem cartItem = cartItemRepository.findByCartItemIdxAndCustomerIdx(cartItemIdx, customUserDetails.getIdx())
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.CART_COUNT_FAIL_UNAUTHORIZED));
         Integer currentCount = cartItem.getCount();
         if (operation == 0){
             currentCount++;
@@ -132,14 +143,17 @@ public class CartService {
 
     // 카트아이템 삭제
     @Transactional(rollbackFor = Exception.class)
-    public void delete(Long cartItemIdx) throws BaseException {
-        cartItemRepository.deleteByCartItemIdx(cartItemIdx);
+    public void delete(Long cartItemIdx, CustomUserDetails customUserDetails) throws BaseException {
+        cartItemRepository.deleteByCartItemIdxAndCustomerIdx(cartItemIdx, customUserDetails.getIdx());
     }
 
     // 카트삭제
     @Transactional(rollbackFor = Exception.class)
     public void deleteAll(CustomUserDetails customUserDetails) throws BaseException {
-        cartRepository.deleteByCustomerIdx(customUserDetails.getIdx());
+        Cart cart = cartRepository.findByCustomerIdx(customUserDetails.getIdx())
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.CART_COUNT_FAIL_NOT_FOUND_CART));
+        cartItemRepository.deleteAllByCartIdx(cart.getIdx());
+        cartRepository.delete(cart);
     }
 }
 

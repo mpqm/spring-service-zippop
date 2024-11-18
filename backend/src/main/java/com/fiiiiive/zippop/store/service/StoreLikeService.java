@@ -42,7 +42,7 @@ public class StoreLikeService {
         }
         Store store = storeRepository.findByStoreIdx(storeIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_LIKE_FAIL_NOT_FOUND));
-        Customer customer = customerRepository.findById(customUserDetails.getIdx())
+        Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx())
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_LIKE_FAIL_INVALID_MEMBER));
         Optional<StoreLike> storeLikeOpt = storeLikeRepository.findByCustomerIdxAndStoreIdx(customer.getIdx(),storeIdx);
         if (storeLikeOpt.isPresent()) {

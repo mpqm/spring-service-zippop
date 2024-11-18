@@ -17,5 +17,5 @@ public interface CartRepository extends JpaRepository<Cart,Long> {
 
     @Modifying
     @Query("DELETE FROM Cart c WHERE c.customer.idx = :customerIdx")
-    void deleteByCustomerIdx(Long customerIdx);
+    void deleteAllByCustomerIdx(Long customerIdx);
 }

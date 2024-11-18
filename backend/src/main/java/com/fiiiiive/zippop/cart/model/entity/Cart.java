@@ -5,6 +5,7 @@ import com.fiiiiive.zippop.auth.model.entity.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -20,8 +21,8 @@ public class Cart extends BaseEntity {
     private Long idx;
 
     // OneToMany
-    @OneToMany(mappedBy = "cart")
-    private List<CartItem> cartItemList;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> cartItemList = new ArrayList<>(); // 빈 리스트로 초기화
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)

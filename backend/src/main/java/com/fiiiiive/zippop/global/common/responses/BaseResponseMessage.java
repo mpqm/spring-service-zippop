@@ -168,7 +168,7 @@ public enum BaseResponseMessage {
     CART_REGISTER_FAIL(false, 5001  , "장바구니 등록에 실패했습니다." ),
     CART_REGISTER_FAIL_MEMBER_NOT_FOUND(false, 5002, "장바구니 사용자를 찾을수 없습니다." ),
     CART_REGISTER_FAIL_GOODS_NOT_FOUND(false, 5003, "상품을 찾을 수 없습니다."),
-    CART_REGISTER_FAIL_EXIST(false, 5004, "장바구니가 이미 존재 합니다."),
+    CART_REGISTER_FAIL_ITEM_EXIST(false, 5004, "해당 상품이 이미 장바구니에 존재 합니다."),
     // 장바구니 조회 5100
     CART_SEARCH_LIST_SUCESS(true, 5100, "장바구니 리스트를 불러왔습니다."),
     CART_SEARCH_FAIL(false, 5101, "장바구니 리스트를 불러오는데 실패했습니다."),
@@ -176,7 +176,10 @@ public enum BaseResponseMessage {
     CART_COUNT_SUCCESS(true, 5200, "장바구니 아이템의 수량을 조절에 성공했습니다."),
     CART_COUNT_FAIL_INVALID_OPERATION(false, 5201, "장바구니 아이템의 수량을 감소에 실패했습니다."),
     CART_COUNT_FAIL_IS_0(false, 5202, "장바구니 아이템의 수량이 0입니다."),
-    CART_COUNT_FAIL_NOT_FOUND(false, 5203, "장바구니 아이템을 찾을 수 없습니다."),
+    CART_COUNT_FAIL_NOT_FOUND_ITEM(false, 5203, "장바구니 아이템을 찾을 수 없습니다."),
+    CART_COUNT_FAIL_NOT_FOUND_CART(false, 5204, "장바구니를 찾을 수 없습니다."),
+    CART_COUNT_FAIL_UNAUTHORIZED(false, 5205,"해당 카트에 접근할 권한이 없습니다."),
+    CART_COUNT_FAIL_INVALID_ITEM(false, 5206, "카트에 속하지 않은 아이템입니다."),
     // 장바구니 삭제 5300
     CART_DELETE_SUCCESS(true, 5300, "장바구니 아이템 삭제에 성공했습니다."),
     CART_DELETE_FAIL(false, 5301, "장바구니 아이템 삭제에 실패했습니다."),
