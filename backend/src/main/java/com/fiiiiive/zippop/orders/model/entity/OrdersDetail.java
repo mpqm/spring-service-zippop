@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.orders.model.entity;
 
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.store.model.entity.Store;
+import com.fiiiiive.zippop.goods.model.entity.Goods;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,19 +11,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class CompanyOrdersDetail extends BaseEntity {
+public class OrdersDetail extends BaseEntity {
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-    private Integer totalPrice;
+    private Integer eachPrice;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "companyOrders_idx")
-    private CompanyOrders companyOrders;
+    @JoinColumn(name = "orders_idx")
+    private Orders orders;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_idx")
-    private Store store;
+    @JoinColumn(name = "goods_idx")
+    private Goods goods ;
 }

@@ -1,23 +1,12 @@
 package com.fiiiiive.zippop.orders.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.Map;
-
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
 public class VerifyOrdersRes {
-    private String impUid;
-    private Map<String, Double> goodsIdxMap;
-    private Long storeIdx;
-    private Integer totalPeople;
-    private Integer totalPrice;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Long ordersIdx;
 }

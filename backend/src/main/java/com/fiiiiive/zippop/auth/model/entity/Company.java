@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.auth.model.entity;
 
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.orders.model.entity.CompanyOrders;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,7 +34,5 @@ public class Company extends BaseEntity {
     @OneToMany(mappedBy = "company")
     private List<Store> storeList;
 
-    @OneToMany(mappedBy = "company")
-    private List<CompanyOrders> companyOrdersList;
 }
 
