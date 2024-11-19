@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
-import { backend } from "@/const";
+import { backend } from "@/env";
 
 
 export const useFavoriteStore = defineStore('favorite', {

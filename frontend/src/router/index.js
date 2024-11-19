@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import PaymentPage from "@/pages/PaymentPage.vue";
+import PaymentPage from "@/pages/orders/PaymentPage.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
 import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
@@ -23,7 +23,7 @@ import FindIdPwPage from "@/pages/auth/FindIdPwPage.vue";
 import CustomerMyPage from "@/pages/mypage/CustomerMyPage.vue";
 import ReviewSearchPage from "@/pages/mypage/ReviewSearchPage.vue";
 import LikeManagePage from "@/pages/mypage/LikeManagePage.vue";
-import CartPage from "@/pages/payment/CartPage.vue";
+import CartPage from "@/pages/orders/CartPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -66,7 +66,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/test', component: CartPage,
+      path: '/test', component: PaymentPage,
     },
     
     { path: '/chats', component: MainChatComponent },

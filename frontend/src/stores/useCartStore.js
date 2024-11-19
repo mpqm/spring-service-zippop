@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import { backend } from '@/const';
+import { backend } from '@/env';
 
 export const useCartStore = defineStore('cart', {
   state: () => ({
@@ -62,6 +62,7 @@ export const useCartStore = defineStore('cart', {
         const res = await axios.delete(
             `${backend}/cart/delete-all`, { withCredentials: true }
         );
+        this.cartList = [];
         return res.data
       } catch (error) {
         return error.response.data

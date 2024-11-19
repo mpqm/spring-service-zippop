@@ -4,8 +4,8 @@
     <div class="main-page">
       <h2 class="hero-text">여러가지 팝업 정보를 단 한 곳에서</h2>
       <div class="search-container">
-        <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="keywordSearchAll" />
-        <button class="search-btn" @click="keywordSearchAll"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+        <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+        <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
         <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
       </div>
       <div class="store-list-grid" v-if="storeList && storeList.length">

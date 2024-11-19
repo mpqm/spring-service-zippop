@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import { backend } from "@/const";
+import { backend } from "@/env";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({ 

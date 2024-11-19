@@ -17,10 +17,13 @@
                 {{ item.price * item.count }}원 ({{ item.price }})
               </td>
               <td>
-                <img class="quantity-input" src="../../assets/img/minus-none.png" @click="count(item.cartItemIdx, -1)" alt="">
+                <div class="quantity-container">
+                  <img class="quantity-input" src="../../assets/img/minus-none.png" @click="count(item.cartItemIdx, -1)" alt="">
                 <input :value="item.count" class="quantity-input" type="text" readonly />
                 <img class="quantity-input" src="../../assets/img/plus-none.png" @click="count(item.cartItemIdx, 1)" alt="">
                 <a href="#" class="delete-option" @click="deleteCartItem(item.cartItemIdx)">삭제</a>
+                </div>
+
               </td>
             </tr>
           </tbody>
@@ -112,8 +115,12 @@ const count = async (cartItemIdx, operation) => {
   if (res.success) {
     const item = cartList.value.find(item => item.cartItemIdx === cartItemIdx);
     if (item) {
-      item.count = operation === -1 ? item.count - 1 : item.count + 1;
-      item.itemTotalPrice = item.price * item.count; // 수량 변경 시 총 가격 업데이트
+      if (operation === -1 && item.count <= 1) {
+        await deleteCartItem(cartItemIdx);  // 수량이 0이 되면 삭제
+      } else {
+        item.count = operation === -1 ? item.count - 1 : item.count + 1;
+        item.itemTotalPrice = item.price * item.count; // 수량 변경 시 총 가격 업데이트
+      }
     }
     // 수량 변경 후 합계 다시 계산
     await updateTotalPrice();  // 총 상품 가격 계산
@@ -157,12 +164,12 @@ const updateFinalOrderPrice = async () => {
 
 
 const sendToPayment = async() => {
-  const goodsList = cartList.value.map(item => {
+  const customData = cartList.value.map(item => {
     return { [item.searchGoodsRes.goodsIdx]: item.count };
   });
-  console.log(goodsList)
   const paymentData = {
-    goodsList: goodsList,
+    goodsList: cartList.value,
+    customData: customData,
     totalPrice: totalPrice.value,
     totalDiscount: totalDiscount.value,
     deliveryFee: deliveryFee.value,
@@ -227,12 +234,16 @@ const sendToPayment = async() => {
 }
 
 .cart-table td:nth-child(4) {
-  display: flex;
-  width: 100%;
-  gap: 10px;
+  width: fit-content;
   justify-content: center;
-  align-items: center;
 }
+.quantity-container {
+  display: flex;
+  align-items: center;  
+  justify-content: center;
+  gap: 10px;
+}
+
 
 .delete-option {
   display: inline-block;
