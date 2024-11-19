@@ -26,11 +26,11 @@ public class Orders extends BaseEntity {
     private String orderState;
 
     // OneToMany
-    @OneToMany(mappedBy = "orders")
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdersDetail> ordersDetailList;
 
     // ManyToOne
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_idx")
     private Customer customer;
 }

@@ -18,6 +18,7 @@ public class SearchGoodsRes {
     private Integer goodsPrice;
     private String goodsContent;
     private Integer goodsAmount;
+    private String goodsStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();;

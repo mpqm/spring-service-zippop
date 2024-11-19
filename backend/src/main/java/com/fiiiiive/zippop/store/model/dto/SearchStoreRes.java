@@ -24,7 +24,7 @@ public class SearchStoreRes {
     private Integer totalPeople;
     private String storeStartDate;
     private String storeEndDate;
-    private String status;
+    private String storeStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<SearchStoreReviewRes> searchStoreReviewResList = new ArrayList<>();
