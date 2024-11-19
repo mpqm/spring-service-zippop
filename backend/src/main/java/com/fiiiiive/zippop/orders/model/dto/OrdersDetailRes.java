@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SearchCustomerOrdersDetailRes {
+public class OrdersDetailRes {
     private Long customerOrdersDetailIdx;
     private Integer eachPrice;
     private String trackingNumber;

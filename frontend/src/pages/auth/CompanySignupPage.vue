@@ -18,15 +18,15 @@
                     <input class="signup-input" v-model="password" type="password" placeholder="비밀번호를 입력해 주세요."/>
                 </div>
                 <div>
-                    <label>이메일</label>
+                    <label >회사명</label>
+                    <input class="signup-input" v-model="name" type="text" placeholder="회사명을 입력해 주세요."/>
+                </div>
+                <div>
+                    <label>회사 대표 이메일</label>
                     <input class="signup-input" v-model="email" type="email" placeholder="ex) example@example.com"/>
                 </div>
                 <div>
-                    <label >회원 이름</label>
-                    <input class="signup-input" v-model="name" type="text" placeholder="이름(실명)을 입력해 주세요."/>
-                </div>
-                <div>
-                    <label >휴대폰번호</label>
+                    <label >회사 대표 번호</label>
                     <input class="signup-input" v-model="phoneNumber" type="text" placeholder="ex) 01012341234"/>
                 </div>
                 <div>
@@ -34,7 +34,7 @@
                     <input class="signup-input" v-model="crn" type="password" placeholder="사업자등록번호"/>
                 </div>
                 <div>
-                    <label >주소/상세주소</label>
+                    <label >회사 주소/상세주소</label>
                     <div class="address">
                         <input class="signup-input" v-model="address" type="text" placeholder="주소" @click="openAddressSearch">
                         <input class="signup-input" v-model="addressDetail" type="text" placeholder="상세 주소">

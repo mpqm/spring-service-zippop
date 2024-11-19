@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.orders.repository;
 
-import com.fiiiiive.zippop.orders.model.entity.CustomerOrders;
+import com.fiiiiive.zippop.orders.model.entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CustomerOrdersRepository extends JpaRepository<CustomerOrders, Long> {
-    @Query("SELECT co FROM CustomerOrders co " +
-            "JOIN FETCH co.customer c " +
+public interface OrdersRepository extends JpaRepository<Orders, Long> {
+    @Query("SELECT o FROM Orders o " +
+            "JOIN FETCH o.customer c " +
             "WHERE c.idx = :customerIdx")
-    Optional<List<CustomerOrders>> findByCustomerIdx(Long customerIdx);
+    Optional<List<Orders>> findByCustomerIdx(Long customerIdx);
 }

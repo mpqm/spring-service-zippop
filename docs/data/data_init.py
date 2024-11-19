@@ -47,14 +47,15 @@ def store_data(num_rows):
             updated_at = created_at + timedelta(days=random.randint(0, 10))
             address = faker.address()
             category = random.choice(["카테고리1", "카테고리2", "카테고리3", "카테고리4", "카테고리5", "카테고리6", "카테고리7", "카테고리8", "카테고리9", "카테고리10"])
-            company_email = f"company{random.randint(1, 100)}@company.com"
+            fixRandomInt = random.randint(1, 100)
+            company_email = f"company{fixRandomInt}@company.com"
             content = faker.text(max_nb_chars=200)
             end_date = faker.date_between(start_date="today", end_date="+30d")
             like_count = 0
             name = f"팝업스토어 {i}"  # 이름을 순차적으로 설정
             start_date = faker.date_between(start_date="-30d", end_date="today")
             total_people = random.randint(1, 200)
-            company_idx = random.randint(1, 1000)  
+            company_idx = fixRandomInt
 
             insert_values.append((
                 created_at.strftime('%Y-%m-%d %H:%M:%S'),
@@ -498,7 +499,7 @@ try:
     store_review_data(10000)
     goods_data(50000)
     goods_image_data(50000)
-    company_data(1000)
+    company_data(100)
     customer_data(10000)
 
 except pymysql.MySQLError as e:
