@@ -24,6 +24,7 @@ import CustomerMyPage from "@/pages/mypage/CustomerMyPage.vue";
 import ReviewSearchPage from "@/pages/mypage/ReviewSearchPage.vue";
 import LikeManagePage from "@/pages/mypage/LikeManagePage.vue";
 import CartPage from "@/pages/orders/CartPage.vue";
+import GoodsDetailPage2 from "@/pages/goods/GoodsDetail2Page.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -37,7 +38,8 @@ const router = createRouter({
     { path: '/store/:storeIdx', component: StoreDetailPage },
 
     {path: "/goods", component: GoodsMainPage},
-    {path: '/goods/:goodsIdx', component: GoodsDetailPage},
+    {path: '/goods/:storeIdx', component: GoodsDetailPage},
+    {path: '/goods-detail/:goodsIdx', component: GoodsDetailPage2},
 
     {
       path: '/mypage/company',

@@ -49,6 +49,7 @@ public class StoreService {
                 .startDate(dto.getStoreStartDate())
                 .endDate(dto.getStoreEndDate())
                 .likeCount(0)
+                .status("STORE_START")
                 .company(company)
                 .build();
         storeRepository.save(store);
@@ -102,6 +103,7 @@ public class StoreService {
                 .category(store.getCategory())
                 .likeCount(store.getLikeCount())
                 .totalPeople(store.getTotalPeople())
+                .storeStatus(store.getStatus())
                 .storeStartDate(store.getStartDate())
                 .storeEndDate(store.getEndDate())
                 .searchStoreImageResList(searchStoreImageResList)
@@ -143,20 +145,28 @@ public class StoreService {
                     .totalPeople(store.getTotalPeople())
                     .storeStartDate(store.getStartDate())
                     .storeEndDate(store.getEndDate())
+                    .storeStatus(store.getStatus())
                     .searchStoreImageResList(searchStoreImageResList)
                     .build();
         });
         return searchStoreResPage;
     }
 
-    // 팝업 스토어 목록 조회 (page)
-    public Page<SearchStoreRes> searchAllAsGuest(String keyword, int page, int size) throws BaseException {
-
+    // 팝업 스토어 목록 조회 (page) flag: 1은 종료되지않은 0은 종료됨
+    public Page<SearchStoreRes> searchAllAsGuest(Boolean flag, String keyword, int page, int size) throws BaseException {
         Page<Store> result = null;
         if(keyword != null) {
-            result = storeRepository.findAllByKeyword(keyword, PageRequest.of(page, size));
+            if(flag){
+                result = storeRepository.findAllByKeywordAndStatus(keyword, "STORE_START",PageRequest.of(page, size));
+            } else {
+                result = storeRepository.findAllByKeywordAndStatus(keyword, "STORE_END", PageRequest.of(page, size));
+            }
         } else {
-            result = storeRepository.findAll(PageRequest.of(page, size));
+            if(flag){
+                result = storeRepository.findAllByStatus("STORE_START",PageRequest.of(page, size));
+            } else {
+                result = storeRepository.findAllByStatus("STORE_END", PageRequest.of(page, size));
+            }
         }
 
         // 예외: 값이 없다면
@@ -190,6 +200,7 @@ public class StoreService {
                     .likeCount(store.getLikeCount())
                     .totalPeople(store.getTotalPeople())
                     .storeStartDate(store.getStartDate())
+                    .storeStatus(store.getStatus())
                     .storeEndDate(store.getEndDate())
                     .searchStoreImageResList(searchStoreImageResList)
                     .build();

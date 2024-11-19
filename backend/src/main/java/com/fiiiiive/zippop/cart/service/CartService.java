@@ -14,6 +14,7 @@ import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.store.model.entity.Store;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,19 +57,30 @@ public class CartService {
             cartItemRepository.save(cartItem);
         } else { // 카트가 있으면 동일한 상품이 있는지 확인 있으면 예외 없으면 새로 추가
             cart = resultCart.get();
-            Optional<CartItem> resultCartItem = cartItemRepository.findByGoodsIdx(goods.getIdx());
-            if(resultCartItem.isEmpty()){
-                cartItem = CartItem.builder()
-                        .cart(cart)
-                        .goods(goods)
-                        .count(1)
-                        .price(goods.getPrice())
-                        .build();
-                cartItemRepository.save(cartItem);
-            } else {
-                throw  new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_ITEM_EXIST);
+            List<CartItem> existingItems = cartItemRepository.findAllByCartIdx(cart.getIdx());
+            // 기존 CartItem이 있는 경우 동일한 Store 확인
+            if (!existingItems.isEmpty()) {
+                Store existingStore = existingItems.get(0).getGoods().getStore();
+                if (!existingStore.getIdx().equals(goods.getStore().getIdx())) {
+                    throw new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_STORE);
+                }
             }
+            // 동일한 상품이 이미 있는지 확인
+            Optional<CartItem> resultCartItem = cartItemRepository.findByGoodsIdxAndCartIdx(goods.getIdx(), cart.getIdx());
+            if (resultCartItem.isPresent()) {
+                throw new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_ITEM_EXIST);
+            }
+
+            // 새로운 CartItem 생성
+            cartItem = CartItem.builder()
+                    .cart(cart)
+                    .goods(goods)
+                    .count(1)
+                    .price(goods.getPrice())
+                    .build();
+            cartItemRepository.save(cartItem);
         }
+
         // CreateCartRes 반환
         return CreateCartRes.builder()
                 .cartIdx(cart.getIdx())

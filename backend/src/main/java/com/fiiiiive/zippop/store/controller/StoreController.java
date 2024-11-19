@@ -56,9 +56,10 @@ public class StoreController {
     @GetMapping("/search-all/as-guest")
     public ResponseEntity<BaseResponse<Page<SearchStoreRes>>> searchAll(
         @RequestParam(required = false) String keyword,
+        @RequestParam Boolean flag,
         @RequestParam(required = false, defaultValue = "0") int page,
         @RequestParam(required = false, defaultValue = "10") int size ) throws BaseException {
-        Page<SearchStoreRes> response = storeService.searchAllAsGuest(keyword, page, size);
+        Page<SearchStoreRes> response = storeService.searchAllAsGuest(flag, keyword, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_SEARCH_SUCCESS, response));
     }
 

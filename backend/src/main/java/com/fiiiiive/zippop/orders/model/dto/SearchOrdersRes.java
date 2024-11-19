@@ -3,7 +3,6 @@ package com.fiiiiive.zippop.orders.model.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -11,14 +10,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrdersRes {
-    private Long customerOrdersIdx;
+public class SearchOrdersRes {
+    private Long ordersIdx;
     private String impUid;
+    private String name;
+    private String email;
+    private String address;
+    private String phoneNumber;
     private Integer usedPoint;
     private Integer totalPrice;
     private String orderState;
     private Integer deliveryCost;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<OrdersDetailRes> searchCustomerOrdersDetailResList = new ArrayList<>();
+    private List<SearchOrdersDetailRes> searchOrdersDetailResList;
 }

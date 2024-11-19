@@ -18,6 +18,7 @@ public enum BaseResponseMessage {
     EMAIL_SEND_FAIL(false, 311, "이메일 전송에 실패했습니다."),
     UNPARSE_JSON(false, 312, "json 형식을 매핑할 수 없습니다."),
     INTERNAL_SERVER_ERROR(false, 500, "내부 서버 오류가 발생해서 처리할 수 없습니다."),
+
     // ========================================================================================================================
     // 회원 기능(2000)
     // 회원가입 2000
@@ -150,6 +151,8 @@ public enum BaseResponseMessage {
     POPUP_STORE_PAY_FAIL_VALIDATION_ERROR(false, 4410, "결제 금액이 잘못 되었습니다."),
     POPUP_STORE_PAY_FAIL_NOT_FOUND_AMOUNT(false, 4408, "결제 금액을 찾을 수 없습니다."),
     POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED(false, 4411, "3000포인트 이상부터 사용할 수 있습니다."),
+    POPUP_PAY_SEARCH_FAIL_INVALID_ROLE(false, 4412, "기업회원은 요청할 수 없는 API 입니다."),
+    POPUP_PAY_REFUND_FAIL_IS_COMPLETE(false, 4413, "배송 진행 중인 물건은 환불할 수 없습니다."),
     // 굿즈 구매 4700
     POPUP_GOODS_PAY_GOODS_NULL(false, 4406, "굿즈가 존재하지 않습니다."),
 
@@ -161,7 +164,8 @@ public enum BaseResponseMessage {
     POPUP_ORDERS_SEARCH_SUCCESS(true, 4409, "결제 내역 조회에 성공했습니다."),
     POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER(false, 4410, "해당 사용자를 찾을 수 없어 결제 내역을 불러올 수 없습니다."),
     POPUP_PAY_SEARCH_FAIL_NOT_FOUND(false, 4411, "결제 내역 조회를 불러올 수 없습니다."),
-
+    PAY_FAIL_IAMPORTONE_SERVER_ERROR(false, 4412, "결제 PG 서버 오류가 발생해서 처리할 수 없습니다."),
+    PAY_FAIL_IAMPORTONE_REFUND_ERROR(false,  314,"결제 취소 요청 중 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
     // ========================================================================================================================
     // 장바구니 5000
@@ -171,6 +175,8 @@ public enum BaseResponseMessage {
     CART_REGISTER_FAIL_MEMBER_NOT_FOUND(false, 5002, "장바구니 사용자를 찾을수 없습니다." ),
     CART_REGISTER_FAIL_GOODS_NOT_FOUND(false, 5003, "상품을 찾을 수 없습니다."),
     CART_REGISTER_FAIL_ITEM_EXIST(false, 5004, "해당 상품이 이미 장바구니에 존재 합니다."),
+    CART_REGISTER_FAIL_STORE(false, 5005, "장바구니의 굿즈의 팝업 스토어는 같아야합니다."),
+
     // 장바구니 조회 5100
     CART_SEARCH_LIST_SUCESS(true, 5100, "장바구니 리스트를 불러왔습니다."),
     CART_SEARCH_FAIL(false, 5101, "장바구니 리스트를 불러오는데 실패했습니다."),

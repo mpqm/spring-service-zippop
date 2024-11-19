@@ -33,7 +33,8 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     Page<Store> findByCompanyEmail(String companyEmail, Pageable pageable);
 
     // 팝업스토어 전체 조회
-    Page<Store> findAll(Pageable pageable);
+    @Query("SELECT s FROM Store s WHERE s.status = :status")
+    Page<Store> findAllByStatus(String status, Pageable pageable);
 
     // 검색어 및 상태 기반으로 전체 조회
     @Query("SELECT s FROM Store s " +
@@ -43,6 +44,15 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "OR s.startDate LIKE %:keyword% " +
             "OR s.companyEmail LIKE %:keyword%")
     Page<Store> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT s FROM Store s " +
+            "WHERE s.status = :status " +
+            "AND (s.address LIKE %:keyword% " +
+            "OR s.name LIKE %:keyword% " +
+            "OR s.category LIKE %:keyword% " +
+            "OR s.startDate LIKE %:keyword% " +
+            "OR s.companyEmail LIKE %:keyword%)")
+    Page<Store> findAllByKeywordAndStatus(String status, @Param("keyword") String keyword, Pageable pageable);
 
     // 검색어 기반으로 전체 조회(기업용)
     @Query("SELECT s FROM Store s " +

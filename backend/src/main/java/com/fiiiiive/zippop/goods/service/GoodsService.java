@@ -44,7 +44,7 @@ public class GoodsService {
                 .price(dto.getGoodsPrice())
                 .content(dto.getGoodsContent())
                 .store(store)
-                .status("SELLING")
+                .status("GOODS_RESERVE")
                 .build();
         goodsRepository.save(goods);
         // GoodsImage 엔티티 리스트 생성 및 저장
@@ -78,6 +78,7 @@ public class GoodsService {
                 .goodsIdx(goods.getIdx())
                 .goodsName(goods.getName())
                 .goodsPrice(goods.getPrice())
+                .goodsStatus(goods.getStatus())
                 .goodsContent(goods.getContent())
                 .goodsAmount(goods.getAmount())
                 .searchGoodsImageResList(searchGoodsImageResList)
@@ -89,9 +90,9 @@ public class GoodsService {
         Page<Goods> result = null;
         if(keyword != null && storeIdx == null) {
             result = goodsRepository.findByKeyword(keyword, PageRequest.of(page, size));
-        } else if (storeIdx != null && keyword == null) {
+        } else if (storeIdx != null && keyword == null) { // 팝업 스토어 상세 페이지 들어갔을때 전체 목록 조회
             result = goodsRepository.findByStoreIdx(storeIdx, PageRequest.of(page, size));
-        } else if (storeIdx != null) {
+        } else if (storeIdx != null) { // 팝업 스토어 상세 페이지 들어갔을때 전체 검색
             result = goodsRepository.findByStoreIdxAndKeyword(storeIdx, keyword, PageRequest.of(page, size));
         } else {
             result = goodsRepository.findAll(PageRequest.of(page, size));
@@ -117,6 +118,7 @@ public class GoodsService {
                     .goodsName(goods.getName())
                     .goodsPrice(goods.getPrice())
                     .goodsContent(goods.getContent())
+                    .goodsStatus(goods.getStatus())
                     .goodsAmount(goods.getAmount())
                     .searchGoodsImageResList(searchGoodsImageResList)
                     .build();
