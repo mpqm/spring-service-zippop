@@ -60,7 +60,7 @@ const searchAll = async (flag) => {
     currentPage.value = 0;
     searchQuery.value = "";
   }
-  await storeStore.searchAllStore(currentPage.value, pageSize.value);
+  await storeStore.searchAllStore(true, currentPage.value, pageSize.value);
   totalElements.value = storeStore.totalElements;
   totalPages.value = storeStore.totalPages;
   storeList.value = storeStore.storeList;
@@ -68,7 +68,7 @@ const searchAll = async (flag) => {
 };
 
 const searchAllByKeyword = async () => {
-  const res = await storeStore.searchAllStoreByKeyword(searchQuery.value, currentPage.value, pageSize.value);
+  const res = await storeStore.searchAllStoreByKeyword(true, searchQuery.value, currentPage.value, pageSize.value);
   if(res.success){
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;

@@ -4,15 +4,15 @@
     <div class="main-page">
       <h2 class="hero-text">팝업 스토어 예약이 끝나고 남은 재고 굿즈를 찾아보세요!</h2>
       <div class="search-container">
-        <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="keywordSearchAll" />
+        <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
         <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
         <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
       </div>
-      <div class="goods-list-grid" v-if="goodsList && goodsList.length">
-        <GoodsCardComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" />
+      <div class="store-list-grid" v-if="storeList && storeList.length">
+        <StoreCardComponent v-for="store in storeList" :key="store.storeIdx" :store="store" :redirecToGoodsDetail="true" />
       </div>
       <div v-else>
-        <p>검색 결과에 해당하는 팝업 굿즈 목록이 없습니다.</p>
+        <p>검색 결과에 해당하는 팝업 스토어 목록이 없습니다.</p>
       </div>
       <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage"  />
     </div>
@@ -22,17 +22,17 @@
 <script setup>
 import HeaderComponent from "@/components/common/HeaderComponent.vue";
 import FooterComponent from "@/components/common/FooterComponent.vue";
-import GoodsCardComponent from "@/components/goods/GoodsCardComponent.vue";
+import StoreCardComponent from "@/components/store/StoreCardComponent.vue";
 import PaginationComponent from "@/components/common/PaginationComponent.vue";
-import { useGoodsStore } from "@/stores/useGoodsStore";
+import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
 
-const goodsStore = useGoodsStore();
+const storeStore = useStoreStore();
 
 const searchQuery = ref("");
 
 // 페이지네이션
-const goodsList = ref([]);
+const storeList = ref([]);
 const currentPage = ref(0);
 const pageSize = ref(12);
 const totalElements = ref(0);
@@ -41,17 +41,17 @@ const hideBtns = ref(false);
 
 onMounted(async () => {
   await searchAll(currentPage.value, pageSize.value);
-  goodsList.value = goodsStore.goodsList;
-  totalElements.value = goodsStore.totalElements;
-  totalPages.value = goodsStore.totalPages;
+  storeList.value = storeStore.storeList;
+  totalElements.value = storeStore.totalElements;
+  totalPages.value = storeStore.totalPages;
 });
 
 const changePage = async(newPage) => {
   currentPage.value = newPage;
   if (newPage >= 0 && searchQuery.value === "") {
     await searchAll();
-  }  else {
-    await  searchAllByKeyword();
+  } else {
+    await searchAllByKeyword();
   }
 };
 
@@ -60,30 +60,27 @@ const searchAll = async (flag) => {
     currentPage.value = 0;
     searchQuery.value = "";
   }
-  await goodsStore.searchAllGoods(currentPage.value, pageSize.value);
-  totalElements.value = goodsStore.totalElements;
-  totalPages.value = goodsStore.totalPages;
-  goodsList.value = goodsStore.goodsList;
+  await storeStore.searchAllStore(false, currentPage.value, pageSize.value);
+  totalElements.value = storeStore.totalElements;
+  totalPages.value = storeStore.totalPages;
+  storeList.value = storeStore.storeList;
   hideBtns.value = false;
 };
 
 const searchAllByKeyword = async () => {
-  currentPage.value = 0;
-  const res = await goodsStore.searchAllGoodsByKeyword(searchQuery.value, currentPage.value, pageSize.value);
+  const res = await storeStore.searchAllStoreByKeyword(false, searchQuery.value, currentPage.value, pageSize.value);
   if(res.success){
-    totalElements.value = goodsStore.totalElements;
-    totalPages.value = goodsStore.totalPages;
-    goodsList.value = goodsStore.goodsList;
+    totalElements.value = storeStore.totalElements;
+    totalPages.value = storeStore.totalPages;
+    storeList.value = storeStore.storeList;
     hideBtns.value = false;
   } else {
-    goodsList.value = null;
+    storeList.value = null;
     totalElements.value = null;
     totalPages.value = null;
     hideBtns.value = true;
   }
 };
-
-
 </script>
 
 <style scoped>
@@ -150,7 +147,7 @@ const searchAllByKeyword = async () => {
   padding: 0 1.25rem;
 }
 
-.goods-list-grid {
+.store-list-grid {
   margin-top: 16px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));

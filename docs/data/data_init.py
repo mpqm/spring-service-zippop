@@ -54,6 +54,7 @@ def store_data(num_rows):
             like_count = 0
             name = f"팝업스토어 {i}"  # 이름을 순차적으로 설정
             start_date = faker.date_between(start_date="-30d", end_date="today")
+            status = random.choice(["STORE_START", "STORE_END"])
             total_people = random.randint(1, 200)
             company_idx = fixRandomInt
 
@@ -241,7 +242,7 @@ def goods_data(num_rows):
             content = faker.text(max_nb_chars=200)
             name = faker.word().capitalize()
             price = round(random.uniform(1000, 50000), 2)
-            status = random.choice(["RESERVED", "STOCK"])
+            status = random.choice(["GOODS_RESERVED", "GOODS_STOCK"])
             store_idx = random.randint(1, 10000)
 
             insert_values.append((

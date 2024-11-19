@@ -37,10 +37,10 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllStore(page, size) {
+    async searchAllStore(flag, page, size) {
       try {
         const res = await axios.get(
-          `${backend}/store/search-all/as-guest?page=${page}&size=${size}`
+          `${backend}/store/search-all/as-guest?flag=${flag}&page=${page}&size=${size}`
         );
         this.storeList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
@@ -50,10 +50,10 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
-    async searchAllStoreByKeyword(keyword, page, size) {
+    async searchAllStoreByKeyword(flag, keyword, page, size) {
       try {
         const res = await axios.get(
-          `${backend}/store/search-all/as-guest?keyword=${keyword}&page=${page}&size=${size}`
+          `${backend}/store/search-all/as-guest?flag=${flag}&keyword=${keyword}&page=${page}&size=${size}`
         );
         this.storeList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
