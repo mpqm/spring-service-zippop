@@ -1,12 +1,58 @@
 <template>
-  <section data-v-a178adf6="" class="pay-button">
-        <span> 상품 결제 굿즈 IDX 1, 2번 2개씩 삼</span>
-        <button data-v-a178adf6="" type="button" @click="payment"
-        class="btn btn-primary btn-block">결제하기</button>
-  </section><!---->
+  <div>
+    <HeaderComponent></HeaderComponent>
+    <div class="payment-page">
+    <hr>
+    <h3 class="t1">배송지 정보</h3>
+    <div class="userinfo-container">
+          <div class="userinfo-item"><span>구매자 이름</span> {{ userInfo.name }}</div>
+          <div class="userinfo-item"><span>구매자 이메일</span> {{ userInfo.email }}</div>
+          <div class="userinfo-item"><span>구매자 휴대전화번호</span> {{ userInfo.phoneNumber }}</div>
+          <div class="userinfo-item"><span>배송지 주소</span> {{ userInfo.address }}</div>
+    </div>
+    <hr>
+    <h3 class="t1">상품 구매 정보</h3>
+    <table class="cart-table">
+          <tbody>
+            <th>상품이미지</th>
+            <th>상품명</th>
+            <th>상품가격</th>
+            <th>상품수량</th>
+            <tr v-for="item in goodsList" :key="item.goodsIdx">
+              <td>
+                <img
+                  v-if="item.searchGoodsRes.searchGoodsImageResList && item.searchGoodsRes.searchGoodsImageResList.length > 0"
+                  :src="item.searchGoodsRes.searchGoodsImageResList[0].goodsImageUrl" class="cart_item_img" />
+              </td>
+              <td>
+                {{ item.searchGoodsRes.goodsName }}
+              </td>
+              <td>
+                {{ item.price * item.count }}원 ({{ item.price }})
+              </td>
+              <td>{{ item.count }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <h3 class="t1">주문 정보</h3>
+    <div class="predict-price-container">
+          <div class="predict-price-item"><span>총 상품 가격</span> {{ paymentData.totalPrice }}원</div>
+          <div class="predict-price-item"><span>총 할인</span> {{ paymentData.totalDiscount }}원</div>
+          <div class="predict-price-item"><span>총 배송비</span> {{ paymentData.deliveryFee }}원</div>
+          <h3 class="predict-total-price"><span>총 주문 금액</span> {{ paymentData.finalOrderPrice }}원</h3>
+        </div>
+      <button type="button" @click="payment" class="pay-btn">결제하기</button>
+      <button type="button" @click="cancelPayment" class="pay-btn">결제취소</button>
+    </div>
+    <FooterComponent></FooterComponent>
+</div>
+
 </template>
 
 <script setup>
+import HeaderComponent from '@/components/common/HeaderComponent.vue';
+import FooterComponent from "@/components/common/FooterComponent.vue";
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useOrdersStore } from '@/stores/useOrdersStore';
 import { onMounted, ref } from 'vue';
@@ -14,23 +60,24 @@ import { useToast } from 'vue-toastification';
 import { IAMPORT_NAME, IAMPORT_PG, IAMPORT_UID } from '@/env';
 import { useCartStore } from '@/stores/useCartStore';
 import { useRouter } from 'vue-router';
+
 const toast = useToast();
 const paymentData = ref({})
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const ordersStore = useOrdersStore();
-const userEmail = ref('');
-const userName = ref('');
+const goodsList = ref([]);
+const userInfo = ref({});
 const router = useRouter();
+
 onMounted(async() => {
   paymentData.value = ordersStore.paymentData
-  userEmail.value = authStore.userInfo.email;
-  userName.value = authStore.userInfo.name;
-  console.log(paymentData.value);
+  goodsList.value = paymentData.value.goodsList;
+  userInfo.value = authStore.userInfo
 });
 
-const transformGoodsList = (goodsList) => {
-  return goodsList.reduce((acc, item) => {
+const transformGoodsList = (customData) => {
+  return customData.reduce((acc, item) => {
     const [goodsIdx, count] = Object.entries(item)[0];
     acc[goodsIdx] = count;
     return acc;
@@ -51,9 +98,9 @@ const payment = () => {
       merchant_uid: "order_no_" + new Date().getMilliseconds(),
       name: IAMPORT_NAME,
       amount: paymentData.value.finalOrderPrice, // 전달받은 총 주문 금액
-      buyer_email: userEmail.value,
-      buyer_name: userName.value,
-      custom_data: transformGoodsList(paymentData.value.goodsList), // 전달받은 데이터 포함
+      buyer_email: userInfo.value.email,
+      buyer_name: userInfo.value.name,
+      custom_data: transformGoodsList(paymentData.value.customData), // 전달받은 데이터 포함
     },
     async (rsp) => {
       if (rsp.success) {
@@ -71,8 +118,112 @@ const payment = () => {
     }
   );
 };
+
+const cancelPayment = async() => {
+  router.push("/mypage/customer/cart")
+}
 </script>
 
 
 <style scoped>
+ .payment-page {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 35rem;
+  padding: 1rem;
+ }
+ hr {
+    border : 1px solid #00c7aa;
+    background-color:#00c7aa;
+    margin: 0 5px;
+}
+.t1 {
+    text-align: left;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.cart-table {
+  width: 100%;
+  table-layout: auto;
+  border-radius: 8px;
+  border: 1px solid #00c7ae;
+  margin-bottom: 20px;
+}
+
+.cart-table th {
+ font-size: 13px;
+}
+.cart_item_img {
+  width: 70px;
+  height: 70px;
+}
+
+.predict-price-container, .userinfo-container{
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  justify-content: space-between;
+}
+
+.predict-price-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.predict-price-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.userinfo-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.predict-total-price {
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.predict-price-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.predict-price-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.predict-total-price {
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.pay-btn {
+  width: auto;
+  margin: 5px;
+  text-align: center;
+  margin-top: 10px;
+  background-color: #00c7ae;
+  color: #fff;
+  padding: 10px;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+}
+
 </style>

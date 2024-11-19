@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 
-import { backend } from "@/const";
+import { backend } from "@/env";
 
 // 전역 저장소 생성
 export const useStoreStore = defineStore("store", {

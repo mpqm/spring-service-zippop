@@ -4,8 +4,8 @@
       <div class="goods-control">
         <div class="search-container">
           <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요"
-            @keyup.enter="keywordSearchAll" />
-          <button class="search-btn" @click="keywordSearchAll"><img class="search-img"
+            @keyup.enter="searchAllByKeyword" />
+          <button class="search-btn" @click="searchAllByKeyword"><img class="search-img"
               src="../../assets/img/search-none.png" alt=""></button>
           <button class="search-btn" @click="searchAll(0)"><img class="search-img"
               src="../../assets/img/reload-none.png" alt=""></button>
@@ -77,7 +77,6 @@ const searchAll = async () => {
 };
 
 const searchAllByKeyword = async () => {
-  currentPage.value = 0;
   const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(searchQuery.value, storeIdx.value, currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;

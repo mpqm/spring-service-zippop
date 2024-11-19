@@ -2,8 +2,8 @@
 <div>
     <div class="store-control">
         <div class="search-container">
-            <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="keywordSearchAll" />
-            <button class="search-btn" @click="keywordSearchAll"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+            <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+            <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
             <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
         </div>
     </div>
@@ -25,62 +25,55 @@
   import { useStoreStore } from "@/stores/useStoreStore";
   import { onMounted, ref } from "vue";
   
-  const storeStore = useStoreStore();
-  const searchQuery = ref("");
-  
-  const showControl = ref(false);
-  const storeList = ref([]);
-  const currentPage = ref(0);
-  const pageSize = ref(8);
-  const totalElements = ref(0);
-  const totalPages = ref(0);
-  const hideBtns = ref(false);
-  
-  onMounted(async () => {
-    await searchAll(currentPage.value, pageSize.value);
-  });
-  
-  const changePage = async(newPage) => {
-    currentPage.value = newPage;
-    if (newPage >= 0 && searchQuery.value === "") {
+const storeStore = useStoreStore();
+
+const searchQuery = ref("");
+
+// 페이지네이션
+const storeList = ref([]);
+const currentPage = ref(0);
+const pageSize = ref(8);
+const totalElements = ref(0);
+const totalPages = ref(0);
+const hideBtns = ref(false);
+const showControl = ref(false);
+
+onMounted(async () => {
+  await searchAll();
+  storeList.value = storeStore.storeList;
+  totalElements.value = storeStore.totalElements;
+  totalPages.value = storeStore.totalPages;
+});
+
+const changePage = async (newPage) => {
+  if (newPage < 0) return; // 잘못된 페이지 방지
+  currentPage.value = newPage;
+  console.log(searchQuery.value);
+  if (searchQuery.value.trim() === "") {
     await searchAll();
   } else {
     await searchAllByKeyword();
   }
-  };
-  
-  const searchAll = async (flag) => {
-    if(flag === 0){
-      currentPage.value = 0;
-      searchQuery.value = "";
-    }
-    const res = await storeStore.searchAllStoreAsCompany(currentPage.value, pageSize.value);
-    if(res.success){
-      totalElements.value = storeStore.totalElements;
-      totalPages.value = storeStore.totalPages;
-      storeList.value = storeStore.storeList;
-      hideBtns.value = false;
-    } else {
-      storeList.value = null;
-      totalElements.value = 0;
-      totalPages.value = 0;
-      hideBtns.value = true;
-    }
-  };
+};
 
-  const searchAllByKeyword = async () => {
-  const res = await storeStore.searchAllStoreByKeywordAsCompany(searchQuery.value, currentPage.value, pageSize.value);
-  if(res.success){
+const searchAll = async (flag) => {
+  if(flag === 0){
+    currentPage.value = 0;
+    searchQuery.value = "";
+  }
+  await storeStore.searchAllStoreAsCompany(currentPage.value, pageSize.value);
+  totalElements.value = storeStore.totalElements;
+  totalPages.value = storeStore.totalPages;
+  storeList.value = storeStore.storeList;
+  hideBtns.value = false;
+};
+
+const searchAllByKeyword = async () => {
+  await storeStore.searchAllStoreByKeywordAsCompany(searchQuery.value, currentPage.value, pageSize.value);
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;
     storeList.value = storeStore.storeList;
     hideBtns.value = false;
-  } else {
-    storeList.value = null;
-    totalElements.value = null;
-    totalPages.value = null;
-    hideBtns.value = true;
-  }
 };
 
   </script>

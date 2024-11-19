@@ -2,7 +2,7 @@
 <template>
   <div class="pagination">
     <button 
-      v-if="currentGroup > 0" 
+      v-if="props.totalPages > pageGroupSize && currentGroup > 0" 
       class="pagination-group-btn" 
       @click="prevGroup">
       &lt;&lt;
@@ -31,7 +31,7 @@
       &gt;
     </button>
     <button 
-      v-if="(currentGroup + 1) * pageGroupSize < totalPages" 
+      v-if="props.totalPages > pageGroupSize && (currentGroup + 1) * pageGroupSize < props.totalPages" 
       class="pagination-group-btn" 
       @click="nextGroup">
       &gt;&gt;
@@ -72,6 +72,9 @@ const nextGroup = () => {
 const groupPages = computed(() => {
   const start = currentGroup.value * pageGroupSize + 1;
   const end = Math.min(start + pageGroupSize - 1, props.totalPages);
+  if (props.totalPages <= pageGroupSize) {
+    return Array.from({ length: props.totalPages }, (_, i) => i + 1);
+  }
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 </script>
