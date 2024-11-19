@@ -74,7 +74,7 @@ export const useGoodsStore = defineStore("goods", {
         return error.response.data;
       }
     },
-    async searchAllGoodsByKeywordAndStoreIdx(keyword, storeIdx, page, size) {
+    async searchAllGoodsByKeywordAndStoreIdx(storeIdx, keyword,page, size) {
       try {
         const res = await axios.get(
           `${backend}/goods/search-all?keyword=${keyword}&storeIdx=${storeIdx}&page=${page}&size=${size}`

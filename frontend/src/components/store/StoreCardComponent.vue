@@ -14,7 +14,9 @@
       alt="store image"
     />
     <div class="btn-container">
-      <button class="normal-btn" @click="goStoreDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+      
+      <button v-if="redirecToGoodsDetail" class="normal-btn" @click="goGoodsDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+      <button v-else class="normal-btn" @click="goStoreDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
       <button class="normal-btn" @click="like"><img class="search-img" src="../../assets/img/like-none.png" alt=""></button>
     </div>
   </div>
@@ -32,9 +34,15 @@ const authStore = useAuthStore();
 const toast = useToast();
 const props = defineProps({
   store: Object,
+  redirecToGoodsDetail: Boolean,
 });
+
 const goStoreDetail = () => {
   router.push(`/store/${props.store.storeIdx}`);
+}
+
+const goGoodsDetail = () => {
+  router.push(`/goods/${props.store.storeIdx}`);
 }
 
 const like = async() => {
