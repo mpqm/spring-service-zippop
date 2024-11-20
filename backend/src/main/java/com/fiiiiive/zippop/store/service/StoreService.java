@@ -154,12 +154,14 @@ public class StoreService {
 
     // 팝업 스토어 목록 조회 (page) flag: 1은 종료되지않은 0은 종료됨
     public Page<SearchStoreRes> searchAllAsGuest(Boolean flag, String keyword, int page, int size) throws BaseException {
-        Page<Store> result = null;
+        Page<Store> result;
+        String storeStart = "STORE_START";
+        String storeEnd = "STORE_END";
         if(keyword != null) {
             if(flag){
-                result = storeRepository.findAllByKeywordAndStatus(keyword, "STORE_START",PageRequest.of(page, size));
+                result = storeRepository.findAllByKeywordAndStatus( keyword, storeStart, PageRequest.of(page, size));
             } else {
-                result = storeRepository.findAllByKeywordAndStatus(keyword, "STORE_END", PageRequest.of(page, size));
+                result = storeRepository.findAllByKeywordAndStatus( keyword, storeEnd, PageRequest.of(page, size));
             }
         } else {
             if(flag){
@@ -170,7 +172,7 @@ public class StoreService {
         }
 
         // 예외: 값이 없다면
-        if (!result.hasContent()) {
+        if (result.isEmpty()) {
             throw new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST);
         }
 

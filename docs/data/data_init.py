@@ -59,6 +59,7 @@ def store_data(num_rows):
             company_idx = fixRandomInt
 
             insert_values.append((
+                status,
                 created_at.strftime('%Y-%m-%d %H:%M:%S'),
                 updated_at.strftime('%Y-%m-%d %H:%M:%S'),
                 address, category, company_email, content,
@@ -71,9 +72,9 @@ def store_data(num_rows):
             if len(insert_values) >= batch_size:
                 cursor.executemany(f"""
                     INSERT INTO {store_table_name} (
-                        created_at, updated_at, address, category, company_email, content,
+                        status, created_at, updated_at, address, category, company_email, content,
                         end_date, like_count, name, start_date, total_people, company_idx
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                 """, insert_values)
                   # 1000개 삽입 후 출력
                 insert_values = []  # 한 번에 삽입 후 초기화
@@ -82,11 +83,11 @@ def store_data(num_rows):
         if insert_values:
             cursor.executemany(f"""
                 INSERT INTO {store_table_name} (
-                    created_at, updated_at, address, category, company_email, content,
+                    status, created_at, updated_at, address, category, company_email, content,
                     end_date, like_count, name, start_date, total_people, company_idx
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """, insert_values)
-            print(f"Inserted remaining {len(insert_values)} rows.")
+
 
         # 한 번만 커밋
         connection.commit()
@@ -141,7 +142,6 @@ def store_image_data(num_rows):
                         created_at, updated_at, url, store_idx
                     ) VALUES (%s, %s, %s, %s);
             """, insert_values)
-            print(f"Inserted remaining {len(insert_values)} rows.")
 
         # 한 번만 커밋
         connection.commit()
@@ -210,7 +210,6 @@ def store_review_data(num_rows):
                     customer_name, rating, title, customer_idx, store_idx
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
             """, insert_values)
-            print(f"Inserted remaining {len(insert_values)} rows.")
 
         # 한 번만 커밋
         connection.commit()
@@ -275,7 +274,6 @@ def goods_data(num_rows):
                     name, price, status, store_idx
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
             """, insert_values)
-            print(f"Inserted remaining {len(insert_values)} rows.")
 
         # 한 번만 커밋
         connection.commit()
@@ -322,6 +320,7 @@ def goods_image_data(num_rows):
                 """, insert_values)
                   # 1000개 삽입 후 출력
                 insert_values = []  # 한 번에 삽입 후 초기화
+               
 
         # 남은 데이터 삽입
         if insert_values:
@@ -330,7 +329,6 @@ def goods_image_data(num_rows):
                     created_at, updated_at, url, goods_idx
                     ) VALUES (%s, %s, %s, %s);
             """, insert_values)
-            print(f"Inserted remaining {len(insert_values)} rows.")
 
         # 한 번만 커밋
         connection.commit()
@@ -393,8 +391,8 @@ def company_data(num_rows):
                         is_in_active, name, password, phone_number, profile_image_url, role, user_id
                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                 """, insert_values)
-                
                 insert_values = []
+                
         
         # 남은 데이터 삽입
         if insert_values:
@@ -404,7 +402,7 @@ def company_data(num_rows):
                     is_in_active, name, password, phone_number, profile_image_url, role, user_id
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """, insert_values)
-            print(f"Inserted remaining {len(insert_values)} rows.")
+            
         
         # 커밋
         connection.commit()
@@ -470,6 +468,7 @@ def customer_data(num_rows):
                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                 """, insert_values)
                 insert_values = []
+                print(f"Inserted {batch_size} rows.")
         
         # 남은 데이터 삽입
         if insert_values:
@@ -496,12 +495,12 @@ def customer_data(num_rows):
 
 try:
     store_data(10000)
-    store_image_data(10000)
-    store_review_data(10000)
-    goods_data(50000)
-    goods_image_data(50000)
-    company_data(100)
-    customer_data(10000)
+    # store_image_data(10000)
+    # store_review_data(10000)
+    # goods_data(50000)
+    # goods_image_data(50000)
+    # company_data(100)
+    # customer_data(10000)
 
 except pymysql.MySQLError as e:
     print(f"MySQL Error: {e}")

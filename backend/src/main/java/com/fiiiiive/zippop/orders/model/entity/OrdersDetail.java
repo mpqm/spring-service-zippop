@@ -16,7 +16,6 @@ public class OrdersDetail extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-    private Long storeIdx;
     private Integer eachPrice;
 
     // ManyToOne

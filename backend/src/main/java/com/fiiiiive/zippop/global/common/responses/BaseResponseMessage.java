@@ -152,7 +152,9 @@ public enum BaseResponseMessage {
     POPUP_STORE_PAY_FAIL_NOT_FOUND_AMOUNT(false, 4408, "결제 금액을 찾을 수 없습니다."),
     POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED(false, 4411, "3000포인트 이상부터 사용할 수 있습니다."),
     POPUP_PAY_SEARCH_FAIL_INVALID_ROLE(false, 4412, "기업회원은 요청할 수 없는 API 입니다."),
+    POPUP_PAY_REFUND_SUCCEESS(true, 4413, "환불 요청에 성공했습니다."),
     POPUP_PAY_REFUND_FAIL_IS_COMPLETE(false, 4413, "배송 진행 중인 물건은 환불할 수 없습니다."),
+    PAY_SEARCH_FAIL_NOT_FOUND_STORE(false, 4414, "해당 팝업 스토어에 대한 주문 내역 목록 조회를 찾을 수 없습니다."),
     // 굿즈 구매 4700
     POPUP_GOODS_PAY_GOODS_NULL(false, 4406, "굿즈가 존재하지 않습니다."),
 
@@ -162,7 +164,7 @@ public enum BaseResponseMessage {
     POPUP_GOODS_PAY_FAIL_FLAG_NOT_DEFINE(false, 4404, "결제 금액이 잘못되었습니다."),
     POPUP_GOODS_PAY_FAIL_NOT_FOUND_MEMBER(false, 4408, "결제 정보에 해당하는 유저가 없습니다."),
     POPUP_ORDERS_SEARCH_SUCCESS(true, 4409, "결제 내역 조회에 성공했습니다."),
-    POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER(false, 4410, "해당 사용자를 찾을 수 없어 결제 내역을 불러올 수 없습니다."),
+    POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER(false, 4444, "해당 사용자를 찾을 수 없어 결제 내역을 불러올 수 없습니다."),
     POPUP_PAY_SEARCH_FAIL_NOT_FOUND(false, 4411, "결제 내역 조회를 불러올 수 없습니다."),
     PAY_FAIL_IAMPORTONE_SERVER_ERROR(false, 4412, "결제 PG 서버 오류가 발생해서 처리할 수 없습니다."),
     PAY_FAIL_IAMPORTONE_REFUND_ERROR(false,  314,"결제 취소 요청 중 오류가 발생했습니다. 관리자에게 문의해주세요."),

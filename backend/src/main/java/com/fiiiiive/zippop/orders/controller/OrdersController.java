@@ -38,14 +38,22 @@ public class OrdersController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam String impUid,
         @RequestParam Boolean flag) throws BaseException, IamportResponseException, IOException{
-        VerifyOrdersRes response = ordersService.verify(customUserDetails, impUid, flag);
+        VerifyOrdersRes response = ordersService.verifyOrders(customUserDetails, impUid, flag);
 
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_PAY_SUCCESS,response));
     }
 
+    @GetMapping("/cancel")
+    public ResponseEntity<BaseResponse<VerifyOrdersRes>> verify(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long orderIdx) throws BaseException, IamportResponseException, IOException{
+        ordersService.cancelOrders(customUserDetails, orderIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_PAY_REFUND_FAIL_IS_COMPLETE));
+    }
+
     // 고객 주문 상세 조회
     @GetMapping("/search/as-customer")
-    public ResponseEntity<BaseResponse<List<SearchOrdersDetailRes>>> searchOrders(
+    public ResponseEntity<BaseResponse<List<SearchOrdersDetailRes>>> searchOrdersAsCustomer (
         @RequestParam Long ordersIdx,
         @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
         SearchOrdersRes response = ordersService.searchOrdersAsCustomer(customUserDetails, ordersIdx);
@@ -62,8 +70,26 @@ public class OrdersController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_ORDERS_SEARCH_SUCCESS,response));
     }
 
+    // 기업 고객 주문 상세 조회
+    @GetMapping("/search/as-company")
+    public ResponseEntity<BaseResponse<List<SearchOrdersDetailRes>>> searchOrdersAsCompany (
+        @RequestParam Long ordersIdx,
+        @RequestParam Long storeIdx,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
+        SearchOrdersRes response = ordersService.searchOrdersAsCompany(customUserDetails, storeIdx, ordersIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_ORDERS_SEARCH_SUCCESS, response));
+    }
 
-
+    // 기업 고객 주문 목록 조회
+    @GetMapping("/search-all/as-company")
+    public ResponseEntity<BaseResponse<Page<SearchOrdersRes>>> searchAllOrdersAsCompany(
+            @RequestParam Long storeIdx,
+            @RequestParam int page,
+            @RequestParam int size,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
+        Page<SearchOrdersRes> response = ordersService.searchAllOrdersAsCompany(customUserDetails, storeIdx, page, size);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_ORDERS_SEARCH_SUCCESS,response));
+    }
 
 
 }

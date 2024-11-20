@@ -21,4 +21,8 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "WHERE c.idx = :customerIdx AND o.idx = :ordersIdx")
     Optional<Orders> findByOrdersIdxAndCustomerIdx(Long ordersIdx, Long customerIdx);
 
+    @Query("SELECT o FROM Orders o WHERE o.idx = :ordersIdx AND o.storeIdx = :storeIdx")
+    Optional<Orders> findByOrdersIdxAndStoreIdx(Long ordersIdx, Long storeIdx);
+
+    Optional<Page<Orders>> findAllByStoreIdx(Long storeIdx, Pageable pageable);
 }

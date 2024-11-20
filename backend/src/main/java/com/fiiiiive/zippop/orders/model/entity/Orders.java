@@ -24,6 +24,7 @@ public class Orders extends BaseEntity {
     private Integer usedPoint;
     private Integer deliveryCost;
     private String orderState;
+    private Long storeIdx;
 
     // OneToMany
     @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)

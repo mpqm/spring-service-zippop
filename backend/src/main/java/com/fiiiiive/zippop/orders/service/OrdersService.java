@@ -57,7 +57,7 @@ public class OrdersService {
 
     // 주문 검증
     @Transactional
-    public VerifyOrdersRes verify(CustomUserDetails customUserDetails, String impUid, Boolean flag) throws BaseException, IamportResponseException, IOException {
+    public VerifyOrdersRes verifyOrders(CustomUserDetails customUserDetails, String impUid, Boolean flag) throws BaseException, IamportResponseException, IOException {
         // 고객 회원 굿즈 구매
         if (!customUserDetails.getRole().equals("ROLE_CUSTOMER")){
             throw new BaseException(BaseResponseMessage.POPUP_STORE_PAY_FAIL_INVALID_ROLE);
@@ -81,11 +81,12 @@ public class OrdersService {
         Integer usedPoint = 0;
         List<Goods> goodsList = new ArrayList<>();
         // 사전 굿즈 구매(flag = true)
+        Goods goods = null;
         if (flag) {
             // 결제하려는 상품 리스트 생성
             for (String key : goodsMap.keySet()) {
                 int purchaseGoodsPrice = goodsMap.get(key).intValue();
-                Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
+                goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_GOODS_NULL));
                 if (purchaseGoodsPrice != 1) {
                     refund(payment.getImpUid(), payment);
@@ -108,7 +109,7 @@ public class OrdersService {
         } else { // 재고 굿즈 구매 (flag == false)
             for (String key : goodsMap.keySet()) {
                 Integer purchaseGoodsPrice = goodsMap.get(key).intValue();
-                Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
+                goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_GOODS_NULL));
                 if (purchaseGoodsPrice > goods.getAmount()) {
                     refund(payment.getImpUid(), payment);
@@ -126,7 +127,7 @@ public class OrdersService {
             customer.setPoint(customer.getPoint() - usedPoint);
         }
         // 결제 금액이 동일하면
-        if (payedPrice.equals(totalPurchasePrice)){
+        if (payedPrice.equals(totalPurchasePrice) && goods !=  null){
             customerRepository.save(customer);
             Orders orders = null;
             if(flag){ // 예약 굿즈 구매
@@ -137,6 +138,7 @@ public class OrdersService {
                         .deliveryCost(0)
                         .usedPoint(usedPoint)
                         .customer(customer)
+                        .storeIdx(goods.getStore().getIdx())
                         .build();
             } else { // 재고 굿즈 구매
                 orders = Orders.builder()
@@ -146,19 +148,19 @@ public class OrdersService {
                         .deliveryCost(2500)
                         .usedPoint(usedPoint)
                         .customer(customer)
+                        .storeIdx(goods.getStore().getIdx())
                         .build();
             }
             ordersRepository.save(orders);
             // 상품 수량 조절
             for (String key : goodsMap.keySet()) {
                 Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
-                Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
+                goods = goodsRepository.findByGoodsIdx(Long.parseLong(key))
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_GOODS_NULL));
                 goods.setAmount(goods.getAmount() - purchaseGoodsAmount);
                 goodsRepository.save(goods);
                 OrdersDetail ordersDetail = OrdersDetail.builder()
                         .eachPrice(goods.getPrice() * purchaseGoodsAmount)
-                        .storeIdx(goods.getStore().getIdx())
                         .orders(orders)
                         .goods(goods)
                         .build();
@@ -172,9 +174,9 @@ public class OrdersService {
         }
     }
 
-    // 주문 취소
+    // 주문 취소 및 환불
     @Transactional
-    public void cancel(CustomUserDetails customUserDetails, Long ordersIdx) throws BaseException, IamportResponseException, IOException {
+    public void cancelOrders(CustomUserDetails customUserDetails, Long ordersIdx) throws BaseException, IamportResponseException, IOException {
         if (!customUserDetails.getRole().equals("ROLE_CUSTOMER")){
             throw new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_ROLE);
         }
@@ -204,6 +206,7 @@ public class OrdersService {
             }
             // 포인트 복구
             customer.setPoint(customer.getPoint() + orders.getUsedPoint());
+            customerRepository.save(customer);
             refund(payment.getImpUid(), payment);
             ordersRepository.delete(orders);
         } else {
@@ -259,8 +262,9 @@ public class OrdersService {
                 .updatedAt(orders.getUpdatedAt())
                 .searchOrdersDetailResList(searchOrdersDetailResList)
                 .build();
-
     }
+
+
 
     public Page<SearchOrdersRes> searchAllOrdersAsCustomer(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
         Customer customer = customerRepository.findByCustomerEmail(customUserDetails.getEmail())
@@ -287,43 +291,79 @@ public class OrdersService {
         return searchOrdersResPage;
     }
 
-//    public SearchOrdersRes searchAllOrdersAsCompany(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
-//        Store store = storeRepository.findByStoreIdx(storeIdx)
-//        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
-//        if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))){
-//            throw new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER);
-//        }
-//        List<OrdersDetail> resultOrdersDetail = ordersDetailRepository.findAllByStoreIdx(storeIdx)
-//        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
-//
-//        List<SearchOrdersDetailRes> searchOrdersDetailResList = new ArrayList<>();
-//        for(OrdersDetail ordersDetail : resultOrdersDetail) {
-//            Goods goods = ordersDetail.getGoods();
-//            SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
-//                    .goodsIdx(goods.getIdx())
-//                    .goodsName(goods.getName())
-//                    .goodsPrice(goods.getPrice())
-//                    .goodsContent(goods.getContent())
-//                    .goodsAmount(goods.getAmount())
-//                    .build();
-//            searchOrdersDetailResList.add(searchGoodsRes);
-//        }
-//            return SearchOrdersRes.builder()
-//                    .ordersIdx(orders.getIdx())
-//                    .impUid(orders.getImpUid())
-//                    .name(orders.getCustomer().getName())
-//                    .email(orders.getCustomer().getEmail())
-//                    .address(orders.getCustomer().getAddress())
-//                    .phoneNumber(orders.getCustomer().getPhoneNumber())
-//                    .usedPoint(orders.getUsedPoint())
-//                    .totalPrice(orders.getTotalPrice())
-//                    .orderState(orders.getOrderState())
-//                    .deliveryCost(orders.getDeliveryCost())
-//                    .createdAt(orders.getCreatedAt())
-//                    .updatedAt(orders.getUpdatedAt())
-//                    .searchOrdersDetailResList(searchOrdersDetailResList)
-//                    .build();
-//    }
+    public SearchOrdersRes searchOrdersAsCompany(CustomUserDetails customUserDetails, Long storeIdx, Long ordersIdx) throws BaseException {
+        Store store = storeRepository.findByStoreIdx(storeIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
+        if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))){
+            throw new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER);
+        }
+        Orders orders = ordersRepository.findByOrdersIdxAndStoreIdx(ordersIdx, storeIdx)
+                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
+        List<SearchOrdersDetailRes> searchOrdersDetailResList = new ArrayList<>();
+        for(OrdersDetail ordersDetail : orders.getOrdersDetailList()){
+            Goods goods = ordersDetail.getGoods();
+            SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
+                    .goodsIdx(goods.getIdx())
+                    .goodsName(goods.getName())
+                    .goodsPrice(goods.getPrice())
+                    .goodsContent(goods.getContent())
+                    .goodsAmount(goods.getAmount())
+                    .build();
+            SearchOrdersDetailRes searchOrdersDetailRes = SearchOrdersDetailRes.builder()
+                    .ordersDetailIdx(ordersDetail.getIdx())
+                    .eachPrice(ordersDetail.getEachPrice())
+                    .createdAt(ordersDetail.getCreatedAt())
+                    .updatedAt(ordersDetail.getUpdatedAt())
+                    .searchGoodsRes(searchGoodsRes)
+                    .build();
+            searchOrdersDetailResList.add(searchOrdersDetailRes);
+        }
+        return SearchOrdersRes.builder()
+                .ordersIdx(orders.getIdx())
+                .impUid(orders.getImpUid())
+                .name(orders.getCustomer().getName())
+                .email(orders.getCustomer().getEmail())
+                .address(orders.getCustomer().getAddress())
+                .phoneNumber(orders.getCustomer().getPhoneNumber())
+                .usedPoint(orders.getUsedPoint())
+                .totalPrice(orders.getTotalPrice())
+                .deliveryCost(orders.getDeliveryCost())
+                .createdAt(orders.getCreatedAt())
+                .updatedAt(orders.getUpdatedAt())
+                .searchOrdersDetailResList(searchOrdersDetailResList)
+                .build();
+    }
+
+    public Page<SearchOrdersRes> searchAllOrdersAsCompany(CustomUserDetails customUserDetails, Long storeIdx, int page, int size) throws BaseException {
+        Store store = storeRepository.findByStoreIdx(storeIdx)
+        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
+        if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))){
+            throw new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER);
+        }
+        Page<Orders> result = ordersRepository.findAllByStoreIdx(storeIdx, PageRequest.of(page, size))
+                .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND));
+        if (!result.hasContent()) {
+            throw new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND);
+        }
+        Page<SearchOrdersRes> searchOrdersResPage = result.map(orders -> {
+            return SearchOrdersRes.builder()
+                    .ordersIdx(orders.getIdx())
+                    .impUid(orders.getImpUid())
+                    .name(orders.getCustomer().getName())
+                    .email(orders.getCustomer().getEmail())
+                    .address(orders.getCustomer().getAddress())
+                    .phoneNumber(orders.getCustomer().getPhoneNumber())
+                    .usedPoint(orders.getUsedPoint())
+                    .totalPrice(orders.getTotalPrice())
+                    .deliveryCost(orders.getDeliveryCost())
+                    .createdAt(orders.getCreatedAt())
+                    .updatedAt(orders.getUpdatedAt())
+                    .build();
+        });
+        return searchOrdersResPage;
+    }
+
+
 
 
 }

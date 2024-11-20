@@ -10,6 +10,4 @@ import java.util.Optional;
 
 @Repository
 public interface OrdersDetailRepository extends JpaRepository<OrdersDetail, Long> {
-
-    Optional<List<OrdersDetail>> findAllByStoreIdx(Long storeIdx);
 }
