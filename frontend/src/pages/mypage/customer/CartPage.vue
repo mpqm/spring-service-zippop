@@ -18,9 +18,9 @@
               </td>
               <td>
                 <div class="quantity-container">
-                  <img class="quantity-input" src="../../assets/img/minus-none.png" @click="count(item.cartItemIdx, -1)" alt="">
+                  <img class="quantity-input" src="../../../assets/img/minus-none.png" @click="count(item.cartItemIdx, -1)" alt="">
                 <input :value="item.count" class="quantity-input" type="text" readonly />
-                <img class="quantity-input" src="../../assets/img/plus-none.png" @click="count(item.cartItemIdx, 1)" alt="">
+                <img class="quantity-input" src="../../../assets/img/plus-none.png" @click="count(item.cartItemIdx, 1)" alt="">
                 <a href="#" class="delete-option" @click="deleteCartItem(item.cartItemIdx)">삭제</a>
                 </div>
 
@@ -39,7 +39,7 @@
           </div>
           <h3 class="predict-total-price"><span>총 주문 금액</span> {{ finalOrderPrice }}원</h3>
           <div class="reward-area">
-            <img class="reward-icon" src="../../assets/img/point.png" alt="">&nbsp;
+            <img class="reward-icon" src="../../../assets/img/point.png" alt="">&nbsp;
             <span>포인트적립: 결제 금액의 10% 적립</span><br>
           </div>
           <a v-if="cartList.length > 0" href="#" class="cart-btn" @click="sendToPayment" >구매하기</a>
@@ -104,8 +104,6 @@ const searchAll = async () => {
     await updateTotalDiscount();  // 총 할인 계산
     await updateFinalOrderPrice();  // 총 주문 금액 계산
     toast.success(res.message);
-  } else {
-      toast.error("장바구니에 상품을 추가해야 결제버튼이 표시됩니다.")
   }
 };
 
@@ -178,8 +176,8 @@ const sendToPayment = async() => {
   };
   
   await ordersStore.setPaymentData(paymentData);
-  // `PaymentPage`로 데이터 전달 (라우터 사용)
-  router.push('/payment')
+  // `ordersPage`로 데이터 전달 (라우터 사용)
+  router.push('/orders')
 };
 
 

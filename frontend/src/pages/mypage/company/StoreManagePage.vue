@@ -2,19 +2,25 @@
 <div>
     <div class="store-control">
         <div class="search-container">
-            <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-            <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
-            <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
+            <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="keywordSearchAll" />
+            <button class="search-btn" @click="keywordSearchAll"><img class="search-img" src="../../../assets/img/search-none.png" alt=""></button>
+            <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../../assets/img/reload-none.png" alt=""></button>
         </div>
+        <router-link class="store-register-btn" to="/mypage/company/store/register">팝업스토어 등록</router-link>
     </div>
-    <div class="store-manage-page">
+    <div class="store-management-page">
         <div class="store-list" v-if="storeList && storeList.length">
             <StoreListComponent v-for="store in storeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
         </div>
         <div class="notice" v-else>
             <p>등록된 팝업 스토어가 없습니다.</p>
         </div>
-        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+        <PaginationComponent
+            :currentPage="currentPage"
+            :totalPages="totalPages"
+            :hideBtns="hideBtns"
+            @page-changed="changePage"
+        />
     </div>
 </div>
   </template>
@@ -25,74 +31,76 @@
   import { useStoreStore } from "@/stores/useStoreStore";
   import { onMounted, ref } from "vue";
   
-const storeStore = useStoreStore();
-
-const searchQuery = ref("");
-
-// 페이지네이션
-const storeList = ref([]);
-const currentPage = ref(0);
-const pageSize = ref(8);
-const totalElements = ref(0);
-const totalPages = ref(0);
-const hideBtns = ref(false);
-const showControl = ref(false);
-
-onMounted(async () => {
-  await searchAll();
-  storeList.value = storeStore.storeList;
-  totalElements.value = storeStore.totalElements;
-  totalPages.value = storeStore.totalPages;
-});
-
-const changePage = async (newPage) => {
-  if (newPage < 0) return; // 잘못된 페이지 방지
-  currentPage.value = newPage;
-  console.log(searchQuery.value);
-  if (searchQuery.value.trim() === "") {
-    await searchAll();
-  } else {
-    await searchAllByKeyword();
-  }
-};
-
-const searchAll = async (flag) => {
-  if(flag === 0){
-    currentPage.value = 0;
-    searchQuery.value = "";
-  }
-  await storeStore.searchAllStoreAsCompany(currentPage.value, pageSize.value);
-  totalElements.value = storeStore.totalElements;
-  totalPages.value = storeStore.totalPages;
-  storeList.value = storeStore.storeList;
-  hideBtns.value = false;
-};
-
-const searchAllByKeyword = async () => {
-  await storeStore.searchAllStoreByKeywordAsCompany(searchQuery.value, currentPage.value, pageSize.value);
+  const storeStore = useStoreStore();
+  const searchQuery = ref("");
+  const showControl = ref(0);
+  const storeList = ref([]);
+  const currentPage = ref(0);
+  const pageSize = ref(8);
+  const totalElements = ref(0);
+  const totalPages = ref(0);
+  const hideBtns = ref(false);
+  
+  onMounted(async () => {
+    await searchAll(currentPage.value, pageSize.value);
+  });
+  
+  const changePage = (newPage) => {
+    if (newPage >= 0) {
+      currentPage.value = newPage;
+      searchAll(currentPage.value, pageSize.value);
+    }
+  };
+  
+  const searchAll = async (page) => {
+    const res = await storeStore.searchAllStoreAsCompany(page, pageSize.value);
+    if(res.success){
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;
     storeList.value = storeStore.storeList;
     hideBtns.value = false;
+  } else {
+    storeList.value = null;
+    totalElements.value = 0;
+    totalPages.value = 0;
+    hideBtns.value = true;
+  }
+  };
+
+  const keywordSearchAll = async () => {
+  currentPage.value = 0;
+  const res = await storeStore.searchAllStoreByKeywordAsCompany(searchQuery.value, currentPage.value, pageSize.value);
+  if(res.success){
+    totalElements.value = storeStore.totalElements;
+    totalPages.value = storeStore.totalPages;
+    storeList.value = storeStore.storeList;
+    hideBtns.value = false;
+  } else {
+    storeList.value = null;
+    totalElements.value = null;
+    totalPages.value = null;
+    hideBtns.value = true;
+  }
 };
 
   </script>
   
   <style scoped>
-  .store-manage-page {
+  .store-management-page {
     flex-direction: row;
     width: 65rem;
   }
-  .notice{
-    text-align: center;
-  }
+
   .store-control {
     padding: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
+.notice{
+    text-align: center;
+  }
+  
   .store-list {
     width: auto;
     padding: 5px;
@@ -130,6 +138,21 @@ const searchAllByKeyword = async () => {
     color: #fff;
   }
 
+  .store-register-btn{
+    display: block;
+    text-align: center;
+    width: auto;
+    font-weight: 400;
+    transition: opacity 0.2s ease-in-out;
+    color: #fff;
+    cursor: pointer;
+    background-color: #00c7ae;
+    border-color: #00c7ae;
+    border: 0.0625rem solid transparent;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    text-decoration: #000;
+  }
 
 .search-container {
     display: flex;

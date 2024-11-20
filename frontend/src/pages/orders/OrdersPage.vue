@@ -42,13 +42,13 @@
           <div class="predict-price-item"><span>총 배송비</span> {{ paymentData.deliveryFee }}원</div>
           <h3 class="predict-total-price"><span>총 주문 금액</span> {{ paymentData.finalOrderPrice }}원</h3>
         </div>
+      <div class="reward-area">
+          <span>결제 요청 후 배송 확정 처리가 되면 환불이 불가능합니다.</span><br>
+      </div>
       <button type="button" @click="payment" class="pay-btn">결제하기</button>
       <button type="button" @click="cancelPayment" class="pay-btn">결제취소</button>
     </div>
-    <div class="reward-area">
-            <img class="reward-icon" src="../../assets/img/point.png" alt="">&nbsp;
-            <span>결제 요청 후 3시간 이내에만 환불이 가능합니다.</span><br>
-      </div>
+
     <FooterComponent></FooterComponent>
 </div>
 
@@ -88,7 +88,6 @@ const transformGoodsList = (customData) => {
   }, {});
 };
 
-
 const payment = () => {
   if (typeof window.IMP === 'undefined') {
     console.error("Iamport script not loaded");
@@ -108,7 +107,7 @@ const payment = () => {
     },
     async (rsp) => {
       if (rsp.success) {
-        const res = await ordersStore.verify(rsp.imp_uid, 0);
+        const res = await ordersStore.verify(rsp.imp_uid, false);
         if (res.success) {
           await cartStore.deleteAllCartItems();
           toast.success("결제를 처리했습니다.");
@@ -238,6 +237,7 @@ const cancelPayment = async() => {
   border: 1px solid #00c7ae;
   border-radius: 8px;
   font-size: 14px;
+  color: red;
 }
 
 .reward-icon {

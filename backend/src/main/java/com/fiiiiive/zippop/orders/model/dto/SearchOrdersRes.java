@@ -19,7 +19,7 @@ public class SearchOrdersRes {
     private String phoneNumber;
     private Integer usedPoint;
     private Integer totalPrice;
-    private String orderState;
+    private String orderStatus;
     private Integer deliveryCost;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

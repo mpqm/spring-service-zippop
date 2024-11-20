@@ -3,8 +3,10 @@ package com.fiiiiive.zippop.orders.service;
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.goods.model.dto.SearchGoodsImageRes;
 import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
+import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
@@ -53,8 +55,8 @@ public class OrdersService {
 
     // READY: 배송 준비
     // CANCEL: 배송 취소
-    // COMPLETE: 배송 진행
-
+    // COMPLETE: 고객 주문 확정
+    // DELIVERY: 기업 배송 확정
     // 주문 검증
     @Transactional
     public VerifyOrdersRes verifyOrders(CustomUserDetails customUserDetails, String impUid, Boolean flag) throws BaseException, IamportResponseException, IOException {
@@ -98,7 +100,7 @@ public class OrdersService {
             // 포인트 적립
             addPoint += (int) Math.round(totalPurchasePrice * 0.05);
             usedPoint = (totalPurchasePrice + 500) - payedPrice;
-            if (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0) {
+            if (usedPoint != 0 && (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0)) {
                 refund(payment.getImpUid(), payment);
                 throw new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED);
             }
@@ -119,10 +121,11 @@ public class OrdersService {
                 totalPurchasePrice += purchaseGoodsPrice * goods.getPrice();
             }
             usedPoint = (totalPurchasePrice + 2500) - payedPrice;
-            if (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0) {
+            if (usedPoint != 0 && (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0)) {
                 refund(payment.getImpUid(), payment);
                 throw new BaseException(BaseResponseMessage.POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED);
             }
+
             totalPurchasePrice += 2500 - usedPoint;
             customer.setPoint(customer.getPoint() - usedPoint);
         }
@@ -134,7 +137,7 @@ public class OrdersService {
                 orders = Orders.builder()
                         .impUid(impUid)
                         .totalPrice(totalPurchasePrice)
-                        .orderState("RESERVE_READY")
+                        .status("RESERVE_READY")
                         .deliveryCost(0)
                         .usedPoint(usedPoint)
                         .customer(customer)
@@ -144,7 +147,7 @@ public class OrdersService {
                 orders = Orders.builder()
                         .impUid(impUid)
                         .totalPrice(totalPurchasePrice)
-                        .orderState("STOCK_READY")
+                        .status("STOCK_READY")
                         .deliveryCost(2500)
                         .usedPoint(usedPoint)
                         .customer(customer)
@@ -185,8 +188,12 @@ public class OrdersService {
         // 결제
         Orders orders = ordersRepository.findByOrdersIdxAndCustomerIdx(ordersIdx, customUserDetails.getIdx())
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER));
-        // COMPLETE 상태가 아닐때
-        if(!Objects.equals(orders.getOrderState(), "RESERVE_COMPLETE") && !Objects.equals(orders.getOrderState(), "STOCK_COMPLETE")){
+        // DELIVERY 상태가 아닐때
+        if(!Objects.equals(orders.getStatus(), "STOCK_DELIVERY") || !Objects.equals(orders.getStatus(), "RESERVE_DELIVERY")) {
+
+            if(Objects.equals(orders.getStatus(), "STOCK_CANCEL") || Objects.equals(orders.getStatus(), "STOCK_CANCEL")){
+                throw new BaseException(BaseResponseMessage.POPUP_PAY_REFUND_FAIL_ALREADYCANCELD);
+            }
             // 결제 정보 조회
             IamportResponse<Payment> response = iamportClient.paymentByImpUid(orders.getImpUid());
             Payment payment = response.getResponse();
@@ -207,18 +214,21 @@ public class OrdersService {
             // 포인트 복구
             customer.setPoint(customer.getPoint() + orders.getUsedPoint());
             customerRepository.save(customer);
-            refund(payment.getImpUid(), payment);
+
             String orderStatus = null;
-            if(orders.getOrderState() == "STOCK_READY"){
+            if(Objects.equals(orders.getStatus(), "STOCK_READY") || Objects.equals(orders.getStatus(), "STOCK_COMPLETE") ){
                 orderStatus = "STOCK_CANCEL";
             }
-            if(orders.getOrderState() == "RESERVE_READY"){
+            else if(Objects.equals(orders.getStatus(), "RESERVE_READY") || Objects.equals(orders.getStatus(), "RESERVE_COMPLETE")){
                 orderStatus = "RESERVE_CANCEL";
+            } else {
+                throw new BaseException(BaseResponseMessage.PAY_COMPLETE_FAIL_IS_DELIVERY);
             }
-            orders.setOrderState(orderStatus);
+            orders.setStatus(orderStatus);
             ordersRepository.save(orders);
+            refund(payment.getImpUid(), payment);
         } else {
-            throw new BaseException(BaseResponseMessage.POPUP_PAY_FAIL_NOT_INVALID);
+            throw new BaseException(BaseResponseMessage.POPUP_PAY_REFUND_FAIL_IS_COMPLETE);
         }
     }
 
@@ -226,7 +236,7 @@ public class OrdersService {
     // 주문 확정
     @Transactional
     public void completeOrders(CustomUserDetails customUserDetails, Long storeIdx, Long ordersIdx) throws BaseException, IamportResponseException, IOException {
-        if(customUserDetails.getRole() == "ROLE_COMPANY"){ // 기업회원 주문 확정(배송 했을때)
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){ // 기업회원 주문 확정(배송 했을때)
             Store store = storeRepository.findByStoreIdx(storeIdx)
                     .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
             if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))){
@@ -235,35 +245,35 @@ public class OrdersService {
             Orders orders = ordersRepository.findByOrdersIdxAndStoreIdx(ordersIdx, storeIdx)
                     .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
             String orderStatus = null;
-            if(Objects.equals(orders.getOrderState(), "STOCK_READY")){
-                orderStatus = "STOCK_COMPLETE";
+            if(Objects.equals(orders.getStatus(), "STOCK_READY") || Objects.equals(orders.getStatus(), "STOCK_COMPLETE") ){
+                orderStatus = "STOCK_DELIVERY";
             }
-            else if(Objects.equals(orders.getOrderState(), "RESERVE_READY")){
-                orderStatus = "RESERVE_COMPLETE";
-            }
-            else if(Objects.equals(orders.getOrderState(), "STOCK_CANCEL") || Objects.equals(orders.getOrderState(), "RESERVE_CANCEL")){
+            else if(Objects.equals(orders.getStatus(), "RESERVE_READY") || Objects.equals(orders.getStatus(), "RESERVE_COMPLETE")){
+                orderStatus = "RESERVE_DELIVERY";
+            } else {
                 throw new BaseException(BaseResponseMessage.PAY_COMPLETE_FAIL_IS_CANCEL);
             }
-            orders.setOrderState(orderStatus);
+            orders.setStatus(orderStatus);
             ordersRepository.save(orders);
-        } else { // 고객회원 주문 확정
+        } else if (Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){ // 고객회원 주문 확정
             Orders orders = ordersRepository.findByOrdersIdxAndCustomerIdx(ordersIdx, customUserDetails.getIdx())
                     .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
             if(!(orders.getCustomer().getIdx().equals(customUserDetails.getIdx()))){
                 throw new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER);
             }
             String orderStatus = null;
-            if(Objects.equals(orders.getOrderState(), "STOCK_READY")){
+            if(Objects.equals(orders.getStatus(), "STOCK_READY")){
                 orderStatus = "STOCK_COMPLETE";
             }
-            else if(Objects.equals(orders.getOrderState(), "RESERVE_READY")){
+            else if(Objects.equals(orders.getStatus(), "RESERVE_READY")){
                 orderStatus = "RESERVE_COMPLETE";
-            }
-            else if(Objects.equals(orders.getOrderState(), "STOCK_CANCEL") || Objects.equals(orders.getOrderState(), "RESERVE_CANCEL")){
+            } else {
                 throw new BaseException(BaseResponseMessage.PAY_COMPLETE_FAIL_IS_CANCEL);
             }
-            orders.setOrderState(orderStatus);
+            orders.setStatus(orderStatus);
             ordersRepository.save(orders);
+        } else {
+            throw new BaseException(BaseResponseMessage.POST_UPDATE_FAIL_INVALID_MEMBER);
         }
     }
 
@@ -285,12 +295,21 @@ public class OrdersService {
         List<SearchOrdersDetailRes> searchOrdersDetailResList = new ArrayList<>();
         for(OrdersDetail ordersDetail : orders.getOrdersDetailList()){
             Goods goods = ordersDetail.getGoods();
+            List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();;
+            for(GoodsImage goodsImage : goods.getGoodsImageList()){
+                SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
+                        .goodsImageIdx(goodsImage.getIdx())
+                        .goodsImageUrl(goodsImage.getUrl())
+                        .build();
+                searchGoodsImageResList.add(searchGoodsImageRes);
+            }
             SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
                         .goodsIdx(goods.getIdx())
                         .goodsName(goods.getName())
                         .goodsPrice(goods.getPrice())
                         .goodsContent(goods.getContent())
                         .goodsAmount(goods.getAmount())
+                        .searchGoodsImageResList(searchGoodsImageResList)
                         .build();
             SearchOrdersDetailRes searchOrdersDetailRes = SearchOrdersDetailRes.builder()
                     .ordersDetailIdx(ordersDetail.getIdx())
@@ -310,6 +329,7 @@ public class OrdersService {
                 .phoneNumber(customer.getPhoneNumber())
                 .usedPoint(orders.getUsedPoint())
                 .totalPrice(orders.getTotalPrice())
+                .orderStatus(orders.getStatus())
                 .deliveryCost(orders.getDeliveryCost())
                 .createdAt(orders.getCreatedAt())
                 .updatedAt(orders.getUpdatedAt())
@@ -336,6 +356,7 @@ public class OrdersService {
                     .phoneNumber(customer.getPhoneNumber())
                     .usedPoint(orders.getUsedPoint())
                     .totalPrice(orders.getTotalPrice())
+                    .orderStatus(orders.getStatus())
                     .deliveryCost(orders.getDeliveryCost())
                     .createdAt(orders.getCreatedAt())
                     .updatedAt(orders.getUpdatedAt())
@@ -352,15 +373,25 @@ public class OrdersService {
         }
         Orders orders = ordersRepository.findByOrdersIdxAndStoreIdx(ordersIdx, storeIdx)
                 .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
+
         List<SearchOrdersDetailRes> searchOrdersDetailResList = new ArrayList<>();
         for(OrdersDetail ordersDetail : orders.getOrdersDetailList()){
             Goods goods = ordersDetail.getGoods();
+            List<SearchGoodsImageRes> searchGoodsImageResList = new ArrayList<>();;
+            for(GoodsImage goodsImage : goods.getGoodsImageList()){
+                SearchGoodsImageRes searchGoodsImageRes = SearchGoodsImageRes.builder()
+                        .goodsImageIdx(goodsImage.getIdx())
+                        .goodsImageUrl(goodsImage.getUrl())
+                        .build();
+                searchGoodsImageResList.add(searchGoodsImageRes);
+            }
             SearchGoodsRes searchGoodsRes = SearchGoodsRes.builder()
                     .goodsIdx(goods.getIdx())
                     .goodsName(goods.getName())
                     .goodsPrice(goods.getPrice())
                     .goodsContent(goods.getContent())
                     .goodsAmount(goods.getAmount())
+                    .searchGoodsImageResList(searchGoodsImageResList)
                     .build();
             SearchOrdersDetailRes searchOrdersDetailRes = SearchOrdersDetailRes.builder()
                     .ordersDetailIdx(ordersDetail.getIdx())
@@ -381,6 +412,7 @@ public class OrdersService {
                 .usedPoint(orders.getUsedPoint())
                 .totalPrice(orders.getTotalPrice())
                 .deliveryCost(orders.getDeliveryCost())
+                .orderStatus(orders.getStatus())
                 .createdAt(orders.getCreatedAt())
                 .updatedAt(orders.getUpdatedAt())
                 .searchOrdersDetailResList(searchOrdersDetailResList)
@@ -408,6 +440,7 @@ public class OrdersService {
                     .phoneNumber(orders.getCustomer().getPhoneNumber())
                     .usedPoint(orders.getUsedPoint())
                     .totalPrice(orders.getTotalPrice())
+                    .orderStatus(orders.getStatus())
                     .deliveryCost(orders.getDeliveryCost())
                     .createdAt(orders.getCreatedAt())
                     .updatedAt(orders.getUpdatedAt())

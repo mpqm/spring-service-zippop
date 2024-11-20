@@ -494,13 +494,13 @@ def customer_data(num_rows):
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
 
 try:
-    store_data(10000)
-    # store_image_data(10000)
-    # store_review_data(10000)
-    # goods_data(50000)
-    # goods_image_data(50000)
-    # company_data(100)
-    # customer_data(10000)
+#     store_data(10000)
+    store_image_data(10000)
+    store_review_data(10000)
+    goods_data(50000)
+    goods_image_data(50000)
+    company_data(100)
+    customer_data(10000)
 
 except pymysql.MySQLError as e:
     print(f"MySQL Error: {e}")
