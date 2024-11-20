@@ -6,9 +6,9 @@
           <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요"
             @keyup.enter="searchAllByKeyword" />
           <button class="search-btn" @click="searchAllByKeyword"><img class="search-img"
-              src="../../assets/img/search-none.png" alt=""></button>
+              src="../../../assets/img/search-none.png" alt=""></button>
           <button class="search-btn" @click="searchAll(0)"><img class="search-img"
-              src="../../assets/img/reload-none.png" alt=""></button>
+              src="../../../assets/img/reload-none.png" alt=""></button>
         </div>
         <div class="btn-container">
           <router-link class="register-btn" :to="`/mypage/company/goods`">&lt;</router-link>
@@ -38,7 +38,7 @@ const searchQuery = ref("");
 const goodsStore = useGoodsStore();
 const route = useRoute();
 
-const showControl = ref(true);
+const showControl = ref(1);
 const goodsList = ref([]);
 const currentPage = ref(0);
 const pageSize = ref(8);

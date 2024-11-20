@@ -23,7 +23,7 @@ public class Orders extends BaseEntity {
     private Integer totalPrice;
     private Integer usedPoint;
     private Integer deliveryCost;
-    private String orderState;
+    private String status;
     private Long storeIdx;
 
     // OneToMany

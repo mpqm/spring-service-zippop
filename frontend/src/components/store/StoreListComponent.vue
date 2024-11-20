@@ -15,13 +15,19 @@
         <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ store.likeCount }}
         <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ store.totalPeople }}
       </div>
-    <div v-if="showControl == true" class="btn-container">
+    <!-- StoreManagePage용 -->
+    <div v-if="showControl === 0" class="btn-container">
         <router-link class="ud-btn" :to="store ? `/store/${store.storeIdx}` : '#'">보기</router-link>
         <router-link class="ud-btn" :to="store ? `/mypage/company/store/update/${store.storeIdx}` : '#'">수정</router-link>
         <button class="ud-btn" @click="deleteStore">삭제</button>
     </div>
-    <div v-if="showControl == false" class="btn-container">
+    <!-- GoodsManagePage1용 -->
+    <div v-if="showControl === 1" class="btn-container">
         <router-link class="ud-btn" :to="store ? `/mypage/company/goods/${store.storeIdx}` : '#'">굿즈 보기</router-link>
+    </div>
+    <!-- CompanyOrdersManagePage1용 -->
+    <div v-if="showControl === 2" class="btn-container">
+        <router-link class="ud-btn" :to="store ? `/mypage/company/orders/${store.storeIdx}` : '#'">거래내역 보기</router-link>
     </div>
   </div>
 </template>
@@ -37,7 +43,7 @@ const router = useRouter();
 const storeStore = useStoreStore();
 const props = defineProps({
   store: Object,
-  showControl: Boolean,
+  showControl: Number,
 });
 
 const deleteStore = async() => {

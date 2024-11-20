@@ -47,19 +47,19 @@ public class OrdersController {
     @GetMapping("/cancel")
     public ResponseEntity<BaseResponse<VerifyOrdersRes>> cancel(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam Long orderIdx) throws BaseException, IamportResponseException, IOException{
-        ordersService.cancelOrders(customUserDetails, orderIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_PAY_REFUND_FAIL_IS_COMPLETE));
+        @RequestParam Long ordersIdx) throws BaseException, IamportResponseException, IOException{
+        ordersService.cancelOrders(customUserDetails, ordersIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_PAY_REFUND_SUCCEESS));
     }
-    
+
     // 주문 확정
     @GetMapping("/complete")
     public ResponseEntity<BaseResponse<VerifyOrdersRes>> complete(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestParam(required = false) Long storeIdx,
-            @RequestParam Long orderIdx) throws BaseException, IamportResponseException, IOException{
-        ordersService.completeOrders(customUserDetails, storeIdx, orderIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_PAY_REFUND_FAIL_IS_COMPLETE));
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam(required = false) Long storeIdx,
+        @RequestParam Long ordersIdx) throws BaseException, IamportResponseException, IOException{
+        ordersService.completeOrders(customUserDetails, storeIdx, ordersIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.PAY_COMPLETE_SUCCESS));
     }
 
     // 고객 주문 상세 조회
