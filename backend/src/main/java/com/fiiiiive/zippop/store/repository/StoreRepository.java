@@ -52,7 +52,7 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "OR s.category LIKE %:keyword% " +
             "OR s.startDate LIKE %:keyword% " +
             "OR s.companyEmail LIKE %:keyword%)")
-    Page<Store> findAllByKeywordAndStatus(String status, @Param("keyword") String keyword, Pageable pageable);
+    Page<Store> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") String status, Pageable pageable);
 
     // 검색어 기반으로 전체 조회(기업용)
     @Query("SELECT s FROM Store s " +
