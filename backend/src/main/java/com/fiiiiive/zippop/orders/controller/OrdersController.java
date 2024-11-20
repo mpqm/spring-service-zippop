@@ -43,11 +43,22 @@ public class OrdersController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_PAY_SUCCESS,response));
     }
 
+    // 결제 취소
     @GetMapping("/cancel")
-    public ResponseEntity<BaseResponse<VerifyOrdersRes>> verify(
+    public ResponseEntity<BaseResponse<VerifyOrdersRes>> cancel(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long orderIdx) throws BaseException, IamportResponseException, IOException{
         ordersService.cancelOrders(customUserDetails, orderIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_PAY_REFUND_FAIL_IS_COMPLETE));
+    }
+    
+    // 주문 확정
+    @GetMapping("/complete")
+    public ResponseEntity<BaseResponse<VerifyOrdersRes>> complete(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(required = false) Long storeIdx,
+            @RequestParam Long orderIdx) throws BaseException, IamportResponseException, IOException{
+        ordersService.completeOrders(customUserDetails, storeIdx, orderIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_PAY_REFUND_FAIL_IS_COMPLETE));
     }
 

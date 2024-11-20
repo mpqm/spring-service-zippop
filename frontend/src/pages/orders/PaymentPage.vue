@@ -45,6 +45,10 @@
       <button type="button" @click="payment" class="pay-btn">결제하기</button>
       <button type="button" @click="cancelPayment" class="pay-btn">결제취소</button>
     </div>
+    <div class="reward-area">
+            <img class="reward-icon" src="../../assets/img/point.png" alt="">&nbsp;
+            <span>결제 요청 후 3시간 이내에만 환불이 가능합니다.</span><br>
+      </div>
     <FooterComponent></FooterComponent>
 </div>
 
@@ -225,5 +229,19 @@ const cancelPayment = async() => {
   border: none;
   font-size: 16px;
 }
+.reward-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px;
+  padding: 5px;
+  border: 1px solid #00c7ae;
+  border-radius: 8px;
+  font-size: 14px;
+}
 
+.reward-icon {
+  width: 20px;
+  height: 20px;
+}
 </style>
