@@ -153,11 +153,14 @@ public enum BaseResponseMessage {
     POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED(false, 4411, "3000포인트 이상부터 사용할 수 있습니다."),
     POPUP_PAY_SEARCH_FAIL_INVALID_ROLE(false, 4412, "기업회원은 요청할 수 없는 API 입니다."),
     POPUP_PAY_REFUND_SUCCEESS(true, 4413, "환불 요청에 성공했습니다."),
-    POPUP_PAY_REFUND_FAIL_IS_COMPLETE(false, 4413, "배송 진행 중인 물건은 환불할 수 없습니다."),
+    PAY_CANCEL_SUCCESS(true, 4413, "환불 요청에 성공했습니다."),
+    PAY_COMPLETE_SUCCESS(true, 441122, "배송 확정 처리에 성공했습니다."),
+    POPUP_PAY_REFUND_FAIL_IS_COMPLETE(false, 4415, "배송 진행 중인 물건은 환불할 수 없습니다."),
+
     PAY_SEARCH_FAIL_NOT_FOUND_STORE(false, 4414, "해당 팝업 스토어에 대한 주문 내역 목록 조회를 찾을 수 없습니다."),
     // 굿즈 구매 4700
     POPUP_GOODS_PAY_GOODS_NULL(false, 4406, "굿즈가 존재하지 않습니다."),
-
+    PAY_COMPLETE_FAIL_IS_CANCEL(false, 4555, "결제 취소 건에 대해선 주문 확정을 지원하지 않습니다."),
     POPUP_GOODS_PAY_FAIL_EXCEEDED(false,4405,"해당 상품의 재고가 부족합니다."),
     POPUP_GOODS_PAY_FAIL_LIMIT_EXCEEDED(false, 4407, "사전 예매 굿즈는 품목 당 하나만 구매 가능합니다."),
     POPUP_GOODS_PAY_FAIL_VALIDATION_ERROR(false, 4404, "결제 금액이 잘못되었습니다."),

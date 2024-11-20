@@ -208,9 +208,62 @@ public class OrdersService {
             customer.setPoint(customer.getPoint() + orders.getUsedPoint());
             customerRepository.save(customer);
             refund(payment.getImpUid(), payment);
-            ordersRepository.delete(orders);
+            String orderStatus = null;
+            if(orders.getOrderState() == "STOCK_READY"){
+                orderStatus = "STOCK_CANCEL";
+            }
+            if(orders.getOrderState() == "RESERVE_READY"){
+                orderStatus = "RESERVE_CANCEL";
+            }
+            orders.setOrderState(orderStatus);
+            ordersRepository.save(orders);
         } else {
             throw new BaseException(BaseResponseMessage.POPUP_PAY_FAIL_NOT_INVALID);
+        }
+    }
+
+
+    // 주문 확정
+    @Transactional
+    public void completeOrders(CustomUserDetails customUserDetails, Long storeIdx, Long ordersIdx) throws BaseException, IamportResponseException, IOException {
+        if(customUserDetails.getRole() == "ROLE_COMPANY"){ // 기업회원 주문 확정(배송 했을때)
+            Store store = storeRepository.findByStoreIdx(storeIdx)
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_SEARCH_FAIL_NOT_EXIST));
+            if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))){
+                throw new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER);
+            }
+            Orders orders = ordersRepository.findByOrdersIdxAndStoreIdx(ordersIdx, storeIdx)
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
+            String orderStatus = null;
+            if(Objects.equals(orders.getOrderState(), "STOCK_READY")){
+                orderStatus = "STOCK_COMPLETE";
+            }
+            else if(Objects.equals(orders.getOrderState(), "RESERVE_READY")){
+                orderStatus = "RESERVE_COMPLETE";
+            }
+            else if(Objects.equals(orders.getOrderState(), "STOCK_CANCEL") || Objects.equals(orders.getOrderState(), "RESERVE_CANCEL")){
+                throw new BaseException(BaseResponseMessage.PAY_COMPLETE_FAIL_IS_CANCEL);
+            }
+            orders.setOrderState(orderStatus);
+            ordersRepository.save(orders);
+        } else { // 고객회원 주문 확정
+            Orders orders = ordersRepository.findByOrdersIdxAndCustomerIdx(ordersIdx, customUserDetails.getIdx())
+                    .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_NOT_FOUND));
+            if(!(orders.getCustomer().getIdx().equals(customUserDetails.getIdx()))){
+                throw new BaseException(BaseResponseMessage.POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER);
+            }
+            String orderStatus = null;
+            if(Objects.equals(orders.getOrderState(), "STOCK_READY")){
+                orderStatus = "STOCK_COMPLETE";
+            }
+            else if(Objects.equals(orders.getOrderState(), "RESERVE_READY")){
+                orderStatus = "RESERVE_COMPLETE";
+            }
+            else if(Objects.equals(orders.getOrderState(), "STOCK_CANCEL") || Objects.equals(orders.getOrderState(), "RESERVE_CANCEL")){
+                throw new BaseException(BaseResponseMessage.PAY_COMPLETE_FAIL_IS_CANCEL);
+            }
+            orders.setOrderState(orderStatus);
+            ordersRepository.save(orders);
         }
     }
 
