@@ -20,31 +20,28 @@ import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { onMounted, ref } from "vue";
 import { useOrdersStore } from "@/stores/useOrdersStore";
 import { useRoute } from "vue-router";
+
+// store, router, route, toast
 const ordersStore = useOrdersStore();
 const route = useRoute();
+
+// 변수(orders)
 const ordersList = ref([]);
 const currentPage = ref(0);
 const pageSize = ref(8);
 const totalElements = ref(0);
 const totalPages = ref(0);
-const storeIdx = ref(null);
 const hideBtns = ref(false);
 const showControl = ref(false);
 
+// onMounted 
 onMounted(async () => {
-    storeIdx.value = route.params.storeIdx;
     await searchAll(currentPage.value, pageSize.value);
 });
 
-const changePage = (newPage) => {
-    if (newPage >= 0) {
-        currentPage.value = newPage;
-        searchAll(currentPage.value, pageSize.value);
-    }
-};
-
-const searchAll = async (page) => {
-    const res = await ordersStore.searchAllAsCompany(storeIdx.value, page, pageSize.value);
+// 주문 목록 조회
+const searchAll = async () => {
+    const res = await ordersStore.searchAllAsCompany(route.params.storeIdx, currentPage.value, pageSize.value);
     if (res.success) {
         totalElements.value = ordersStore.totalElements;
         totalPages.value = ordersStore.totalPages;
@@ -58,6 +55,13 @@ const searchAll = async (page) => {
     }
 };
 
+// 페이지 네이션
+const changePage = (newPage) => {
+    if (newPage >= 0) {
+        currentPage.value = newPage;
+        searchAll(currentPage.value, pageSize.value);
+    }
+};
 
 </script>
 
@@ -65,13 +69,6 @@ const searchAll = async (page) => {
 .store-management-page {
     flex-direction: row;
     width: 65rem;
-}
-
-.store-control {
-    padding: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .notice {
@@ -86,95 +83,5 @@ const searchAll = async (page) => {
     gap: 10px;
 }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 10px auto;
-}
 
-.pagination-btn {
-    padding: 0.5rem 1rem;
-    color: black;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.pagination-move-btn {
-    padding: 0.5rem 1rem;
-    color: #fff;
-    background-color: #00c7ae;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.pagination-btn.active {
-    background-color: #00c7ae;
-    color: #fff;
-}
-
-.store-register-btn {
-    display: block;
-    text-align: center;
-    width: auto;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-decoration: #000;
-}
-
-.search-container {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.search-input {
-    border: 1px solid #e1e1e1;
-    border-radius: 4px;
-    display: flex;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    padding: 0.5rem;
-    width: 30rem;
-    box-sizing: border-box;
-    color: #323232;
-    background-color: #fff;
-}
-
-.search-btn {
-    display: block;
-    text-align: center;
-    width: auto;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-decoration: #000;
-}
-
-.search-btn:hover,
-.pagination-btn:hover,
-.pagination-move-btn:hover,
-.store-register-btn:hover {
-    opacity: 0.8;
-}
-
-.search-img {
-    padding: 0 1.25rem;
-}
 </style>

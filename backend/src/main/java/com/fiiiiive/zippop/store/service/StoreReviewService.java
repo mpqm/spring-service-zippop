@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,9 @@ public class StoreReviewService {
     @Transactional
     public CreateStoreReviewRes register(CustomUserDetails customUserDetails, Long storeIdx, CreateStoreReviewReq dto) throws BaseException {
         // 예외처리: 고객 사용자가 존재하지 않을때, 팝업스토어가 존재하지 않을때
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
+            throw new BaseException(BaseResponseMessage.REVIEW_REGISTER_FAIL_ONLY_CUSTOMER);
+        }
         Customer customer = customerRepository.findByCustomerEmail(customUserDetails.getEmail())
         .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_INVALID_MEMBER));
         Store store = storeRepository.findById(storeIdx)

@@ -21,9 +21,11 @@
 <script setup>
 import { defineProps } from 'vue';
 
+// props 정의(유저 역할)
 defineProps({
   userRole: String,
 });
+
 </script>
 
 <style scoped>
@@ -55,6 +57,6 @@ defineProps({
 .router-link-active {
   color: #fff;
   font-weight: bold;
-  background-color:#00c7ae;
+  background-color: #00c7ae;
 }
 </style>

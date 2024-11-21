@@ -6,57 +6,56 @@
       <img class="coin-img" src="../../assets/img/coin.png" alt="" />{{ goods.goodsPrice }}원
       <img class="stock-img" src="../../assets/img/stock.png" alt="" />{{ goods.goodsAmount }}개
     </p>
-    <img
-      class="goods-img"
-      v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length"
-      :src="goods.searchGoodsImageResList[0].goodsImageUrl"
-      alt="goods image"
-    />
+    <img class="goods-img" v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length" :src="goods.searchGoodsImageResList[0].goodsImageUrl" alt="goods image" />
     <div class="btn-container">
       <button class="normal-btn" @click="goGoodsDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
       <button class="normal-btn" @click="registerCart"><img src="../../assets/img/cart-none.png" alt=""></button>
     </div>
   </div>
 </template>
-  
-  <script setup>
+
+<script setup>
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useCartStore } from "@/stores/useCartStore";
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-const router = useRouter(); 
-const toast = useToast();
-const cartStore = useCartStore();
-const authStore = useAuthStore();
+
+// props 정의(goods)
 const props = defineProps({
   goods: Object,
 });
 
+// store, router, route, toast
+const router = useRouter();
+const toast = useToast();
+const cartStore = useCartStore();
+const authStore = useAuthStore();
 
-const goGoodsDetail = async() => {
+// 굿즈 상세 페이지 이동 함수
+const goGoodsDetail = async () => {
   router.push(`/goods-detail/${props.goods.goodsIdx}`);
 }
 
+// 카트 등록
 const registerCart = async () => {
-    if(!authStore.isLoggedIn){
-      toast.error("로그인이 필요합니다.");
-    } else {
-      const req = {
-        goodsIdx: props.goods.goodsIdx,
-      }
-      const res = await cartStore.register(req);
-      if (res.success) {
-          toast.success(res.message);
-      } else {
-          toast.error(res.message);
-      }
+  if (!authStore.isLoggedIn) {
+    toast.error("로그인이 필요합니다.");
+  } else {
+    const req = {
+      goodsIdx: props.goods.goodsIdx,
     }
-
+    const res = await cartStore.register(req);
+    if (res.success) {
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+    }
+  }
 }
 
 </script>
-  
+
 <style scoped>
 .goods-card {
   width: auto;
@@ -79,26 +78,17 @@ const registerCart = async () => {
   margin: 4px 0;
 }
 
-.t3 {
-  margin: 4px 0;
-  color: red;
-}
 .search-img {
   width: 20px;
   height: auto;
 }
+
 .goods-img {
   width: 100%;
-  height: 200px; 
+  height: 200px;
   border-radius: 8px;
   margin-top: 4px;
-  object-fit: cover; 
-}
-
-
-.goods-info {
-  display: flex;
-  gap: 10px;
+  object-fit: cover;
 }
 
 .coin-img {
@@ -114,26 +104,31 @@ const registerCart = async () => {
   height: 20px;
   vertical-align: middle;
 }
-.btn-container{
+
+.btn-container {
   display: flex;
   width: auto;
   gap: 10px;
 }
+
 .normal-btn {
   margin-top: 10px;
   display: block;
-    text-align: center;
-    width: 100%;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-decoration: #000;
+  text-align: center;
+  width: 100%;
+  font-weight: 400;
+  transition: opacity 0.2s ease-in-out;
+  color: #fff;
+  cursor: pointer;
+  background-color: #00c7ae;
+  border-color: #00c7ae;
+  border: 0.0625rem solid transparent;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  text-decoration: #000;
+}
+
+.normal-btn:hover {
+  opacity: 0.8;
 }
 </style>
-  

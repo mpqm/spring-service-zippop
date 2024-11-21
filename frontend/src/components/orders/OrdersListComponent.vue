@@ -1,7 +1,6 @@
 <template>
     <div class="orders-list-item">
-        <img class="orders-img" v-if="orders.searchordersImageResList && orders.searchordersImageResList.length"
-            :src="orders.searchordersImageResList[0].ordersImageUrl" alt="orders image" />
+        <img class="orders-img" v-if="orders.searchordersImageResList && orders.searchordersImageResList.length" :src="orders.searchordersImageResList[0].ordersImageUrl" alt="orders image" />
         <div class="orders-info1">
             <p class="t3">주문 번호 : {{ orders.impUid }}</p>
             <p class="t3">주문자 : {{ orders.name }}</p>
@@ -18,16 +17,11 @@
         <div v-if="showControl == true" class="btn-container">
             <button class="orders-cancel-btn" @click="cancelOrders">주문 취소</button>
             <button class="orders-complete-btn" @click="completeOrders">주문 확정</button>
-            <router-link class="ud-btn" :to="orders ? `/orders/${orders.ordersIdx}` : '#'">정보
-                보기</router-link>
+            <router-link class="ud-btn" :to="orders ? `/orders/${orders.ordersIdx}` : '#'">정보 보기</router-link>
         </div>
         <div v-if="showControl == false" class="btn-container">
             <button class="orders-complete-btn" @click="completeOrders">배송 확정</button>
-            <router-link
-    v-if="orders && storeIdx"
-    class="ud-btn"
-    :to="`/orders/${orders.ordersIdx}?storeIdx=${storeIdx}`"
-    >정보 보기</router-link>
+            <router-link v-if="orders && storeIdx" class="ud-btn" :to="`/orders/${orders.ordersIdx}?storeIdx=${storeIdx}`">정보 보기</router-link>
         </div>
     </div>
 </template>
@@ -38,22 +32,29 @@ import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 import { useOrdersStore } from "@/stores/useOrdersStore";
 
-const ordersStore = useOrdersStore();
-
-const toast = useToast();
-const router = useRouter();
-const formatedDate = ref("");
-const formatedOrderStatus = ref("");
+// props 정의(주문, 스토어 인덱스, showControl)
 const props = defineProps({
     orders: Object,
     storeIdx: String,
     showControl: Boolean,
 });
+
+// store, router, route, toast
+const ordersStore = useOrdersStore();
+const toast = useToast();
+const router = useRouter();
+
+// 변수
+const formatedDate = ref("");
+const formatedOrderStatus = ref("");
+
+// onMounted
 onMounted(async () => {
     formatedDate.value = formatDate(props.orders.createdAt)
     formatedOrderStatus.value = formaOrdersStatus(props.orders.orderStatus)
 });
 
+// 주문 취소
 const cancelOrders = async () => {
     const res = await ordersStore.cancel(props.orders.ordersIdx);
     if (res.success) {
@@ -63,6 +64,8 @@ const cancelOrders = async () => {
         toast.error(res.message);
     }
 }
+
+// 주문 확정(고객), 배송 확정(기업)
 const completeOrders = async () => {
     if (props.showControl) {
         const res = await ordersStore.completeAsCustomer(props.orders.ordersIdx);
@@ -73,7 +76,7 @@ const completeOrders = async () => {
             toast.error(res.message);
         }
     } else {
-        const res = await ordersStore.completeAsCompany(props.storeIdx,props.orders.ordersIdx);
+        const res = await ordersStore.completeAsCompany(props.storeIdx, props.orders.ordersIdx);
         if (res.success) {
             toast.success(res.message)
             router.go(0)
@@ -81,13 +84,15 @@ const completeOrders = async () => {
             toast.error(res.message);
         }
     }
-
 }
+
+// 날짜 포맷 함수
 const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
+// 주문 상태 포맷 함수
 const formaOrdersStatus = (statusString) => {
     if (statusString === "STOCK_READY") return "재고 굿즈 결제 완료";
     else if (statusString === "STOCK_CANCEL") return "재고 굿즈 결제 취소";
@@ -98,6 +103,7 @@ const formaOrdersStatus = (statusString) => {
     else if (statusString === "RESERVE_COMPLETE") return "예약 굿즈 주문 확정";
     else if (statusString === "RESERVE_DELIVERY") return "예약 굿즈 배달 중";
 }
+
 </script>
 
 <style scoped>
@@ -133,12 +139,6 @@ const formaOrdersStatus = (statusString) => {
     color: #666;
 }
 
-.t1 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
 .t2 {
     margin: 0;
     display: flex;
@@ -155,21 +155,6 @@ const formaOrdersStatus = (statusString) => {
     margin: 0;
     font-size: 0.9rem;
     color: green;
-}
-
-.like-img {
-    object-fit: cover;
-    width: auto;
-    height: 20px;
-    padding: 5px;
-    vertical-align: middle;
-}
-
-.people-img {
-    object-fit: cover;
-    width: auto;
-    height: 30px;
-    vertical-align: middle;
 }
 
 .btn-container {

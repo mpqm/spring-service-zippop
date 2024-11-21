@@ -8,29 +8,26 @@
         </div>
         <div class="right-panel">
           <div class="title">
-            <h2>{{ storeName }}</h2>
-            <p>{{ category }}</p>
+            <h2>{{ store.storeName }}</h2>
+            <p>{{ store.category }}</p>
           </div>
-          <p> {{ address }} / {{ addressDetail }}</p>
-          <p> {{ storeStartDate }} ~ {{ storeEndDate }}</p>
-          <p> {{ storeContent }}</p>
+          <p> {{ store.storeAddress }}</p>
+          <p> {{ store.storeStartDate }} ~ {{ store.storeEndDate }}</p>
+          <p> {{ store.storeContent }}</p>
           <p class="t2">
-            <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ likeCount }}
-            <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ totalPeople }}
+            <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ store.likeCount }}
+            <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ store.totalPeople }}
           </p>
           <hr>
           <button @click="goStoreDetail" class="normal-btn">&nbsp;<p>상세 정보 보러가기</p>
-            </button>
+          </button>
         </div>
       </div>
       <div class="main-page">
         <div class="search-container">
-          <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요"
-            @keyup.enter="keywordSearchAll" />
-          <button class="search-btn" @click="searchAllByKeyword"><img class="search-img"
-              src="../../assets/img/search-none.png" alt=""></button>
-          <button class="search-btn" @click="searchAll(0)"><img class="search-img"
-              src="../../assets/img/reload-none.png" alt=""></button>
+          <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="keywordSearchAll" />
+          <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+          <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
         </div>
         <div class="goods-list-grid" v-if="goodsList && goodsList.length">
           <GoodsCardComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" />
@@ -38,8 +35,7 @@
         <div v-else>
           <p>검색 결과에 해당하는 팝업 굿즈 목록이 없습니다.</p>
         </div>
-        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns"
-          @page-changed="changePage" />
+        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
     </div>
     <FooterComponent></FooterComponent>
@@ -59,115 +55,107 @@ import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 
+// store, router, route, toast
 const goodsStore = useGoodsStore();
 const storeStore = useStoreStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 
-// store
-const storeIdx = ref(null);
-const storeName = ref("");
-const storeContent = ref("");
-const category = ref("");
-const totalPeople = ref(0);
-const likeCount = ref(0);
-const address = ref("");
-const addressDetail = ref("");
-const storeStartDate = ref("");
-const storeEndDate = ref("");
+// 변수(store)
 const fileUrls = ref([]);
 const store = ref({});
 
-// goods
+// 변수(goods)
 const searchQuery = ref("");
 const goodsList = ref([]);
 const currentPage = ref(0);
-const pageSize = ref(12);
+const pageSize = ref(8);
 const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
+const isKeywordSearch = ref(false);
 
-
-
+// onMounted 
 onMounted(async () => {
-  storeIdx.value = route.params.storeIdx;
   await search();
-  await autoSet();
-
-  await searchAll(currentPage.value, pageSize.value);
-  goodsList.value = goodsStore.goodsList;
-  totalElements.value = goodsStore.totalElements;
-  totalPages.value = goodsStore.totalPages;
+  await searchAll();
 });
 
+// 스토어 조회 
 const search = async () => {
-  const res = await storeStore.searchStore(storeIdx.value);
+  const res = await storeStore.searchStore(route.params.storeIdx);
   if (res.success) {
     store.value = storeStore.store;
-    await autoSet();
+    mapper();
+
   } else {
     router.push("/")
     toast.error(res.message);
   }
 }
 
+// 스토어 상세 정보 이동
 const goStoreDetail = () => {
-  router.push(`/store/${storeIdx.value}`);
+  router.push(`/store/${route.params.storeIdx}`);
 }
 
-const changePage = async(newPage) => {
-  currentPage.value = newPage;
-  if (newPage >= 0 && searchQuery.value === "") {
-    await searchAll();
-  }  else {
-    await  searchAllByKeyword();
-  }
-};
-
-const autoSet = async () => {
-  storeIdx.value = storeStore.store.storeIdx;
-  storeName.value = storeStore.store.storeName;
-  storeContent.value = storeStore.store.storeContent;
-  category.value = storeStore.store.category;
-  totalPeople.value = storeStore.store.totalPeople;
-  likeCount.value = storeStore.store.likeCount;
-  address.value = storeStore.store.storeAddress.split(',')[0];
-  addressDetail.value = storeStore.store.storeAddress.split(',')[1] || '';
-  storeStartDate.value = storeStore.store.storeStartDate;
-  storeEndDate.value = storeStore.store.storeEndDate;
+// 매핑함수
+const mapper = () => {
   if (storeStore.store.searchStoreImageResList && storeStore.store.searchStoreImageResList.length) {
-    fileUrls.value = storeStore.store.searchStoreImageResList.map(image => image.storeImageUrl);
-  }
-  goodsList.value = storeStore.store.searchGoodsResList;
+      fileUrls.value = storeStore.store.searchStoreImageResList.map(image => image.storeImageUrl);
+    }
 }
 
-
+// 굿즈 목록 조회
 const searchAll = async (flag) => {
-  if(flag === 0){
+  if (flag === 0) {
     currentPage.value = 0;
     searchQuery.value = "";
+    isKeywordSearch.value = false; // 일반 검색 상태로 전환
   }
-  await goodsStore.searchAllGoodsByStoreIdx(storeIdx.value, currentPage.value, pageSize.value);
-  totalElements.value = goodsStore.totalElements;
-  totalPages.value = goodsStore.totalPages;
-  goodsList.value = goodsStore.goodsList;
-  hideBtns.value = false;
-};
-
-const searchAllByKeyword = async () => {
-  currentPage.value = 0;
-  const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(storeIdx.value, searchQuery.value, currentPage.value, pageSize.value);
-  if(res.success){
+  const res = await goodsStore.searchAllByStoreIdx(route.params.storeIdx, currentPage.value, pageSize.value);
+  if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
     goodsList.value = goodsStore.goodsList;
     hideBtns.value = false;
   } else {
-    goodsList.value = null;
-    totalElements.value = null;
-    totalPages.value = null;
+    goodsList.value = [];
+    totalElements.value = 0;
+    totalPages.value = 0;
     hideBtns.value = true;
+  }
+};
+
+// 굿즈 목록 조회 (키워드 검색) 
+const searchAllByKeyword = async () => {
+  if (!isKeywordSearch.value) {
+    currentPage.value = 0; // 키워드 검색 상태로 진입 시 페이지를 초기화
+    isKeywordSearch.value = true; // 키워드 검색 상태 활성화
+  }
+  const res = await goodsStore.searchAllByKeywordAndStoreIdx(searchQuery.value, route.params.storeIdx, currentPage.value, pageSize.value);
+  if (res.success) {
+    totalElements.value = goodsStore.totalElements;
+    totalPages.value = goodsStore.totalPages;
+    goodsList.value = goodsStore.goodsList;
+    hideBtns.value = false;
+  } else {
+    goodsList.value = [];
+    totalElements.value = 0;
+    totalPages.value = 0;
+    hideBtns.value = true;
+  }
+};
+
+// 페이지 네이션
+const changePage = async (newPage) => {
+  if (newPage < 0 || newPage >= totalPages.value) return; // 유효한 페이지 번호인지 확인
+  currentPage.value = newPage;
+  if (isKeywordSearch.value) { // 키워드 검색 상태일 경우
+    await searchAllByKeyword();
+  } else { // 일반 검색 상태일 경우
+    await searchAll();
   }
 };
 
@@ -198,12 +186,8 @@ const searchAllByKeyword = async () => {
   width: 100%;
   height: 98%;
   padding: 5px;
-  ;
 }
 
-.notice {
-  text-align: center;
-}
 
 .left-panel,
 .right-panel {
@@ -224,25 +208,11 @@ const searchAllByKeyword = async () => {
   gap: 10px;
 }
 
-.file-preview {
-  display: flex;
-  overflow-x: auto;
-  gap: 10px;
-  padding: 1rem 0;
-}
-
 .file-preview-item img {
   width: 100%;
   max-height: 300px;
   object-fit: cover;
   border-radius: 8px;
-}
-
-.store-img {
-  width: 100%;
-  height: fit-content;
-  border-radius: 8px;
-  margin-top: 4px;
 }
 
 .like-img {
@@ -278,152 +248,9 @@ const searchAllByKeyword = async () => {
   justify-content: center;
 }
 
-.detail-header {
-  display: flex;
-  column-gap: 10px;
-  background-color: #fff;
-  border-radius: 8px;
-  border: 1px solid #00c7ae;
-  margin: 0;
-  width: 65rem;
-  flex-direction: column;
+.normal-btn:hover {
+  opacity: 0.8;
 }
-
-.menu-list {
-  display: flex;
-  width: fit-content;
-}
-
-.menu-link {
-  border: 0;
-  background-color: transparent;
-  position: relative;
-  padding: 1rem;
-  text-decoration: none;
-  color: #000;
-  font-weight: bold;
-  border-right: 1px solid #00c7ae;
-}
-
-.menu-link.active {
-  color: #fff;
-  font-weight: bold;
-  background-color: #00c7ae;
-}
-
-.goods-list-container {
-  flex-direction: row;
-  width: 65rem;
-  border: 1px solid #00c7ae;
-  margin: 10px auto;
-  border-radius: 8px;
-}
-
-.review-list-container {
-  flex-direction: row;
-  width: 65rem;
-  border: 1px solid #00c7ae;
-  margin: 10px auto;
-  border-radius: 8px;
-}
-
-.goods-control {
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.goods-control {
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.goods-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.review-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 10px auto;
-}
-
-.back-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.btn-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.register-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.pagination-btn {
-  padding: 0.5rem 1rem;
-  color: black;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.pagination-move-btn {
-  padding: 0.5rem 1rem;
-  color: #fff;
-  background-color: #00c7ae;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.pagination-btn.active {
-  background-color: #00c7ae;
-  color: #fff;
-}
-
 
 .search-container {
   display: flex;
@@ -463,7 +290,6 @@ const searchAllByKeyword = async () => {
 
 .search-btn:hover,
 .pagination-btn:hover,
-.pagination-move-btn:hover,
 .goods-register-btn:hover {
   opacity: 0.8;
 }
@@ -478,15 +304,6 @@ const searchAllByKeyword = async () => {
   flex-direction: column;
   width: 65rem;
   padding: 1rem;
-}
-
-.hero-text {
-  display: flex;
-  justify-content: center;
-  padding: 0.5rem 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #323232;
 }
 
 .search-container {
@@ -542,34 +359,5 @@ const searchAllByKeyword = async () => {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
   grid-auto-rows: 2fr;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 2rem;
-}
-
-.pagination-btn {
-  padding: 0.5rem 1rem;
-  color: black;
-  border: 1px solid #fff;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.pagination-move-btn {
-  padding: 0.5rem 1rem;
-  color: #fff;
-  background-color: #00c7ae;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.pagination-btn.active {
-  background-color: #00c7ae;
-  color: #fff;
 }
 </style>

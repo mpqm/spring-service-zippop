@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import PaymentPage from "@/pages/orders/OrdersPage.vue";
 import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
 import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
@@ -34,63 +33,66 @@ import CompanyOrdersManagePage2 from "@/pages/mypage/company/CompanyOrdersManage
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/login", component: LoginPage },
-    { path: '/find-idpw', component: FindIdPwPage},
-    { path: "/signup/customer", component: CustomerSignupPage },
-    { path: "/signup/company", component: CompanySignupPage },
-    
-    { path: "/", component: StoreMainPage },
-    { path: '/store/:storeIdx', component: StoreDetailPage },
-    
-    {path: "/goods", component: GoodsMainPage},
-    {path: '/goods/:storeIdx', component: GoodsDetailPage},
-    {path: '/goods-detail/:goodsIdx', component: GoodsDetailPage2},
-    
-    { path: "/orders", component: OrdersPage },
-    { path: "/orders/:ordersIdx", component: OrdersDetailPage },
-    
+    // 인증
+    { path: "/login", component: LoginPage }, // 로그인 
+    { path: '/find-idpw', component: FindIdPwPage }, // 아이디/비밀번호 찾기
+    { path: "/signup/customer", component: CustomerSignupPage }, // 고객 회원가입
+    { path: "/signup/company", component: CompanySignupPage }, // 기업 회원가입
+
+    // 팝업 스토어
+    { path: "/", component: StoreMainPage }, // 팝업 스토어 메인 페이지
+    { path: '/store/:storeIdx', component: StoreDetailPage }, // 팝업 스토어 상세 페이지
+
+    // 굿즈 마켓
+    { path: "/goods", component: GoodsMainPage }, // 굿즈 마켓 메인 페이지(스토어 목록)
+    { path: '/goods/:storeIdx', component: GoodsDetailPage }, // 굿즈 마켓 상세 페이지
+    { path: '/goods-detail/:goodsIdx', component: GoodsDetailPage2 }, // 굿즈 마켓 상세 페이지2(상점 인덱스 입력)
+
+    // 주문 및 결제
+    { path: "/orders", component: OrdersPage }, // 주문 및 결제 메인 페이지
+    { path: "/orders/:ordersIdx", component: OrdersDetailPage }, // 주문 내역 상세 페이지
+
+    // 마이페이지 기업
     {
       path: '/mypage/company',
-      component: CompanyMyPage ,
+      component: CompanyMyPage,
       children: [
-        { path: 'store', component: StoreManagePage },
-        { path: 'store/register', component: StoreRegisterPage },
-        { path: 'store/update/:storeIdx', component: StoreUpdatePage },
-        { path: 'store/:storeIdx', component: StoreDetailPage },
-        { path: 'goods', component: GoodsManage1Page },
-        { path: 'goods/:storeIdx', component: GoodsManage2Page },
-        { path: 'goods/:storeIdx/register', component: GoodsRegisterPage },
-        { path: 'goods/:storeIdx/update/:goodsIdx', component: GoodsUpdatePage },
-        { path: 'orders', component: CompanyOrdersManagePage1, },
-        { path: 'orders/:storeIdx', component: CompanyOrdersManagePage2, },
-        { path: 'account-edit', component: EditProfilePage },
+        { path: 'store', component: StoreManagePage }, // 스토어 관리 메인 페이지
+        { path: 'store/register', component: StoreRegisterPage }, // 스토어 관리 등록 페이지
+        { path: 'store/update/:storeIdx', component: StoreUpdatePage }, // 스토어 관리 수정 페이지
+        { path: 'store/:storeIdx', component: StoreDetailPage }, // 스토어 관리 상세 페이지
+
+        { path: 'goods', component: GoodsManage1Page }, // 굿즈 관리 메인 페이지(스토어 목록)
+        { path: 'goods/:storeIdx', component: GoodsManage2Page }, // 굿즈 관리 상세 페이지
+        { path: 'goods/:storeIdx/register', component: GoodsRegisterPage }, // 굿즈 관리 등록 페이지
+        { path: 'goods/:storeIdx/update/:goodsIdx', component: GoodsUpdatePage }, // 굿즈 관리 수정 페이지
+
+
+        { path: 'orders', component: CompanyOrdersManagePage1, }, // 주문 관리 메인 페이지(스토어 목록)
+        { path: 'orders/:storeIdx', component: CompanyOrdersManagePage2, }, // 주문 관리 상세 페이지
+        { path: 'account-edit', component: EditProfilePage }, // 고객 정보 수정 페이지
       ]
     },
 
+    // 마이페이지 고객
     {
       path: '/mypage/customer',
-      component: CustomerMyPage ,
+      component: CustomerMyPage,
       children: [
-        { path: 'review', component: ReviewSearchPage },
-        { path: 'account-edit', component: EditProfilePage },
-        { path: 'like', component: LikeManagePage },
-        { path: 'cart', component: CartPage, },
-        { path: 'orders', component: CustomerOrdersManagePage, },
+        { path: 'review', component: ReviewSearchPage }, // 리뷰 검색 메인 페이지
+        { path: 'account-edit', component: EditProfilePage }, // 고객 정보 수정 페이지
+        { path: 'like', component: LikeManagePage }, // 좋아요 관리 메인 페이지
+        { path: 'cart', component: CartPage, }, // 장바구니 관리 메인 페이지
+        { path: 'orders', component: CustomerOrdersManagePage, }, // 주문 관리 메인 페이지
       ]
     },
 
-    {
-      path: '/test', component: PaymentPage,
-    },
-    
+    // 채팅
     { path: '/chats', component: MainChatComponent },
-    
-    
+
+    // 에러
+    { path: '/:catchAll(.*)', redirect: '/error', },
     { path: '/error', component: ErrorPage },
-    {
-      path: '/:catchAll(.*)',
-      redirect: '/error',
-    },
   ],
 });
 
