@@ -5,22 +5,23 @@
             <div class="detail-container">
                 <div class="left-panel">
                     <ImageSlider class="image-slider" :fileUrls="fileUrls"></ImageSlider>
-            </div>
-            <div class="right-panel">
+                </div>
+                <div class="right-panel">
                     <div class="title">
-                        <h2>{{ storeName }}</h2>
-                        <p>{{ goodsName }}</p>
+                        <h2>{{ goods.storeName }}</h2>
+                        <p>{{ goods.goodsName }}</p>
                     </div>
                     <p class="t2">
-                        <img class="people-img" src="../../assets/img/coin.png" alt="" />{{ goodsPrice }}원
-                        <img class="like-img" src="../../assets/img/stock.png" alt="" />{{ goodsAmount }}개
+                        <img class="people-img" src="../../assets/img/coin.png" alt="" />{{goods.goodsPrice }}원
+                        <img class="like-img" src="../../assets/img/stock.png" alt="" />{{ goods.goodsAmount }}개
                     </p>
-                    <p> {{ goodsContent }}</p>
-                    <div v-if="hideBtns==true" class="btn-container">
-                        <button class="normal-btn" @click="registerCart"><img class="search-img" src="../../assets/img/cart-none.png" alt="">&nbsp;<p>카트추가</p></button>
-                        <button class="normal-btn" @click="like"><img class="search-img" src="../../assets/img/payment-none.png" alt="">&nbsp;<p>결제하기</p></button>
+                    <p> {{ goods.goodsContent }}</p>
+                    <div class="btn-container">
+                        <button class="normal-btn" @click="registerCart"><img class="search-img" src="../../assets/img/cart-none.png">
+                            &nbsp;<p>카트추가</p>
+                        </button>
                     </div>
-            </div>
+                </div>
             </div>
         </div>
         <FooterComponent></FooterComponent>
@@ -38,71 +39,58 @@ import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useCartStore } from "@/stores/useCartStore";
 
+// store, router, route, toast
 const goodsStore = useGoodsStore();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
-
-const route = useRoute();
 const router = useRouter();
+const route = useRoute();
 const toast = useToast();
 
-const goodsIdx = ref(null);
-const storeName = ref("");
-const goodsName = ref("");
-const goodsPrice = ref("");
-const goodsContent = ref("");
-const goodsAmount = ref(0);
-const fileUrls = ref([]);
+// 변수
 const goods = ref({});
-const hideBtns = ref(true);
+const fileUrls = ref([]);
 
+// onMounted 
 onMounted(async () => {
     await search(route.params.goodsIdx);
-    await autoSet();
-    if(authStore.userInfo.role === "ROLE_CUSTOMER"){
-        hideBtns.value = true;
-    }
 });
 
+// 굿즈 조회 
 const search = async (goodsIdx) => {
-    const res = await goodsStore.searchGoods(goodsIdx);
+    const res = await goodsStore.search(goodsIdx);
     if (res.success) {
         goods.value = goodsStore.goods;
-        await autoSet();
+        // 이미지 매핑
+        mapper();
     } else {
         router.push("/")
         toast.error(res.message);
     }
 }
 
-const autoSet = async () => {
-    storeName.value = goodsStore.goods.storeName;
-    goodsIdx.value = goodsStore.goods.goodsIdx;
-    goodsName.value = goodsStore.goods.goodsName;
-    goodsContent.value = goodsStore.goods.goodsContent;
-    storeName.value = goodsStore.goods.storeName;
-    goodsPrice.value = goodsStore.goods.goodsPrice;
-    goodsAmount.value = goodsStore.goods.goodsAmount;
+// 매퍼(이미지)
+const mapper = () => {
     if (goodsStore.goods.searchGoodsImageResList && goodsStore.goods.searchGoodsImageResList.length) {
         fileUrls.value = goodsStore.goods.searchGoodsImageResList.map(image => image.goodsImageUrl);
     }
 }
 
+// 카트 추가 
 const registerCart = async () => {
-    if(!authStore.isLoggedIn){
-      toast.error("로그인이 필요합니다.");
+    if (authStore.isLoggedIn) {
+        const req = {
+            goodsIdx: route.params.goodsIdx,
+        }
+        const res = await cartStore.register(req);
+        if (res.success) {
+            toast.success(res.message);
+        } else {
+            toast.error(res.message);
+        }
     } else {
-      const req = {
-        goodsIdx: goodsIdx.value,
-      }
-      const res = await cartStore.register(req);
-      if (res.success) {
-          toast.success(res.message);
-      } else {
-          toast.error(res.message);
-      }
+        toast.error("로그인이 필요합니다.");
     }
-
 }
 
 </script>
@@ -131,21 +119,18 @@ const registerCart = async () => {
     padding: 5px;
 }
 
-.left-panel, .right-panel {
+.left-panel,
+.right-panel {
     width: 50%;
 }
+
 .right-panel {
     width: 50%;
     padding: 1rem;
     display: flex;
     flex-direction: column;
 }
-.file-preview {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding: 1rem 0;
-}
+
 .file-preview-item img {
     width: 100%;
     max-height: 300px;
@@ -158,20 +143,23 @@ const registerCart = async () => {
     align-items: center;
     gap: 10px;
 }
+
 .t2 {
     display: flex;
     align-items: center;
     gap: 10px;
     margin: 1rem 0;
 }
-.btn-container{
-  display: flex;
-  flex-direction: column;
-  width: auto;
-  gap: 10px;
+
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    gap: 10px;
 }
+
 .normal-btn {
-  display: flex;
+    display: flex;
     text-align: center;
     width: 100%;
     font-weight: 400;

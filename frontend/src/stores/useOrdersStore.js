@@ -12,9 +12,13 @@ export const useOrdersStore = defineStore('orders', {
     }),
     persist: { storage: sessionStorage },
     actions: {
+
+        // 결제 정보 설정
         async setPaymentData(paymentData) {
             this.paymentData = paymentData;
         },
+
+        // 결제 정보 검증 요청
         async verify(imp_uid, flag) {
             try {
                 const res = await axios.get(
@@ -26,6 +30,8 @@ export const useOrdersStore = defineStore('orders', {
                 return error.response.data;
             }
         },
+
+        // 결제 취소
         async cancel(ordersIdx) {
             try {
                 const res = await axios.get(
@@ -37,6 +43,8 @@ export const useOrdersStore = defineStore('orders', {
                 return error.response.data;
             }
         },
+
+        // 결제 완료 (고객)
         async completeAsCustomer(ordersIdx) {
             try {
                 const res = await axios.get(
@@ -48,6 +56,8 @@ export const useOrdersStore = defineStore('orders', {
                 return error.response.data;
             }
         },
+
+        // 배송 완료 (기업)
         async completeAsCompany(storeIdx, ordersIdx) {
             try {
                 const res = await axios.get(
@@ -59,6 +69,8 @@ export const useOrdersStore = defineStore('orders', {
                 return error.response.data;
             }
         },
+
+        // 고객 주문 단일 조회
         async searchAsCustomer(ordersIdx) {
             try {
                 const res = await axios.get(
@@ -71,6 +83,8 @@ export const useOrdersStore = defineStore('orders', {
                 return error.response.data;
             }
         },
+
+        // 고객 주문 목록 조회
         async searchAllAsCustomer(page, size) {
             try {
                 const res = await axios.get(
@@ -85,6 +99,8 @@ export const useOrdersStore = defineStore('orders', {
                 return error.response.data;
             }
         },
+
+        // 기업 주문 단일 조회
         async searchAsCompany(storeIdx, ordersIdx) {
             try {
                 const res = await axios.get(
@@ -97,6 +113,8 @@ export const useOrdersStore = defineStore('orders', {
                 return error.response.data;
             }
         },
+
+        // 기업 주문 목록 조회
         async searchAllAsCompany(storeIdx, page, size) {
             try {
                 const res = await axios.get(

@@ -31,11 +31,15 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { ref } from "vue";
 import { useToast } from "vue-toastification";
 
+// store, router, route, toast
 const authStore = useAuthStore();
 const toast = useToast();
+
+// 변수(auth)
 const userEmail = ref("");
 const userId = ref("");
 
+// 아이디 찾기 
 const findId = async () => {
     const req = {
         email: userEmail.value
@@ -47,6 +51,8 @@ const findId = async () => {
         toast.error(res.message)
     }
 }
+
+// 비밀번호 찾기 
 const findPw = async () => {
     const req = {
         userId: userId.value
@@ -65,29 +71,6 @@ const findPw = async () => {
 .find-idpw-page {
     padding: 3rem 0;
     background-color: #fff;
-}
-
-.relate-container {
-    margin: 0 5px;
-    text-align: center;
-    display: flex;
-    justify-content: space-between;
-}
-
-.find-id-pw {
-    text-decoration: none;
-    color: #000;
-    cursor: pointer;
-}
-
-.auto-find-idpw {
-    cursor: pointer;
-}
-
-.find-id-pw:hover,
-.auto-find-idpw:hover {
-    cursor: pointer;
-    color: #00c7ae;
 }
 
 .find-idpw-container {
@@ -139,30 +122,7 @@ const findPw = async () => {
     box-sizing: border-box;
 }
 
-.kakao-find-idpw-btn {
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    width: 100%;
-    user-select: none;
-    margin-top: 0.75rem;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #fee500;
-    border-color: #fee500;
-    color: rgba(0, 0, 0, .85);
-    border: 0.0625rem solid transparent;
-    padding: 0.6875rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: 0.25rem;
-    text-decoration: none;
-}
-
-.find-idpw-btn:hover,
-.kakao-find-idpw-btn:hover {
+.find-idpw-btn:hover {
     opacity: 0.8;
 }
 
@@ -180,11 +140,5 @@ const findPw = async () => {
     background-color: #fff;
     background-clip: padding-box;
     box-sizing: border-box;
-}
-
-.logo-img {
-    align-self: center;
-    width: 300px;
-    height: 100px;
 }
 </style>

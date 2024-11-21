@@ -15,6 +15,8 @@ export const useStoreStore = defineStore("store", {
   }),
   persist: { storage: sessionStorage, },
   actions: {
+
+    // 스토어 등록
     async registerStore(req) {
       try {
         const res = await axios.post(
@@ -26,6 +28,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 단일 조회(스토어 인덱스)
     async searchStore(storeIdx) {
       try {
         const res = await axios.get(
@@ -37,6 +41,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 목록 조회(flag = 스토어 마감 여부)
     async searchAllStore(flag, page, size) {
       try {
         const res = await axios.get(
@@ -50,6 +56,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 목록 조회(flag = 스토어 마감 여부, 키워드 검색)
     async searchAllStoreByKeyword(flag, keyword, page, size) {
       try {
         const res = await axios.get(
@@ -63,6 +71,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 목록 조회(기업 등록)
     async searchAllStoreAsCompany(page, size) {
       try {
         const res = await axios.get(
@@ -77,6 +87,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 목록 조회(기업 등록, 키워드 검색)
     async searchAllStoreByKeywordAsCompany(keyword, page, size) {
       try {
         const res = await axios.get(
@@ -91,6 +103,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 수정
     async updateStore(storeIdx, req) {
       try {
         const res = await axios.patch(
@@ -102,6 +116,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 삭제
     async deleteStore(storeIdx) {
       try {
         const res = await axios.delete(
@@ -113,6 +129,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 좋아요 등록
     async registerLike(storeIdx) {
       try {
         const res = await axios.get(
@@ -124,6 +142,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+    
+    // 스토어 좋아요 목록 조회
     async searchAllLike(page, size) {
       try {
         const res = await axios.get(
@@ -138,10 +158,12 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 리뷰 등록
     async registerReview(storeIdx, req){
       try {
         const res = await axios.post(
-          `${backend}/store/review/registe?storeIdx=${storeIdx}`, req,
+          `${backend}/store/review/register?storeIdx=${storeIdx}`, req,
           { withCredentials: true },
         );
         return res.data;
@@ -149,6 +171,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+
+    // 스토어 리뷰 목록 조회(전체)
     async searchAllReview(storeIdx, page, size){
       try {
         const res = await axios.get(
@@ -162,6 +186,8 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }      
     },
+
+    // 스토어 리뷰 목록 조회(고객)
     async searchAllReviewAsCustomer(page, size){
       try {
         const res = await axios.get(

@@ -12,11 +12,13 @@
         </div>
         <div class="btn-container">
           <router-link class="register-btn" :to="`/mypage/company/goods`">&lt;</router-link>
-          <router-link class="back-btn" :to="`/mypage/company/goods/${route.params.storeIdx}/register`">팝업 굿즈 등록</router-link>
+          <router-link class="back-btn" :to="`/mypage/company/goods/${route.params.storeIdx}/register`">팝업 굿즈
+            등록</router-link>
         </div>
       </div>
       <div class="goods-list" v-if="goodsList && goodsList.length">
-        <GoodsListComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" />
+        <GoodsListComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods"
+          :showControl="showControl" />
       </div>
       <div class="notice" v-else>
         <p>등록된 굿즈가 없습니다.</p>
@@ -34,10 +36,12 @@ import { useGoodsStore } from "@/stores/useGoodsStore";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-const searchQuery = ref("");
+// store, router, route, toast
 const goodsStore = useGoodsStore();
 const route = useRoute();
 
+// 변수(goods)
+const searchQuery = ref("");
 const showControl = ref(1);
 const goodsList = ref([]);
 const currentPage = ref(0);
@@ -45,49 +49,62 @@ const pageSize = ref(8);
 const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
-const storeIdx = ref(null);
+const isKeywordSearch = ref(false);
 
+// onMounted 
 onMounted(async () => {
-  storeIdx.value = route.params.storeIdx;
-  await searchAll(storeIdx.value, currentPage.value, pageSize.value);
+  await searchAll();
 });
 
-const changePage = async(newPage) => {
-  currentPage.value = newPage;
-  if (newPage >= 0 && searchQuery.value === "") {
-    await searchAll();
-  } else {
-    await searchAllByKeyword();
+// 굿즈 목록 조회
+const searchAll = async (flag) => {
+  if (flag === 0) {
+    currentPage.value = 0;
+    searchQuery.value = "";
+    isKeywordSearch.value = false; // 일반 검색 상태로 전환
   }
-};
-
-const searchAll = async () => {
-  const res = await goodsStore.searchAllGoodsByStoreIdx(storeIdx.value, currentPage.value, pageSize.value);
+  const res = await goodsStore.searchAllByStoreIdx(route.params.storeIdx, currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
     goodsList.value = goodsStore.goodsList;
     hideBtns.value = false;
   } else {
-    goodsList.value = null;
+    goodsList.value = [];
     totalElements.value = 0;
     totalPages.value = 0;
     hideBtns.value = true;
   }
 };
 
+// 굿즈 목록 조회(키워드 검색)
 const searchAllByKeyword = async () => {
-  const res = await goodsStore.searchAllGoodsByKeywordAndStoreIdx(searchQuery.value, storeIdx.value, currentPage.value, pageSize.value);
+  if (!isKeywordSearch.value) {
+    currentPage.value = 0; // 키워드 검색 상태로 진입 시 페이지를 초기화
+    isKeywordSearch.value = true; // 키워드 검색 상태 활성화
+  }
+  const res = await goodsStore.searchAllByKeywordAndStoreIdx(searchQuery.value, route.params.storeIdx, currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = goodsStore.totalElements;
     totalPages.value = goodsStore.totalPages;
     goodsList.value = goodsStore.goodsList;
     hideBtns.value = false;
   } else {
-    goodsList.value = null;
-    totalElements.value = null;
-    totalPages.value = null;
+    goodsList.value = [];
+    totalElements.value = 0;
+    totalPages.value = 0;
     hideBtns.value = true;
+  }
+};
+
+// 페이지 네이션
+const changePage = async (newPage) => {
+  if (newPage < 0 || newPage >= totalPages.value) return; // 유효한 페이지 번호인지 확인
+  currentPage.value = newPage;
+  if (isKeywordSearch.value) { // 키워드 검색 상태일 경우
+    await searchAllByKeyword();
+  } else { // 일반 검색 상태일 경우
+    await searchAll();
   }
 };
 
@@ -98,9 +115,11 @@ const searchAllByKeyword = async () => {
   flex-direction: row;
   width: 65rem;
 }
-.notice{
-    text-align: center;
-  }
+
+.notice {
+  text-align: center;
+}
+
 .goods-control {
   padding: 5px;
   display: flex;
@@ -114,13 +133,6 @@ const searchAllByKeyword = async () => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 10px auto;
 }
 
 .back-btn {
@@ -161,28 +173,10 @@ const searchAllByKeyword = async () => {
   text-decoration: #000;
 }
 
-.pagination-btn {
-  padding: 0.5rem 1rem;
-  color: black;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  border-radius: 5px;
+.back-btn:hover,
+.register-btn:hover {
+  opacity: 0.8;
 }
-
-.pagination-move-btn {
-  padding: 0.5rem 1rem;
-  color: #fff;
-  background-color: #00c7ae;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.pagination-btn.active {
-  background-color: #00c7ae;
-  color: #fff;
-}
-
 
 .search-container {
   display: flex;
@@ -221,8 +215,6 @@ const searchAllByKeyword = async () => {
 }
 
 .search-btn:hover,
-.pagination-btn:hover,
-.pagination-move-btn:hover,
 .goods-register-btn:hover {
   opacity: 0.8;
 }

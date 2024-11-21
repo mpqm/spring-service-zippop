@@ -6,24 +6,18 @@
           <tbody>
             <tr v-for="item in cartList" :key="item.goodsIdx">
               <td>
-                <img
-                  v-if="item.searchGoodsRes.searchGoodsImageResList && item.searchGoodsRes.searchGoodsImageResList.length > 0"
-                  :src="item.searchGoodsRes.searchGoodsImageResList[0].goodsImageUrl" class="cart_item_img" />
+                <img v-if="item.searchGoodsRes.searchGoodsImageResList && item.searchGoodsRes.searchGoodsImageResList.length > 0" 
+                      :src="item.searchGoodsRes.searchGoodsImageResList[0].goodsImageUrl" class="cart_item_img" />
               </td>
-              <td>
-                {{ item.searchGoodsRes.goodsName }}
-              </td>
-              <td>
-                {{ item.price * item.count }}원 ({{ item.price }})
-              </td>
+              <td> {{ item.searchGoodsRes.goodsName }} </td>
+              <td> {{ item.price * item.count }}원 ({{ item.price }}) </td>
               <td>
                 <div class="quantity-container">
                   <img class="quantity-input" src="../../../assets/img/minus-none.png" @click="count(item.cartItemIdx, -1)" alt="">
-                <input :value="item.count" class="quantity-input" type="text" readonly />
-                <img class="quantity-input" src="../../../assets/img/plus-none.png" @click="count(item.cartItemIdx, 1)" alt="">
-                <a href="#" class="delete-option" @click="deleteCartItem(item.cartItemIdx)">삭제</a>
+                  <input :value="item.count" class="quantity-input" type="text" readonly />
+                  <img class="quantity-input" src="../../../assets/img/plus-none.png" @click="count(item.cartItemIdx, 1)" alt="">
+                  <a href="#" class="delete-option" @click="deleteCartItem(item.cartItemIdx)">삭제</a>
                 </div>
-
               </td>
             </tr>
           </tbody>
@@ -33,16 +27,13 @@
           <div class="predict-price-item"><span>총 상품 가격</span> {{ totalPrice }}원</div>
           <div class="predict-price-item"><span>총 할인</span> {{ totalDiscount }}원</div>
           <div class="predict-price-item"><span>총 배송비</span> {{ deliveryFee }}원</div>
-          <div class="predict-price-item">
-            <span><input type="checkbox" v-model="usePoints">포인트 사용:</span>
-            {{ userPoints }} points
-          </div>
+          <div class="predict-price-item"><span><input type="checkbox" v-model="usePoints">포인트 사용:</span>{{ userPoints }} points </div>
           <h3 class="predict-total-price"><span>총 주문 금액</span> {{ finalOrderPrice }}원</h3>
           <div class="reward-area">
             <img class="reward-icon" src="../../../assets/img/point.png" alt="">&nbsp;
             <span>포인트적립: 결제 금액의 10% 적립</span><br>
           </div>
-          <a v-if="cartList.length > 0" href="#" class="cart-btn" @click="sendToPayment" >구매하기</a>
+          <a v-if="cartList.length > 0" href="#" class="cart-btn" @click="setPaymentData">구매하기</a>
           <a href="#" class="cart-btn" @click="deleteAllCartItems">장바구니 비우기</a>
         </div>
       </div>
@@ -57,11 +48,15 @@ import { useOrdersStore } from '@/stores/useOrdersStore';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+
+// store, router, route, toast
 const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
 const ordersStore = useOrdersStore();
 const toast = useToast();
+
+// 변수(cart)
 const cartList = ref([]);
 const totalPrice = ref(0);
 const userPoints = ref(0);
@@ -70,11 +65,9 @@ const deliveryFee = ref(2500);
 const totalDiscount = ref(0);
 const finalOrderPrice = ref(0);
 
+// onMounted
 onMounted(async () => {
   await searchAll();
-  await authStore.getInfo();
-  userPoints.value = authStore.userInfo.point;
-  cartList.value = cartStore.cartList;
   await updateTotalPrice();  // 총 상품 가격 계산
   await updateTotalDiscount();  // 총 할인 계산
   await updateFinalOrderPrice();  // 총 주문 금액 계산
@@ -93,13 +86,14 @@ watch(() => usePoints.value, async () => {
   await updateFinalOrderPrice();  // 총 주문 금액 계산
 });
 
+// 카트 목록 조회
 const searchAll = async () => {
   const res = await cartStore.searchAll();
   if (res.success) {
+    await authStore.getInfo();
+    userPoints.value = authStore.userInfo.point;
     cartList.value = cartStore.cartList;
-    cartList.value.forEach(item => {
-      item.itemTotalPrice = item.price * item.count;  // 아이템별 총 금액 계산
-    })
+    cartList.value.forEach(item => { item.itemTotalPrice = item.price * item.count; }) // 아이템별 총 금액 계산
     await updateTotalPrice();  // 총 상품 가격 계산
     await updateTotalDiscount();  // 총 할인 계산
     await updateFinalOrderPrice();  // 총 주문 금액 계산
@@ -107,6 +101,7 @@ const searchAll = async () => {
   }
 };
 
+// 수량 조절
 const count = async (cartItemIdx, operation) => {
   const operationValue = operation === -1 ? 1 : 0; // -1: 감소, 1: 증가
   const res = await cartStore.count(cartItemIdx, operationValue);
@@ -129,6 +124,7 @@ const count = async (cartItemIdx, operation) => {
   }
 };
 
+// 카트 아이템 삭제
 const deleteCartItem = async (cartItemIdx) => {
   await cartStore.deleteCartItem(cartItemIdx)
   cartList.value = cartList.value.filter(item => item.cartItemIdx !== cartItemIdx);
@@ -137,6 +133,7 @@ const deleteCartItem = async (cartItemIdx) => {
   await updateTotalPrice();
 };
 
+// 전체 카트 아이템 삭제
 const deleteAllCartItems = async () => {
   await cartStore.deleteAllCartItems()
   cartList.value = [];
@@ -160,11 +157,9 @@ const updateFinalOrderPrice = async () => {
   finalOrderPrice.value = totalPrice.value - totalDiscount.value + deliveryFee.value;
 };
 
-
-const sendToPayment = async() => {
-  const customData = cartList.value.map(item => {
-    return { [item.searchGoodsRes.goodsIdx]: item.count };
-  });
+// 결제 정보 저장 및 결제 페이지로 이동
+const setPaymentData = async () => {
+  const customData = cartList.value.map(item => { return { [item.searchGoodsRes.goodsIdx]: item.count }; });
   const paymentData = {
     goodsList: cartList.value,
     customData: customData,
@@ -174,12 +169,10 @@ const sendToPayment = async() => {
     usePoints: usePoints.value,
     finalOrderPrice: finalOrderPrice.value,
   };
-  
   await ordersStore.setPaymentData(paymentData);
   // `ordersPage`로 데이터 전달 (라우터 사용)
   router.push('/orders')
 };
-
 
 </script>
 
@@ -235,13 +228,13 @@ const sendToPayment = async() => {
   width: fit-content;
   justify-content: center;
 }
+
 .quantity-container {
   display: flex;
-  align-items: center;  
+  align-items: center;
   justify-content: center;
   gap: 10px;
 }
-
 
 .delete-option {
   display: inline-block;
@@ -268,6 +261,11 @@ const sendToPayment = async() => {
   font-size: 15px;
   font-weight: bold;
   color: #fff;
+}
+
+.cart-btn:hover,
+.quantity-input:hover{
+  opacity: 0.8;
 }
 
 .predict-price-title {
@@ -322,5 +320,4 @@ const sendToPayment = async() => {
   width: 20px;
   height: 20px;
 }
-
 </style>

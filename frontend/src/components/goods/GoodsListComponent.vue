@@ -32,20 +32,24 @@ import { useToast } from "vue-toastification";
 import { useRoute, useRouter } from "vue-router";
 import GoodsModalComponent from "@/components/goods/GoodsModalComponent.vue"; 
 
+// store, router, route, toast
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
 const goodsStore = useGoodsStore();
 
+// props 정의(goods, showControl)
 const props = defineProps({
   goods: Object,
   showControl: Boolean,
 });
 
+// 변수
 const isModalOpen = ref(false);
 
+// 굿즈 삭제
 const deleteGoods = async () => {
-  const res = await goodsStore.deleteGoods(props.goods.goodsIdx);
+  const res = await goodsStore.delete(props.goods.goodsIdx);
   if (res.success) {
     toast.success(res.message);
     router.go(0);
@@ -54,13 +58,16 @@ const deleteGoods = async () => {
   }
 };
 
+// 모달 열기
 const openModal = () => {
   isModalOpen.value = true;
 };
 
+// 모달 닫기
 const closeModal = () => {
   isModalOpen.value = false;
 };
+
 </script>
 
 <style scoped>
@@ -101,23 +108,6 @@ const closeModal = () => {
   margin: 0;
   font-size: 1.2rem;
   font-weight: bold;
-}
-
-.t2 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.t3 {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.goods-content {
-  font-size: 0.9rem;
-  color: #666;
 }
 
 .btn-container {

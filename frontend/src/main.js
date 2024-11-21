@@ -25,9 +25,7 @@ app.mount("#app");
 
 // Axios 인터셉터 설정
 axios.interceptors.response.use(
-    response => {
-        return response;
-    },
+    response => { return response; },
     async error => {
         if (error.response) {
             const status = error.response.status;
