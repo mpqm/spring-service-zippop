@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,8 +23,20 @@ public class Goods extends BaseEntity {
     private String name;
     private String content;
     private Integer price;
-    private Integer amount;
     private String status;
+
+    // Setter
+    @Setter
+    private Integer amount;
+
+    // Update
+    public Goods update(String name, String content, Integer price, Integer amount){
+        this.name = name;
+        this.content = content;
+        this.price = price;
+        this.amount = amount;
+        return this;
+    }
 
     // OneToMany
     @OneToMany(mappedBy = "goods")

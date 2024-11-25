@@ -5,9 +5,9 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class EditPasswordReq {
     private String originPassword;
     private String newPassword;

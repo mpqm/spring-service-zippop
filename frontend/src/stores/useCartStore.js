@@ -5,6 +5,9 @@ import { backend } from '@/env';
 export const useCartStore = defineStore('cart', {
   state: () => ({
     cartList: [],
+    cartItemList: [],
+    totalElements: null,
+    totalPages: null,
   }),
   persist: { storage: sessionStorage },
   actions: {
@@ -23,24 +26,40 @@ export const useCartStore = defineStore('cart', {
     },
 
     // 장바구니 목록 조회
-    async searchAll() {
+    async searchAll(page, size) {
       try {
         const res = await axios.get(
-          `${backend}/cart/search-all`,
+          `${backend}/cart/search-all?page=${page}&size=${size}`,
           { withCredentials: true }
         );
-        this.cartList = res.data.result;
+        this.cartList = res.data.result.content;
+        this.totalElements = res.data.result.totalElements;
+        this.totalPages = res.data.result.totalPages; 
         return res.data;
       } catch (error) {
         return error.response.data
       }
     },
 
-    // 장바구니 수량 증가
-    async count(cartItemIdx, operation) {
+    // 장바구니 아이템 목록 조회
+    async itemSearchAll(storeIdx) {
       try {
         const res = await axios.get(
-          `${backend}/cart/count?cartItemIdx=${cartItemIdx}&operation=${operation}`,
+          `${backend}/cart/item/search-all?storeIdx=${storeIdx}`,
+          { withCredentials: true }
+        );
+        this.cartItemList = res.data.result;
+        return res.data;
+      } catch (error) {
+        return error.response.data
+      }
+    },
+
+    // 장바구니 아에팀 수량 조절
+    async itemCount(cartItemIdx, operation) {
+      try {
+        const res = await axios.get(
+          `${backend}/cart/item/count?cartItemIdx=${cartItemIdx}&operation=${operation}`,
           { withCredentials: true }
         );
         return res.data;
@@ -49,11 +68,11 @@ export const useCartStore = defineStore('cart', {
       }
     },
 
-    // 장바구니 항목 삭제
+    // 장바구니 아이템 삭제
     async deleteCartItem(cartItemIdx) {
       try {
         const res = await axios.delete(
-          `${backend}/cart/delete?cartItemIdx=${cartItemIdx}`,
+          `${backend}/cart/item/delete?cartItemIdx=${cartItemIdx}`,
           { withCredentials: true }
         );
         return res.data
@@ -62,14 +81,14 @@ export const useCartStore = defineStore('cart', {
       }
     },
 
-    // 모든 장바구니 항목 삭제
-    async deleteAllCartItems() {
+    // 장바구니 아이템 전체 삭제
+    async deleteAllCartItems(storeIdx) {
       try {
         const res = await axios.delete(
-          `${backend}/cart/delete-all`,
+          `${backend}/cart/item/delete-all?storeIdx=${storeIdx}`,
           { withCredentials: true }
         );
-        this.cartList = [];
+        this.cartItemList = [];
         return res.data
       } catch (error) {
         return error.response.data

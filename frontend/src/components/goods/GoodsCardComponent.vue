@@ -24,6 +24,7 @@ import { useToast } from "vue-toastification";
 // props 정의(goods)
 const props = defineProps({
   goods: Object,
+  storeIdx: Number,
 });
 
 // store, router, route, toast
@@ -34,7 +35,7 @@ const authStore = useAuthStore();
 
 // 굿즈 상세 페이지 이동 함수
 const goGoodsDetail = async () => {
-  router.push(`/goods-detail/${props.goods.goodsIdx}`);
+  router.push(`/goods/${props.storeIdx}/${props.goods.goodsIdx}`);
 }
 
 // 카트 등록
@@ -44,6 +45,7 @@ const registerCart = async () => {
   } else {
     const req = {
       goodsIdx: props.goods.goodsIdx,
+      storeIdx: props.storeIdx,
     }
     const res = await cartStore.register(req);
     if (res.success) {

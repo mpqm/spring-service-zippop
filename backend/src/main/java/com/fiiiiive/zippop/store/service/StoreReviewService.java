@@ -5,7 +5,8 @@ import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.orders.model.entity.Orders;
+import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.store.model.entity.StoreReview;
 import com.fiiiiive.zippop.store.model.dto.CreateStoreReviewReq;
 import com.fiiiiive.zippop.store.model.dto.CreateStoreReviewRes;
@@ -25,43 +26,52 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class StoreReviewService {
+
     private final StoreReviewRepository storeReviewRepository;
     private final StoreRepository storeRepository;
     private final CustomerRepository customerRepository;
-    
-    // 리뷰 등록
+    private final OrdersRepository ordersRepository;
+
+    // 팝업 스토어 리뷰 등록
     @Transactional
     public CreateStoreReviewRes register(CustomUserDetails customUserDetails, Long storeIdx, CreateStoreReviewReq dto) throws BaseException {
-        // 예외처리: 고객 사용자가 존재하지 않을때, 팝업스토어가 존재하지 않을때
+        // 1. 예외처리: 고객 사용자가 존재하지 않을 때, 팝업스토어가 존재하지 않을때, 기업회원 일 때, 결제를 완료하지 않은 사용자 일 때
         if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
-            throw new BaseException(BaseResponseMessage.REVIEW_REGISTER_FAIL_ONLY_CUSTOMER);
+            throw new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_INVALID_ROLE);
         }
-        Customer customer = customerRepository.findByCustomerEmail(customUserDetails.getEmail())
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_INVALID_MEMBER));
-        Store store = storeRepository.findById(storeIdx)
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_STORE_NOT_EXIST));
+        Orders orders = ordersRepository.findByStoreIdxAndCustomerIdxAndStatus(storeIdx, customUserDetails.getIdx(), "_COMPLETE").orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_INVALID_MEMBER)
+        );
+        Store store = storeRepository.findById(storeIdx).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_NOT_FOUND)
+        );
         Optional<StoreReview> resultStoreReview = storeReviewRepository.findByStoreIdxAndCustomerIdx(storeIdx, customUserDetails.getIdx());
         if(resultStoreReview.isPresent()){
-            throw new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_DUPLICATED);
+            throw new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_DUPLICATED);
         }
+
+        // 2. StoreReview 저장 및 반환
         StoreReview storeReview = StoreReview.builder()
                 .customerEmail(customUserDetails.getEmail())
-                .customerName(customer.getName())
+                .customerName(orders.getCustomer().getName())
                 .title(dto.getReviewTitle())
                 .content(dto.getReviewContent())
                 .rating(dto.getReviewRating())
                 .store(store)
-                .customer(customer)
+                .customer(orders.getCustomer())
                 .build();
         storeReviewRepository.save(storeReview);
         return CreateStoreReviewRes.builder().reviewIdx(storeReview.getIdx()).build();
     }
 
-    // 팝업 스토어에 등록된 리뷰들 조회
-    public Page<SearchStoreReviewRes> searchAllAsGuest(Long storeIdx, int page, int size) throws BaseException {
-        Page<StoreReview> result = storeReviewRepository.findByStoreIdx(storeIdx, PageRequest.of(page, size))
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_STORE_NOT_EXIST));
-        Page<SearchStoreReviewRes> getReviewResPage = result.map(review -> SearchStoreReviewRes.builder()
+    // 팝업 스토어 리뷰 목록 조회(전체)
+    public Page<SearchStoreReviewRes> searchAll(Long storeIdx, int page, int size) throws BaseException {
+        // 1. 예외 : 리뷰 목록 조회 결과가 없을 때
+        Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByStoreIdx(storeIdx, PageRequest.of(page, size)).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+        // 2. StoreReview DTO Page 반환
+        Page<SearchStoreReviewRes> searchStoreReviewResPage = storeReviewPage.map(review -> SearchStoreReviewRes.builder()
                 .reviewIdx(review.getIdx())
                 .customerName(review.getCustomerName())
                 .customerEmail(review.getCustomerEmail())
@@ -71,14 +81,17 @@ public class StoreReviewService {
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
                 .build());
-        return getReviewResPage;
+        return searchStoreReviewResPage;
     }
 
-    // 고객이 작성한 팝업 스토어 리뷰 목록 조회
+    // 팝업 스토어 리뷰 목록 조회(고객)
     public Page<SearchStoreReviewRes> searchAllAsCustomer(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
-        Page<StoreReview> result = storeReviewRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size))
-        .orElseThrow(() -> new BaseException(BaseResponseMessage.POPUP_STORE_REVIEW_FAIL_STORE_NOT_EXIST));
-        Page<SearchStoreReviewRes> getReviewResPage = result.map(review -> SearchStoreReviewRes.builder()
+        // 1. 예외 : 리뷰 목록 조회 결과가 없을 때
+        Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size)).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+        // 2. StoreReview DTO Page 반환
+        Page<SearchStoreReviewRes> searchStoreReviewResPage = storeReviewPage.map(review -> SearchStoreReviewRes.builder()
                 .reviewIdx(review.getIdx())
                 .storeName(review.getStore().getName())
                 .customerEmail(review.getCustomerEmail())
@@ -89,6 +102,6 @@ public class StoreReviewService {
                 .createdAt(review.getCreatedAt())
                 .updatedAt(review.getUpdatedAt())
                 .build());
-        return getReviewResPage;
+        return searchStoreReviewResPage;
     }
 }

@@ -25,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/goods")
 public class GoodsController {
+
     private final GoodsService goodsService;
     private final CloudFileUpload cloudFileUpload;
 
@@ -35,28 +36,31 @@ public class GoodsController {
         @RequestParam Long storeIdx,
         @RequestPart("files") MultipartFile[] files,
         @RequestPart("dto") CreateGoodsReq dto) throws BaseException {
+
         List<String> fileNames = cloudFileUpload.multipleUpload(files);
         CreateGoodsRes response = goodsService.register(customUserDetails, storeIdx, fileNames, dto);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_REGISTER_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.GOODS_REGISTER_SUCCESS, response));
     }
 
-    // 상품 인덱스 조회
+    // 팝업 굿즈 단일 조회
     @GetMapping("/search")
     public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> search(
         @RequestParam Long goodsIdx) throws Exception {
+
         SearchGoodsRes response = goodsService.search(goodsIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.GOODS_SEARCH_SUCCESS, response));
     }
 
-    // 팝업 재고 굿즈 목록 조회(검색어)
+    // 팝업 굿즈 목록 조회(검색어)
     @GetMapping("/search-all")
-    public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> searchAllAsGuest(
+    public ResponseEntity<BaseResponse<Page<SearchGoodsRes>>> searchAll(
         @RequestParam(required = false) Long storeIdx,
         @RequestParam(required = false) String keyword,
         @RequestParam int page,
         @RequestParam int size) throws BaseException {
+
         Page<SearchGoodsRes> response = goodsService.searchAll(storeIdx, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_GOODS_SEARCH_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.GOODS_SEARCH_ALL_SUCCESS, response));
     }
 
     // 팝업 굿즈 수정
@@ -66,9 +70,10 @@ public class GoodsController {
         @RequestParam Long goodsIdx,
         @RequestPart(name = "dto") UpdateGoodsReq dto,
         @RequestPart(name = "files") MultipartFile[] files) throws BaseException {
+
         List<String> fileNames = cloudFileUpload.multipleUpload(files);
         UpdateGoodsRes response = goodsService.update(customUserDetails, goodsIdx, fileNames, dto);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_UPDATE_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.GOODS_UPDATE_SUCCESS,response));
     }
 
     // 팝업 굿즈 삭제
@@ -76,7 +81,8 @@ public class GoodsController {
     public ResponseEntity<BaseResponse> delete(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long goodsIdx) throws BaseException {
+
         goodsService.delete(customUserDetails, goodsIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_STORE_DELETE_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.GOODS_DELETE_SUCCESS));
     }
 }

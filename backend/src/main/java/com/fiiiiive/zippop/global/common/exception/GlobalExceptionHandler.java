@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MailException.class)
     public ResponseEntity<BaseResponse> handleMailException(MailException e){
-        BaseResponse<String> baseResponse = new BaseResponse<>(BaseResponseMessage.MEMBER_EMAIL_SEND_FAIL, e.getMessage());
+        BaseResponse<String> baseResponse = new BaseResponse<>(BaseResponseMessage.EMAIL_SEND_FAIL, e.getMessage());
         return ResponseEntity.badRequest().body(baseResponse);
     }
 

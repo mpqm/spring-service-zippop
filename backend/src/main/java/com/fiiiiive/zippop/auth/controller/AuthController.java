@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.auth.controller;
 import com.fiiiiive.zippop.auth.model.dto.*;
+import com.fiiiiive.zippop.auth.model.dto.GetInfoRes;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
@@ -24,78 +25,87 @@ import java.net.URI;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
     private final AuthService authService;
     private final CloudFileUpload cloudFileUpload;
 
+    // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<BaseResponse<PostSignupRes>> signup(
-        @RequestPart(name = "dto") PostSignupReq dto,
-        @RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
+    public ResponseEntity<BaseResponse<Void>> signup(
+            @RequestPart(name = "dto") PostSignupReq dto,
+            @RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
+
         String url = cloudFileUpload.upload(file);
-        PostSignupRes response = authService.signup(dto, url);
-        if(response.getIsInactive()){
-            return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_REGISTER_SUCCESS_INACTIVE_MEMBER, response));
-        } else {
-            return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_REGISTER_SUCCESS, response));
-        }
+        Boolean response = authService.signup(dto, url);
+        return ResponseEntity.ok(new BaseResponse(response ? BaseResponseMessage.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : BaseResponseMessage.AUTH_SIGNUP_SUCCESS));
     }
 
-    @GetMapping("/email-verify")
+    // 이메일 검증
+    @GetMapping("/verify")
     public ResponseEntity<Void> verify(
-        @RequestParam String email,
-        @RequestParam String role,
-        @RequestParam String uuid) throws BaseException {
-        Boolean flag = authService.activeMember(email, role, uuid);
-        if(flag){
-            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://localhost:8081/login?success=true")).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("http://localhost:8081/login?error=true")).build();
-        }
+            @RequestParam String email,
+            @RequestParam String role,
+            @RequestParam String uuid) throws BaseException {
+
+        String response = authService.verify(email, role, uuid);
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(response)).build();
     }
 
+    // 계정 비활성화
     @GetMapping("/inactive")
-    public ResponseEntity<BaseResponse> inactive(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
-        authService.inActiveMember(customUserDetails);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_INACTIVE_SUCCESS));
+    public ResponseEntity<BaseResponse<Void>> inactive(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
+
+        authService.inactive(customUserDetails);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.AUTH_INACTIVE_SUCCESS));
     }
 
+    // 계정 ID 찾기
     @PostMapping("/find-id")
-    public ResponseEntity<BaseResponse> findId(
-        @RequestBody FindUserIdReq dto) throws BaseException {
+    public ResponseEntity<BaseResponse<Void>> findId(
+            @RequestBody FindUserIdReq dto) throws BaseException {
+
         authService.findId(dto);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_FIND_ID_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.AUTH_FIND_ID_SUCCESS));
     }
 
+    // 계정 PW 찾기
     @PostMapping("find-password")
-    public ResponseEntity<BaseResponse> findPassword(
-        @RequestBody FindPasswordReq dto) throws BaseException {
+    public ResponseEntity<BaseResponse<Void>> findPassword(
+            @RequestBody FindPasswordReq dto) throws BaseException {
+
         authService.findPassword(dto);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_FIND_PASSWORD_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.AUTH_FIND_PASSWORD_SUCCESS));
     }
 
+    // 회원 정보 수정
     @PatchMapping("/edit-info")
-    public ResponseEntity<BaseResponse> editInfo(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestPart(name = "dto") EditInfoReq dto,
-        @RequestPart(name = "file", required = false) MultipartFile file) throws BaseException {
+    public ResponseEntity<BaseResponse<Void>> editInfo(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestPart(name = "dto") EditInfoReq dto,
+            @RequestPart(name = "file", required = false) MultipartFile file) throws BaseException {
+
         String url = cloudFileUpload.upload(file);
         authService.editInfo(customUserDetails, dto, url);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EDIT_INFO_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.AUTH_EDIT_INFO_SUCCESS));
     }
 
+    // 회원 비밀번호 수정
     @PatchMapping("/edit-password")
-    public ResponseEntity<BaseResponse> editPassword(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestBody EditPasswordReq dto) throws BaseException {
+    public ResponseEntity<BaseResponse<Void>> editPassword(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody EditPasswordReq dto) throws BaseException {
+
         authService.editPassword(customUserDetails, dto);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_EDIT_PASSWORD_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.AUTH_EDIT_PASSWORD_SUCCESS));
     }
 
+    // 회원 정보 조회
     @GetMapping("/get-info")
     public ResponseEntity<BaseResponse<GetInfoRes>> getInfo(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException{
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException{
+
         GetInfoRes response = authService.getInfo(customUserDetails);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.MEMBER_PROFILE_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.AUTH_GET_PROFILE_SUCCESS, response));
     }
 }

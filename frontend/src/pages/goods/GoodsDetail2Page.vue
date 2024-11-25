@@ -81,6 +81,7 @@ const registerCart = async () => {
     if (authStore.isLoggedIn) {
         const req = {
             goodsIdx: route.params.goodsIdx,
+            storeIdx: route.params.storeIdx,
         }
         const res = await cartStore.register(req);
         if (res.success) {

@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.global.common.responses;
 
 public enum BaseResponseMessage {
-    // ========================================================================================================================
     // 200~500 Internal
     REQUEST_SUCCESS(true, 200, "요청이 정상적으로 처리되었습니다"),
     REQUEST_FAIL(false, 300, "요청을 실패했습니다."),
@@ -18,84 +17,152 @@ public enum BaseResponseMessage {
     EMAIL_SEND_FAIL(false, 311, "이메일 전송에 실패했습니다."),
     UNPARSE_JSON(false, 312, "json 형식을 매핑할 수 없습니다."),
     INTERNAL_SERVER_ERROR(false, 500, "내부 서버 오류가 발생해서 처리할 수 없습니다."),
+    IAMPORT_ERROR(false,  314,"PG 사에 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-    // ========================================================================================================================
-    // 회원 기능(2000)
-    // 회원가입 2000
-    MEMBER_REGISTER_SUCCESS(true, 2000, "이메일 인증을 완료해주세요 유효시간은 3분입니다."),
-    MEMBER_REGISTER_SUCCESS_INACTIVE_MEMBER(true, 2014, "비활성화된 계정입니다. 이메일 인증을 완료해 복구하세요, 유효시간은 3분입니다."),
-    MEMBER_REGISTER_FAIL(false, 2001, "회원가입에 실패했습니다."),
-    MEMBER_REGISTER_FAIL_ALREADY_REGISTER_AS_CUSTOMER(false, 2002, "이미 고객 회원으로 가입된 계정입니다. 고객 회원은 기업 회원으로 회원가입 할 수 없습니다."),
-    MEMBER_REGISTER_FAIL_ALREADY_REGISTER_AS_COMPANY(false, 2003, "이미 기업 회원으로 가입된 계정입니다. 기업 회원은 고객 회원으로 회원가입할 수 없습니다."),
-    MEMBER_REGISTER_FAIL_ID_EMPTY(false, 2002, "아이디를 입력해주세요"),
-    MEMBER_REGISTER_FAIL_ID_FORMAT(false, 2003, "아이디 형식이 맞지 않습니다."),
-    MEMBER_REGISTER_FAIL_ID_DUPLICATION(false, 2004, "아이디가 중복되었습니다."),
-    MEMBER_REGISTER_FAIL_PASSWORD_EMPTY(false, 2005, "패스워드를 입력해주세요"),
-    MEMBER_REGISTER_FAIL_PASSWORD_FORMAT(false, 2006, "패스워드 형식이 맞지 않습니다."),
-    MEMBER_REGISTER_FAIL_PASSWORD_COMPLEXITY(false, 2007, "복잡한 패스워드를 사용해주세요"),
-    MEMBER_REGISTER_FAIL_NAME_EMPTY(false, 2008, "이름을 입력해주세요"),
-    MEMBER_REGISTER_FAIL_ALREADY_EXIST(false, 2009, "이미 회원가입한 계정입니다."),
-    // 이메일 인증 2010
-    MEMBER_EMAIL_VERIFY_SUCCESS(true, 2010, "이메일 인증을 완료했습니다."),
-    MEMBER_EMAIL_VERIFY_FAIL(false, 2011, "이메일 인증에 실패했습니다."),
-    MEMBER_EMAIL_SEND_FAIL(false, 2012, "이메일 전송에 실패했습니다."),
-    MEMBER_EMAIL_VERIFY_SAVE_FAIL(false, 2013, "이메일 인증 값 저장에 실패했습니다."),
-    // 로그인 2030
-    MEMBER_LOGIN_SUCCESS(true, 2030, "로그인에 성공했습니다."),
-    MEMBER_LOGIN_FAIL(false, 2031, "로그인에 실패했습니다."),
-    MEMBER_LOGIN_FAIL_NOT_FOUND(false, 2032, "사용자를 찾을 수 없습니다"),
-    // 계정 비활성화 2040
-    MEMBER_INACTIVE_SUCCESS(true, 2040, "계정 비활성화에 성공했습니다."),
-    MEMBER_INACTIVE_FAIL(false, 2041, "계정 비활성화에 실패했습니다."),
-    // 계정 정보 수정 2050
-    MEMBER_EDIT_INFO_SUCCESS(true, 2050, "계정 프로필 정보 변경에 성공했습니다."),
-    MEMBER_EDIT_INFO_FAIL(false, 2051, "계정 프로필 정보 변경에 실패했습니다."),
-    // 계정 패스워드 수정 2060
-    MEMBER_EDIT_PASSWORD_SUCCESS(true, 2050, "계정 비밀번호 변경에 성공했습니다."),
-    MEMBER_EDIT_PASSWORD_FAIL(false, 2051, "계정 비밀번호 변경에 실패했습니다."),
-    MEMBER_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH(false, 2052, "계정 비밃번호가 틀립니다."),
+    // 회원 2000
+    // 회원 가입
+    AUTH_SIGNUP_SUCCESS(true, 2000, "이메일 인증을 완료해주세요 유효시간은 3분입니다."),
+    AUTH_SIGNUP_SUCCESS_IS_INACTIVE(true, 2001, "비활성화된 계정입니다. 이메일 인증을 완료해 복구하세요, 유효시간은 3분입니다."),
+    AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_CUSTOMER(false, 2002, "이미 고객 회원으로 가입된 계정입니다. 고객 회원은 기업 회원으로 회원가입 할 수 없습니다."),
+    AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY(false, 2003, "이미 기업 회원으로 가입된 계정입니다. 기업 회원은 고객 회원으로 회원가입할 수 없습니다."),
+    AUTH_SIGNUP_FAIL_ALREADY_EXIST(false, 2004, "이미 회원가입한 계정입니다."),
+    // 이메일 인증
+    AUTH_VERIFY_FAIL(false, 2004, "이메일 인증에 실패했습니다."),
+    // 계정 비/활성화
+    AUTH_INACTIVE_SUCCESS(true, 2005, "계정 비활성화에 성공했습니다."),
+    AUTH_INACTIVE_FAIL(false, 2006, "계정 비활성화에 실패했습니다."),
+    // 아이디 찾기
+    AUTH_FIND_ID_SUCCESS(true, 2007, "이메일로 아이디 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
+    AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY(false, 2008, "이메일 인증이 되지않은 사용자는 아이디 찾기를 진행할 수 없습니다."),
+    // 비밀번호 찾기
+    AUTH_FIND_PASSWORD_SUCCESS(true, 2009, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
+    AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY(false, 2010, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
+    // 계정 정보 변경
+    AUTH_EDIT_INFO_SUCCESS(true, 2011, "계정 프로필 정보 변경에 성공했습니다."),
+    AUTH_EDIT_INFO_FAIL(false, 2012, "계정 프로필 정보 변경에 실패했습니다."),
+    AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER(false, 2012, "사용자를 찾을 수 없습니다."),
+    // 계정 패스워드 수정
+    AUTH_EDIT_PASSWORD_SUCCESS(true, 2013, "계정 비밀번호 변경에 성공했습니다."),
+    AUTH_EDIT_PASSWORD_FAIL(false, 2014, "계정 비밀번호 변경에 실패했습니다."),
+    AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER(false, 2015, "사용자를 찾을 수 없습니다."),
+    AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH(false, 2016, "계정 비밃번호가 틀립니다."),
     // 프로필 정보 2070
-    MEMBER_PROFILE_SUCCESS(true,2070,"프로필 조회에 성공했습니다"),
-    MEMBER_PROFILE_FAIL(true,2071,"프로필 조회에 실패했습니다"),
-    // 멤버 로그아웃 2080
-    MEMBER_LOGOUT_SUCCESS(true, 2080, "로그아웃에 성공했습니다."),
-    MEMBER_FIND_ID_SUCCESS(true, 2082, "이메일로 아이디 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
-    MEMBER_FIND_ID_FAIL_EMAIL_VERIFY(false, 2081, "이메일 인증이 되지않은 사용자는 아이디 찾기를 진행할 수 없습니다."),
-    MEMBER_FIND_PASSWORD_SUCCESS(true, 2082, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
-    MEMBER_FIND_PASSWORD_FAIL_EMAIL_VERIFY(false, 2081, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
-    // ========================================================================================================================
-    // 팝업 스토어 3000
-    // 팝업 스토어 등록 3000
-    POPUP_STORE_REGISTER_SUCCESS(true, 3000, "팝업 스토어 등록에 성공했습니다."),
-    POPUP_STORE_REGISTER_FAIL_DUPLICATION(false, 3001, "이미 등록된 팝업 스토어 입니다."),
-    POPUP_STORE_REGISTER_FAIL_UNAUTHORIZED(false, 3002, "팝업 스토어 등록은 기업회원만 가능합니다."),
-    // 팝업 스토어 조회 3100
-    POPUP_STORE_SEARCH_SUCCESS(true, 3100, "팝업 스토어 목록 조회에 성공했습니다."),
-    POPUP_STORE_SEARCH_FAIL_NOT_EXIST(false, 3101, "해당 팝업 스토어가 존재하지 않습니다."),
-    POPUP_STORE_SEARCH_FAIL_INVALID_REQUEST(false, 3102, "유효하지 않은 팝업 스토어 조회 파라미터입니다."),
-    // 팝업 스토어 수정 3200
-    POPUP_STORE_UPDATE_SUCCESS(true, 3200, "팝업 스토어 수정에 성공했습니다."),
-    POPUP_STORE_UPDATE_FAIL_INVALID_MEMBER(false, 3201, "해당 팝업스토어를 등록한 기업회원이 아닙니다."),
-    // 팝업 스토어 삭제 3300
-    POPUP_STORE_DELETE_SUCCESS(true, 3300, "팝업 스토어 삭제에 성공했습니다."),
-    POPUP_STORE_DELETE_FAIL_NOT_FOUND(false, 3301, "팝업 스토어를 찾을 수 없어 삭제에 실패했습니다."),
-    POPUP_STORE_DELETE_FAIL_INVALID_MEMBER(false, 3302, "해당 팝업 스토어를 등록한 기업 회원이 아닙니다."),
-    // 팝업 스토어 좋아요 3400
-    POPUP_STORE_LIKE_SUCCESS(true, 3400, "팝업 스토어 좋아요 성공"),
-    POPUP_STORE_LIKE_FAIL_NOT_FOUND(false, 3400, "해당 팝업 스토어를 찾을 수 없습니다."),
-    POPUP_STORE_LIKE_FAIL_INVALID_MEMBER(false, 3401, "인증된 사용자 만이 추천을 누를 수 있습니다."),
-    POPUP_STORE_LIKE_FAIL_INVALID_ROLE(false, 3403, "기업 회원은 좋아요 기능이 제한됩니다."),
-    POPUP_STORE_LIKE_SEARCH_ALL_SUCCESS(true, 3402, "팝업 스토어 좋아요 목록을 불러오는데 성공했습니다."),
-    POPUP_STORE_REVIEW_SEARCH_SUCCESS(true, 3403, "팝업 스토어 전체 리뷰를 불러왔습니다."),
-    // ========================================================================================================================
-    // 팝업 스토어 리뷰 4000
-    // 팝업 스토어 리뷰 등록 4000
-    POPUP_STORE_REVIEW_SUCCESS(true, 4000, "팝업 스토어 리뷰 등록에 성공했습니다."),
-    POPUP_STORE_REVIEW_FAIL_CONTENTS_EMPTY(false, 4001, "팝업 스토어 리뷰 내용을 작성해주세요"),
-    POPUP_STORE_REVIEW_FAIL_STORE_NOT_EXIST(false, 4002, "해당 팝업 스토어를 찾을 수 없습니다."),
-    POPUP_STORE_REVIEW_FAIL_INVALID_MEMBER(false, 4003, "인증된 사용자만이 리뷰를 등록할 수 있습니다."),
-    POPUP_STORE_REVIEW_FAIL_DUPLICATED(false, 4004,"리뷰는 팝업스토어당 한 글씩만 적을 수 있습니다."),
-    REVIEW_REGISTER_FAIL_ONLY_CUSTOMER(false, 4005, "리뷰는 고객 회원만 작성 가능합니다."),
+    AUTH_GET_PROFILE_SUCCESS(true,2016,"프로필 조회에 성공했습니다"),
+    AUTH_GET_PROFILE_FAIL(false,2017,"프로필 조회에 실패했습니다"),
+
+    // 장바구니 3000
+    // 장바구니 등록
+    CART_REGISTER_SUCCESS(true, 3000  , "장바구니 등록에 성공했습니다." ),
+    CART_REGISTER_FAIL_MEMBER_NOT_FOUND(false, 3001, "사용자를 찾을수 없습니다." ),
+    CART_REGISTER_FAIL_GOODS_NOT_FOUND(false, 3002, "상품을 찾을 수 없습니다."),
+    CART_REGISTER_FAIL_STORE_NOT_FOUND(false, 3003, "상품을 찾을 수 없습니다."),
+    CART_REGISTER_FAIL_ITEM_EXIST(false, 3004, "해당 상품이 이미 장바구니에 존재 합니다."),
+    // 장바구니 목록 조회
+    CART_SEARCH_ALL_SUCCESS(true, 3005, "장바구니 목록을 불러왔습니다."),
+    CART_SEARCH_ALL_FAIL_NOT_FOUND(false, 3006, "장바구니 목록을 찾을 수 없습니다."),
+    // 장바구니 아이템 목록 조회
+    CART_ITEM_SEARCH_ALL_SUCCESS(true, 3007, "장바구니 아이템 목록을 불러왔습니다."),
+    CART_ITEM_SEARCH_ALL_FAIL_NOT_FOUND(false, 3008, "장바구니 아이템 목록을 찾을 수 없습니다."),
+    // 장바구니 아이템 수량 조절
+    CART_ITEM_COUNT_SUCCESS(true, 3009, "장바구니 아이템 수량 조절에 성공했습니다."),
+    CART_ITEM_COUNT_FAIL_NOT_FOUND(false, 3010, "장바구니 아이템을 찾을 수 없습니다."),
+    CART_ITEM_COUNT_FAIL_IS_ZERO(false, 3011, "장바구니 아이템의 수량이 0입니다."),
+    // 장바구니 삭제
+    CART_ITEM_DELETE_SUCCESS(true, 3012, "장바구니 아이템 삭제에 성공했습니다."),
+    // 장바구니 전체삭제
+    CART_ITEM_DELETE_ALL_SUCCESS(true, 3013, "장바구니 전체 삭제에 성공했습니다."),
+    CART_DELETE_ALL_FAIL_NOT_FOUND(false, 3014, "장바구니를 찾을 수 없습니다."),
+
+    // 팝업 스토어 4000
+    // 팝업 스토어 등록
+    STORE_REGISTER_SUCCESS(true, 4000, "팝업 스토어 등록에 성공했습니다."),
+    STORE_REGISTER_FAIL_UNAUTHORIZED(false, 4001, "팝업 스토어 등록은 기업회원만 가능합니다."),
+    // 팝업 스토어 단일 조회
+    STORE_SEARCH_SUCCESS(true, 4002, "팝업 스토어 목록 조회에 성공했습니다."),
+    STORE_SEARCH_FAIL_NOT_FOUND(false, 4003, "해당 팝업 스토어가 존재하지 않습니다."),
+    // 팝업 스토어 목록 조회
+    STORE_SEARCH_ALL_SUCCESS(true, 4004, "팝업 스토어 목록 조회에 성공했습니다."),
+    STORE_SEARCH_ALL_FAIL_NOT_FOUND(false, 4005, "해당 팝업 스토어가 조재하지 않습니다."),
+    // 팝업 스토어 수정
+    STORE_UPDATE_SUCCESS(true, 4006, "팝업 스토어 수정에 성공했습니다."),
+    STORE_UPDATE_FAIL_NOT_FOUND(false, 4007, "팝업 스토어를 찾을 수 없습니다."),
+    STORE_UPDATE_FAIL_INVALID_MEMBER(false, 4008, "해당 팝업스토어를 등록한 기업회원이 아닙니다."),
+    // 팝업 스토어 삭제
+    STORE_DELETE_SUCCESS(true, 4009, "팝업 스토어 삭제에 성공했습니다."),
+    STORE_DELETE_FAIL_NOT_FOUND(false, 4010, "팝업 스토어를 찾을 수 없어 삭제에 실패했습니다."),
+    STORE_DELETE_FAIL_INVALID_MEMBER(false, 4011, "해당 팝업 스토어를 등록한 기업 회원이 아닙니다."),
+    // 팝업 스토어 좋아요
+    STORE_LIKE_SUCCESS(true, 4012, "팝업 스토어 좋아요 성공"),
+    STORE_LIKE_FAIL_NOT_FOUND(false, 4013, "해당 팝업 스토어를 찾을 수 없습니다."),
+    STORE_LIKE_FAIL_INVALID_MEMBER(false, 4014, "해당 팝업 스토어에서 결제한 내역이 없습니다."),
+    STORE_LIKE_FAIL_INVALID_ROLE(false, 4015, "기업 회원은 좋아요 기능이 제한됩니다."),
+    STORE_LIKE_SEARCH_ALL_SUCCESS(true, 4016, "팝업 스토어 좋아요 목록을 불러오는데 성공했습니다."),
+    STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND(false, 4017, "팝업 스토어 좋아요 목록을 찾을 수 없습니다."),
+    // 팝업 스토어 리뷰
+    STORE_REVIEW_SUCCESS(true, 4018, "팝업 스토어 리뷰 등록에 성공했습니다."),
+    STORE_REVIEW_FAIL_INVALID_ROLE(false, 4019, "기업 회원은 리뷰 작성 기능이 제한 됩니다."),
+    STORE_REVIEW_FAIL_NOT_FOUND(false, 4020, "해당 팝업 스토어를 찾을 수 없습니다."),
+    STORE_REVIEW_FAIL_INVALID_MEMBER(false, 4021, "인증된 사용자만이 리뷰를 등록할 수 있습니다."),
+    STORE_REVIEW_FAIL_DUPLICATED(false, 4022,"리뷰는 팝업스토어당 한 글씩만 적을 수 있습니다."),
+    STORE_REVIEW_SEARCH_ALL_SUCCESS(true, 4023, "팝업 스토어 리뷰 목록을 불러왔습니다."),
+    STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND(false, 4024, "팝업 스토어 리뷰 목록을 찾을 수 없습니다."),
+
+    // 팝업 굿즈 5000
+    // 팝업 굿즈 등록
+    GOODS_REGISTER_SUCCESS(true, 5000,"팝업 굿즈 등록에 성공했습니다."),
+    GOODS_REGISTER_FAIL_NOT_FOUND_STORE(false, 5001, "해당 스토어를 찾을 수 없습니다."),
+    GOODS_REGISTER_FAIL_INVALID_MEMBER(false, 5002, "팝업 굿즈 등록은 팝업 스토어를 등록한 기업회원만 가능합니다."),
+    // 팝업 굿즈 조회
+    GOODS_SEARCH_SUCCESS(true, 5003, "팝업 굿즈 조회에 성공했습니다."),
+    GOODS_SEARCH_FAIL_NOT_FOUND_STORE(false, 5004, "해당 스토어를 찾을 수 없습니다."),
+    // 팝업 굿즈 목록 조회
+    GOODS_SEARCH_ALL_SUCCESS(true, 5005, "팝업 굿즈 목록 조회에 성공했습니다."),
+    GOODS_SEARCH_ALL_FAIL_STORE_NOT_NOT_FOUND(false, 5006, "해당 스토어를 찾을 수 없습니다."),
+    // 팝업 굿즈 수정
+    GOODS_UPDATE_SUCCESS(true, 5007, "팝업 굿즈 수정에 성공했습니다."),
+    GOODS_UPDATE_FAIL_NOT_FOUND(false, 5008, "팝업 굿즈를 찾을 수 없습니다."),
+    GOODS_UPDATE_FAIL_NOT_FOUND_INVALID_MEMBER(false, 5009, "팝업 굿즈 수정은 팝업 스토어를 등록한 기업회원만 가능합니다."),
+    // 팝업 굿즈 삭제
+    GOODS_DELETE_SUCCESS(true, 5010, "팝업 굿즈 삭제에 성공했습니다."),
+    GOODS_DELETE_FAIL_NOT_FOUND(false, 5011, "팝업 스토어를 찾을 수 없어 삭제에 실패했습니다."),
+    GOODS_DELETE_FAIL_INVALID_MEMBER(false, 5012, "해당 팝업 스토어를 등록한 기업 회원이 아닙니다."),
+
+    // 굿즈 주문 6000
+    // 굿즈 구매
+    ORDERS_PAY_SUCCESS(true, 6000,"결제에 성공했습니다."),
+    ORDERS_PAY_FAIL(false, 6001, "결제에 실패했습니다. 주문한 내역이 없습니다."),
+    ORDERS_PAY_FAIL_INVALID_ROLE(false, 6002, "기업회원은 결제를 진행할 수 없습니다."),
+    ORDERS_PAY_FAIL_NOT_FOUND_MEMBER(false, 6003, "결제 정보에 해당하는 유저가 없습니다."),
+    ORDERS_PAY_FAIL_NOT_FOUND_GOODS(false, 6004, "결제 정보에 해당하는 팝업 굿즈가 없습니다."),
+    ORDERS_PAY_FAIL_LIMIT_EXCEEDED(false, 6005, "사전 예매 굿즈는 품목 당 하나만 구매 가능합니다."),
+    ORDERS_PAY_FAIL_POINT_EXCEEDED(false, 6006, "3000포인트 이상부터 사용할 수 있습니다."),
+    ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE(false, 6007, "결제 금액이 잘못되었습니다."),
+    // 굿즈 환불
+    ORDERS_CANCEL_SUCCESS(true, 6008, "환불 요청에 성공했습니다."),
+    ORDERS_CANCEL_FAIL_INVALID_ROLE(true, 6009, "기업회원은 요청할 수 없는 API 입니다."),
+    ORDERS_CANCEL_FAIL_NOT_FOUND_MEMBER(false, 6010, "결제 정보에 해당하는 유저가 없습니다."),
+    ORDERS_CANCEL_FAIL_NOT_FOUND(false, 6011, "해당 결재내역을 찾을 수 없습니다."),
+    ORDERS_CANCEL_FAIL_ALREADY_CANCEL(false, 6012, "이미 환불 처리가 진행된 내역입니다."),
+    ORDERS_CANCEL_FAIL_NOT_FOUND_GOODS(false, 6013, "결제 정보에 해당하는 팝업 굿즈가 없습니다."),
+    ORDERS_CANCEL_FAIL_IS_DELIVERY(false, 6014, "배송 중인 건에 대해선 환불 을 지원하지 않습니다."),
+    // 굿즈 구매 확정
+    ORDERS_COMPLETE_SUCCESS(true, 6015, "배송 및 결제 확정 처리에 성공했습니다."),
+    ORDERS_COMPLETE_FAIL_NOT_FOUND_STORE(false, 6016, "팝업 스토어를 찾을 수 없습니다."),
+    ORDERS_COMPLETE_FAIL_INVALID_MEMBER(false, 6017, "해당 거래내역에 접근 권한이 없습니다."),
+    ORDERS_COMPLETE_FAIL_IS_DELIVERY(false, 6018, "이미 주문 확정 처리 되고 배달 중입니다."),
+    ORDERS_COMPLETE_FAIL_NOT_FOUND(false, 6019, "거래 내역을 찾을 수 없습니다."),
+    ORDERS_COMPLETE_FAIL_IS_CANCEL(false, 6020, "결제 취소 건에 대해선 주문 확정을 지원하지 않습니다."),
+    // 굿즈 구매 내역 조회
+    ORDERS_SEARCH_SUCCESS(true, 6021, "결제 내역 조회에 성공했습니다."),
+    ORDERS_SEARCH_FAIL_NOT_FOUND(false, 6022, "거래 내역을 찾을 수 없습니다."),
+    ORDERS_SEARCH_FAIL_INVALID_MEMBER(false, 6023, "해당 거래내역에 접근 권한이 없습니다."),
+    ORDERS_SEARCH_FAIL_NOT_FOUND_STORE(false, 6024, "팝업 스토어를 찾을 수 없습니다"),
+    // 굿즈 구매 내역 목록 조회
+    ORDERS_SEARCH_ALL_SUCCESS(true, 6025, "결제 내역 목록 조회에 성공했습니다."),
+    ORDERS_SEARCH_ALL_FAIL_NOT_FOUND(false, 6026, "거래 내역을 찾을 수 없습니다."),
+    ORDERS_SEARCH_ALL_FAIL_NOT_FOUND_STORE(false, 6027, "팝업 스토어를 찾을 수 없습니다"),
+    ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER(false, 6028, "해당 거래내역에 접근 권한이 없습니다."),
+
     // ========================================================================================================================
     // 팝업 예약 9000
     // 팝업 예약 생성 9000
@@ -113,25 +180,7 @@ public enum BaseResponseMessage {
     POPUP_RESERVE_SEARCH_STATUS_SUCCESS(true, 9300, "예약 대기자 및 Redis 상태를 불러왔습니다."),
 
     // ========================================================================================================================
-    // 팝업 굿즈 4000
-    // 팝업 굿즈 등록 4000
-    POPUP_GOODS_REGISTER_SUCCESS(true, 4000,"상품 등록에 성공했습니다."),
-    POPUP_GOODS_REGISTER_FAIL(false, 4001, "상품 등록에 실패했습니다."),
-    POPUP_GOODS_REGISTER_FAIL_IMG_FORMAT(false, 4002, "상품 이미지 파일 형식이 맞지 않습니다."),
-    POPUP_GOODS_REGISTER_FAIL_NAME_EMPTY(false, 4003, "상품명을 입력해주세요"),
-    POPUP_GOODS_REGISTER_FAIL_PRICE_EMPTY(false, 4004, "상품 가격을 입력해주세요"),
-    POPUP_GOODS_REGISTER_FAIL_AMOUNT_EMPTY(false, 4005, "등록할 상품의 수량을 입력해주세요"),
-    POPUP_GOODS_REGISTER_FAIL_STORE_NOT_FOUND(false, 4006, "해당 스토어를 찾을 수 없습니다."),
-    // 팝업 굿즈 조회 4100
-    POPUP_GOODS_SEARCH_SUCCESS(true, 4100, "팝업 굿즈 조회에 성공했습니다."),
-    POPUP_GOODS_SEARCH_FAIL(false, 4101, "팝업 굿즈 조회에 실패했습니다."),
-    POPUP_GOODS_SEARCH_FAIL_STORE_NOT_NOT_FOUND(false, 4102, "해당 스토어를 찾을 수 없습니다."),
-    // 팝업 굿즈 수정 4200
-    POPUP_GOODS_UPDATE_SUCCESS(true, 4200, "팝업 굿즈 수정에 성공했습니다."),
-    POPUP_GOODS_UPDATE_FAIL(false, 4201, "팝업 굿즈 수정에 실패했습니다."),
-    // 팝업 굿즈 삭제 4300
-    POPUP_GOODS_DELETE_SUCCESS(true, 4300, "팝업 굿즈 삭제에 성공했습니다."),
-    POPUP_GOODS_DELETE_FAIL(false, 4301, "팝업 굿즈 삭제에 실패했습니다."),
+
     // 팝업 굿즈 주문 검증 4400
 
 
@@ -140,72 +189,9 @@ public enum BaseResponseMessage {
 
     // 결제
     // 기업 수수료 결제 4500
-    POPUP_PAY_SUCCESS(true, 4500,"결제에 성공했습니다."),
-    POPUP_PAY_FAIL_NOT_INVALID(false, 4501, "결제에 실패했습니다."),
-    // 기업 수수료 결제 4600
-    POPUP_STORE_PAY_FAIL(false, 4601, "기업 팝업 수수료 결제에 실패했습니다."),
-    POPUP_STORE_PAY_FAIL_NOT_FOUND_PAYINFO(false, 4602, "기업 팝업 수수료 결제 정보를 가져올수 없습니다."),
-    POPUP_STORE_PAY_FAIL_NOT_FOUND_COMPANY(false, 4607, "해당 기업 회원은 존재하지 않습니다."),
-    POPUP_STORE_PAY_FAIL_INVALID_ROLE(false, 4412, "기업회원은 결제를 진행할 수 없습니다."),
-    POPUP_STORE_PAY_FAIL_INCORRECT_REQUEST(false, 4608, "결제 형식이 다릅니다. 기업 수수료 결제를 진행해주세요"),
-    POPUP_STORE_PAY_FAIL_NOT_FOUND_STORE(false, 4409, "해당 팝업 스토어가 존재하지 않습니다"),
-    POPUP_STORE_PAY_FAIL_VALIDATION_ERROR(false, 4410, "결제 금액이 잘못 되었습니다."),
-    POPUP_STORE_PAY_FAIL_NOT_FOUND_AMOUNT(false, 4408, "결제 금액을 찾을 수 없습니다."),
-    POPUP_GOODS_PAY_FAIL_POINT_EXCEEDED(false, 4411, "3000포인트 이상부터 사용할 수 있습니다."),
-    POPUP_PAY_SEARCH_FAIL_INVALID_ROLE(false, 4412, "기업회원은 요청할 수 없는 API 입니다."),
-    POPUP_PAY_REFUND_SUCCEESS(true, 4413, "환불 요청에 성공했습니다."),
-    PAY_CANCEL_SUCCESS(true, 4413, "환불 요청에 성공했습니다."),
-    PAY_COMPLETE_SUCCESS(true, 441122, "배송 확정 처리에 성공했습니다."),
-    PAY_COMPLETE_FAIL_INVALID_MEMBER(false, 44676, "배송 확정 처리에 실패했습니다."),
-    POPUP_PAY_REFUND_FAIL_IS_COMPLETE(false, 4415, "배송 진행 중인 물건은 환불할 수 없습니다."),
-    POPUP_PAY_REFUND_FAIL_ALREADYCANCELD(false, 441222, "이미 환불 처리가 진행된 내역입니다."),
-    PAY_SEARCH_FAIL_NOT_FOUND_STORE(false, 4414, "해당 팝업 스토어에 대한 주문 내역 목록 조회를 찾을 수 없습니다."),
-    // 굿즈 구매 4700
-    POPUP_GOODS_PAY_GOODS_NULL(false, 4406, "굿즈가 존재하지 않습니다."),
-    PAY_COMPLETE_FAIL_IS_CANCEL(false, 4555, "결제 취소 건에 대해선 주문 확정을 지원하지 않습니다."),
-    PAY_COMPLETE_FAIL_IS_DELIVERY(false, 4555, "배송 중인 건에 대해선 환불 을 지원하지 않습니다."),
-    POPUP_GOODS_PAY_FAIL_EXCEEDED(false,4405,"해당 상품의 재고가 부족합니다."),
-    POPUP_GOODS_PAY_FAIL_LIMIT_EXCEEDED(false, 4407, "사전 예매 굿즈는 품목 당 하나만 구매 가능합니다."),
-    POPUP_GOODS_PAY_FAIL_VALIDATION_ERROR(false, 4404, "결제 금액이 잘못되었습니다."),
-    POPUP_GOODS_PAY_FAIL_FLAG_NOT_DEFINE(false, 4404, "결제 금액이 잘못되었습니다."),
-    POPUP_GOODS_PAY_FAIL_NOT_FOUND_MEMBER(false, 4408, "결제 정보에 해당하는 유저가 없습니다."),
-    POPUP_ORDERS_SEARCH_SUCCESS(true, 4409, "결제 내역 조회에 성공했습니다."),
-    POPUP_PAY_SEARCH_FAIL_INVALID_MEMBER(false, 4444, "해당 사용자를 찾을 수 없어 결제 내역을 불러올 수 없습니다."),
-    POPUP_PAY_SEARCH_FAIL_NOT_FOUND(false, 44112, "결제 내역 조회를 불러올 수 없습니다."),
-    PAY_FAIL_IAMPORTONE_SERVER_ERROR(false, 4412, "결제 PG 서버 오류가 발생해서 처리할 수 없습니다."),
-    PAY_FAIL_IAMPORTONE_REFUND_ERROR(false,  314,"결제 취소 요청 중 오류가 발생했습니다. 관리자에게 문의해주세요."),
 
-    // ========================================================================================================================
-    // 장바구니 5000
-    // 장바구니 등록 5000
-    CART_REGISTER_SUCCESS(true, 5000  , "장바구니 등록에 성공했습니다." ),
-    CART_REGISTER_FAIL(false, 5001  , "장바구니 등록에 실패했습니다." ),
-    CART_REGISTER_FAIL_MEMBER_NOT_FOUND(false, 5002, "장바구니 사용자를 찾을수 없습니다." ),
-    CART_REGISTER_FAIL_GOODS_NOT_FOUND(false, 5003, "상품을 찾을 수 없습니다."),
-    CART_REGISTER_FAIL_ITEM_EXIST(false, 5004, "해당 상품이 이미 장바구니에 존재 합니다."),
-    CART_REGISTER_FAIL_STORE(false, 5005, "장바구니의 굿즈의 팝업 스토어는 같아야합니다."),
 
-    // 장바구니 조회 5100
-    CART_SEARCH_LIST_SUCESS(true, 5100, "장바구니 리스트를 불러왔습니다."),
-    CART_SEARCH_FAIL(false, 5101, "장바구니 리스트를 불러오는데 실패했습니다."),
-    // 장바구니 수량 조절 5200
-    CART_COUNT_SUCCESS(true, 5200, "장바구니 아이템의 수량을 조절에 성공했습니다."),
-    CART_COUNT_FAIL_INVALID_OPERATION(false, 5201, "장바구니 아이템의 수량을 감소에 실패했습니다."),
-    CART_COUNT_FAIL_IS_0(false, 5202, "장바구니 아이템의 수량이 0입니다."),
-    CART_COUNT_FAIL_NOT_FOUND_ITEM(false, 5203, "장바구니 아이템을 찾을 수 없습니다."),
-    CART_COUNT_FAIL_NOT_FOUND_CART(false, 5204, "장바구니를 찾을 수 없습니다."),
-    CART_COUNT_FAIL_UNAUTHORIZED(false, 5205,"해당 카트에 접근할 권한이 없습니다."),
-    CART_COUNT_FAIL_INVALID_ITEM(false, 5206, "카트에 속하지 않은 아이템입니다."),
-    // 장바구니 삭제 5300
-    CART_DELETE_SUCCESS(true, 5300, "장바구니 아이템 삭제에 성공했습니다."),
-    CART_DELETE_FAIL(false, 5301, "장바구니 아이템 삭제에 실패했습니다."),
-    CART_DELETE_FAIL_ITEM_NOT_FOUND(false, 5302, "장바구니 아이템을 찾을 수 없습니다."),
-    // 장바구니 전체삭제 5400
-    CART_DELETE_ALL_SUCCESS(true, 5400, "장바구니 전체 삭제에 성공했습니다."),
-    CART_DELETE_ALL_FAIL(false, 5401, "장바구니 전체 삭제에 실패했습니다."),
-    //장바구니 포인트 5500
-    CART_POINT_SEARCH_SUCCESS(true,5500,"포인트 조회에 성공했습니다."),
-    CART_POINT_SEARCH_FAIL(false,5501,"포인트 조회에 실패했습니다"),
+
     // ========================================================================================================================
     // 찜 6000
     // 찜 등록 6100
@@ -217,76 +203,6 @@ public enum BaseResponseMessage {
     FAVORITE_SEARCH_ALL_SUCCESS(true, 6200, "팝업 스토어 찜 목록을 불러오는데 성공했습니다."),
     FAVORITE_SEARCH_ALL_FAIL(false, 6201, "팝업 스토어 찜 목록을 불러오는데 실패했습니다."),
 
-    // ========================================================================================================================
-
-
-    // 게시글 6000 ========================================================================================================================
-    // 게시글 등록 6000
-    POST_REGISTER_SUCCESS(true, 6000, "게시글이 성공적으로 등록되었습니다."),
-    POST_REGISTER_FAIL(false, 6001, "게시글 등록에 실패했습니다."),
-    POST_REGISTER_FAIL_INVALID_MEMBER(false, 6002, "인증된 사용자만이 게시글을 등록할 수 있습니다."),
-    // 게시글 전체 조회 6100
-    POST_SEARCH_ALL_SUCCESS(true, 6100, "전체 게시글을 불러오는데 성공했습니다." ),
-    POST_SEARCH_ALL_FAIL(false, 6101, "전체 게시글을 불러오는데 실패했습니다."),
-
-    // 게시글 단일 조회 6200
-    POST_SEARCH_BY_IDX_SUCCESS(true, 6200, "단일 게시글을 불러오는데 성공했습니다."),
-    POST_SEARCH_BY_IDX_FAIL(false, 6201, "단일 게시글을 불러오는데 실패했습니다."),
-
-    // 게시글 검색어 추천 조회 6300
-    POST_SEARCH_BY_KEYWORD_SUCCESS(true, 6300, "게시글 검색어 추천 조회에 성공했습니다."),
-    POST_SEARCH_FAIL(false, 6301, "게시글 검색어 추천 조회에 실패했습니다."),
-
-    // 게시글 고객 회원 조회 6400
-    POST_SEARCH_BY_CUSTOMER_SUCCESS(false, 6400, "사용자가 작성한 게시글을 불러왔습니다."),
-    POST_SEARCH_BY_CUSTOMER_FAIL(false, 6401, "사용자가 작성한 게시글을 불러오는데 실패했습니다."),
-
-    // 게시글 고객 회원 수정 6500
-    POST_UPDATE_SUCCESS(true, 6500, "게시글 수정에 성공했습니다."),
-    POST_UPDATE_FAIL(false, 6501, "게시글 수정에 실패했습니다."),
-    POST_UPDATE_FAIL_INVALID_MEMBER(false, 6502, "해당 게시글의 작성자가 아닙니다." ),
-    POST_UPDATE_FAIL_NOT_FOUND_IMAGE(false, 6503, ""),
-    POST_UPDATE_FAIL_NOT_FOUND_POST(false, 6504, "해당 게시글을 찾을 수 없습니다."),
-    // 게시글 고객 회원 삭제 6600
-    POST_DELETE_SUCCESS(true, 6600, "게시글 삭제에 성공했습니다."),
-    POST_DELETE_FAIL_INVALID_MEMBER(false, 6601, "해당 게시글의 작성자가 아닙니다."),
-    POST_DELETE_FAIL_POST_NOT_FOUND(false, 6602, "해당 게시글을 찾을 수 없습니다."),
-    POST_DELETE_FAIL(false, 6602, "게시글 삭제에 실패했습니다."),
-
-    // 게시글 추천 6700
-    POST_LIKE_SUCCESS(true, 6700, "게시글 추천에 성공했습니다."),
-    POST_LIKE_FAIL_POST_NOT_FOUND(false, 6701, "해당 게시글을 찾을 수 없습니다."),
-    POST_LIKE_FAIL_INVALID_MEMBER(false, 6702, "인증된 사용자 만이 게시글을 추천할 수 있습니다."),
-
-    // 댓글 7000 ========================================================================================================================
-    // 댓글 생성 7000
-    COMMENT_REGISTER_SUCCESS(true, 7000, "댓글이 성공적으로 등록되었습니다."),
-    COMMENT_REGISTER_FAIL(false, 7001, "댓글 등록에 실패했습니다."),
-    COMMENT_REGISTER_FAIL_INVALID_MEMBER(false, 7003, "로그인한 사용자만이 댓글을 등록할수있습니다."),
-    COMMENT_REGISTER_FAIL_POST_NOT_FOUND(false,7003,"해당 게시글을 찾을 수 없습니다."),
-
-    // 댓글 전체 조회 7100
-    COMMENT_SEARCH_ALL_SUCCESS(true, 7100, "전체 댓글을 불러왔습니다." ),
-    COMMENT_SEARCH_ALL_FAIL(false, 7101, "전체 댓글을 불러오는데 실패했습니다."),
-
-    // 댓글 고객 회원 조회 7200
-    COMMENT_SEARCH_BY_CUSTOMER_SUCCESS(true, 7200, "사용자의 전체 댓글을 불러왔습니다. " ),
-    COMMENT_SEARCH_BY_CUSTOMER_FAIL(false, 7201, "사용자의 전체 댓글을 불러오는데 실패했습니다."),
-
-    // 댓글 수정 7300
-    COMMENT_UPDATE_SUCCESS(true, 7300, "댓글을 수정하는데 성공했습니다."),
-    COMMENT_UPDATE_FAIL_INVALID_MEMBER(false, 7301, "해당 댓글을 단 사용자가 아닙니다."),
-    COMMENT_UPDATE_FAIL_COMMENT_NOT_FOUND(false, 7302, "해당 댓글을 찾을 수 없습니다."),
-
-    // 댓글 삭제 7400
-    COMMENT_DELETE_SUCCESS(true, 7400, "댓글을 삭제하는데 성공했습니다."),
-    COMMENT_DELETE_FAIL_INVALID_MEMBER(false, 7401, "해당 댓글을 단 사용자가 아닙니다."),
-    COMMENT_DELETE_FAIL_COMMENT_NOT_FOUND(false, 7402, "해당 댓글을 찾을 수 없습니다."),
-
-    // 댓글 추천 7500
-    COMMENT_LIKE_SUCCESS(true, 7500, "댓글 추천에 성공했습니다."),
-    COMMENT_LIKE_FAIL_INVALID_MEMBER(false, 7501,"인증된 사용자만이 댓글을 추천할 수 있습니다."),
-    COMMENT_LIKE_FAIL_COMMENT_NOT_FOUND(false, 7502,"해당 댓글을 찾을 수 없습니다."),
 
 
     // ========================================================================================================================

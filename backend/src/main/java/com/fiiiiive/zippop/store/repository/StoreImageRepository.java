@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface StoreImageRepository extends JpaRepository<StoreImage, Long> {
+    // 스토어 인덱스로 전체 삭제
     @Modifying
     @Transactional
     @Query("DELETE FROM StoreImage si WHERE si.store.idx = :storeIdx")
