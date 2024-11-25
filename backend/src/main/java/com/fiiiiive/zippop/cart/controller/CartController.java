@@ -1,10 +1,8 @@
 package com.fiiiiive.zippop.cart.controller;
 
-import com.fiiiiive.zippop.cart.model.dto.SearchCartItemRes;
+import com.fiiiiive.zippop.cart.model.dto.*;
+import com.fiiiiive.zippop.cart.service.CartItemService;
 import com.fiiiiive.zippop.cart.service.CartService;
-import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
-import com.fiiiiive.zippop.cart.model.dto.CountCartItemRes;
-import com.fiiiiive.zippop.cart.model.dto.CreateCartRes;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
@@ -12,6 +10,7 @@ import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,44 +24,69 @@ import java.util.List;
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
 public class CartController {
-    private final CartService cartService;
 
+    private final CartService cartService;
+    private final CartItemService cartItemService;
+
+    // 장바구니 등록
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse> register(
+    public ResponseEntity<BaseResponse<Void>> register(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestBody CreateCartReq dto) throws BaseException {
-        CreateCartRes response = cartService.register(customUserDetails, dto);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_REGISTER_SUCCESS, response));
+
+        cartService.register(customUserDetails, dto);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_REGISTER_SUCCESS));
     }
 
-    @GetMapping("/count")
-    public ResponseEntity<BaseResponse> count(
+    // 장바구니 목록 조회
+    @GetMapping("/search-all")
+    public ResponseEntity<BaseResponse<Page<SearchCartRes>>> searchAll(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam int page,
+        @RequestParam int size) throws BaseException {
+
+        Page<SearchCartRes> response = cartService.searchAll(customUserDetails, page, size);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_SEARCH_ALL_SUCCESS, response));
+    }
+
+    // 장바구니 아이템 수량 조절
+    @GetMapping("/item/count")
+    public ResponseEntity<BaseResponse<Void>> itemCount(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long cartItemIdx,
-        @RequestParam Long operation) throws BaseException {
-        CountCartItemRes response  = cartService.count(customUserDetails, cartItemIdx, operation);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_COUNT_SUCCESS, response));
+        @RequestParam Boolean flag) throws BaseException {
+
+        cartItemService.itemCount(customUserDetails, cartItemIdx, flag);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_ITEM_COUNT_SUCCESS));
     }
 
-    @GetMapping("/search-all")
-    public ResponseEntity<BaseResponse> searchAll(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
-        List<SearchCartItemRes> response = cartService.searchAll(customUserDetails);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_SEARCH_LIST_SUCESS, response));
+    // 장바구니 아이템 전체 조회(고객)
+    @GetMapping("/item/search-all")
+    public ResponseEntity<BaseResponse> itemSearchAll(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long storeIdx) throws BaseException {
+
+        List<SearchCartItemRes> response = cartItemService.itemSearchAll(customUserDetails, storeIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_ITEM_SEARCH_ALL_SUCCESS, response));
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<BaseResponse> delete(
+    // 장바구니 아이템 삭제
+    @DeleteMapping("/item/delete")
+    public ResponseEntity<BaseResponse> itemDelete(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long cartItemIdx) throws BaseException {
-        cartService.delete(cartItemIdx, customUserDetails);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_DELETE_SUCCESS));
+
+        cartItemService.itemDelete(cartItemIdx, customUserDetails);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_ITEM_DELETE_SUCCESS));
     }
 
-    @DeleteMapping("/delete-all")
-    public ResponseEntity<BaseResponse> deleteAll(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
-        cartService.deleteAll(customUserDetails);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_DELETE_ALL_SUCCESS));
+    // 장바구니 아이템 전체 삭제
+    @DeleteMapping("/item/delete-all")
+    public ResponseEntity<BaseResponse> itemDeleteAll(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long storeIdx) throws BaseException {
+
+        cartItemService.itemDeleteAll(customUserDetails, storeIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_ITEM_DELETE_ALL_SUCCESS));
     }
 }

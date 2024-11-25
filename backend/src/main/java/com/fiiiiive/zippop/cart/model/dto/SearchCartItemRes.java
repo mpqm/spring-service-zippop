@@ -5,9 +5,9 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SearchCartItemRes {
     private Long cartItemIdx;
     private Integer count;

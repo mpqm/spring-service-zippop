@@ -22,13 +22,14 @@ import FindIdPwPage from "@/pages/auth/FindIdPwPage.vue";
 import CustomerMyPage from "@/pages/mypage/customer/CustomerMyPage.vue";
 import ReviewSearchPage from "@/pages/mypage/customer/ReviewSearchPage.vue";
 import LikeManagePage from "@/pages/mypage/customer/LikeManagePage.vue";
-import CartPage from "@/pages/mypage/customer/CartPage.vue";
 import GoodsDetailPage2 from "@/pages/goods/GoodsDetail2Page.vue";
 import CustomerOrdersManagePage from "@/pages/mypage/customer/CustomerOrdersManagePage.vue";
 import OrdersPage from "@/pages/orders/OrdersPage.vue";
 import OrdersDetailPage from "@/pages/orders/OrdersDetailPage.vue";
 import CompanyOrdersManagePage1 from "@/pages/mypage/company/CompanyOrdersManagePage1.vue";
 import CompanyOrdersManagePage2 from "@/pages/mypage/company/CompanyOrdersManagePage2.vue";
+import CartManagement2Page from "@/pages/mypage/customer/CartManagement2Page.vue";
+import CartManagement1Page from "@/pages/mypage/customer/CartManagement1Page.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -46,7 +47,7 @@ const router = createRouter({
     // 굿즈 마켓
     { path: "/goods", component: GoodsMainPage }, // 굿즈 마켓 메인 페이지(스토어 목록)
     { path: '/goods/:storeIdx', component: GoodsDetailPage }, // 굿즈 마켓 상세 페이지
-    { path: '/goods-detail/:goodsIdx', component: GoodsDetailPage2 }, // 굿즈 마켓 상세 페이지2(상점 인덱스 입력)
+    { path: '/goods/:storeIdx/:goodsIdx', component: GoodsDetailPage2 }, // 굿즈 마켓 상세 페이지2(상점 인덱스 입력)
 
     // 주문 및 결제
     { path: "/orders", component: OrdersPage }, // 주문 및 결제 메인 페이지
@@ -82,7 +83,8 @@ const router = createRouter({
         { path: 'review', component: ReviewSearchPage }, // 리뷰 검색 메인 페이지
         { path: 'account-edit', component: EditProfilePage }, // 고객 정보 수정 페이지
         { path: 'like', component: LikeManagePage }, // 좋아요 관리 메인 페이지
-        { path: 'cart', component: CartPage, }, // 장바구니 관리 메인 페이지
+        { path: 'cart', component: CartManagement1Page, }, // 장바구니 관리 메인 페이지
+        { path: 'cart/:storeIdx', component: CartManagement2Page, }, // 장바구니 관리 메인 페이지
         { path: 'orders', component: CustomerOrdersManagePage, }, // 주문 관리 메인 페이지
       ]
     },

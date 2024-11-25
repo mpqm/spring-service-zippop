@@ -4,9 +4,10 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateCartReq {
     private Long goodsIdx;
+    private Long storeIdx;
 }

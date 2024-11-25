@@ -91,7 +91,6 @@ public class JwtFilter extends OncePerRequestFilter {
         response.addCookie(cookie);
     }
 
-
     // Refresh Token 검증
     private boolean validateRefreshToken(String refreshToken) {
         String storedRefreshToken = (String) redisTemplate.opsForValue().get("refreshToken:" + jwtUtil.getUserId(refreshToken));

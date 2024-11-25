@@ -14,6 +14,7 @@ public class BaseResponse<T> {
         this.success = baseResponseMessage.getSuccess();
         this.code = baseResponseMessage.getCode();
         this.message = baseResponseMessage.getMessage();
+        this.result = null;
     }
 
     public BaseResponse( BaseResponseMessage baseResponseMessage, T result) {

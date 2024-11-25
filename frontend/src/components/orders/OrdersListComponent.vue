@@ -12,24 +12,24 @@
             <p class="t2">배송비 : {{ orders.deliveryCost }} 원</p>
             <p class="t2">총 가격 : {{ orders.totalPrice }} 원</p>
             <p class="t3">배송 주소 : {{ orders.address }}</p>
-            <p class="t4">상태 : {{ formatedOrderStatus }}</p>
+            <p class="t4" :class="getStatusClass(orders.orderStatus)">상태 : {{ formatedOrderStatus }}</p>
         </div>
         <div v-if="showControl == true" class="btn-container">
-            <button class="orders-cancel-btn" @click="cancelOrders">주문 취소</button>
+            <button class="orders-cancel-btn" :disabled="isCancelDisabled" @click="cancelOrders">주문 취소</button>
             <button class="orders-complete-btn" @click="completeOrders">주문 확정</button>
             <router-link class="ud-btn" :to="orders ? `/orders/${orders.ordersIdx}` : '#'">정보 보기</router-link>
         </div>
         <div v-if="showControl == false" class="btn-container">
             <button class="orders-complete-btn" @click="completeOrders">배송 확정</button>
-            <router-link v-if="orders && storeIdx" class="ud-btn" :to="`/orders/${orders.ordersIdx}?storeIdx=${storeIdx}`">정보 보기</router-link>
+            <router-link v-if="orders && route.params.storeIdx" class="ud-btn" :to="`/orders/${orders.ordersIdx}?storeIdx=${route.params.storeIdx}`">정보 보기</router-link>
         </div>
     </div>
 </template>
 
 <script setup>
-import { defineProps, onMounted, ref } from "vue";
+import { computed, defineProps, onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useOrdersStore } from "@/stores/useOrdersStore";
 
 // props 정의(주문, 스토어 인덱스, showControl)
@@ -42,6 +42,7 @@ const props = defineProps({
 // store, router, route, toast
 const ordersStore = useOrdersStore();
 const toast = useToast();
+const route = useRoute();
 const router = useRouter();
 
 // 변수
@@ -76,7 +77,7 @@ const completeOrders = async () => {
             toast.error(res.message);
         }
     } else {
-        const res = await ordersStore.completeAsCompany(props.storeIdx, props.orders.ordersIdx);
+        const res = await ordersStore.completeAsCompany(route.params.storeIdx, props.orders.ordersIdx);
         if (res.success) {
             toast.success(res.message)
             router.go(0)
@@ -103,6 +104,20 @@ const formaOrdersStatus = (statusString) => {
     else if (statusString === "RESERVE_COMPLETE") return "예약 굿즈 주문 확정";
     else if (statusString === "RESERVE_DELIVERY") return "예약 굿즈 배달 중";
 }
+
+// 주문 확정인 경우 취소 버튼 비활성화
+const isCancelDisabled = computed(() => {
+  return props.orders.orderStatus === "STOCK_COMPLETE" || props.orders.orderStatus === "RESERVE_COMPLETE";
+});
+
+// 상태별 클래스 반환 함수
+const getStatusClass = (statusString) => {
+  if (statusString === "STOCK_READY" || statusString === "RESERVE_READY") return "status-ready";
+  else if (statusString === "STOCK_CANCEL" || statusString === "RESERVE_CANCEL") return "status-cancel";
+  else if (statusString === "STOCK_COMPLETE" || statusString === "RESERVE_COMPLETE") return "status-complete";
+  else if (statusString === "STOCK_DELIVERY" || statusString === "RESERVE_DELIVERY") return "status-delivery";
+  return "";
+};
 
 </script>
 
@@ -212,4 +227,21 @@ const formaOrdersStatus = (statusString) => {
     border-radius: 0.25rem;
     text-decoration: #000;
 }
+
+.status-ready {
+  color: #f39c12;
+}
+
+.status-cancel {
+  color: #e74c3c;
+}
+
+.status-complete {
+  color: #3498db;
+}
+
+.status-delivery {
+  color: #27ae60;
+}
+
 </style>

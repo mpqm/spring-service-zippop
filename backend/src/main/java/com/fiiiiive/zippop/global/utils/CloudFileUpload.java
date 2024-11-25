@@ -22,6 +22,7 @@ public class CloudFileUpload  {
     private String bucketName;
     private final AmazonS3 amazonS3;
 
+    // 단일 파일 업로드
     public String upload(MultipartFile file) throws BaseException {
         if(file != null) {
             ObjectMetadata metadata = new ObjectMetadata();
@@ -39,6 +40,7 @@ public class CloudFileUpload  {
         }
     }
 
+    // 복수 파일 업로드
     public List<String> multipleUpload(MultipartFile[] files) throws BaseException {
         if(files != null) {
             List<String> fileNames = new ArrayList<>();

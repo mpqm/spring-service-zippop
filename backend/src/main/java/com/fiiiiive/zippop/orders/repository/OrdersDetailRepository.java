@@ -9,5 +9,4 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface OrdersDetailRepository extends JpaRepository<OrdersDetail, Long> {
-}
+public interface OrdersDetailRepository extends JpaRepository<OrdersDetail, Long> { }

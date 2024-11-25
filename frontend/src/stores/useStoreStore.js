@@ -46,7 +46,7 @@ export const useStoreStore = defineStore("store", {
     async searchAllStore(flag, page, size) {
       try {
         const res = await axios.get(
-          `${backend}/store/search-all/as-guest?flag=${flag}&page=${page}&size=${size}`
+          `${backend}/store/search-all?flag=${flag}&page=${page}&size=${size}`
         );
         this.storeList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
@@ -61,7 +61,7 @@ export const useStoreStore = defineStore("store", {
     async searchAllStoreByKeyword(flag, keyword, page, size) {
       try {
         const res = await axios.get(
-          `${backend}/store/search-all/as-guest?flag=${flag}&keyword=${keyword}&page=${page}&size=${size}`
+          `${backend}/store/search-all?flag=${flag}&keyword=${keyword}&page=${page}&size=${size}`
         );
         this.storeList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
@@ -176,7 +176,7 @@ export const useStoreStore = defineStore("store", {
     async searchAllReview(storeIdx, page, size){
       try {
         const res = await axios.get(
-          `${backend}/store/review/search-all/as-guest?storeIdx=${storeIdx}&page=${page}&size=${size}`,
+          `${backend}/store/review/search-all?storeIdx=${storeIdx}&page=${page}&size=${size}`,
         );
         this.reviewList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;

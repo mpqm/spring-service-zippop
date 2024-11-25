@@ -56,6 +56,15 @@ public class JwtUtil {
                 .compact();
     }
 
+    // 토큰 만료 시간 확인
+    public Boolean isExpired(String token) {
+        try{
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        } catch (ExpiredJwtException expiredJwtException){
+            return true;
+        }
+    }
+
     // 멤버 인덱스 조회
     public Long getIdx(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("idx", Long.class);
@@ -80,15 +89,4 @@ public class JwtUtil {
     public String getEmail(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
-
-    // 토큰 만료 시간 확인
-    public Boolean isExpired(String token) {
-        try{
-            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
-        } catch (ExpiredJwtException expiredJwtException){
-            return true;
-        }
-    }
-
-
 }

@@ -78,7 +78,7 @@ def store_data(num_rows):
                 """, insert_values)
                   # 1000개 삽입 후 출력
                 insert_values = []  # 한 번에 삽입 후 초기화
-
+                print(f"------------------------- store_data 100 inserted successfully.")
         # 남은 데이터 삽입
         if insert_values:
             cursor.executemany(f"""
@@ -91,7 +91,7 @@ def store_data(num_rows):
 
         # 한 번만 커밋
         connection.commit()
-        print(f"------------------------- store_data inserted successfully.")
+        print(f"------------------------- store_data total inserted successfully.")
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
@@ -134,6 +134,7 @@ def store_image_data(num_rows):
                 """, insert_values)
                   # 1000개 삽입 후 출력
                 insert_values = []  # 한 번에 삽입 후 초기화
+                print(f"------------------------- store_image_data 100 inserted successfully.")
 
         # 남은 데이터 삽입
         if insert_values:
@@ -145,7 +146,7 @@ def store_image_data(num_rows):
 
         # 한 번만 커밋
         connection.commit()
-        print(f"------------------------- store_image_data inserted successfully.")
+        print(f"------------------------- store_image_data total inserted successfully.")
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
@@ -201,6 +202,7 @@ def store_review_data(num_rows):
                 """, insert_values)
                   # 1000개 삽입 후 출력
                 insert_values = []  # 한 번에 삽입 후 초기화
+                print(f"------------------------- store_review_data 100 inserted successfully.")
 
         # 남은 데이터 삽입
         if insert_values:
@@ -213,7 +215,7 @@ def store_review_data(num_rows):
 
         # 한 번만 커밋
         connection.commit()
-        print(f"------------------------- store_review_data inserted successfully.")
+        print(f"------------------------- store_review_data total inserted successfully.")
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
@@ -265,6 +267,7 @@ def goods_data(num_rows):
                 """, insert_values)
                   # 1000개 삽입 후 출력
                 insert_values = []  # 한 번에 삽입 후 초기화
+                print(f"------------------------- goods_data 100 inserted successfully.")
 
         # 남은 데이터 삽입
         if insert_values:
@@ -277,7 +280,7 @@ def goods_data(num_rows):
 
         # 한 번만 커밋
         connection.commit()
-        print(f"------------------------- goods_data inserted successfully.")
+        print(f"------------------------- goods_data total inserted successfully.")
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
@@ -320,6 +323,7 @@ def goods_image_data(num_rows):
                 """, insert_values)
                   # 1000개 삽입 후 출력
                 insert_values = []  # 한 번에 삽입 후 초기화
+                print(f"------------------------- goods_image_data 100 inserted successfully.")
                
 
         # 남은 데이터 삽입
@@ -332,7 +336,7 @@ def goods_image_data(num_rows):
 
         # 한 번만 커밋
         connection.commit()
-        print(f"------------------------- goods_image_data inserted successfully.")
+        print(f"------------------------- goods_image_data total inserted successfully.")
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
@@ -349,7 +353,6 @@ def company_data(num_rows):
     cursor.execute(f"ALTER TABLE {company_table_name} DISABLE KEYS;")
     
     try:
-        batch_size = 1000  # 한번에 삽입할 배치 크기
         insert_values = []
         
         for i in range(1, num_rows + 1):
@@ -392,7 +395,7 @@ def company_data(num_rows):
                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                 """, insert_values)
                 insert_values = []
-                
+                print(f"------------------------- company_data 1000 inserted successfully.")
         
         # 남은 데이터 삽입
         if insert_values:
@@ -406,7 +409,7 @@ def company_data(num_rows):
         
         # 커밋
         connection.commit()
-        print(f"------------------------- company_data inserted successfully.")
+        print(f"------------------------- company_data total inserted successfully.")
     
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -423,7 +426,6 @@ def customer_data(num_rows):
     cursor.execute(f"ALTER TABLE {customer_table_name} DISABLE KEYS;")
     
     try:
-        batch_size = 1000  # 한번에 삽입할 배치 크기
         insert_values = []
         
         for i in range(1, num_rows + 1):
@@ -468,8 +470,8 @@ def customer_data(num_rows):
                     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
                 """, insert_values)
                 insert_values = []
-                print(f"Inserted {batch_size} rows.")
-        
+                print(f"------------------------- customer_data 1000 inserted successfully.")
+
         # 남은 데이터 삽입
         if insert_values:
             cursor.executemany(f"""
@@ -483,7 +485,7 @@ def customer_data(num_rows):
         
         # 커밋
         connection.commit()
-        print(f"------------------------- customer_data inserted successfully.")
+        print(f"------------------------- customer_data total inserted successfully.")
     except Exception as e:
         print(f"An error occurred: {e}")
         connection.rollback()
@@ -494,7 +496,7 @@ def customer_data(num_rows):
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
 
 try:
-#     store_data(10000)
+    store_data(10000)
     store_image_data(10000)
     store_review_data(10000)
     goods_data(50000)

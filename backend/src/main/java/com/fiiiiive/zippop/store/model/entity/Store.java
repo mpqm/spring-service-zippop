@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.store.model.entity;
 
+import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.auth.model.entity.Company;
@@ -9,7 +10,6 @@ import lombok.*;
 
 import java.util.List;
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,6 +30,18 @@ public class Store extends BaseEntity {
     private Integer likeCount;
     private String status;
 
+    // Update
+    public Store update(String name, String content, String address, String category, Integer totalPeople, String startDate, String endDate){
+        this.name = name;
+        this.content = content;
+        this.address = address;
+        this.category = category;
+        this.totalPeople = totalPeople;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        return this;
+    }
+
     // OneToMany
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoreReview> storeReviewList;
@@ -42,6 +54,9 @@ public class Store extends BaseEntity {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reserve> reserveList;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cart> cartList;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoreLike> storeLikeList;

@@ -10,7 +10,6 @@ import lombok.*;
 import java.util.*;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,17 +21,32 @@ public class Customer extends BaseEntity {
     private Long idx;
     private String userId;
     private String email;
-    private String password;
     private String name;
     private String phoneNumber;
     private String address;
-    private Integer point;
     private String role;
-    private Boolean isEmailAuth;
-    private Boolean isInActive;
     private String profileImageUrl;
 
+    // Setter
+    @Setter
+    private Integer point; // 포인트
+    @Setter
+    private Boolean isEmailAuth;
+    @Setter
+    private Boolean isInActive;
+    @Setter
+    private String password;
 
+    // Update
+    public Customer update(String name, String address, String phoneNumber, String profileImageUrl) {
+        this.name = name;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.profileImageUrl = profileImageUrl;
+        return this;
+    }
+
+    // OneToMany
     @OneToMany(mappedBy = "customer")
     private List<Cart> cartList;
 

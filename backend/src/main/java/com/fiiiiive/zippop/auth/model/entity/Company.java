@@ -8,7 +8,6 @@ import lombok.*;
 import java.util.*;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,19 +19,33 @@ public class Company extends BaseEntity {
     private Long idx;
     private String email;
     private String userId;
-    private String password;
     private String name;
     private String crn; // 사업자 등록 번호
     private String phoneNumber;
     private String address;
-    private Boolean isEmailAuth;
-    private Boolean isInActive;
     private String role;
     private String profileImageUrl;
+
+    // Setter
+    @Setter
+    private Boolean isEmailAuth;
+    @Setter
+    private Boolean isInActive;
+    @Setter
+    private String password;
+
+    // Update
+    public Company update(String name, String address, String crn, String phoneNumber, String profileImageUrl) {
+        this.name = name;
+        this.address = address;
+        this.crn = crn;
+        this.phoneNumber = phoneNumber;
+        this.profileImageUrl = profileImageUrl;
+        return this;
+    }
 
     // OneToMany
     @OneToMany(mappedBy = "company")
     private List<Store> storeList;
-
 }
 

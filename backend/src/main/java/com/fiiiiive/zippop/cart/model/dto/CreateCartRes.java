@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateCartRes {
     private Long cartIdx;
     private Long cartItemIdx;

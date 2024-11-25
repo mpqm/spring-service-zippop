@@ -17,13 +17,17 @@
       <router-link class="ud-btn" :to="store ? `/mypage/company/store/update/${store.storeIdx}` : '#'">수정</router-link>
       <button class="ud-btn" @click="deleteStore">삭제</button>
     </div>
-    <!-- GoodsManagePage1용 -->
+    <!-- GoodsManage1Page용 -->
     <div v-if="showControl === 1" class="btn-container">
       <router-link class="ud-btn" :to="store ? `/mypage/company/goods/${store.storeIdx}` : '#'">굿즈 보기</router-link>
     </div>
-    <!-- CompanyOrdersManagePage1용 -->
+    <!-- CompanyOrdersManage1Page1 -->
     <div v-if="showControl === 2" class="btn-container">
       <router-link class="ud-btn" :to="store ? `/mypage/company/orders/${store.storeIdx}` : '#'">거래내역 보기</router-link>
+    </div>
+    <!-- CartManagement1Page용 -->
+    <div v-if="showControl === 3" class="btn-container">
+      <router-link class="ud-btn" :to="store ? `/mypage/customer/cart/${store.storeIdx}` : '#'">카트 보기</router-link>
     </div>
   </div>
 </template>

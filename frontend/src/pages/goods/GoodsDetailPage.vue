@@ -30,7 +30,7 @@
           <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
         </div>
         <div class="goods-list-grid" v-if="goodsList && goodsList.length">
-          <GoodsCardComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" />
+          <GoodsCardComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :storeIdx="store.storeIdx" />
         </div>
         <div v-else>
           <p>검색 결과에 해당하는 팝업 굿즈 목록이 없습니다.</p>

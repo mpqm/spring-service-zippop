@@ -4,9 +4,9 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class EditInfoReq {
     private String name;
     private String crn;

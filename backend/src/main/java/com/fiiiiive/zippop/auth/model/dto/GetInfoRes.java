@@ -2,10 +2,11 @@ package com.fiiiiive.zippop.auth.model.dto;
 
 import lombok.*;
 
-@AllArgsConstructor
-@Builder
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class GetInfoRes {
     private String name;
     private String email;

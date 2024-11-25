@@ -23,7 +23,6 @@ import com.fiiiiive.zippop.auth.model.dto.PostLoginReq;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -47,7 +46,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
     }
 
-    // 그림에서 10번
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         CustomUserDetails member = (CustomUserDetails)authResult.getPrincipal();
