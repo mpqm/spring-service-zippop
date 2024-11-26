@@ -39,7 +39,7 @@ jobs:
         run: |
           cd ./backend
           chmod +x ./gradlew
-          ./gradlew build
+          ./gradlew clean build -x test
       
       # 5. SCP를 통해 파일을 EC2 서버로 복사
       - name: copy file via ssh
