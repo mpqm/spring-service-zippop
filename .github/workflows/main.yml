@@ -29,7 +29,9 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install
+        run: | 
+          cd. ./frontend
+          npm install 
 
       - name: Build with npm
         run : |
