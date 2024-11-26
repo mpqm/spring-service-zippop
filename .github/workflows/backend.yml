@@ -89,5 +89,5 @@ jobs:
           port: ${{ secrets.AWS_EC2_PORT }}
           script_stop: true
           script: |
-            chmod +x /home/ubuntu/deployment.sh
-            /home/ubuntu/deployment.sh
+            chmod +x /home/ubuntu/cicd/deployment.sh
+            /home/ubuntu/cicd/deployment.sh
