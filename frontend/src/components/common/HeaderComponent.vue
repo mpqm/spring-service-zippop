@@ -6,6 +6,7 @@
         <img class="logo-img" src="../../assets/img/zippopbanner.png" />
         <a :class="{ 'nav-link': true, active: isActive('/') }" href="/">팝업찾기</a>
         <a :class="{ 'nav-link': true, active: isActive('/goods') }" href="/goods">굿즈마켓</a>
+        <span> cicd </span>
       </div>
       <!-- 고객용 -->
       <div class="right-section" v-if="userStatus && userInfo.role === 'ROLE_CUSTOMER'">
