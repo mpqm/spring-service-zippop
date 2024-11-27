@@ -47,7 +47,7 @@ public class AuthService {
             return : 복구 회원과 신규회원의 구분을 위해 isInActive 반환
          */
         if(Objects.equals(dto.getRole(), "ROLE_CUSTOMER")){
-            if(companyRepository.findByCompanyEmail(dto.getEmail()).isEmpty()) {
+            if(companyRepository.findByCompanyEmail(dto.getEmail()).isPresent()) {
                 throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY);
             }
             Optional<Customer> customerOpt = customerRepository.findByCustomerEmail(dto.getEmail());
@@ -77,7 +77,7 @@ public class AuthService {
             }
             return customer.getIsInActive();
         } else {
-            if(customerRepository.findByCustomerEmail(dto.getEmail()).isEmpty()) {
+            if(customerRepository.findByCustomerEmail(dto.getEmail()).isPresent()) {
                 throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_CUSTOMER);
             }
             Optional<Company> companyOpt = companyRepository.findByCompanyEmail(dto.getEmail());
