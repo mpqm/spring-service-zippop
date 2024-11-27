@@ -15,20 +15,25 @@ public interface GoodsRepository extends JpaRepository<Goods, Long> {
     // 굿즈 인덱스로 조회
     // 비관적락 잠금 설정
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT g FROM Goods g WHERE g.idx = :goodsIdx")
+    @Query("SELECT g FROM Goods g " +
+            "WHERE g.idx = :goodsIdx")
     Optional<Goods> findByGoodsIdx(Long goodsIdx);
 
     // 굿즈, 스토어 인덱스로 조회
-    @Query("SELECT g FROM Goods g WHERE g.idx = :goodsIdx And g.store.idx = :storeIdx")
-    Optional<Goods> findByGoodsIdxAndStoreIdx(Long goodsIdx, Long storeIdx);
+    @Query("SELECT g FROM Goods g " +
+            "JOIN FETCH g.store gs " +
+            "WHERE g.idx = :goodsIdx  AND gs.idx = :storeIdx")
+    Optional<Goods> findByGoodsIdxAndStoreIdx(@Param("goodsIdx") Long goodsIdx, @Param("storeIdx") Long storeIdx);
 
     // 스토어 인덱스로 조회
-    Page<Goods> findAllByStoreIdx(Long storeIdx, Pageable pageable);
+    @Query("SELECT g FROM Goods g " +
+            "JOIN FETCH g.store gs " +
+            "WHERE gs.idx = :storeIdx")
+    Page<Goods> findAllByStoreIdx(@Param("storeIdx") Long storeIdx, Pageable pageable);
 
     // 검색어, 팝업스토어 인덱스로 전체 조회
-    @Query("SELECT g FROM Goods g JOIN FETCH g.store gs " +
-            "WHERE gs.idx = :storeIdx AND (gs.name LIKE %:keyword% " +
-            "OR g.name LIKE %:keyword%)")
-    Page<Goods> findAllByStoreIdxAndKeyword(Long storeIdx, @Param("keyword") String keyword, Pageable pageable);
-
+    @Query("SELECT g FROM Goods g " +
+            "JOIN FETCH g.store gs " +
+            "WHERE gs.idx = :storeIdx AND (gs.name LIKE %:keyword% OR g.name LIKE %:keyword%)")
+    Page<Goods> findAllByStoreIdxAndKeyword(@Param("storeIdx") Long storeIdx, @Param("keyword") String keyword, Pageable pageable);
 }
