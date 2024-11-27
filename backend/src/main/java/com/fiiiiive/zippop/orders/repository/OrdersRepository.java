@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.orders.repository;
 
 import com.fiiiiive.zippop.orders.model.entity.Orders;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,29 +12,31 @@ import java.util.Optional;
 
 @Repository
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
-
     // 고객 인덱스로 목록 조회
     @Query("SELECT o FROM Orders o " +
-            "JOIN FETCH o.customer c " +
-            "WHERE c.idx = :customerIdx")
-    Optional<Page<Orders>> findAllByCustomerIdx(Long customerIdx, Pageable pageable);
+            "JOIN FETCH o.customer oc " +
+            "WHERE oc.idx = :customerIdx")
+    Optional<Page<Orders>> findAllByCustomerIdx(@Param("customerIdx") Long customerIdx, Pageable pageable);
 
     // 스토어 인덱스로 목록 조회
-    Optional<Page<Orders>> findAllByStoreIdx(Long storeIdx, Pageable pageable);
+    @Query("SELECT o FROM Orders o " +
+            "WHERE o.storeIdx = :storeIdx")
+    Optional<Page<Orders>> findAllByStoreIdx(@Param("storeIdx") Long storeIdx, Pageable pageable);
 
     // 주문, 고객 인덱스로 조회
     @Query("SELECT o FROM Orders o " +
-            "JOIN FETCH o.customer c " +
-            "WHERE c.idx = :customerIdx AND o.idx = :ordersIdx")
-    Optional<Orders> findByOrdersIdxAndCustomerIdx(Long ordersIdx, Long customerIdx);
+            "JOIN FETCH o.customer oc " +
+            "WHERE o.idx = :ordersIdx AND oc.idx = :customerIdx ")
+    Optional<Orders> findByOrdersIdxAndCustomerIdx(@Param("ordersIdx") Long ordersIdx, @Param("customerIdx") Long customerIdx);
 
     // 주문, 스토어 인덱스로 조회
-    @Query("SELECT o FROM Orders o WHERE o.idx = :ordersIdx AND o.storeIdx = :storeIdx")
-    Optional<Orders> findByOrdersIdxAndStoreIdx(Long ordersIdx, Long storeIdx);
+    @Query("SELECT o FROM Orders o " +
+            "WHERE o.idx = :ordersIdx AND o.storeIdx = :storeIdx")
+    Optional<Orders> findByOrdersIdxAndStoreIdx(@Param("ordersIdx") Long ordersIdx, @Param("storeIdx") Long storeIdx);
 
     // 주문, 스토어 인덱스 및 주문 상태로 조회
-    @Query("SELECT o FROM Orders o WHERE o.storeIdx = :storeIdx AND o.customer.idx = :customerIdx AND o.status LIKE %:status%")
-    Optional<Orders> findByStoreIdxAndCustomerIdxAndStatus(Long storeIdx, Long customerIdx, String status);
-
-
+    @Query("SELECT o FROM Orders o " +
+            "JOIN FETCH o.customer oc " +
+            "WHERE o.storeIdx = :storeIdx AND oc.idx = :customerIdx AND o.status LIKE %:status%")
+    Optional<Orders> findByStoreIdxAndCustomerIdxAndStatus(@Param("storeIdx") Long storeIdx, @Param("customerIdx") Long customerIdx, @Param("status") String status);
 }
