@@ -136,7 +136,7 @@ public class AuthService {
 
         // 2. Redis에 저장된 값이 없거나 전달 받은 uuid와 다르면 이메일 인증 실패 리다이렉트 URL 반환
         if (redisUuid == null || !redisUuid.equals(uuid)) {
-            return "http://localhost:8081/login?error=true";
+            return "https://d3iaa8b0a37h7p.cloudfront.net/login?error=true";
         }
         
         /*
@@ -163,7 +163,7 @@ public class AuthService {
 
         // 4. 인증 성공 후 Redis 에서 해당 이메일 관련 UUID 삭제 후 성공 리다이렉트 URL 반환
         redisTemplate.delete("emailVerify:" + email);
-        return "http://localhost:8081/login?success=true";
+        return "https://d3iaa8b0a37h7p.cloudfront.net/login?success=true";
     }
 
     // 계정 비활성화

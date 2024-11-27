@@ -49,7 +49,7 @@ public class MailUtil {
         }
 
         // 3. 메시지 생성 및 전송
-        message.setText("https://d3iaa8b0a37h7p.cloudfront.net/api/api/v1/auth/verify?email="+email+"&role="+role+"&uuid="+uuid);
+        message.setText("https://mpqm-zippop-backend.kro.kr/api/v1/auth/verify?email="+email+"&role="+role+"&uuid="+uuid);
         emailSender.send(message);
     }
 
