@@ -12,7 +12,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private SecretKey secretKey;
+    private final SecretKey secretKey;
 
     // JwtUtil 생성자
     public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
