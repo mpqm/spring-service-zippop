@@ -32,41 +32,24 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    // 공용 함수 : 역할 확인 메서드
-    public boolean checkIsCustomer(String role) {
-        return Objects.equals(role, "ROLE_CUSTOMER");
-    }
-
     // 회원가입
     @Transactional
     public Boolean signup(PostSignupReq dto, String url) throws BaseException {
         /*
-        1. 이메일 중복 체크
-        if : 기업 이메일로 고객으로 가입 할 수 없음
-        else : 고객 이메일로 고객으로 가입 할 수 없음
-         */
-        if(checkIsCustomer(dto.getRole())){ // 기업 이메일로 고객으로 가입 할 수 없음
-            if(companyRepository.findByCompanyEmail(dto.getEmail()).isEmpty()) {
-                throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY);
-            }
-        } else {
-            if(customerRepository.findByCustomerEmail(dto.getEmail()).isEmpty()) {
-                throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_CUSTOMER);
-            }
-        }
-        
-        /*
-        2. 고객 및 기업 회원 가입
+        1. 고객 및 기업 회원 가입
         if : 고객 회원(역할 확인)
-            if : 조회 결과가 있으면 예외 / isEmailAuth : true(이메일 인증 재전송), false(계정 복구 이메일 인증 전송)
+            if : 기업 이메일로 고객으로 가입 할 수 없음 / isEmailAuth : true(이메일 인증 재전송), false(계정 복구 이메일 인증 전송)
             else : 조회 결과가 없으면 저장 / 신규회원 이메일 인증 전송
             return : 복구 회원과 신규회원의 구분을 위해 isInActive 반환
         else : 기업 회원
-            if : 조회 결과가 있으면 예외 / isEmailAuth : true(이메일 인증 재전송), false(계정 복구 이메일 인증 전송)
+            if :  고객 이메일로 고객으로 가입 할 수 없음 / isEmailAuth : true(이메일 인증 재전송), false(계정 복구 이메일 인증 전송)
             else : 조회 결과가 없으면 저장 / 신규회원 이메일 인증 전송
             return : 복구 회원과 신규회원의 구분을 위해 isInActive 반환
          */
-        if(checkIsCustomer(dto.getRole())){
+        if(Objects.equals(dto.getRole(), "ROLE_CUSTOMER")){
+            if(companyRepository.findByCompanyEmail(dto.getEmail()).isEmpty()) {
+                throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY);
+            }
             Optional<Customer> customerOpt = customerRepository.findByCustomerEmail(dto.getEmail());
             Customer customer;
             if(customerOpt.isPresent()){
@@ -94,6 +77,9 @@ public class AuthService {
             }
             return customer.getIsInActive();
         } else {
+            if(customerRepository.findByCustomerEmail(dto.getEmail()).isEmpty()) {
+                throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_CUSTOMER);
+            }
             Optional<Company> companyOpt = companyRepository.findByCompanyEmail(dto.getEmail());
             Company company;
             if(companyOpt.isPresent()){
@@ -159,7 +145,7 @@ public class AuthService {
          if : 고객 회원 이메일 인증 여부, 비활성화 여부 수정 후 저장
          else : 기업 회원 이메일 인증 여부, 비활성화 여부 수정 후 저장
          */
-        if (checkIsCustomer(role)) {
+        if(Objects.equals(role, "ROLE_CUSTOMER")){
             Customer customer = customerRepository.findByCustomerEmail(email).orElseThrow(
                     () -> new BaseException(BaseResponseMessage.AUTH_VERIFY_FAIL)
             );
@@ -189,7 +175,7 @@ public class AuthService {
         if : 고객 회원 이메일 인증 여부, 비활성화 여부 수정 후 저장
         else : 기업 회원 이메일 인증 여부, 비활성화 여부 수정 후 저장
          */
-        if(checkIsCustomer(customUserDetails.getRole())){
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
                     () -> new BaseException(BaseResponseMessage.AUTH_INACTIVE_FAIL)
             );
@@ -297,7 +283,7 @@ public class AuthService {
         if: 고객 회원 : 이름. 주소, 휴대폰 번호, 프로필 이미지
         else: 기업 회원 : 이름, 주소, 사업자등록번호, 휴대폰 번호, 프로필 이미지
          */
-        if(checkIsCustomer(customUserDetails.getRole())){
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
                     () -> new BaseException(BaseResponseMessage.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
             );
@@ -327,7 +313,7 @@ public class AuthService {
     @Transactional
     public void editPassword(CustomUserDetails customUserDetails, EditPasswordReq dto) throws BaseException {
         // 1. 역할 확인 -> 고객 및 기업 회원 조회 -> 비밀 번호 일치 여부를 검사 -> 변경된 비밀번호 저장
-        if(checkIsCustomer(customUserDetails.getRole())){
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
                     () ->  new BaseException(BaseResponseMessage.AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER)
             );
@@ -351,7 +337,7 @@ public class AuthService {
     // 회원 정보 조회
     public GetInfoRes getInfo(CustomUserDetails customUserDetails) throws BaseException {
         // 1. 고객 및 회원 조회 후 정보 반환
-        if(checkIsCustomer(customUserDetails.getRole())){
+        if(Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
                     () -> new BaseException(BaseResponseMessage.AUTH_GET_PROFILE_FAIL)
             );
