@@ -41,7 +41,7 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://d3iaa8b0a37h7p.cloudfront.net", "http://localhost:8081"));
+        config.setAllowedOrigins(List.of("https://d3iaa8b0a37h7p.cloudfront.net"));
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
