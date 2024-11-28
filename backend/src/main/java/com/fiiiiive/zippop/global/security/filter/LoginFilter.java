@@ -66,12 +66,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         aToken.setHttpOnly(true);
         aToken.setSecure(true);
         aToken.setPath("/");
+        aToken.setAttribute("SamSite", "None");
         response.addCookie(aToken);
 
         Cookie rToken = new Cookie("RTOKEN", refreshToken);
         rToken.setHttpOnly(true);
         rToken.setSecure(true);
         rToken.setPath("/");
+        aToken.setAttribute("SamSite", "None");
         response.addCookie(rToken);
 
         response.setStatus(HttpServletResponse.SC_OK);

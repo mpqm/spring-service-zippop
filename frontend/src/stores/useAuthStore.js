@@ -38,7 +38,7 @@ export const useAuthStore = defineStore("auth", {
             try {
                 const res = await axios.post(
                     `${backend}/auth/login`, req,
-                    { headers: { 'Content-Type': 'application/json' }, }
+                    { headers: { 'Content-Type': 'application/json', }, withCredentials: true }
                 );
                 this.isLoggedIn = true;
                 await this.getInfo()

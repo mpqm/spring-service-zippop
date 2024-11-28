@@ -13,7 +13,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("http://localhost:8081","https://mpqm-zippop-backend.kro.kr","https://d3iaa8b0a37h7p.cloudfront.net") // 프론트엔드가 호스팅되는 도메인
+                        .allowedOrigins("http://localhost:8081","https://mpqm-zippop-backend.kro.kr","https://d3iaa8b0a37h7p.cloudfront.net") // 프론트엔드가 호스팅되는 도메인
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true)
                         .allowedHeaders("*");
