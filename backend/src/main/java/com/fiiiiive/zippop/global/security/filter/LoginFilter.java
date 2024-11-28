@@ -63,18 +63,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // accessToken, refreshToken, userToken 쿠키 설정
         Cookie aToken = new Cookie("ATOKEN", accessToken);
-        
+
         aToken.setHttpOnly(true);
         aToken.setSecure(true);
         aToken.setPath("/");
-        aToken.setAttribute("SamSite", "None");
+        aToken.setAttribute("SameSite", "None");
         response.addCookie(aToken);
 
         Cookie rToken = new Cookie("RTOKEN", refreshToken);
         rToken.setHttpOnly(true);
         rToken.setSecure(true);
         rToken.setPath("/");
-        aToken.setAttribute("SamSite", "None");
+        aToken.setAttribute("SameSite", "None");
         response.addCookie(rToken);
 
         response.setStatus(HttpServletResponse.SC_OK);
