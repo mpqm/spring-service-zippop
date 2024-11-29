@@ -60,6 +60,7 @@ public class SecurityConfig {
                         auth
 //                            .requestMatchers("/api/v1/test/**").authenticated()
                             .requestMatchers("/api/v1/auth/get-info").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/reserve/register").hasAuthority("ROLE_COMPANY")
                             .requestMatchers("/api/v1/test/ex01").hasAuthority("ROLE_COMPANY") //RBAC 테스트
                             .anyRequest().permitAll()
         );

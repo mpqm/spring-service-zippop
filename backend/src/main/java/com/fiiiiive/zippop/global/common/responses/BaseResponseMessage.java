@@ -164,12 +164,14 @@ public enum BaseResponseMessage {
     ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER(false, 6028, "해당 거래내역에 접근 권한이 없습니다."),
 
     // ========================================================================================================================
-    // 팝업 예약 9000
+    // 팝업 예약 700
     // 팝업 예약 생성 9000
-    POPUP_RESERVE_CREATE_SUCCESS(true, 9000, "예약 등록에 성공했습니다."),
-    POPUP_RESERVE_CREATE_FAIL_TIME_CLOSED(false, 9001, "해당 시간대는 예약이 마감되었습니다."),
-    POPUP_RESERVE_CREATE_FAIL_INVALID_MEMBER(false, 9002, "기업 회원이 아닌 회원은 예약을 생성할 수 없습니다."),
-    POPUP_RESERVE_CREATE_FAIL_NOT_FOUND(false, 9003, "예약을 생성하려는 팝업스토어를 찾을 수 없습니다."),
+    RESERVE_REGISTER_SUCCESS(true, 7000, "예약 등록에 성공했습니다."),
+    RESERVE_REGISTER_FAIL_INVALID_MEMBER(false, 7001, "해당 팝업 스토어의 관리자가 아닙니다."),
+    RESERVE_REGISTER_FAIL_INVALID_ROLE(false, 7002, "기업 회원이 아닌 회원은 예약을 생성할 수 없습니다."),
+    RESERVE_REGISTER_FAIL_TIME_CLOSED(false, 7003, "해당 시간대는 예약이 마감되었습니다."),
+    RESERVE_REGISTER_FAIL_NOT_FOUND_STORE(false, 7004, "해당 팝업 스토어를 찾을 수 없습니다."),
+    RESERVE_ENROLL_FAIL_NOT_FOUND(false, 9003, "생성된 예약을 찾을 수 없습니다."),
     // 팝업 예약 취소 9100
     POPUP_RESERVE_CANCEL_SUCCESS(true, 9100, "예약 취소에 성공했습니다."),
     POPUP_RESERVE_CANCEL_FAIL(false,  9101, "예약 취소에 실패했습니다."),
