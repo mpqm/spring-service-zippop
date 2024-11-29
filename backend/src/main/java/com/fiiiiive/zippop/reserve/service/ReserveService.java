@@ -34,42 +34,38 @@ public class ReserveService {
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
 
-    public CreateReserveRes create(CustomUserDetails customUserDetails, CreateReserveReq dto) throws BaseException {
-        if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
-            Optional<Store> result = storeRepository.findById(dto.getStoreIdx());
-            if(result.isPresent()){
-                Store store = result.get();
-                String onDoingUUID = UUID.randomUUID().toString();
-                String waitingUUID = UUID.randomUUID().toString();
-                Reserve reserve = Reserve.builder()
-                        .maxCount(dto.getMaxCount())
-                        .store(store)
-                        .onDoingUUID(onDoingUUID)
-                        .waitingUUID(waitingUUID)
-                        .expiredTime(dto.getExpireTime())
-                        .build();
-                reserveRepository.save(reserve);
-                redisUtil.init(onDoingUUID, reserve.getExpiredTime()); // 예약 접속
-                redisUtil.init(waitingUUID, reserve.getExpiredTime()); // 예약 대기
-                return CreateReserveRes.builder()
-                        .reserveIdx(reserve.getIdx())
-                        .onDoingUUID(reserve.getOnDoingUUID())
-                        .waitingUUID(reserve.getWaitingUUID())
-                        .storeIdx(store.getIdx())
-                        .build();
-            } else {
-                throw new BaseException(BaseResponseMessage.POPUP_RESERVE_CREATE_FAIL_NOT_FOUND);
-            }
-        } else {
-            throw new BaseException(BaseResponseMessage.POPUP_RESERVE_CREATE_FAIL_INVALID_MEMBER);
+    public CreateReserveRes register(CustomUserDetails customUserDetails, CreateReserveReq dto) throws BaseException {
+        // 1. 예외: 기업 회원이 아닐 때, 스토어 조회 안될 때, 스토어의 이메일과 인증된 사용자의 이메일이 다를 때
+        if(!Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
+            throw new BaseException(BaseResponseMessage.RESERVE_REGISTER_FAIL_INVALID_ROLE);
         }
+        Store store = storeRepository.findById(dto.getStoreIdx()).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.RESERVE_REGISTER_FAIL_NOT_FOUND_STORE)
+        );
+        if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) {
+            throw new BaseException(BaseResponseMessage.RESERVE_REGISTER_FAIL_INVALID_MEMBER);
+        }
+        String workingUUID = UUID.randomUUID().toString();
+        String waitingUUID = UUID.randomUUID().toString();
+        Reserve reserve = Reserve.builder()
+                .reservePeople(dto.getReservePeople())
+                .store(store)
+                .workingUUID(workingUUID)
+                .waitingUUID(waitingUUID)
+                .expiredTime(dto.getExpireTime())
+                .build();
+        reserveRepository.save(reserve);
+        redisUtil.init(workingUUID, reserve.getExpiredTime()); // 예약 접속 큐 생성
+        redisUtil.init(waitingUUID, reserve.getExpiredTime()); // 예약 대기 큐 생성
+        return CreateReserveRes.builder().reserveIdx(reserve.getIdx()).build();
     }
 
     public String enroll(HttpServletRequest req, HttpServletResponse res, String email, Long reserveIdx) throws IOException {
         // String email = customUserDetails.getEmail();
-        Optional<Reserve> result = reserveRepository.findById(reserveIdx);
-        Reserve reserve = result.get();
-        String onDoingUUID = reserve.getOnDoingUUID();
+        Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
+                () -> new BaseException(BaseResponseMessage)
+        );
+        String onDoingUUID = reserve.getgUUID();
         String waitingUUID = reserve.getWaitingUUID();
         // 만약 최대 예약자보다 redis의 값의 크기가 적으면 예약 redis로 이동하거나 취소처리로 자리가 났을 경우에
         if(reserve.getMaxCount() > redisUtil.zCard(onDoingUUID) || redisUtil.getzRank(onDoingUUID, email) != null){

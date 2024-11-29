@@ -9,6 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class CreateReserveReq {
     private Long storeIdx;
-    private Long maxCount;
+    private Long reservePeople;
     private Long expireTime;
 }

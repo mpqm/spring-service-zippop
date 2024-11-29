@@ -10,7 +10,4 @@ import lombok.*;
 @AllArgsConstructor
 public class CreateReserveRes {
     private Long reserveIdx;
-    private String onDoingUUID;
-    private String waitingUUID;
-    private Long storeIdx;
 }

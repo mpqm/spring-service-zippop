@@ -5,9 +5,9 @@ import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.reserve.service.ReserveService;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
+import com.fiiiiive.zippop.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,24 +28,26 @@ public class ReserveController {
     private final ReserveService reserveService;
 
     // 예약 생성
-    @PostMapping("/create")
-    public ResponseEntity<BaseResponse> create(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateReserveReq dto) throws BaseException {
-        CreateReserveRes response = reserveService.create(customUserDetails, dto);
+    @PostMapping("/register")
+    public ResponseEntity<BaseResponse> register(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestBody CreateReserveReq dto) throws BaseException {
+        CreateReserveRes response = reserveService.register(customUserDetails, dto);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_RESERVE_CREATE_SUCCESS,response));
     }
 
     // 예약 신청: email -> @AuthenticationPrincipal CustomUserDetails customUserDetails // 테스트 중
     @GetMapping("/enroll")
     public ResponseEntity<BaseResponse> enroll(HttpServletRequest req, HttpServletResponse res,
-                                                String email, @RequestParam Long reserveIdx) throws IOException {
-        String response = reserveService.enroll(req, res, email, reserveIdx);
+                                                String userId, @RequestParam Long reserveIdx) throws IOException {
+        String response = reserveService.enroll(req, res, userId, reserveIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_RESERVE_ENROLL_SUCCESS, response));
     }
 
     // 예약 취소: email -> @AuthenticationPrincipal CustomUserDetails customUserDetails // 테스트 중
     @GetMapping("/cancel")
-    public ResponseEntity<BaseResponse> cancel(String email, @RequestParam Long reserveIdx) throws BaseException {
-        String response = reserveService.cancel(email, reserveIdx);
+    public ResponseEntity<BaseResponse> cancel(String userId, @RequestParam Long reserveIdx) throws BaseException {
+        String response = reserveService.cancel(userId, reserveIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_RESERVE_CANCEL_SUCCESS, response));
     }
 
