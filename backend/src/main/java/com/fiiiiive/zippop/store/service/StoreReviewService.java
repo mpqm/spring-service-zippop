@@ -36,9 +36,6 @@ public class StoreReviewService {
     @Transactional
     public CreateStoreReviewRes register(CustomUserDetails customUserDetails, Long storeIdx, CreateStoreReviewReq dto) throws BaseException {
         // 1. 예외처리: 고객 사용자가 존재하지 않을 때, 팝업스토어가 존재하지 않을때, 기업회원 일 때, 결제를 완료하지 않은 사용자 일 때
-        if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
-            throw new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_INVALID_ROLE);
-        }
         Orders orders = ordersRepository.findByStoreIdxAndCustomerIdxAndStatus(storeIdx, customUserDetails.getIdx(), "_COMPLETE").orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_INVALID_MEMBER)
         );

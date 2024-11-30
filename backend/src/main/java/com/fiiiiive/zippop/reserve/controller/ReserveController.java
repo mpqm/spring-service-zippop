@@ -33,25 +33,27 @@ public class ReserveController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestBody CreateReserveReq dto) throws BaseException {
         CreateReserveRes response = reserveService.register(customUserDetails, dto);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_RESERVE_CREATE_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_REGISTER_SUCCESS,response));
     }
 
     // 예약 신청: email -> @AuthenticationPrincipal CustomUserDetails customUserDetails // 테스트 중
     @GetMapping("/enroll")
-    public ResponseEntity<BaseResponse> enroll(HttpServletRequest req, HttpServletResponse res,
-                                                String userId, @RequestParam Long reserveIdx) throws IOException {
-        String response = reserveService.enroll(req, res, userId, reserveIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_RESERVE_ENROLL_SUCCESS, response));
+    public ResponseEntity<BaseResponse> enroll(
+        HttpServletResponse res,
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long reserveIdx) throws BaseException {
+        String response = reserveService.enroll(res, customUserDetails, reserveIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_ENROLL_SUCCESS, response));
     }
 
     // 예약 취소: email -> @AuthenticationPrincipal CustomUserDetails customUserDetails // 테스트 중
     @GetMapping("/cancel")
     public ResponseEntity<BaseResponse> cancel(String userId, @RequestParam Long reserveIdx) throws BaseException {
         String response = reserveService.cancel(userId, reserveIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_RESERVE_CANCEL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
-    @GetMapping("/reserve-status")
+    @GetMapping("/status")
     public ResponseEntity<BaseResponse> reserveStatus(String reserveUUID, String reserveWaitingUUID){
         String response = reserveService.reserveStatus(reserveUUID,reserveWaitingUUID);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_RESERVE_SEARCH_STATUS_SUCCESS, response));

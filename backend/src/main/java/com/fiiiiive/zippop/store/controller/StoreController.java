@@ -101,7 +101,7 @@ public class StoreController {
     }
 
     // 팝업 스토어 좋아요
-    @GetMapping("/like")
+    @GetMapping("/like/register")
     public ResponseEntity<BaseResponse<Void>> like(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long storeIdx) throws BaseException {
