@@ -34,10 +34,7 @@ public class StoreLikeService {
     // 팝업 스토어 좋아요 증감
     @Transactional
     public void like(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
-        // 1. 예외: 팝업 스토어가 존재하지 않을때, 사용자가 존재하지 않을때, 기업 회원일때
-        if(Objects.equals(customUserDetails.getRole(), "ROLE_COMPANY")){
-            throw new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_INVALID_ROLE);
-        }
+        // 1. 예외: 팝업 스토어가 존재하지 않을때, 사용자가 존재하지 않을때
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_NOT_FOUND)
         );

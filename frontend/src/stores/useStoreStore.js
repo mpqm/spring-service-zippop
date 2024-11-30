@@ -134,7 +134,7 @@ export const useStoreStore = defineStore("store", {
     async registerLike(storeIdx) {
       try {
         const res = await axios.get(
-          `${backend}/store/like?storeIdx=${storeIdx}`, 
+          `${backend}/store/like/register?storeIdx=${storeIdx}`, 
           {withCredentials: true,}
         );
         return res.data;

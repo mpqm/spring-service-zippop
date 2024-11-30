@@ -58,11 +58,43 @@ public class SecurityConfig {
         http.addFilter(corsFilter());
         http.authorizeHttpRequests((auth) ->
                         auth
-//                            .requestMatchers("/api/v1/test/**").authenticated()
+                            // 인증
+                            .requestMatchers("/api/v1/auth/**").permitAll()
+                            // 장바구니
+                            .requestMatchers("/api/v1/cart/**").hasAuthority("ROLE_CUSTOMER")
+                            // 굿즈
+                            .requestMatchers("/api/v1/goods/register").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/goods/update").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/goods/delete").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/goods/search").permitAll()
+                            .requestMatchers("/api/v1/goods/search-all").permitAll()
+                            // 주문
+                            .requestMatchers("/api/v1/orders/verify").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/orders/cancel").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/orders/complete").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/orders/search/as-customer").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/orders/search-all/as-customer").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/orders/search/as-company").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/orders/search-all/as-company").hasAuthority("ROLE_COMPANY")
+                            // 팝업 스토어
+                            .requestMatchers("/api/v1/store/register").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/store/update").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/store/delete").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/store/search").permitAll()
+                            .requestMatchers("/api/v1/store/search-all").permitAll()
+                            .requestMatchers("/api/v1/store/search-all/as-company").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/store/like/register").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/store/like/search-all").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/store/review/register").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/store/review/search-all").permitAll()
+                            .requestMatchers("/api/v1/store/review/search-all/as-customer").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/auth/get-info").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
+                            // 예약
                             .requestMatchers("/api/v1/reserve/register").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/test/ex01").hasAuthority("ROLE_COMPANY") //RBAC 테스트
-                            .anyRequest().permitAll()
+                            .requestMatchers("/api/v1/reserve/enroll").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/reserve/cancel").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/reserve/status").hasAuthority("ROLE_CUSTOMER")
+//                            .anyRequest().permitAll()
         );
         http.addFilter(corsFilter());
         http.oauth2Login((config) -> {

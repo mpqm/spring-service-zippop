@@ -60,7 +60,7 @@ public class CartController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.CART_ITEM_COUNT_SUCCESS));
     }
 
-    // 장바구니 아이템 전체 조회(고객)
+    // 장바구니 아이템 전체 조회
     @GetMapping("/item/search-all")
     public ResponseEntity<BaseResponse> itemSearchAll(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,

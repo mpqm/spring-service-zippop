@@ -9,7 +9,7 @@ public enum BaseResponseMessage {
     JWT_TOKEN_EXPIRED(false, 303, "JWT 토큰이 만료되었습니다."),
     JWT_TOKEN_UNSUPPORTED(false, 304, "JWT 토큰 형식이 아닙니다."),
     JWT_TOKEN_WRONG(false, 305, "JWT 토큰이 잘못됬습니다."),
-    ACCESS_DENIED(false, 306, "접근이 거부되었습니다. 권한이 없습니다."),
+    ACCESS_DENIED(false, 403, "접근이 거부되었습니다. 권한이 없습니다."),
     BAD_CREDENTIAL(false, 307, "아이디 또는 비밀번호가 맞지 않습니다. 다시 확인해 주세요"),
     USER_NOT_FOUND(false, 308, "계정이 존재하지 않습니다. 회원가입 진행 후 로그인 해주세요."),
     FILE_UPLOAD_FAIL(false, 309,"이미지 업로드에 실패했습니다."),
@@ -164,50 +164,23 @@ public enum BaseResponseMessage {
     ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER(false, 6028, "해당 거래내역에 접근 권한이 없습니다."),
 
     // ========================================================================================================================
-    // 팝업 예약 700
-    // 팝업 예약 생성 9000
+    // 팝업 예약 7000
+    // 팝업 예약 생성
     RESERVE_REGISTER_SUCCESS(true, 7000, "예약 등록에 성공했습니다."),
     RESERVE_REGISTER_FAIL_INVALID_MEMBER(false, 7001, "해당 팝업 스토어의 관리자가 아닙니다."),
     RESERVE_REGISTER_FAIL_INVALID_ROLE(false, 7002, "기업 회원이 아닌 회원은 예약을 생성할 수 없습니다."),
     RESERVE_REGISTER_FAIL_TIME_CLOSED(false, 7003, "해당 시간대는 예약이 마감되었습니다."),
     RESERVE_REGISTER_FAIL_NOT_FOUND_STORE(false, 7004, "해당 팝업 스토어를 찾을 수 없습니다."),
-    RESERVE_ENROLL_FAIL_NOT_FOUND(false, 9003, "생성된 예약을 찾을 수 없습니다."),
+    // 팝업 예약 접속
+    RESERVE_ENROLL_SUCCESS(true, 7005, "예약에 성공했습니다."),
+    RESERVE_ENROLL_FAIL_NOT_FOUND(false, 7006, "생성된 예약을 찾을 수 없습니다."),
+    RESERVE_ENROLL_FAIL_INVALID_ROLE(false, 7007, "기업 회원은 예약에 참여할 수 없습니다."),
     // 팝업 예약 취소 9100
-    POPUP_RESERVE_CANCEL_SUCCESS(true, 9100, "예약 취소에 성공했습니다."),
-    POPUP_RESERVE_CANCEL_FAIL(false,  9101, "예약 취소에 실패했습니다."),
-    // 팝업 예약 접속 9200
-    POPUP_RESERVE_ENROLL_SUCCESS(true, 9200, "예약에 성공했습니다."),
-    POPUP_RESERVE_ENROLL_FAIL(false, 9201, "예약에 실패했습니다."),
+    RESERVE_CANCEL_SUCCESS(true, 7008, "예약취소에 성공했습니다."),
+    RESERVE_CANCEL_FAIL(false,  9101, "예약 취소에 실패했습니다."),
     // 팝업 예약 조회 9300
     POPUP_RESERVE_SEARCH_STATUS_SUCCESS(true, 9300, "예약 대기자 및 Redis 상태를 불러왔습니다."),
 
-    // ========================================================================================================================
-
-    // 팝업 굿즈 주문 검증 4400
-
-
-    // 팝업 굿즈 결제 4500
-
-
-    // 결제
-    // 기업 수수료 결제 4500
-
-
-
-    // ========================================================================================================================
-    // 찜 6000
-    // 찜 등록 6100
-    FAVORITE_ACTIVE_SUCCESS(true, 6100, "해당 팝업 스토어를 찜 목록에 추가했습니다."),
-    FAVORITE_ACTIVE_FAIL_STORE_NOT_FOUND(false, 6101, "해당 팝업 스토어를 찾을 수 없습니다."),
-    FAVORITE_ACTIVE_FAIL_MEMBER_NOT_FOUND(false, 6102, "유저를 찾을 수 없습니다."),
-    FAVORITE_INACTIVE_SUCCESS(true, 6200, "해당 팝업 스토어를 찜 목록에서 뺏습니다."),
-    // 찜 조회 6200
-    FAVORITE_SEARCH_ALL_SUCCESS(true, 6200, "팝업 스토어 찜 목록을 불러오는데 성공했습니다."),
-    FAVORITE_SEARCH_ALL_FAIL(false, 6201, "팝업 스토어 찜 목록을 불러오는데 실패했습니다."),
-
-
-
-    // ========================================================================================================================
     // 채팅 8000
     // 채팅방 생성 8000
     CHAT_ROOM_CREATE_SUCCESS(true, 8000, "채팅방 생성에 성공했습니다."),

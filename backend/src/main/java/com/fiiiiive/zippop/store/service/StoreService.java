@@ -33,7 +33,7 @@ public class StoreService {
     // 팝업 스토어 등록
     @Transactional
     public CreateStoreRes register(CustomUserDetails customUserDetails, CreateStoreReq dto, List<String> fileNameList) throws BaseException {
-        // 1. 예외: 기업회원이 아닐때
+        // 1. 예외: 기업회원을 찾을 수 없을 때
         Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx()).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_REGISTER_FAIL_UNAUTHORIZED)
         );
