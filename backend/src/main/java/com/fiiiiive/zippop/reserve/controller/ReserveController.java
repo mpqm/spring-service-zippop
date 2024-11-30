@@ -48,8 +48,10 @@ public class ReserveController {
 
     // 예약 취소: email -> @AuthenticationPrincipal CustomUserDetails customUserDetails // 테스트 중
     @GetMapping("/cancel")
-    public ResponseEntity<BaseResponse> cancel(String userId, @RequestParam Long reserveIdx) throws BaseException {
-        String response = reserveService.cancel(userId, reserveIdx);
+    public ResponseEntity<BaseResponse> cancel(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long reserveIdx) throws BaseException {
+        String response = reserveService.cancel(customUserDetails, reserveIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 

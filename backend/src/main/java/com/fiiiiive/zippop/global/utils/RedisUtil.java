@@ -73,16 +73,16 @@ public class RedisUtil {
         zSetOperations.remove(key, value);
     }
 
-    public String moveFirstWaitingToReserve(String key1, String key2) {
+    public String firstWatingUserToWorking(String key1, String key2) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> waitingList = zSetOperations.rangeWithScores(key2, 0, 0);
         if (waitingList != null && !waitingList.isEmpty()) {
             ZSetOperations.TypedTuple<Object> firstWaitingUser = waitingList.iterator().next();
-            String userEmail = (String) firstWaitingUser.getValue();
+            String userId = (String) firstWaitingUser.getValue();
             double score = firstWaitingUser.getScore();
-            zSetOperations.remove(key2, userEmail);
-            zSetOperations.add(key1, userEmail, score);
-            return userEmail;
+            zSetOperations.remove(key2, userId);
+            zSetOperations.add(key1, userId, score);
+            return userId;
         } else {
             return null;
         }
