@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -369,7 +370,7 @@ public class OrdersService {
     // 고객 주문 목록 조회
     public Page<SearchOrdersRes> searchAllOrdersAsCustomer(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
         // 1. 고객 인덱스로 페이징 조회 및 예외 처리
-        Page<Orders> ordersPage = ordersRepository.findAllByCustomerIdx(customUserDetails.getIdx(),PageRequest.of(page, size)).orElseThrow(
+        Page<Orders> ordersPage = ordersRepository.findAllByCustomerIdx(customUserDetails.getIdx(),PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
@@ -461,7 +462,7 @@ public class OrdersService {
         if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))){
             throw new BaseException(BaseResponseMessage.ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER);
         }
-        Page<Orders> ordersPage = ordersRepository.findAllByStoreIdx(storeIdx, PageRequest.of(page, size)).orElseThrow(
+        Page<Orders> ordersPage = ordersRepository.findAllByStoreIdx(storeIdx, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
         );
         // 2. Orders DTO Page 반환

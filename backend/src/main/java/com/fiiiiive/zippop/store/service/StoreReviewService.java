@@ -17,6 +17,7 @@ import com.fiiiiive.zippop.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +65,7 @@ public class StoreReviewService {
     // 팝업 스토어 리뷰 목록 조회(전체)
     public Page<SearchStoreReviewRes> searchAll(Long storeIdx, int page, int size) throws BaseException {
         // 1. 예외 : 리뷰 목록 조회 결과가 없을 때
-        Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByStoreIdx(storeIdx, PageRequest.of(page, size)).orElseThrow(
+        Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByStoreIdx(storeIdx, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
         );
         // 2. StoreReview DTO Page 반환
@@ -84,7 +85,7 @@ public class StoreReviewService {
     // 팝업 스토어 리뷰 목록 조회(고객)
     public Page<SearchStoreReviewRes> searchAllAsCustomer(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
         // 1. 예외 : 리뷰 목록 조회 결과가 없을 때
-        Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size)).orElseThrow(
+        Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
         );
         // 2. StoreReview DTO Page 반환
