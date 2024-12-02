@@ -86,7 +86,7 @@ public class OrdersService {
         int addPoint = 0;
         int usedPoint;
         List<Goods> goodsList = new ArrayList<>();
-        // 6. 사전 굿즈 구매(flag = true)
+        // 6. 예약 굿즈 구매(flag = true)
         Goods goods = null;
         if (flag) {
             // 6-1. 결제하려는 굿즈 리스트 생성, 재고 수량 확인, 총 구매 금액 계산
@@ -105,14 +105,8 @@ public class OrdersService {
             }
             // 6-2. 포인트 적립 계산(총 구매 금액의 5%)
             addPoint += (int) Math.round(totalPurchasePrice * 0.05);
-            usedPoint = (totalPurchasePrice + 500) - payedPrice;
-            // 6-3 포인트 유효성 검사 (3000포인트 이상부터 사용 가능)
-            if (usedPoint != 0 && (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0)) {
-                refund(payment.getImpUid(), payment);
-                throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_POINT_EXCEEDED);
-            }
-            // 6-4. 배송비 적용 및 최종 구매 금액 조정 및 갱신
-            totalPurchasePrice += 500 - usedPoint;
+            usedPoint = 0;
+            // 6-4. 배송비 적용 x 포인트 사용 x , 최종 구매 금액 조정 및 갱신
             customer.setPoint(customer.getPoint() - usedPoint + addPoint);
         } else { // 7. 재고 굿즈 구매 (flag == false)
             // 7-1. 결제하려는 굿즈 리스트 생성, 총 구매 금액 계산

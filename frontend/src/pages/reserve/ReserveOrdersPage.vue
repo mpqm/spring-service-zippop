@@ -34,8 +34,6 @@
             <h3 class="t1">주문 정보</h3>
             <div class="predict-price-container">
                 <div class="predict-price-item"><span>총 상품 가격</span> {{ paymentData.totalPrice }}원</div>
-                <div class="predict-price-item"><span>총 할인</span> {{ paymentData.totalDiscount }}원</div>
-                <div class="predict-price-item"><span>총 배송비</span> {{ paymentData.deliveryFee }}원</div>
                 <h3 class="predict-total-price"><span>총 주문 금액</span> {{ paymentData.finalOrderPrice }}원</h3>
             </div>
             <div class="reward-area">
@@ -106,11 +104,11 @@ const payment = () => {
         },
         async (rsp) => {
             if (rsp.success) {
-                const res = await ordersStore.verify(rsp.imp_uid, false);
+                const res = await ordersStore.verify(rsp.imp_uid, true);
                 if (res.success) {
-                    await cartStore.deleteAllCartItems();
+                    await cartStore.deleteAllCartItems(route.params.storeIdx);
                     toast.success("결제를 처리했습니다.");
-                    router.push("/mypage/customer/cart")
+                    router.push("/")
                 } else {
                     toast.error("결제를 처리하지 못했습니다.");
                 }
