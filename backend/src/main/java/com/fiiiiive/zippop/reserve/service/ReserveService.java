@@ -4,12 +4,12 @@ package com.fiiiiive.zippop.reserve.service;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.reserve.model.dto.ReserveStatusReq;
-import com.fiiiiive.zippop.reserve.model.dto.ReserveStatusRes;
+import com.fiiiiive.zippop.reserve.model.dto.*;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
-import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
-import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
+import com.fiiiiive.zippop.store.model.dto.SearchStoreImageRes;
+import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
+import com.fiiiiive.zippop.store.model.entity.StoreImage;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.global.utils.JwtUtil;
@@ -19,15 +19,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -161,6 +160,22 @@ public class ReserveService {
         return "예약을 취소했습니다.";
     }
 
+    public Page<SearchReserveRes> searchAllAsCompany(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
+        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size)).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+        Page<SearchReserveRes> searchReserveResPage = reservePage.map(reserve -> {
+            return SearchReserveRes.builder()
+                    .storeIdx(reserve.getStore().getIdx())
+                    .reserveIdx(reserve.getIdx())
+                    .reservePeople(reserve.getTotalPeople())
+                    .reserveStartDate(reserve.getStartDate())
+                    .reserveStartTime(reserve.getStartTime())
+                    .reserveEndTime(reserve.getEndTime())
+                    .build();
+        });
+        return searchReserveResPage;
+    }
 //    // 폴링방식
 //    public String status(CustomUserDetails customUserDetails, Long reserveIdx) throws BaseException {
 //        Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
