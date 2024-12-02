@@ -18,16 +18,16 @@
             <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ store.likeCount }}
             <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ store.totalPeople }}
           </p>
-          <CountDownTimer :targetTime="store.storeEndDate"></CountDownTimer>
+          <CountDownTimer :targetTime="store.storeEndDate" :flag="true"></CountDownTimer>
           <hr>
-          <button class="normal-btn"><img src="../../assets/img/reserve-none.png" alt="">&nbsp;<p>예약 참여</p></button>
+          <!-- <button class="normal-btn" @click="goReserve"><img src="../../assets/img/reserve-none.png" alt="">&nbsp;<p>예약 참여</p></button> -->
         </div>
       </div>
       <div class="detail-header">
         <div class="menu-list">
           <button class="menu-link" :class="{ active: activeMenu === 'goods' }" @click="setActiveMenu('goods')">굿즈 보기</button>
           <button class="menu-link" :class="{ active: activeMenu === 'review' }" @click="setActiveMenu('review')"> 리뷰 보기</button>
-          <button class="menu-link" :class="{ active: activeMenu === 'question' }" @click="setActiveMenu('review')"> 문의 채팅</button>
+          <button class="menu-link" :class="{ active: activeMenu === 'reserve' }" @click="setActiveMenu('reserve')"> 예약 확인</button>
         </div>
       </div>
       <div v-if="activeMenu == 'goods'" class="goods-list-container">
@@ -61,8 +61,14 @@
         </div>
         <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
-      <div v-if="activeMenu == 'chat'">
-        dd
+      <div v-if="activeMenu == 'reserve'">
+        <div class="review-list" v-if="reserveList && reserveList.length">
+          <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl="true" /> 
+        </div>
+        <div class="notice" v-else>
+          <p>등록된 예약이 없습니다.</p>
+        </div>
+        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
     </div>
     <FooterComponent></FooterComponent>
@@ -77,16 +83,19 @@ import FooterComponent from "@/components/common/FooterComponent.vue";
 import CountDownTimer from "@/components/common/CountDownTimer.vue";
 import GoodsListComponent from "@/components/goods/GoodsListComponent.vue";
 import ReviewListComponent from "@/components/store/ReviewListComponent.vue";
+import ReserveListComponent from "@/components/reserve/ReserveListComponent.vue";
 import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { ref, onMounted } from "vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useGoodsStore } from "@/stores/useGoodsStore";
+import { useReserveStore } from "@/stores/useReserveStore";
 
 // store, router, route, toast
 const goodsStore = useGoodsStore();
 const storeStore = useStoreStore();
+const reserveStore = useReserveStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -113,6 +122,9 @@ const reviewPageSize = ref(8);
 const reviewContent = ref('');
 const reviewTitle = ref('');
 const reviewRating = ref(0);
+
+// 변수(reserve)
+const reserveList = ref([]);
 
 // onMounted
 onMounted(async () => {
@@ -147,6 +159,8 @@ const setActiveMenu = (menu) => {
     searchAllGoods();
   } else if (menu == 'review') {
     searchAllReview();
+  } else if (menu == 'reserve') {
+    searchAllReserve();
   }
 }
 
@@ -206,6 +220,7 @@ const searchAllGoodsByKeyword = async () => {
   }
 };
 
+// 리뷰 등록
 const registerReview = async () => {
   const req = {
     reviewTitle: reviewTitle.value,
@@ -229,6 +244,19 @@ const searchAllReview = async () => {
     totalPages.value = storeStore.totalPages;
   } else {
     reviewList.value = [];
+    totalElements.value = 0;
+    totalPages.value = 0;
+  }
+}
+
+const searchAllReserve = async () => {
+  const res = await reserveStore.searchAllReserveByStoreIdx(route.params.storeIdx, currentPage.value, reviewPageSize.value);
+  if (res.success) {
+    reserveList.value = reserveStore.reserveList;
+    totalElements.value = reserveStore.totalElements;
+    totalPages.value = reserveStore.totalPages;
+  } else {
+    reserveList.value = [];
     totalElements.value = 0;
     totalPages.value = 0;
   }

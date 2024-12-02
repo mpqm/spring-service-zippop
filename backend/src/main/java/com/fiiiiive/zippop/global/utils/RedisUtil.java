@@ -73,10 +73,10 @@ public class RedisUtil {
         zSetOperations.remove(key, value);
     }
 
-    public String firstWatingUserToWorking(String key1, String key2) {
+    public String firstWaitingUserToWorking(String key1, String key2, Integer fixedSize) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> waitingList = zSetOperations.rangeWithScores(key2, 0, 0);
-        if (waitingList != null && !waitingList.isEmpty()) {
+        if (waitingList != null && !waitingList.isEmpty() && getSize(key1) < fixedSize) {
             ZSetOperations.TypedTuple<Object> firstWaitingUser = waitingList.iterator().next();
             String userId = (String) firstWaitingUser.getValue();
             double score = firstWaitingUser.getScore();

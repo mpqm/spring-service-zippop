@@ -1,6 +1,9 @@
 <template>
-  <div class="countdown-timer">
+  <div class="countdown-timer" v-if="flag">
     종료까지 남은 시간: {{ days }}일 {{ hours }}시간 {{ minutes }}분 {{ seconds }}초
+  </div>
+  <div class="countdown-timer2" v-if="flag==false">
+    예약까지 남은 시간: {{ days }}일 {{ hours }}시간 {{ minutes }}분 {{ seconds }}초
   </div>
 </template>
 
@@ -11,6 +14,7 @@ import { defineProps } from "vue";
 // Props 정의
 const props = defineProps({
   targetTime: String, // 문자열로 된 목표 시간 (예: "2024-11-21")
+  flag: Boolean, // true 팝업 스토어 종료까지 남은 시간 false 예약 까지 남은 시간
 });
 
 // 남은 시간을 표시할 ref 변수
@@ -57,6 +61,12 @@ onUnmounted(() => {
 <style scoped>
 .countdown-timer {
   font-size: 1.2rem;
+  color: #e63946;
+  font-weight: bold;
+}
+
+.countdown-timer2 {
+  font-size: 1rem;
   color: #e63946;
   font-weight: bold;
 }

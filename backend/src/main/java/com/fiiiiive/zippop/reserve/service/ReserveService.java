@@ -143,8 +143,7 @@ public class ReserveService {
         if (currentOrder != null) {
             // 현재 사용자 예약 접속 redis에서 삭제
             redisUtil.remove(workingUUID, customUserDetails.getEmail());
-            // 대기1순위 사용자 예약 접속 redis에 추가
-            String firstWaitingUser = redisUtil.firstWatingUserToWorking(workingUUID, waitingUUID);
+            String firstWaitingUser = redisUtil.firstWaitingUserToWorking(workingUUID, waitingUUID, reserve.getTotalPeople());
             if(firstWaitingUser != null ){
                 log.info("대기자에서 예약자로 이동: {}", firstWaitingUser);
             } else {
@@ -178,12 +177,16 @@ public class ReserveService {
         return searchReserveResPage;
     }
 
-    public Page<SearchReserveRes> searchAll(String keyword, int page, int size) throws BaseException {
+    public Page<SearchReserveRes> searchAll(Long storeIdx, String keyword, int page, int size) throws BaseException {
         Page<Reserve> reservePage;
-        if(keyword != null) {
-            reservePage = reserveRepository.findAllByStatus("STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+        if(storeIdx == null){
+            if(keyword == null) {
+                reservePage = reserveRepository.findAllByStatus("STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+            } else {
+                reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, "STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+            }
         } else {
-            reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, "STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+            reservePage = reserveRepository.findAllByStoreIdx(storeIdx, "STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
         }
         if (reservePage.isEmpty()) {
             throw new BaseException(BaseResponseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND);
