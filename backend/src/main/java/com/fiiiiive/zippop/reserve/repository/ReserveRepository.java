@@ -33,4 +33,8 @@ public interface ReserveRepository extends JpaRepository<Reserve, Long> {
             "WHERE rs.status = :status " +
              "AND (rs.address LIKE %:keyword% OR rs.name LIKE %:keyword% OR rs.category LIKE %:keyword% OR rs.startDate LIKE %:keyword% OR rs.companyEmail LIKE %:keyword%)")
     Page<Reserve> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") String status, Pageable pageable);
+    @Query("SELECT r FROM Reserve r " +
+            "JOIN FETCH r.store rs " +
+            "WHERE rs.idx = :storeIdx AND rs.status = :status")
+    Page<Reserve> findAllByStoreIdx(@Param("storeIdx") Long storeIdx, @Param("status") String status, Pageable pageable);
 }
