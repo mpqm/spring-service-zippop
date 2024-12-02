@@ -19,6 +19,10 @@ public interface ReserveRepository extends JpaRepository<Reserve, Long> {
 
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.store rs " +
-            "WHERE rs.companyEmail = :companyEmail")
-    Optional<Page<Reserve>> findAllByCompanyEmail(String companyEmail, Pageable pageable);
+            "WHERE rs.idx = :storeIdx AND rs.companyEmail = :companyEmail")
+    Optional<Page<Reserve>> findAllByCompanyEmail(Long storeIdx, String companyEmail, Pageable pageable);
+
+
+    @Query("SELECT r FROM Reserve r ")
+    Optional<Page<Reserve>> findAllPage(Pageable pageable);
 }

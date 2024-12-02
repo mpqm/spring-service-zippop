@@ -30,9 +30,8 @@ import CompanyOrdersManagePage1 from "@/pages/mypage/company/CompanyOrdersManage
 import CompanyOrdersManagePage2 from "@/pages/mypage/company/CompanyOrdersManagePage2.vue";
 import CartManagement2Page from "@/pages/mypage/customer/CartManagement2Page.vue";
 import CartManagement1Page from "@/pages/mypage/customer/CartManagement1Page.vue";
-import ReserveTestPage from "@/pages/reserve/ReserveTestPage.vue";
-import ReserveTestPage2 from "@/pages/reserve/ReserveTestPage2.vue";
-import ReserveManagePage from "@/pages/mypage/company/ReserveManagePage.vue";
+import ReserveManagePage1 from "@/pages/mypage/company/ReserveManagePage1.vue";
+import ReserveManagePage2 from "@/pages/mypage/company/ReserveManagePage2.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -75,7 +74,8 @@ const router = createRouter({
         { path: 'orders', component: CompanyOrdersManagePage1, }, // 주문 관리 메인 페이지(스토어 목록)
         { path: 'orders/:storeIdx', component: CompanyOrdersManagePage2, }, // 주문 관리 상세 페이지
 
-        { path: 'reserve', component: ReserveManagePage, }, // 주문 관리 상세 페이지
+        { path: 'reserve', component: ReserveManagePage1, }, // 주문 관리 상세 페이지
+        { path: 'reserve/:storeIdx', component: ReserveManagePage2, }, // 주문 관리 상세 페이지
         { path: 'account-edit', component: EditProfilePage }, // 고객 정보 수정 페이지
       ]
     },
@@ -94,9 +94,9 @@ const router = createRouter({
       ]
     },
 
-    // 팝업 스토어 예약
-    { path: "/reserve", component: ReserveTestPage }, // 팝업 스토어 예약 페이지
-    { path: '/reserve2', component: ReserveTestPage2 }, // 팝업 스토어 예약에서 상품 선택 및 주문 페이지
+    // // 팝업 스토어 예약
+    // { path: "/reserve", component: ReserveTestPage1 }, // 팝업 스토어 예약 페이지
+    // { path: '/reserve2', component: ReserveTestPage2 }, // 팝업 스토어 예약에서 상품 선택 및 주문 페이지
 
     // 채팅
     { path: '/chats', component: MainChatComponent },

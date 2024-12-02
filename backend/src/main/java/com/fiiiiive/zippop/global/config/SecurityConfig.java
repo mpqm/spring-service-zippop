@@ -102,6 +102,8 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/reserve/enroll").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/reserve/cancel").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/reserve/status").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/reserve/search-all/as-company").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers("/api/v1/reserve/search-all").permitAll()
 //                            .anyRequest().permitAll()
         );
         http.addFilter(corsFilter());

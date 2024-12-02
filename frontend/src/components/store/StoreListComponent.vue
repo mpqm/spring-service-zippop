@@ -31,7 +31,7 @@
     </div>
      <!-- ReserveManagementPage 용 -->
     <div v-if="showControl === 4" class="btn-container">
-      <router-link class="ud-btn" :to="store ? `/mypage/company/reserve/${store.storeIdx}` : '#'">예약 생성</router-link>
+      <router-link class="ud-btn" :to="store ? `/mypage/company/reserve/${store.storeIdx}` : '#'">예약 보기</router-link>
     </div>
   </div>
 </template>

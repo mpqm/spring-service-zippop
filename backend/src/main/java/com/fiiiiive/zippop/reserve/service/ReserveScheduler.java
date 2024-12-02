@@ -23,8 +23,8 @@ public class ReserveScheduler {
     /**
      * 매일 아침 9시에 예약 데이터 순회 후 Redis 큐 생성
      */
-    @Scheduled(fixedRate = 10000)
-//    @Scheduled(cron = "0 0 9 * * ?") // 매일 9시
+//    @Scheduled(fixedRate = 10000)
+    @Scheduled(cron = "0 0 9 * * ?") // 매일 9시
     public void processReserveQueues() {
         log.info("스케줄러 실행 시작: 예약 데이터를 처리합니다.");
 

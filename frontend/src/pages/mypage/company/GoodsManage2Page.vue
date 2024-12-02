@@ -3,28 +3,21 @@
     <div class="goods-manage-page">
       <div class="goods-control">
         <div class="search-container">
-          <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요"
-            @keyup.enter="searchAllByKeyword" />
-          <button class="search-btn" @click="searchAllByKeyword"><img class="search-img"
-              src="../../../assets/img/search-none.png" alt=""></button>
-          <button class="search-btn" @click="searchAll(0)"><img class="search-img"
-              src="../../../assets/img/reload-none.png" alt=""></button>
+          <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+          <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../../assets/img/search-none.png" alt=""></button>
+          <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../../assets/img/reload-none.png" alt=""></button>
         </div>
         <div class="btn-container">
           <router-link class="register-btn" :to="`/mypage/company/goods`">&lt;</router-link>
-          <router-link class="back-btn" :to="`/mypage/company/goods/${route.params.storeIdx}/register`">팝업 굿즈
-            등록</router-link>
+          <router-link class="back-btn" :to="`/mypage/company/goods/${route.params.storeIdx}/register`">팝업 굿즈 등록</router-link>
         </div>
       </div>
       <div class="goods-list" v-if="goodsList && goodsList.length">
-        <GoodsListComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods"
-          :showControl="showControl" />
+        <GoodsListComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" />
       </div>
-      <div class="notice" v-else>
-        <p>등록된 굿즈가 없습니다.</p>
+      <div class="notice" v-else> <p>등록된 굿즈가 없습니다.</p>
       </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns"
-        @page-changed="changePage" />
+      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
 </template>
