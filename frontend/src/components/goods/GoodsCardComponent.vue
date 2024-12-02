@@ -8,7 +8,7 @@
     </p>
     <img class="goods-img" v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length" :src="goods.searchGoodsImageResList[0].goodsImageUrl" alt="goods image" />
     <div class="btn-container">
-      <button class="normal-btn" @click="goGoodsDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+      <button v-if="showControl" class="normal-btn" @click="goGoodsDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
       <button class="normal-btn" @click="registerCart"><img src="../../assets/img/cart-none.png" alt=""></button>
     </div>
   </div>
@@ -25,6 +25,7 @@ import { useToast } from "vue-toastification";
 const props = defineProps({
   goods: Object,
   storeIdx: Number,
+  showControl: Boolean,
 });
 
 // store, router, route, toast

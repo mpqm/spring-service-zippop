@@ -16,6 +16,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useRoute, useRouter } from "vue-router";
 import { useReserveStore } from "@/stores/useReserveStore";
 import { useToast } from "vue-toastification";
+
 const reserveStore = useReserveStore();
 const route = useRoute();
 const toast = useToast();
@@ -29,7 +30,7 @@ const statusMessage = ref(""); // 상태 메시지
 
 let statusInterval = null; // Interval ID 저장
 // Vue 컴포넌트 라이프사이클
-onMounted(async() => {
+onMounted(async () => {
   await isUserLoggedIn()
   await enroll()
   connectWebSocket();
@@ -43,8 +44,8 @@ onBeforeUnmount(() => {
   disconnectWebSocket();
 });
 
-const isUserLoggedIn = async() => {
-  if(authStore.isLoggedIn) {
+const isUserLoggedIn = async () => {
+  if (authStore.isLoggedIn) {
     return;
   } else {
     router.go(-1);
@@ -52,17 +53,17 @@ const isUserLoggedIn = async() => {
   }
 }
 
-const enroll = async() => {
-  
+const enroll = async () => {
+
   const res = await reserveStore.enroll(route.params.reserveIdx);
-  if(!res.success) {
+  if (!res.success) {
     router.push("/")
   }
 }
 
-const cancel = async() => {
+const cancel = async () => {
   const res = await reserveStore.cancel(route.params.reserveIdx);
-  if(res.success) {
+  if (res.success) {
     router.go(-1)
     toast.success(res.message)
   } else {
@@ -83,22 +84,22 @@ const connectWebSocket = () => {
       console.log("WebSocket 연결 성공: " + frame);
       const userEmail = useAuthStore().userInfo.email;
       stompClient.value.subscribe(`/user/${userEmail}/reserve/status`, (message) => {
-      console.log("서버로부터 상태 메시지 수신: ", message);
-      if (!message.body) {
-        console.log("메시지 응답 없음");
-      }
-      try {
-        const data = JSON.parse(message.body);
-        waitingTotal.value = data.waitingTotal;
-        workingTotal.value = data.workingTotal;
-        statusMessage.value = data.statusMessage;
-        if (data.access) {
+        console.log("서버로부터 상태 메시지 수신: ", message);
+        if (!message.body) {
+          console.log("메시지 응답 없음");
+        }
+        try {
+          const data = JSON.parse(message.body);
+          waitingTotal.value = data.waitingTotal;
+          workingTotal.value = data.workingTotal;
+          statusMessage.value = data.statusMessage;
+          if (data.access) {
             toast.success("예약 접속자로 전환되었습니다.");
-            router.push(`/reserve/${route.params.reserveIdx}/orders`); // 이동할 페이지 경로
+            router.push(`/reserve/${route.params.storeIdx}/${route.params.reserveIdx}/goods`); // 이동할 페이지 경로
           }
-      } catch (error) {
-        console.error("메시지 파싱 실패", error);
-      }
+        } catch (error) {
+          console.error("메시지 파싱 실패", error);
+        }
       });
 
       // 서버에 초기 상태 요청
@@ -115,7 +116,7 @@ const connectWebSocket = () => {
 const sendInitialStatusRequest = () => {
   if (stompClient.value && stompClient.value.connected) {
     const reserveIdx = route.params.reserveIdx;
-    stompClient.value.send( "/pub/reserve/status", {}, JSON.stringify({ reserveIdx }) );
+    stompClient.value.send("/pub/reserve/status", {}, JSON.stringify({ reserveIdx }));
   }
 };
 
@@ -136,10 +137,14 @@ const disconnectWebSocket = () => {
 /* 컨테이너를 화면 중앙에 배치 */
 .container {
   display: flex;
-  justify-content: center; /* 가로 중앙 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
-  height: 100vh; /* 화면 전체 높이 */
-  background-color: #f7f7f7; /* 배경색 */
+  justify-content: center;
+  /* 가로 중앙 정렬 */
+  align-items: center;
+  /* 세로 중앙 정렬 */
+  height: 100vh;
+  /* 화면 전체 높이 */
+  background-color: #f7f7f7;
+  /* 배경색 */
 }
 
 /* 상태 박스 디자인 */
@@ -180,10 +185,12 @@ const disconnectWebSocket = () => {
 }
 
 .cancel-button:hover {
-  background-color: #d43f3a; /* 버튼 호버 색상 */
+  background-color: #d43f3a;
+  /* 버튼 호버 색상 */
 }
 
 .cancel-button:active {
-  background-color: #c12e2a; /* 버튼 활성화 색상 */
+  background-color: #c12e2a;
+  /* 버튼 활성화 색상 */
 }
 </style>

@@ -35,7 +35,9 @@ import ReserveManagePage2 from "@/pages/mypage/company/ReserveManagePage2.vue";
 import ReserveRegisterPage from "@/pages/mypage/company/ReserveRegisterPage.vue";
 import ReserveMainPage from "@/pages/reserve/ReserveMainPage.vue";
 import ReserveQueuePage from "@/pages/reserve/ReserveQueuePage.vue";
-import ReserveWorkingPage from "@/pages/reserve/ReserveWorkingPage.vue";
+import ReserveGoodsPage from "@/pages/reserve/ReserveGoodsPage.vue";
+import ReserveOrdersPage from "@/pages/reserve/ReserveOrdersPage.vue";
+import ReserveCartPage from "@/pages/reserve/ReserveCartPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -61,8 +63,10 @@ const router = createRouter({
 
     // 팝업 예약
     { path: "/reserve", component: ReserveMainPage }, // 팝업 예약 메인 페이지
-    { path: "/reserve/:reserveIdx", component: ReserveQueuePage }, // 팝업 스토어 예약 페이지
-    { path: "/reserve/:reserveIdx/orders", component: ReserveWorkingPage }, // 팝업 스토어 예약 페이지
+    { path: "/reserve/:storeIdx/:reserveIdx", component: ReserveQueuePage }, // 팝업 스토어 예약 페이지
+    { path: "/reserve/:storeIdx/:reserveIdx/goods", component: ReserveGoodsPage }, // 팝업 스토어 예약 페이지(굿즈 목록)
+    { path: "/reserve/:storeIdx/:reserveIdx/cart", component: ReserveCartPage }, // 팝업 스토어 예약 페이지(장바구니)
+    { path: "/reserve/:storeIdx/:reserveIdx/orders", component: ReserveOrdersPage }, // 팝업 스토어 예약 페이지(결제)
         // // 팝업 스토어 예약
     // { path: '/reserve2', component: ReserveTestPage2 }, // 팝업 스토어 예약에서 상품 선택 및 주문 페이지
     // 마이페이지 기업
