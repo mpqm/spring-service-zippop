@@ -14,7 +14,7 @@
         </div>
         <div class="btn-container">
             <button v-if="redirecToGoodsDetail" class="normal-btn" @click="goGoodsDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
-            <button v-else class="normal-btn" @click="goreserveDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
+            <button v-else class="normal-btn" @click="goReserveDetail"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
         </div>
     </div>
 </template>
@@ -34,7 +34,7 @@ const props = defineProps({
 const router = useRouter();
 
 // 스토어 상세 페이지 이동
-const goreserveDetail = () => {
+const goReserveDetail = () => {
     router.push(`/store/${props.reserve.storeIdx}`);
 }
 

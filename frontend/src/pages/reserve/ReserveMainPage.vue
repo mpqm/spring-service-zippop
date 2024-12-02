@@ -8,15 +8,13 @@
                 <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
                 <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
             </div>
-
             <div class="reserve-list-grid" v-if="reserveList && reserveList.length">
                 <ReserveCardComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" />
             </div>
             <div v-else>
                 <p>검색 결과에 해당하는 팝업 스토어 목록이 없습니다.</p>
             </div>
-            <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns"
-            @page-changed="changePage" />
+            <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
         </div>
         <FooterComponent></FooterComponent>
     </div>
@@ -70,33 +68,33 @@ const searchAll = async (flag) => {
 
 // 스토어 목록 조회(키워드 검색)
 const searchAllByKeyword = async () => {
-  if (!isKeywordSearch.value) {
-    currentPage.value = 0; // 키워드 검색 상태로 진입 시 페이지를 초기화
-    isKeywordSearch.value = true; // 키워드 검색 상태 활성화
-  }
-  const res = await reserveStore.searchAllReserveByKeyword(searchQuery.value, currentPage.value, pageSize.value);
-  if (res.success) {
-    totalElements.value = reserveStore.totalElements;
-    totalPages.value = reserveStore.totalPages;
-    reserveList.value = reserveStore.storeList;
-    hideBtns.value = false;
-  } else {
-    reserveList.value = [];
-    totalElements.value = 0;
-    totalPages.value = 0;
-    hideBtns.value = true;
-  }
+    if (!isKeywordSearch.value) {
+        currentPage.value = 0; // 키워드 검색 상태로 진입 시 페이지를 초기화
+        isKeywordSearch.value = true; // 키워드 검색 상태 활성화
+    }
+    const res = await reserveStore.searchAllReserveByKeyword(searchQuery.value, currentPage.value, pageSize.value);
+    if (res.success) {
+        totalElements.value = reserveStore.totalElements;
+        totalPages.value = reserveStore.totalPages;
+        reserveList.value = reserveStore.storeList;
+        hideBtns.value = false;
+    } else {
+        reserveList.value = [];
+        totalElements.value = 0;
+        totalPages.value = 0;
+        hideBtns.value = true;
+    }
 };
 
 // 페이지 네이션
 const changePage = async (newPage) => {
-  if (newPage < 0 || newPage >= totalPages.value) return; // 유효한 페이지 번호인지 확인
-  currentPage.value = newPage;
-  if (isKeywordSearch.value) { // 키워드 검색 상태일 경우
-    await searchAllByKeyword();
-  } else { // 일반 검색 상태일 경우
-    await searchAll();
-  }
+    if (newPage < 0 || newPage >= totalPages.value) return; // 유효한 페이지 번호인지 확인
+    currentPage.value = newPage;
+    if (isKeywordSearch.value) { // 키워드 검색 상태일 경우
+        await searchAllByKeyword();
+    } else { // 일반 검색 상태일 경우
+        await searchAll();
+    }
 };
 
 </script>
