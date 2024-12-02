@@ -13,7 +13,7 @@
       <div class="reserve-list" v-if="reserveList && reserveList.length">
         <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl="false" />
       </div>
-      <div class="notice" v-else> <p>등록된 팝업 스토어가 없습니다.</p> </div>
+      <div class="notice" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
       <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>

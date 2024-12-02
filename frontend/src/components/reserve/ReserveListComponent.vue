@@ -3,6 +3,7 @@
     <div class="store-info1">
       <p class="t1">예약 인원수 : {{ reserve.reservePeople }}</p>
       <p class="t2">예약 시작 날짜 : {{ reserve.reserveStartDate }} </p>
+      <p class="t2">예약 시간: {{ formatTime(reserve.reserveStartTime) }} ~ {{ formatTime(reserve.reserveEndTime) }}</p>
       <CountDownTimer :targetTime="reserve.reserveStartTime" :flag="false"></CountDownTimer>
     </div>
     <div v-if="showControl" class="btn-container">
@@ -25,12 +26,12 @@ const props = defineProps({
   showControl: Boolean,
 });
 
-// function formatTime(dateTimeString) {
-//   if (!dateTimeString) return "";
-//   // 문자열을 자르기: 'T' 이후 부분 가져오기
-//   const timePart = dateTimeString.split("T")[1];
-//   return timePart ? timePart.slice(0, 5) : "";
-// }
+function formatTime(dateTimeString) {
+  if (!dateTimeString) return "";
+  // 문자열을 자르기: 'T' 이후 부분 가져오기
+  const timePart = dateTimeString.split("T")[1];
+  return timePart ? timePart.slice(0, 5) : "";
+}
 
 const goReserve = () => {
   router.push(`/reserve/${props.reserve.reserveIdx}`);

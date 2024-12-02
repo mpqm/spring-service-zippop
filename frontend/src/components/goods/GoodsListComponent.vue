@@ -14,7 +14,7 @@
         <img class="stock-img" src="../../assets/img/stock.png" alt="" />&nbsp;{{ goods.goodsAmount }}
       </div>
     <div v-if="showControl == true" class="btn-container">
-      <router-link class="ud-btn" :to="goods ? `/goods/${goods.goodsIdx}` : '#'">보기</router-link>
+      <router-link class="ud-btn" :to="goods ? `/goods/${route.params.storeIdx}/${goods.goodsIdx}` : '#'">보기</router-link>
       <router-link class="ud-btn" :to="goods ? `/mypage/company/goods/${route.params.storeIdx}/update/${goods.goodsIdx}` : '#'">수정</router-link>
       <button class="ud-btn" @click="deleteGoods">삭제</button>
     </div>
