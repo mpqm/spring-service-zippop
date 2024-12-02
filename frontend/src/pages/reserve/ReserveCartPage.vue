@@ -12,8 +12,7 @@
                     <tbody>
                         <tr v-for="item in cartItemList" :key="item.goodsIdx">
                             <td>
-                                <img v-if="item.searchGoodsRes.searchGoodsImageResList && item.searchGoodsRes.searchGoodsImageResList.length > 0" 
-                                :src="item.searchGoodsRes.searchGoodsImageResList[0].goodsImageUrl" class="cart_item_img" />
+                                <img v-if="item.searchGoodsRes.searchGoodsImageResList && item.searchGoodsRes.searchGoodsImageResList.length > 0" :src="item.searchGoodsRes.searchGoodsImageResList[0].goodsImageUrl" class="cart_item_img" />
                             </td>
                             <td> {{ item.searchGoodsRes.goodsName }} </td>
                             <td> {{ item.price * item.count }}원 ({{ item.price }}) </td>
@@ -28,9 +27,6 @@
                 <div class="predict-price-container">
                     <h3 class="predict-price-title">주문 예상 금액</h3>
                     <div class="predict-price-item"><span>총 상품 가격</span> {{ totalPrice }}원</div>
-                    <div class="predict-price-item"><span>총 할인</span> {{ totalDiscount }}원</div>
-                    <div class="predict-price-item"><span>총 배송비</span> {{ deliveryFee }}원</div>
-                    <div class="predict-price-item"><span><input type="checkbox" v-model="usePoints">포인트 사용:</span>{{ userPoints }} points </div>
                     <h3 class="predict-total-price"><span>총 주문 금액</span> {{ finalOrderPrice }}원</h3>
                     <div class="reward-area">
                         <img class="reward-icon" src="../../assets/img/point.png" alt="">&nbsp;
@@ -63,31 +59,20 @@ const toast = useToast();
 const cartItemList = ref([]);
 const totalPrice = ref(0);
 const userPoints = ref(0);
-const usePoints = ref(false);
-const deliveryFee = ref(2500);
-const totalDiscount = ref(0);
 const finalOrderPrice = ref(0);
 
 // onMounted
 onMounted(async () => {
     await searchAll();
     await updateTotalPrice();  // 총 상품 가격 계산
-    await updateTotalDiscount();  // 총 할인 계산
     await updateFinalOrderPrice();  // 총 주문 금액 계산
 });
 
 // 수량 변경 시 자동으로 totalPrice와 finalOrderPrice 업데이트
 watch(() => cartStore.cartItemList, async () => {
     await updateTotalPrice();  // 총 상품 가격 계산
-    await updateTotalDiscount();  // 총 할인 계산
     await updateFinalOrderPrice();  // 총 주문 금액 계산
 }, { deep: true });
-
-// usePoints가 변경될 때마다 totalDiscount와 finalOrderPrice 업데이트
-watch(() => usePoints.value, async () => {
-    await updateTotalDiscount();  // 포인트 사용 여부에 따라 할인 계산
-    await updateFinalOrderPrice();  // 총 주문 금액 계산
-});
 
 // 카트 목록 조회
 const searchAll = async () => {
@@ -98,7 +83,6 @@ const searchAll = async () => {
         cartItemList.value = cartStore.cartItemList;
         cartItemList.value.forEach(item => { item.itemTotalPrice = item.price * item.count; }) // 아이템별 총 금액 계산
         await updateTotalPrice();  // 총 상품 가격 계산
-        await updateTotalDiscount();  // 총 할인 계산
         await updateFinalOrderPrice();  // 총 주문 금액 계산
         toast.success(res.message);
     }
@@ -109,14 +93,9 @@ const updateTotalPrice = async () => {
     totalPrice.value = cartItemList.value.reduce((acc, item) => acc + item.itemTotalPrice, 0);
 };
 
-// 총 할인 계산 (포인트 사용 여부에 따라 할인액 결정)
-const updateTotalDiscount = async () => {
-    totalDiscount.value = usePoints.value ? userPoints.value : 0;
-};
-
 // 최종 주문 금액 계산
 const updateFinalOrderPrice = async () => {
-    finalOrderPrice.value = totalPrice.value - totalDiscount.value + deliveryFee.value;
+    finalOrderPrice.value = totalPrice.value;
 };
 
 // 결제 정보 저장 및 결제 페이지로 이동
@@ -126,9 +105,6 @@ const setPaymentData = async () => {
         goodsList: cartItemList.value,
         customData: customData,
         totalPrice: totalPrice.value,
-        totalDiscount: totalDiscount.value,
-        deliveryFee: deliveryFee.value,
-        usePoints: usePoints.value,
         finalOrderPrice: finalOrderPrice.value,
     };
     await ordersStore.setPaymentData(paymentData);
