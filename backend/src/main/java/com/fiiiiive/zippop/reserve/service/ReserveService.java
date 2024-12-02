@@ -4,6 +4,8 @@ package com.fiiiiive.zippop.reserve.service;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.reserve.model.dto.ReserveStatusReq;
+import com.fiiiiive.zippop.reserve.model.dto.ReserveStatusRes;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
@@ -18,8 +20,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,6 +37,9 @@ public class ReserveService {
     private final StoreRepository storeRepository;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
+    private final SimpMessagingTemplate messagingTemplate;
+
+
 
     public CreateReserveRes register(CustomUserDetails customUserDetails, CreateReserveReq dto) throws BaseException {
         // 1. 예외: 기업 회원이 아닐 때, 스토어 조회 안될 때, 스토어의 이메일과 인증된 사용자의 이메일이 다를 때
@@ -92,33 +100,33 @@ public class ReserveService {
          */
         String workingUUID = reserve.getWorkingUUID();
         String waitingUUID = reserve.getWaitingUUID();
-        String userId = customUserDetails.getUserId();
+        String userEmail = customUserDetails.getEmail();
 
         // 예약 접속 큐의 현재 크기 및 사용자의 순서 조회
-        Long currentOrder = redisUtil.getOrder(workingUUID,userId);
+        Long currentOrder = redisUtil.getOrder(workingUUID,userEmail);
         Long workingQueueSize = redisUtil.getSize(workingUUID);
         // 예약 접속 큐에 사용자가 이미 있는 경우 -> 사이트 재접속
 
         if (currentOrder != null) {
             // 이미 등록되어 있으므로 토큰을 발급합니다.
-            issueWToken(res, reserveIdx, userId);
+            issueWToken(res, reserveIdx, userEmail);
             long rank = currentOrder + 1; // 0부터 시작하므로 +1 해서 순위를 반환
             return "팝업 스토어 예약 굿즈 페이지로 이동합니다 -> 접속 번호 " + rank;
         }
         // 예약 접속 큐에 자리가 있는 경우 (현재 예약자 수보다 큐의 크기가 작은 경우)
         if (workingQueueSize < reserve.getReservePeople()) {
             // 새로운 사용자 등록
-            redisUtil.save(workingUUID, userId, System.currentTimeMillis());
+            redisUtil.save(workingUUID, userEmail, System.currentTimeMillis());
 
-            issueWToken(res, reserveIdx, userId);
+            issueWToken(res, reserveIdx, userEmail);
 
-            long rank = redisUtil.getOrder(workingUUID, userId) + 1;
+            long rank = redisUtil.getOrder(workingUUID, userEmail) + 1;
             return "팝업 스토어 예약 굿즈 페이지로 이동합니다 -> 접속 번호 " + rank;
         }
 
         // 예약 접속 큐가 꽉 찬 경우 -> 대기 큐에 추가
-        redisUtil.save(waitingUUID, userId, System.currentTimeMillis());
-        long rank = redisUtil.getOrder(waitingUUID, userId) + 1;
+        redisUtil.save(waitingUUID, userEmail, System.currentTimeMillis());
+        long rank = redisUtil.getOrder(waitingUUID, userEmail) + 1;
         return "예약 대기: " + rank;
     }
 
@@ -128,11 +136,11 @@ public class ReserveService {
         );
         String workingUUID = reserve.getWorkingUUID();
         String waitingUUID = reserve.getWaitingUUID();
-        Long currentOrder = redisUtil.getOrder(workingUUID, customUserDetails.getUserId());
+        Long currentOrder = redisUtil.getOrder(workingUUID, customUserDetails.getEmail());
         // 4. 현재 사용자가 예약 큐에 있는 경우
         if (currentOrder != null) {
             // 현재 사용자 예약 접속 redis에서 삭제
-            redisUtil.remove(workingUUID, customUserDetails.getUserId());
+            redisUtil.remove(workingUUID, customUserDetails.getEmail());
             // 대기1순위 사용자 예약 접속 redis에 추가
             String firstWaitingUser = redisUtil.firstWatingUserToWorking(workingUUID, waitingUUID);
             if(firstWaitingUser != null ){
@@ -141,20 +149,68 @@ public class ReserveService {
                 log.info("대기자가 없습니다");
             }
         } else {
-            Long waitingOrder = redisUtil.getOrder(waitingUUID, customUserDetails.getUserId());
+            Long waitingOrder = redisUtil.getOrder(waitingUUID, customUserDetails.getEmail());
             if (waitingOrder != null) {
                 // 대기 큐에서 현재 사용자 제거
-                redisUtil.remove(waitingUUID, customUserDetails.getUserId());
+                redisUtil.remove(waitingUUID, customUserDetails.getEmail());
                 log.info("대기 예약이 취소되었습니다.");
             }
         }
         return "예약을 취소했습니다.";
     }
 
-    public String reserveStatus(String onDoingUUID, String waitingUUID){
-        String reserveTotal = redisUtil.getAllValues(onDoingUUID);
-        String reserveWaitingTotal = redisUtil.getAllValues(waitingUUID);
-        return " 예약접속자 " + reserveTotal + " 예약대기자 " + reserveWaitingTotal;
+//    // 폴링방식
+//    public String status(CustomUserDetails customUserDetails, Long reserveIdx) throws BaseException {
+//        Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
+//                () -> new BaseException(BaseResponseMessage.RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND)
+//        );
+//        String waitingTotal = redisUtil.getAllValues(reserve.getWaitingUUID());
+//        String workingTotal = redisUtil.getAllValues(reserve.getWorkingUUID());
+//        Long currentWorkingOrder = redisUtil.getOrder(reserve.getWorkingUUID(), customUserDetails.getUserId());
+//        if(currentWorkingOrder == null){
+//            Long currentWaitingOrder = redisUtil.getOrder(reserve.getWaitingUUID(), customUserDetails.getUserId());
+//            return " 예약접속자 " + workingTotal + " 예약대기자 " + waitingTotal + "현재 순번" + (currentWaitingOrder + 1);
+//        }
+//        return " 예약접속자 " + workingTotal + " 예약대기자 " + waitingTotal + "현재 순번" + (currentWorkingOrder + 1);
+//    }
+
+    // 소켓 방식
+    public void status(Principal principal, ReserveStatusReq reserveStatusReq) throws BaseException {
+
+        Reserve reserve = reserveRepository.findById(reserveStatusReq.getReserveIdx()).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND)
+        );
+
+        String waitingTotal = redisUtil.getAllValues(reserve.getWaitingUUID());
+        String workingTotal = redisUtil.getAllValues(reserve.getWorkingUUID());
+        Long currentWorkingOrder = redisUtil.getOrder(reserve.getWorkingUUID(), principal.getName());
+
+        String statusMessage;
+        System.out.println(principal.getName());
+        if (currentWorkingOrder == null) {
+
+            Long currentWaitingOrder = redisUtil.getOrder(reserve.getWaitingUUID(), principal.getName());
+            if(currentWaitingOrder == null){
+                throw new BaseException(BaseResponseMessage.CACHE_FAIL_NOT_FOUND);
+            }
+            statusMessage = " 예약접속자 " + workingTotal + " 예약대기자 " + waitingTotal + " 현재 대기 순번 " + (currentWaitingOrder + 1);
+        } else {
+            statusMessage = " 예약접속자 " + workingTotal + " 예약대기자 " + waitingTotal +  " 현재 접속 순번 " + (currentWorkingOrder + 1);
+        }
+        log.info(statusMessage);
+        ReserveStatusRes reserveStatusRes = ReserveStatusRes.builder()
+                .workingTotal(workingTotal)
+                .waitingTotal(waitingTotal)
+                .statusMessage(statusMessage)
+                .build();
+        // 특정 사용자에게만 상태 정보 전송
+        messagingTemplate.convertAndSendToUser(
+                principal.getName(), // 사용자 이름으로 특정 사용자에게 전송
+                "/reserve/status",
+                reserveStatusRes
+        );
+        log.info("Sending message to user: {}", principal.getName());
     }
+
 }
 
