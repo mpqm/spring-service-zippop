@@ -15,6 +15,7 @@ import com.fiiiiive.zippop.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,9 +103,9 @@ public class GoodsService {
          */
         Page<Goods> goodsPage = null;
         if(keyword != null){
-            goodsPage = goodsRepository.findAllByStoreIdxAndKeyword(storeIdx, keyword, PageRequest.of(page, size));
+            goodsPage = goodsRepository.findAllByStoreIdxAndKeyword(storeIdx, keyword, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
         } else {
-            goodsPage = goodsRepository.findAllByStoreIdx(storeIdx, PageRequest.of(page, size));
+            goodsPage = goodsRepository.findAllByStoreIdx(storeIdx, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
         }
         if (goodsPage.isEmpty()) {
             throw new BaseException(BaseResponseMessage.GOODS_SEARCH_ALL_FAIL_STORE_NOT_NOT_FOUND);

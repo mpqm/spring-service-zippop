@@ -19,6 +19,7 @@ import com.fiiiiive.zippop.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,7 +90,7 @@ public class CartService {
     // 장바구니 목록 조회
     public Page<SearchCartRes> searchAll(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
         // 1. 예외: 사용자가 등록한 카드 목록을 찾지 못했을때
-        Page<Cart> cartPage = cartRepository.findAllByCustomerIdxAndStoreIdx(customUserDetails.getIdx(), PageRequest.of(page, size)).orElseThrow(
+        Page<Cart> cartPage = cartRepository.findAllByCustomerIdxAndStoreIdx(customUserDetails.getIdx(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.CART_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 

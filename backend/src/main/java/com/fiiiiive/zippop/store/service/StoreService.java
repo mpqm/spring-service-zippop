@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -112,15 +113,15 @@ public class StoreService {
         Page<Store> storePage;
         if(keyword != null) {
             if(flag){
-                storePage = storeRepository.findAllByKeywordAndStatus( keyword, "STORE_START", PageRequest.of(page, size));
+                storePage = storeRepository.findAllByKeywordAndStatus( keyword, "STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
             } else {
-                storePage = storeRepository.findAllByKeywordAndStatus( keyword, "STORE_END", PageRequest.of(page, size));
+                storePage = storeRepository.findAllByKeywordAndStatus( keyword, "STORE_END", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
             }
         } else {
             if(flag){
-                storePage = storeRepository.findAllByStatus("STORE_START",PageRequest.of(page, size));
+                storePage = storeRepository.findAllByStatus("STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
             } else {
-                storePage = storeRepository.findAllByStatus("STORE_END", PageRequest.of(page, size));
+                storePage = storeRepository.findAllByStatus("STORE_END", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
             }
         }
         if (storePage.isEmpty()) {
@@ -167,9 +168,9 @@ public class StoreService {
         */
         Page<Store> storePage = null;
         if(keyword != null) {
-            storePage = storeRepository.findAllByKeywordAndCompanyEmail(keyword, customUserDetails.getEmail(), PageRequest.of(page, size));
+            storePage = storeRepository.findAllByKeywordAndCompanyEmail(keyword, customUserDetails.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
         } else {
-            storePage = storeRepository.findAllByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size));
+            storePage = storeRepository.findAllByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
         }
         if (storePage.isEmpty()) {
             throw new BaseException(BaseResponseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);

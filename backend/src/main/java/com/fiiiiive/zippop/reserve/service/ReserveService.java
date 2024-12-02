@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -161,7 +162,7 @@ public class ReserveService {
     }
 
     public Page<SearchReserveRes> searchAllAsCompany(CustomUserDetails customUserDetails, Long storeIdx, int page, int size) throws BaseException {
-        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(storeIdx, customUserDetails.getEmail(), PageRequest.of(page, size)).orElseThrow(
+        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(storeIdx, customUserDetails.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
         );
         Page<SearchReserveRes> searchReserveResPage = reservePage.map(reserve -> {
@@ -178,7 +179,7 @@ public class ReserveService {
     }
 
     public Page<SearchReserveRes> searchAll(int page, int size) throws BaseException {
-        Page<Reserve> reservePage = reserveRepository.findAllPage(PageRequest.of(page, size)).orElseThrow(
+        Page<Reserve> reservePage = reserveRepository.findAllPage(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
         );
         Page<SearchReserveRes> searchReserveResPage = reservePage.map(reserve -> {

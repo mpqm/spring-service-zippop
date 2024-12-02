@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class StoreLikeService {
     // 팝업 스토어 좋아요 목록 조회(고객)
     public Page<SearchStoreLikeRes> searchAll(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
         // 1. 예외 : 팝업 스토어 목록이 없을 때
-        Page<StoreLike> storeLikePage = storeLikeRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size)).orElseThrow(
+        Page<StoreLike> storeLikePage = storeLikeRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 ()->new BaseException(BaseResponseMessage.STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
