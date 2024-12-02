@@ -8,11 +8,13 @@ import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
 import com.fiiiiive.zippop.reserve.model.dto.ReserveStatusReq;
+import com.fiiiiive.zippop.reserve.model.dto.SearchReserveRes;
 import com.fiiiiive.zippop.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -59,6 +61,16 @@ public class ReserveController {
         @RequestParam Long reserveIdx) throws BaseException {
 
         String response = reserveService.cancel(customUserDetails, reserveIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+    }
+
+    @GetMapping("/search-all/as-company")
+    public ResponseEntity<BaseResponse> searchAllAsCompany (
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam int page,
+        @RequestParam int size ) throws BaseException {
+        
+        Page<SearchReserveRes> response = reserveService.searchAllAsCompany(customUserDetails, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
