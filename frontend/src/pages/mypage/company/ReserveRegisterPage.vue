@@ -14,7 +14,7 @@
         <div>
           <label>팝업스토어 예약 시작시간/종료시간</label>
           <div class="date-picker">
-            <input class="register-input" v-model="reserveStartTime" type="time" placeholder="시작시간" />
+            <input class="register-input" :min="'09:00'"  v-model="reserveStartTime" type="time" placeholder="시작시간" />
             <input class="register-input" v-model="reserveEndTime" type="time" placeholder="종료시간" />
           </div>
         </div>

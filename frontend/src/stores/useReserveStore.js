@@ -59,6 +59,19 @@ export const useReserveStore = defineStore("reserve", {
                 return error.response.data
             }
         },
+        async searchAllReserveByKeyword(keyword, page, size) {
+            try {
+                const res = await axios.get(
+                    `${backend}/reserve/search-all?keyword=${keyword}&page=${page}&size=${size}`,
+                );
+                this.reserveList = res.data.result.content;
+                this.totalElements = res.data.result.totalElements;
+                this.totalPages = res.data.result.totalPages;
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        },
         async searchAllReserveAsCompany(storeIdx, page, size) {
             try {
                 const res = await axios.get(
