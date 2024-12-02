@@ -77,10 +77,11 @@ public class ReserveController {
 
     @GetMapping("/search-all")
     public ResponseEntity<BaseResponse> searchAll (
+        @RequestParam(required = false) String keyword,
         @RequestParam int page,
         @RequestParam int size ) throws BaseException {
 
-        Page<SearchReserveRes> response = reserveService.searchAll(page, size);
+        Page<SearchReserveRes> response = reserveService.searchAll(keyword, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 

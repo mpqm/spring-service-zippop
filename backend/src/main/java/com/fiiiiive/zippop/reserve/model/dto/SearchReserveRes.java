@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.reserve.model.dto;
 
+import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -17,4 +18,5 @@ public class SearchReserveRes {
     private LocalDate reserveStartDate;
     private LocalDateTime reserveStartTime;
     private LocalDateTime reserveEndTime;
+    private SearchStoreRes searchStoreRes;
 }

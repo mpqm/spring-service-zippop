@@ -178,11 +178,41 @@ public class ReserveService {
         return searchReserveResPage;
     }
 
-    public Page<SearchReserveRes> searchAll(int page, int size) throws BaseException {
-        Page<Reserve> reservePage = reserveRepository.findAllPage(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
-        );
+    public Page<SearchReserveRes> searchAll(String keyword, int page, int size) throws BaseException {
+        Page<Reserve> reservePage;
+        if(keyword != null) {
+            reservePage = reserveRepository.findAllByStatus("STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+        } else {
+            reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, "STORE_START", PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
+        }
+        if (reservePage.isEmpty()) {
+            throw new BaseException(BaseResponseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND);
+        }
         Page<SearchReserveRes> searchReserveResPage = reservePage.map(reserve -> {
+            List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
+            for (StoreImage storeImage : reserve.getStore().getStoreImageList()) {
+                SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
+                        .storeImageIdx(storeImage.getIdx())
+                        .storeImageUrl(storeImage.getUrl())
+                        .createdAt(storeImage.getCreatedAt())
+                        .updatedAt(storeImage.getUpdatedAt())
+                        .build();
+                searchStoreImageResList.add(searchStoreImageRes);
+            }
+            SearchStoreRes searchStoreRes = SearchStoreRes.builder()
+                    .storeIdx(reserve.getStore().getIdx())
+                    .companyEmail(reserve.getStore().getCompanyEmail())
+                    .storeName(reserve.getStore().getName())
+                    .storeContent(reserve.getStore().getContent())
+                    .storeAddress(reserve.getStore().getAddress())
+                    .category(reserve.getStore().getCategory())
+                    .likeCount(reserve.getStore().getLikeCount())
+                    .totalPeople(reserve.getStore().getTotalPeople())
+                    .storeStartDate(reserve.getStore().getStartDate())
+                    .storeStatus(reserve.getStore().getStatus())
+                    .storeEndDate(reserve.getStore().getEndDate())
+                    .searchStoreImageResList(searchStoreImageResList)
+                    .build();
             return SearchReserveRes.builder()
                     .storeIdx(reserve.getStore().getIdx())
                     .reserveIdx(reserve.getIdx())
@@ -190,6 +220,7 @@ public class ReserveService {
                     .reserveStartDate(reserve.getStartDate())
                     .reserveStartTime(reserve.getStartTime())
                     .reserveEndTime(reserve.getEndTime())
+                    .searchStoreRes(searchStoreRes)
                     .build();
         });
         return searchReserveResPage;
@@ -221,7 +252,6 @@ public class ReserveService {
         Long currentWorkingOrder = redisUtil.getOrder(reserve.getWorkingUUID(), principal.getName());
 
         String statusMessage;
-        System.out.println(principal.getName());
         if (currentWorkingOrder == null) {
 
             Long currentWaitingOrder = redisUtil.getOrder(reserve.getWaitingUUID(), principal.getName());
