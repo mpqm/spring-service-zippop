@@ -160,8 +160,25 @@ public class ReserveService {
         return "예약을 취소했습니다.";
     }
 
-    public Page<SearchReserveRes> searchAllAsCompany(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
-        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size)).orElseThrow(
+    public Page<SearchReserveRes> searchAllAsCompany(CustomUserDetails customUserDetails, Long storeIdx, int page, int size) throws BaseException {
+        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(storeIdx, customUserDetails.getEmail(), PageRequest.of(page, size)).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+        Page<SearchReserveRes> searchReserveResPage = reservePage.map(reserve -> {
+            return SearchReserveRes.builder()
+                    .storeIdx(reserve.getStore().getIdx())
+                    .reserveIdx(reserve.getIdx())
+                    .reservePeople(reserve.getTotalPeople())
+                    .reserveStartDate(reserve.getStartDate())
+                    .reserveStartTime(reserve.getStartTime())
+                    .reserveEndTime(reserve.getEndTime())
+                    .build();
+        });
+        return searchReserveResPage;
+    }
+
+    public Page<SearchReserveRes> searchAll(int page, int size) throws BaseException {
+        Page<Reserve> reservePage = reserveRepository.findAllPage(PageRequest.of(page, size)).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
         );
         Page<SearchReserveRes> searchReserveResPage = reservePage.map(reserve -> {

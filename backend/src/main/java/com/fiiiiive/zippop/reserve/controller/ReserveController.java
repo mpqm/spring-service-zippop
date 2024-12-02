@@ -67,10 +67,20 @@ public class ReserveController {
     @GetMapping("/search-all/as-company")
     public ResponseEntity<BaseResponse> searchAllAsCompany (
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long storeIdx,
         @RequestParam int page,
         @RequestParam int size ) throws BaseException {
-        
-        Page<SearchReserveRes> response = reserveService.searchAllAsCompany(customUserDetails, page, size);
+
+        Page<SearchReserveRes> response = reserveService.searchAllAsCompany(customUserDetails,storeIdx, page, size);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+    }
+
+    @GetMapping("/search-all")
+    public ResponseEntity<BaseResponse> searchAll (
+        @RequestParam int page,
+        @RequestParam int size ) throws BaseException {
+
+        Page<SearchReserveRes> response = reserveService.searchAll(page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
