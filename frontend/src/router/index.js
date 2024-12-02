@@ -32,6 +32,7 @@ import CartManagement2Page from "@/pages/mypage/customer/CartManagement2Page.vue
 import CartManagement1Page from "@/pages/mypage/customer/CartManagement1Page.vue";
 import ReserveManagePage1 from "@/pages/mypage/company/ReserveManagePage1.vue";
 import ReserveManagePage2 from "@/pages/mypage/company/ReserveManagePage2.vue";
+import ReserveRegisterPage from "@/pages/mypage/company/ReserveRegisterPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -76,6 +77,7 @@ const router = createRouter({
 
         { path: 'reserve', component: ReserveManagePage1, }, // 주문 관리 상세 페이지
         { path: 'reserve/:storeIdx', component: ReserveManagePage2, }, // 주문 관리 상세 페이지
+        { path: 'reserve/register/:storeIdx', component: ReserveRegisterPage, }, // 주문 관리 상세 페이지
         { path: 'account-edit', component: EditProfilePage }, // 고객 정보 수정 페이지
       ]
     },

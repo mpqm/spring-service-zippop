@@ -7,7 +7,7 @@
         </div>
         <div class="btn-container">
           <router-link class="register-btn" :to="`/mypage/company/reserve`">&lt;</router-link>
-          <router-link class="back-btn" :to="`/mypage/company/reserve/${route.params.reserveIdx}/register`">예약 등록</router-link>
+          <router-link class="back-btn" :to="`/mypage/company/reserve/register/${route.params.storeIdx}`">예약 등록</router-link>
         </div>
       </div>
       <div class="reserve-list" v-if="reserveList && reserveList.length">
