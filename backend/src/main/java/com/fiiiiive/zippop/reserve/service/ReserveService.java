@@ -110,18 +110,17 @@ public class ReserveService {
         // 예약 접속 큐에 사용자가 이미 있는 경우 -> 사이트 재접속
 
         if (currentOrder != null) {
-            // 이미 등록되어 있으므로 토큰을 발급합니다.
+            // 이미 등록되어 있으므로 토큰을 발급
             issueWToken(res, reserveIdx, userEmail);
             long rank = currentOrder + 1; // 0부터 시작하므로 +1 해서 순위를 반환
             return "팝업 스토어 예약 굿즈 페이지로 이동합니다 -> 접속 번호 " + rank;
+
         }
         // 예약 접속 큐에 자리가 있는 경우 (현재 예약자 수보다 큐의 크기가 작은 경우)
         if (workingQueueSize < reserve.getTotalPeople()) {
             // 새로운 사용자 등록
             redisUtil.save(workingUUID, userEmail, System.currentTimeMillis());
-
             issueWToken(res, reserveIdx, userEmail);
-
             long rank = redisUtil.getOrder(workingUUID, userEmail) + 1;
             return "팝업 스토어 예약 굿즈 페이지로 이동합니다 -> 접속 번호 " + rank;
         }
@@ -132,7 +131,7 @@ public class ReserveService {
         return "예약 대기: " + rank;
     }
 
-    public String cancel(CustomUserDetails customUserDetails, Long reserveIdx) throws BaseException {
+    public String cancel(HttpServletResponse res,CustomUserDetails customUserDetails, Long reserveIdx) throws BaseException {
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.RESERVE_CANCEL_FAIL)
         );
@@ -141,9 +140,10 @@ public class ReserveService {
         Long currentOrder = redisUtil.getOrder(workingUUID, customUserDetails.getEmail());
         // 4. 현재 사용자가 예약 큐에 있는 경우
         if (currentOrder != null) {
-            // 현재 사용자 예약 접속 redis에서 삭제
+            // 현재 사용자 예약 접속 redis에서 삭제, 토큰 삭제
             redisUtil.remove(workingUUID, customUserDetails.getEmail());
-            String firstWaitingUser = redisUtil.firstWaitingUserToWorking(workingUUID, waitingUUID, reserve.getTotalPeople());
+            deleteWToken(res);
+            String firstWaitingUser = redisUtil.firstWatingUserToWorking(workingUUID, waitingUUID, reserve.getTotalPeople());
             if(firstWaitingUser != null ){
                 log.info("대기자에서 예약자로 이동: {}", firstWaitingUser);
             } else {
@@ -253,7 +253,7 @@ public class ReserveService {
         String waitingTotal = redisUtil.getAllValues(reserve.getWaitingUUID());
         String workingTotal = redisUtil.getAllValues(reserve.getWorkingUUID());
         Long currentWorkingOrder = redisUtil.getOrder(reserve.getWorkingUUID(), principal.getName());
-
+        boolean access; // 결제 페이지로 접근 가능한지 여부
         String statusMessage;
         if (currentWorkingOrder == null) {
 
@@ -261,15 +261,18 @@ public class ReserveService {
             if(currentWaitingOrder == null){
                 throw new BaseException(BaseResponseMessage.CACHE_FAIL_NOT_FOUND);
             }
-            statusMessage = " 예약접속자 " + workingTotal + " 예약대기자 " + waitingTotal + " 현재 대기 순번 " + (currentWaitingOrder + 1);
+            statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 예약 대기자 순번: " + (currentWaitingOrder + 1);
+            access = false; // 대기 큐에 있으면 access는 false
         } else {
-            statusMessage = " 예약접속자 " + workingTotal + " 예약대기자 " + waitingTotal +  " 현재 접속 순번 " + (currentWorkingOrder + 1);
+            statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 예약 접속자 순번: " + (currentWorkingOrder + 1);
+            access = true; // 예약 접속 큐에 있으면 access는 true
         }
-        log.info(statusMessage);
+
         ReserveStatusRes reserveStatusRes = ReserveStatusRes.builder()
                 .workingTotal(workingTotal)
                 .waitingTotal(waitingTotal)
                 .statusMessage(statusMessage)
+                .access(access) // access 필드 설정
                 .build();
         // 특정 사용자에게만 상태 정보 전송
         messagingTemplate.convertAndSendToUser(
@@ -277,7 +280,7 @@ public class ReserveService {
                 "/reserve/status",
                 reserveStatusRes
         );
-        log.info("Sending message to user: {}", principal.getName());
+        log.info("Sending message to user: {}", principal.getName(), access);
     }
 
 }

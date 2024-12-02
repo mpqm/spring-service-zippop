@@ -35,6 +35,7 @@ import ReserveManagePage2 from "@/pages/mypage/company/ReserveManagePage2.vue";
 import ReserveRegisterPage from "@/pages/mypage/company/ReserveRegisterPage.vue";
 import ReserveMainPage from "@/pages/reserve/ReserveMainPage.vue";
 import ReserveQueuePage from "@/pages/reserve/ReserveQueuePage.vue";
+import ReserveWorkingPage from "@/pages/reserve/ReserveWorkingPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -60,7 +61,8 @@ const router = createRouter({
 
     // 팝업 예약
     { path: "/reserve", component: ReserveMainPage }, // 팝업 예약 메인 페이지
-    { path: "/reserve/:storeIdx", component: ReserveQueuePage }, // 팝업 스토어 예약 페이지
+    { path: "/reserve/:reserveIdx", component: ReserveQueuePage }, // 팝업 스토어 예약 페이지
+    { path: "/reserve/:reserveIdx/orders", component: ReserveWorkingPage }, // 팝업 스토어 예약 페이지
         // // 팝업 스토어 예약
     // { path: '/reserve2', component: ReserveTestPage2 }, // 팝업 스토어 예약에서 상품 선택 및 주문 페이지
     // 마이페이지 기업

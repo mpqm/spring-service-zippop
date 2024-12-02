@@ -45,11 +45,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleAuthenticationException(AuthenticationException e) {
         if (e instanceof BadCredentialsException) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(BaseResponseMessage.BAD_CREDENTIAL, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.BAD_CREDENTIAL, e.getMessage()));
         } else if (e instanceof InternalAuthenticationServiceException | e instanceof InsufficientAuthenticationException) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(BaseResponseMessage.CHAT_USER_NOT_FOUND, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.CHAT_USER_NOT_FOUND, e.getMessage()));
         }else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(BaseResponseMessage.INVALID_TOKEN, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.INVALID_TOKEN, e.getMessage()));
         }
     }
 

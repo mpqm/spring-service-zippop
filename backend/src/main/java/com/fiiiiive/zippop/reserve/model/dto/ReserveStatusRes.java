@@ -11,4 +11,5 @@ public class ReserveStatusRes {
     private String waitingTotal;
     private String workingTotal;
     private String statusMessage;
+    private Boolean access;
 }

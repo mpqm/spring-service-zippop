@@ -144,6 +144,10 @@ const update = async () => {
   };
   const formData = new FormData();
   formData.append("dto", new Blob([JSON.stringify(req)], { type: "application/json" }));
+  if (files.value.length === 0) {
+    toast.error("이미지를 선택해주세요");
+    return
+  }
   Array.from(files.value).forEach((file) => { formData.append("files", file);});
   const res = await storeStore.updateStore(route.params.storeIdx, formData);
   if (res.success) {

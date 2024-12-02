@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.global.utils;
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,6 +27,16 @@ public class RedisUtil {
             throw new RuntimeException(e);
         }
     }
+
+    // Redis에서 키 존재 여부 확인
+    public boolean exists(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    public Long getTTL(String key) {
+        return redisTemplate.getExpire(key, TimeUnit.SECONDS);
+    }
+
 
     // SortedSet 값 저장(key, value, score), 타임스탬프를 기준으로 value를 저장 및 정렬
     public void save(String key, String value, long timestamp) {
@@ -73,7 +82,7 @@ public class RedisUtil {
         zSetOperations.remove(key, value);
     }
 
-    public String firstWaitingUserToWorking(String key1, String key2, Integer fixedSize) {
+    public String firstWatingUserToWorking(String key1, String key2, Integer fixedSize) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> waitingList = zSetOperations.rangeWithScores(key2, 0, 0);
         if (waitingList != null && !waitingList.isEmpty() && getSize(key1) < fixedSize) {

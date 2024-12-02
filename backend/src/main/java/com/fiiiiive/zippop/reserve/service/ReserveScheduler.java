@@ -24,28 +24,40 @@ public class ReserveScheduler {
      * 매일 아침 9시에 예약 데이터 순회 후 Redis 큐 생성
      */
 //    @Scheduled(fixedRate = 10000)
-    @Scheduled(cron = "0 0 9 * * ?") // 매일 9시
+ @Scheduled(cron = "0 0 9 * * ?") // 매일 9시
     public void processReserveQueues() {
         log.info("스케줄러 실행 시작: 예약 데이터를 처리합니다.");
 
         // 오늘 기준 모든 예약 데이터 조회
         LocalDate today = LocalDate.now();
-        log.info(String.valueOf(today));
         List<Reserve> reserveList = reserveRepository.findAllByStartDate(today);
 
         for (Reserve reserve : reserveList) {
             try {
-                // Redis 큐 생성
                 String workingUUID = reserve.getWorkingUUID();
                 String waitingUUID = reserve.getWaitingUUID();
 
+                // TTL 계산
                 long ttl = Duration.between(reserve.getStartTime(), reserve.getEndTime()).getSeconds();
-                redisUtil.create(workingUUID, ttl);
-                log.info("Working Queue 생성 완료: {}", workingUUID);
-                redisUtil.create(waitingUUID, ttl);
-                log.info("Waiting Queue 생성 완료: {}", waitingUUID);
+                boolean aa = redisUtil.exists(workingUUID);
+                System.out.println(aa);
+                // Working Queue
+                if (!redisUtil.exists(workingUUID) || redisUtil.getTTL(workingUUID) <= 0) {
+                    redisUtil.create(workingUUID, ttl);
+                    log.info("Working Queue 생성 완료: {}", workingUUID);
+                } else {
+                    log.info("Working Queue 이미 존재 (TTL: {}): {}", redisUtil.getTTL(workingUUID), workingUUID);
+                }
+
+                // Waiting Queue
+                if (!redisUtil.exists(waitingUUID) || redisUtil.getTTL(waitingUUID) <= 0) {
+                    redisUtil.create(waitingUUID, ttl);
+                    log.info("Waiting Queue 생성 완료: {}", waitingUUID);
+                } else {
+                    log.info("Waiting Queue 이미 존재 (TTL: {}): {}", redisUtil.getTTL(waitingUUID), waitingUUID);
+                }
             } catch (Exception e) {
-                log.error("예약 처리 중 오류 발생 - 예약 ID: {}, 오류: {}", reserve.getIdx(), e.getMessage());
+                log.error("레디스 큐 생성 중 오류 발생 - 예약 ID: {}, 오류: {}", reserve.getIdx(), e.getMessage());
             }
         }
 
