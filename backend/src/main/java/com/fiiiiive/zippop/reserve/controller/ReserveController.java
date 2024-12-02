@@ -7,17 +7,21 @@ import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
+import com.fiiiiive.zippop.reserve.model.dto.ReserveStatusReq;
 import com.fiiiiive.zippop.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.security.Principal;
 
 @Tag(name = "reserve-api", description = "Reserve")
 @Slf4j
@@ -32,6 +36,7 @@ public class ReserveController {
     public ResponseEntity<BaseResponse> register(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestBody CreateReserveReq dto) throws BaseException {
+
         CreateReserveRes response = reserveService.register(customUserDetails, dto);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_REGISTER_SUCCESS,response));
     }
@@ -42,6 +47,7 @@ public class ReserveController {
         HttpServletResponse res,
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long reserveIdx) throws BaseException {
+
         String response = reserveService.enroll(res, customUserDetails, reserveIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_ENROLL_SUCCESS, response));
     }
@@ -51,14 +57,27 @@ public class ReserveController {
     public ResponseEntity<BaseResponse> cancel(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long reserveIdx) throws BaseException {
+
         String response = reserveService.cancel(customUserDetails, reserveIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
-    @GetMapping("/status")
-    public ResponseEntity<BaseResponse> reserveStatus(String reserveUUID, String reserveWaitingUUID){
-        String response = reserveService.reserveStatus(reserveUUID,reserveWaitingUUID);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.POPUP_RESERVE_SEARCH_STATUS_SUCCESS, response));
+//    // 폴링방식
+//    @GetMapping("/status")
+//    public ResponseEntity<BaseResponse> status(
+//        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+//        @RequestParam Long reserveIdx) throws BaseException {
+//
+//        String response = reserveService.status(customUserDetails, reserveIdx);
+//        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_SEARCH_STATUS_SUCCESS, response));
+//    }
+
+    @MessageMapping("/reserve/status")
+    public void status(
+        @AuthenticationPrincipal Principal principal,
+        @Payload ReserveStatusReq reserveStatusReq) throws BaseException {
+
+        reserveService.status(principal, reserveStatusReq);
     }
 
 }

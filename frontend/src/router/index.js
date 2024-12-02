@@ -30,6 +30,8 @@ import CompanyOrdersManagePage1 from "@/pages/mypage/company/CompanyOrdersManage
 import CompanyOrdersManagePage2 from "@/pages/mypage/company/CompanyOrdersManagePage2.vue";
 import CartManagement2Page from "@/pages/mypage/customer/CartManagement2Page.vue";
 import CartManagement1Page from "@/pages/mypage/customer/CartManagement1Page.vue";
+import ReserveTestPage from "@/pages/reserve/ReserveTestPage.vue";
+import ReserveTestPage2 from "@/pages/reserve/ReserveTestPage2.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -88,6 +90,10 @@ const router = createRouter({
         { path: 'orders', component: CustomerOrdersManagePage, }, // 주문 관리 메인 페이지
       ]
     },
+
+    // 팝업 스토어 예약
+    { path: "/reserve", component: ReserveTestPage }, // 팝업 스토어 예약 페이지
+    { path: '/reserve2', component: ReserveTestPage2 }, // 팝업 스토어 예약에서 상품 선택 및 주문 페이지
 
     // 채팅
     { path: '/chats', component: MainChatComponent },

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,7 +42,7 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://d3iaa8b0a37h7p.cloudfront.net"));
+        config.setAllowedOrigins(List.of("https://d3iaa8b0a37h7p.cloudfront.net", "http://localhost:8081"));
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
@@ -58,7 +59,14 @@ public class SecurityConfig {
         http.addFilter(corsFilter());
         http.authorizeHttpRequests((auth) ->
                         auth
+                            // 소켓
+                            .requestMatchers("/ws/**").permitAll() // WebSocket 엔드포인트 허용
+                            .requestMatchers("/pub/**").permitAll() // 메시지 매핑 허용
+                            .requestMatchers("/sub/**").permitAll() // 메시지 브로커 허용
+                            .requestMatchers("/user/**").permitAll()
+                            .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                             // 인증
+
                             .requestMatchers("/api/v1/auth/**").permitAll()
                             // 장바구니
                             .requestMatchers("/api/v1/cart/**").hasAuthority("ROLE_CUSTOMER")

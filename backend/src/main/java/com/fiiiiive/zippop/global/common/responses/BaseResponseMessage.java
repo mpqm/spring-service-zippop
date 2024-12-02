@@ -18,6 +18,8 @@ public enum BaseResponseMessage {
     UNPARSE_JSON(false, 312, "json 형식을 매핑할 수 없습니다."),
     INTERNAL_SERVER_ERROR(false, 500, "내부 서버 오류가 발생해서 처리할 수 없습니다."),
     IAMPORT_ERROR(false,  314,"PG 사에 오류가 발생했습니다. 관리자에게 문의해주세요."),
+    // REDIS 예외처리 9000
+    CACHE_FAIL_NOT_FOUND(false, 999, "예약을 하지 않은 사용자입니다."),
 
     // 회원 2000
     // 회원 가입
@@ -175,12 +177,12 @@ public enum BaseResponseMessage {
     RESERVE_ENROLL_SUCCESS(true, 7005, "예약에 성공했습니다."),
     RESERVE_ENROLL_FAIL_NOT_FOUND(false, 7006, "생성된 예약을 찾을 수 없습니다."),
     RESERVE_ENROLL_FAIL_INVALID_ROLE(false, 7007, "기업 회원은 예약에 참여할 수 없습니다."),
-    // 팝업 예약 취소 9100
+    // 팝업 예약 취소
     RESERVE_CANCEL_SUCCESS(true, 7008, "예약취소에 성공했습니다."),
-    RESERVE_CANCEL_FAIL(false,  9101, "예약 취소에 실패했습니다."),
-    // 팝업 예약 조회 9300
-    POPUP_RESERVE_SEARCH_STATUS_SUCCESS(true, 9300, "예약 대기자 및 Redis 상태를 불러왔습니다."),
-
+    RESERVE_CANCEL_FAIL(false,  7009, "예약 취소에 실패했습니다."),
+    // 팝업 예약 조회
+    RESERVE_SEARCH_STATUS_SUCCESS(true, 7010, "예약 대기자 및 Redis 상태를 불러왔습니다."),
+    RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND(false, 7011, "예약을 조회할 수 없습니다."),
     // 채팅 8000
     // 채팅방 생성 8000
     CHAT_ROOM_CREATE_SUCCESS(true, 8000, "채팅방 생성에 성공했습니다."),
@@ -208,6 +210,8 @@ public enum BaseResponseMessage {
     //채팅 유저 확인 8500
     CHAT_USER_FOUND(true,8500,"사용자가 존재합니다."),
     CHAT_USER_NOT_FOUND(false,8401 ,"사용자가 존재하지 않습니다" );
+
+
 
     // ========================================================================================================================
     private Boolean success;

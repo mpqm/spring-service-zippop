@@ -1,5 +1,7 @@
 package com.fiiiiive.zippop.global.utils;
 
+import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    // Redis SortedSet 초기화 및 만료 시간 설정
+    // SortedSet 생성 초기화 및 만료 시간 설정
     public void create(String key, long expirationTimeMinutes) {
         try {
             ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
@@ -27,7 +29,7 @@ public class RedisUtil {
         }
     }
 
-    // SortedSet 값 저장(key, value, score), 타임스탬프를 기준으로 value를 정렬
+    // SortedSet 값 저장(key, value, score), 타임스탬프를 기준으로 value를 저장 및 정렬
     public void save(String key, String value, long timestamp) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         zSetOperations.add(key, value, timestamp);
@@ -37,9 +39,7 @@ public class RedisUtil {
     public String getAllValues(String key) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> values = zSetOperations.rangeWithScores(key, 0, -1);
-        values.forEach(
-                value -> log.info("Value: " + value.getValue() + ", Score: " + value.getScore())
-        );
+        values.forEach( value -> log.info("Value: " + value.getValue() + ", Score: " + value.getScore()) );
         String total = String.valueOf(this.getSize(key));
         log.info(total);
         log.info("==========================================");
@@ -62,7 +62,7 @@ public class RedisUtil {
     }
 
     // SortedSet 내 값의 순위 조회
-    public Long getOrder(String key, String value) {
+    public Long getOrder(String key, String value) throws BaseException {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         return zSetOperations.rank(key, value);
     }

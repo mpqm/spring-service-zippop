@@ -1,5 +1,8 @@
 package com.fiiiiive.zippop.global.security;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,13 +20,19 @@ public class CustomUserDetails implements UserDetails {
     @Getter
     private final String userId;
     private final String email;
+    private String role;
     @Getter
     private final String name;
     private final String password;
-    private final String role;
     private final Boolean isEmailAuth;
 
-    public CustomUserDetails(Long idx, String email, String role, String userId) {
+    // 직렬화/역직렬화 시 사용될 생성자
+    @JsonCreator
+    public CustomUserDetails(
+            @JsonProperty("idx") Long idx,
+            @JsonProperty("email") String email,
+            @JsonProperty("role") String role,
+            @JsonProperty("userId") String userId) {
         this.idx = idx;
         this.userId = userId;
         this.email = email;
@@ -36,7 +45,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new GrantedAuthority(){
+        collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
                 return role;
