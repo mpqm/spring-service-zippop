@@ -33,13 +33,12 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ReserveService {
+
     private final ReserveRepository reserveRepository;
     private final StoreRepository storeRepository;
     private final JwtUtil jwtUtil;
     private final RedisUtil redisUtil;
     private final SimpMessagingTemplate messagingTemplate;
-
-
 
     public CreateReserveRes register(CustomUserDetails customUserDetails, CreateReserveReq dto) throws BaseException {
         // 1. 예외: 기업 회원이 아닐 때, 스토어 조회 안될 때, 스토어의 이메일과 인증된 사용자의 이메일이 다를 때
@@ -54,19 +53,22 @@ public class ReserveService {
         String workingUUID = UUID.randomUUID().toString();
         String waitingUUID = UUID.randomUUID().toString();
         Reserve reserve = Reserve.builder()
-                .reservePeople(dto.getReservePeople())
                 .store(store)
                 .workingUUID(workingUUID)
                 .waitingUUID(waitingUUID)
-                .expiredTime(dto.getExpireTime())
+                .totalPeople(dto.getReservePeople())
+                .startDate(dto.getReserveStartDate())
+                .startTime(dto.getReserveStartTime())
+                .endTime(dto.getReserveEndTime())
                 .build();
         reserveRepository.save(reserve);
+        // 얘약 변경
+        if(store.getTotalPeople() <= 0){
+            throw new BaseException(BaseResponseMessage.RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED);
+        }
+        store.setTotalPeople(store.getTotalPeople() - dto.getReservePeople());
+        storeRepository.save(store);
 
-        // 3. 예약 접속 큐, 예약 대기 큐 생성
-        redisUtil.create(workingUUID, reserve.getExpiredTime());
-        log.info("Working Queue 생성됨: {}", workingUUID);
-        redisUtil.create(waitingUUID, reserve.getExpiredTime());
-        log.info("Waiting Queue 생성됨: {}", waitingUUID);
         return CreateReserveRes.builder().reserveIdx(reserve.getIdx()).build();
     }
 
@@ -114,7 +116,7 @@ public class ReserveService {
             return "팝업 스토어 예약 굿즈 페이지로 이동합니다 -> 접속 번호 " + rank;
         }
         // 예약 접속 큐에 자리가 있는 경우 (현재 예약자 수보다 큐의 크기가 작은 경우)
-        if (workingQueueSize < reserve.getReservePeople()) {
+        if (workingQueueSize < reserve.getTotalPeople()) {
             // 새로운 사용자 등록
             redisUtil.save(workingUUID, userEmail, System.currentTimeMillis());
 

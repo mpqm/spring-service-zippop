@@ -6,6 +6,9 @@ import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -19,8 +22,10 @@ public class Reserve extends BaseEntity {
     private Long idx;
     private String workingUUID;
     private String waitingUUID;
-    private Long reservePeople;
-    private Long expiredTime;
+    private Integer totalPeople;
+    private LocalDate startDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     // ManyToOne
     @ManyToOne
