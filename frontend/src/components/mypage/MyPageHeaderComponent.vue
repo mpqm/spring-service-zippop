@@ -5,7 +5,7 @@
       <router-link class="menu-link" to="/mypage/company/goods">굿즈 관리</router-link>
       <router-link class="menu-link" to="/mypage/company/reserve">예약 관리</router-link>
       <router-link class="menu-link" to="/mypage/company/orders">결제 내역</router-link>
-      <router-link class="menu-link" to="/chats">문의 채팅</router-link>
+      <!-- <router-link class="menu-link" to="/chats">문의 채팅</router-link> -->
       <router-link class="menu-link" to="/mypage/company/account-edit">회원정보 관리</router-link>
     </div>
     <div v-if="userRole === 'ROLE_CUSTOMER'" class="menu-list">
@@ -13,7 +13,7 @@
       <router-link class="menu-link" to="/mypage/customer/like">좋아요</router-link>
       <router-link class="menu-link" to="/mypage/customer/review">리뷰</router-link>
       <router-link class="menu-link" to="/mypage/customer/orders">결제 내역</router-link>
-      <router-link class="menu-link" to="/chats">문의 채팅</router-link>
+      <!-- <router-link class="menu-link" to="/chats">문의 채팅</router-link> -->
       <router-link class="menu-link" to="/mypage/customer/account-edit">회원정보 관리</router-link>
     </div>
   </div>
