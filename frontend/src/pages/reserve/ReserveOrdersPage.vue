@@ -104,7 +104,7 @@ const payment = () => {
         },
         async (rsp) => {
             if (rsp.success) {
-                const res = await ordersStore.verify(rsp.imp_uid, true);
+                const res = await ordersStore.verifyReserve(rsp.imp_uid);
                 if (res.success) {
                     await cartStore.deleteAllCartItems(route.params.storeIdx);
                     toast.success("결제를 처리했습니다.");

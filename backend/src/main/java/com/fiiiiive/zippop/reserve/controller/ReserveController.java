@@ -65,6 +65,7 @@ public class ReserveController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
+    // 예약 조회(기업)
     @GetMapping("/search-all/as-company")
     public ResponseEntity<BaseResponse> searchAllAsCompany (
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -76,6 +77,7 @@ public class ReserveController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
+    // 예약 조회(전체)
     @GetMapping("/search-all")
     public ResponseEntity<BaseResponse> searchAll (
         @RequestParam(required = false) String keyword,
@@ -96,7 +98,7 @@ public class ReserveController {
 //        String response = reserveService.status(customUserDetails, reserveIdx);
 //        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_SEARCH_STATUS_SUCCESS, response));
 //    }
-
+    // 예약 상태(소켓통신)
     @MessageMapping("/reserve/status")
     public void status(
         @AuthenticationPrincipal Principal principal,

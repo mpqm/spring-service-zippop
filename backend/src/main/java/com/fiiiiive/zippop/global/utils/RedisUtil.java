@@ -71,7 +71,7 @@ public class RedisUtil {
     }
 
     // SortedSet 내 값의 순위 조회
-    public Long getOrder(String key, String value) throws BaseException {
+    public Long getOrder(String key, String value) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         return zSetOperations.rank(key, value);
     }

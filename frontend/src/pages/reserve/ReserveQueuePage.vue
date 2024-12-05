@@ -94,7 +94,6 @@ const connectWebSocket = () => {
           workingTotal.value = data.workingTotal;
           statusMessage.value = data.statusMessage;
           if (data.access) {
-            toast.success("예약 접속자로 전환되었습니다.");
             router.push(`/reserve/${route.params.storeIdx}/${route.params.reserveIdx}/goods`); // 이동할 페이지 경로
           }
         } catch (error) {

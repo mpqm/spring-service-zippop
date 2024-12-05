@@ -98,6 +98,40 @@ public class StoreService {
                 .build();
     }
 
+    // 팝업 스토어 단일 조회 (idx, name)
+    public SearchStoreRes searchAsReserve(Long storeIdx) throws BaseException {
+        // 1. 예외: 팝업 스토어가 존재하지 않을때
+        Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_SEARCH_FAIL_NOT_FOUND)
+        );
+
+        // 2. Store Dto 반환
+        List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
+        for (StoreImage storeImage : store.getStoreImageList()) {
+            SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
+                    .storeImageIdx(storeImage.getIdx())
+                    .storeImageUrl(storeImage.getUrl())
+                    .createdAt(storeImage.getCreatedAt())
+                    .updatedAt(storeImage.getUpdatedAt())
+                    .build();
+            searchStoreImageResList.add(searchStoreImageRes);
+        }
+        return SearchStoreRes.builder()
+                .storeIdx(store.getIdx())
+                .companyEmail(store.getCompanyEmail())
+                .storeName(store.getName())
+                .storeContent(store.getContent())
+                .storeAddress(store.getAddress())
+                .category(store.getCategory())
+                .likeCount(store.getLikeCount())
+                .totalPeople(store.getTotalPeople())
+                .storeStatus(store.getStatus())
+                .storeStartDate(store.getStartDate())
+                .storeEndDate(store.getEndDate())
+                .searchStoreImageResList(searchStoreImageResList)
+                .build();
+    }
+
     // 팝업 스토어 목록 전체 회원 조회
     public Page<SearchStoreRes> searchAll(Boolean flag, String keyword, int page, int size) throws BaseException {
         /*

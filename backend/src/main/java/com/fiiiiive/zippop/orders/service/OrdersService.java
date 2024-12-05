@@ -52,9 +52,104 @@ public class OrdersService {
     private final GoodsRepository goodsRepository;
     private final StoreRepository storeRepository;
 
-    // 결제 검증
+    // 결제 검증(예약용)
     @Transactional
-    public VerifyOrdersRes verifyOrders(CustomUserDetails customUserDetails, String impUid, Boolean flag) throws BaseException, IamportResponseException, IOException {
+    public VerifyOrdersRes verifyOrdersReserve(CustomUserDetails customUserDetails, String impUid) throws BaseException, IamportResponseException, IOException {
+        // 1. 고객 회원만 굿즈 구매 가능
+        if (!customUserDetails.getRole().equals("ROLE_CUSTOMER")){
+            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_INVALID_ROLE);
+        }
+
+        // 2. 회원 정보 조회
+        Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_MEMBER)
+        );
+
+        // 3. 결제 정보 조회
+        IamportResponse<Payment> response = iamportClient.paymentByImpUid(impUid);
+        Payment payment = response.getResponse();
+        if (payment == null) {
+            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL);
+        }
+
+        // 4. 결제 금액과 customData 확인 및 Map 형태로 변환
+        Integer payedPrice = payment.getAmount().intValue();
+        String customData = payment.getCustomData();
+        if (customData == null) {
+            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL);
+        }
+        Gson gson = new Gson();
+        Map<String, Double> goodsMap = gson.fromJson(customData, Map.class);
+
+        // 5. 초기 변수 설정
+        int totalPurchasePrice = 0;
+        int addPoint = 0;
+        int usedPoint;
+        List<Goods> goodsList = new ArrayList<>();
+
+        // 6. 예약 굿즈 구매
+        Goods goods = null;
+        // 6-1. 결제하려는 굿즈 리스트 생성, 재고 수량 확인, 총 구매 금액 계산
+        for (String key : goodsMap.keySet()) {
+            int purchaseGoodsAmount = goodsMap.get(key).intValue();
+            goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
+                    () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
+            );
+            // 구매 항목개수가 1개 이상이면 결제 실패
+            if (purchaseGoodsAmount != 1) {
+                refund(payment.getImpUid(), payment);
+                throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
+            }
+            goodsList.add(goods);
+            totalPurchasePrice += purchaseGoodsAmount * goods.getPrice();
+        }
+        // 6-2. 포인트 적립 계산(총 구매 금액의 5%)
+        addPoint += (int) Math.round(totalPurchasePrice * 0.05);
+        usedPoint = 0;
+        // 6-4. 배송비 적용 x 포인트 사용 x , 최종 구매 금액 조정 및 갱신
+        customer.setPoint(customer.getPoint() - usedPoint + addPoint);
+        // 8. 결제 금액 검증 / 불일치 시 환불 처리
+        if (!payedPrice.equals(totalPurchasePrice) && goods ==  null) {
+            refund(payment.getImpUid(), payment);
+            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE);
+        }
+
+        // 8-1. 고객 포인트 갱신 저장
+        customerRepository.save(customer);
+        Orders orders = null;
+        // 8-2. 주문 객체 생성 및 저장 예약 굿즈 구매 배송비 X, 상태 RESERVE_READY
+        orders = Orders.builder()
+                .impUid(impUid)
+                .totalPrice(totalPurchasePrice)
+                .status("RESERVE_READY")
+                .deliveryCost(0)
+                .usedPoint(usedPoint)
+                .customer(customer)
+                .storeIdx(goods.getStore().getIdx())
+                .build();
+        ordersRepository.save(orders);
+
+        // 8-3. 굿즈 재고 차감 및 주문 상세 정보 저장
+        for (String key : goodsMap.keySet()) {
+            Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
+            goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
+                    () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
+            );
+            goods.setAmount(goods.getAmount() - purchaseGoodsAmount);
+            goodsRepository.save(goods);
+            OrdersDetail ordersDetail = OrdersDetail.builder()
+                    .eachPrice(goods.getPrice() * purchaseGoodsAmount)
+                    .orders(orders)
+                    .goods(goods)
+                    .build();
+            ordersDetailRepository.save(ordersDetail);
+        }
+        return VerifyOrdersRes.builder().ordersIdx(orders.getIdx()).build();
+    }
+
+    // 결제 검증(재고용)
+    @Transactional
+    public VerifyOrdersRes verifyOrdersStock(CustomUserDetails customUserDetails, String impUid) throws BaseException, IamportResponseException, IOException {
         // 1. 고객 회원만 굿즈 구매 가능
         if (!customUserDetails.getRole().equals("ROLE_CUSTOMER")){
             throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_INVALID_ROLE);
@@ -88,103 +183,66 @@ public class OrdersService {
         List<Goods> goodsList = new ArrayList<>();
         // 6. 예약 굿즈 구매(flag = true)
         Goods goods = null;
-        if (flag) {
-            // 6-1. 결제하려는 굿즈 리스트 생성, 재고 수량 확인, 총 구매 금액 계산
-            for (String key : goodsMap.keySet()) {
-                int purchaseGoodsAmount = goodsMap.get(key).intValue();
-                goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
-                        () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
-                );
-                // 구매 항목개수가 1개 이상이면 결제 실패
-                if (purchaseGoodsAmount != 1) {
-                    refund(payment.getImpUid(), payment);
-                    throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
-                }
-                goodsList.add(goods);
-                totalPurchasePrice += purchaseGoodsAmount * goods.getPrice();
-            }
-            // 6-2. 포인트 적립 계산(총 구매 금액의 5%)
-            addPoint += (int) Math.round(totalPurchasePrice * 0.05);
-            usedPoint = 0;
-            // 6-4. 배송비 적용 x 포인트 사용 x , 최종 구매 금액 조정 및 갱신
-            customer.setPoint(customer.getPoint() - usedPoint + addPoint);
-        } else { // 7. 재고 굿즈 구매 (flag == false)
-            // 7-1. 결제하려는 굿즈 리스트 생성, 총 구매 금액 계산
-            for (String key : goodsMap.keySet()) {
-                Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
-                goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
-                        () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
-                );
-                // 구매한 항목 수가 굿즈의 남은 수량보다 크면 예외
-                if (purchaseGoodsAmount > goods.getAmount()) {
-                    refund(payment.getImpUid(), payment);
-                    throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_POINT_EXCEEDED);
-                }
-                goodsList.add(goods);
-                totalPurchasePrice += purchaseGoodsAmount * goods.getPrice();
-            }
-            // 7-2. 사용된 포인트 계산 (적립 X)
-            usedPoint = (totalPurchasePrice + 2500) - payedPrice;
-            // 7-3 포인트 유효성 검사 (3000포인트 이상부터 사용 가능)
-            if (usedPoint != 0 && (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0)) {
+        // 7. 재고 굿즈 구매
+        // 7-1. 결제하려는 굿즈 리스트 생성, 총 구매 금액 계산
+        for (String key : goodsMap.keySet()) {
+            Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
+            goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
+                    () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
+            );
+            // 구매한 항목 수가 굿즈의 남은 수량보다 크면 예외
+            if (purchaseGoodsAmount > goods.getAmount()) {
                 refund(payment.getImpUid(), payment);
                 throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_POINT_EXCEEDED);
             }
-            // 7-4. 배송비 적용 및 최종 구매 금액 조정 및 갱신
-            totalPurchasePrice += 2500 - usedPoint;
-            customer.setPoint(customer.getPoint() - usedPoint);
+            goodsList.add(goods);
+            totalPurchasePrice += purchaseGoodsAmount * goods.getPrice();
         }
+        // 7-2. 사용된 포인트 계산 (적립 X)
+        usedPoint = (totalPurchasePrice + 2500) - payedPrice;
+        // 7-3 포인트 유효성 검사 (3000포인트 이상부터 사용 가능)
+        if (usedPoint != 0 && (customer.getPoint() < 3000 || customer.getPoint() - usedPoint < 0)) {
+            refund(payment.getImpUid(), payment);
+            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_POINT_EXCEEDED);
+        }
+        // 7-4. 배송비 적용 및 최종 구매 금액 조정 및 갱신
+        totalPurchasePrice += 2500 - usedPoint;
+        customer.setPoint(customer.getPoint() - usedPoint);
         // 8. 결제 금액 검증 / 불일치 시 환불 처리
-        if (payedPrice.equals(totalPurchasePrice) && goods !=  null){
-            // 8-1. 고객 포인트 갱신 저장
-            customerRepository.save(customer);
-            Orders orders = null;
-            // 8-2. 주문 객체 생성 및 저장
-            // if : 예약 굿즈 구매 배송비 X, 상태 RESERVE_READY
-            // else : 재고 굿즈 구매 배송비 2500, 상태 STOCK_READY
-            if(flag){ // 예약 굿즈 구매
-                orders = Orders.builder()
-                        .impUid(impUid)
-                        .totalPrice(totalPurchasePrice)
-                        .status("RESERVE_READY")
-                        .deliveryCost(0)
-                        .usedPoint(usedPoint)
-                        .customer(customer)
-                        .storeIdx(goods.getStore().getIdx())
-                        .build();
-            } else { // 재고 굿즈 구매
-                orders = Orders.builder()
-                        .impUid(impUid)
-                        .totalPrice(totalPurchasePrice)
-                        .status("STOCK_READY")
-                        .deliveryCost(2500)
-                        .usedPoint(usedPoint)
-                        .customer(customer)
-                        .storeIdx(goods.getStore().getIdx())
-                        .build();
-            }
-            ordersRepository.save(orders);
-
-            // 8-3. 굿즈 재고 차감 및 주문 상세 정보 저장
-            for (String key : goodsMap.keySet()) {
-                Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
-                goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
-                        () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
-                );
-                goods.setAmount(goods.getAmount() - purchaseGoodsAmount);
-                goodsRepository.save(goods);
-                OrdersDetail ordersDetail = OrdersDetail.builder()
-                        .eachPrice(goods.getPrice() * purchaseGoodsAmount)
-                        .orders(orders)
-                        .goods(goods)
-                        .build();
-                ordersDetailRepository.save(ordersDetail);
-            }
-            return VerifyOrdersRes.builder().ordersIdx(orders.getIdx()).build();
-        } else {
+        if (!payedPrice.equals(totalPurchasePrice) && goods ==  null){
             refund(payment.getImpUid(), payment);
             throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE);
         }
+        // 8-1. 고객 포인트 갱신 저장
+        customerRepository.save(customer);
+
+        // 8-2. 주문 객체 생성 및 저장 재고 굿즈 구매 배송비 2500, 상태 STOCK_READY
+        Orders orders = Orders.builder()
+                .impUid(impUid)
+                .totalPrice(totalPurchasePrice)
+                .status("STOCK_READY")
+                .deliveryCost(2500)
+                .usedPoint(usedPoint)
+                .customer(customer)
+                .storeIdx(goods.getStore().getIdx())
+                .build();
+        ordersRepository.save(orders);
+        // 8-3. 굿즈 재고 차감 및 주문 상세 정보 저장
+        for (String key : goodsMap.keySet()) {
+            Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
+            goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
+                    () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
+            );
+            goods.setAmount(goods.getAmount() - purchaseGoodsAmount);
+            goodsRepository.save(goods);
+            OrdersDetail ordersDetail = OrdersDetail.builder()
+                    .eachPrice(goods.getPrice() * purchaseGoodsAmount)
+                    .orders(orders)
+                    .goods(goods)
+                    .build();
+            ordersDetailRepository.save(ordersDetail);
+        }
+        return VerifyOrdersRes.builder().ordersIdx(orders.getIdx()).build();
     }
 
     // 결제 취소 및 환불

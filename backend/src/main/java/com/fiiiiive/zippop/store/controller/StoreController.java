@@ -52,6 +52,18 @@ public class StoreController {
         SearchStoreRes searchStoreRes = storeService.search(storeIdx);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.STORE_SEARCH_SUCCESS, searchStoreRes));
     }
+
+    // 팝업 스토어 단일 조회 (예약용 및 접근제어 설정)
+    @GetMapping("/search/as-reserve")
+    public ResponseEntity<BaseResponse<SearchStoreRes>> searchAsReserve(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long storeIdx,
+        @RequestParam Long reserveIdx) throws BaseException {
+
+        SearchStoreRes searchStoreRes = storeService.search(storeIdx);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.STORE_SEARCH_SUCCESS, searchStoreRes));
+    }
+
     
     // 팝업 스토어 목록 + 조건 조회(전체)
     @GetMapping("/search-all")

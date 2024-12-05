@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.global.config;
 
+import com.fiiiiive.zippop.global.security.AccessControlService;
 import com.fiiiiive.zippop.global.security.CustomUserDetailService;
 import com.fiiiiive.zippop.global.security.filter.*;
 import com.fiiiiive.zippop.global.security.oauth2.CustomOAuth2Service;
@@ -22,7 +23,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -38,6 +38,7 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomUserDetailService customUserDetailService;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final AccessControlService accessControlService;
 
     @Bean
     public CorsFilter corsFilter() {
@@ -77,7 +78,8 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/goods/search").permitAll()
                             .requestMatchers("/api/v1/goods/search-all").permitAll()
                             // 주문
-                            .requestMatchers("/api/v1/orders/verify").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/orders/verify/stock").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/orders/verify/reserve").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/orders/cancel").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/orders/complete").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/orders/search/as-customer").hasAuthority("ROLE_CUSTOMER")
@@ -104,7 +106,8 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/reserve/status").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/reserve/search-all/as-company").hasAuthority("ROLE_COMPANY")
                             .requestMatchers("/api/v1/reserve/search-all").permitAll()
-//                            .anyRequest().permitAll()
+                            .requestMatchers("/api/v1/store/search/as-reserve").access(accessControlService::hasReserveAccess)
+                            .anyRequest().permitAll()
         );
         http.addFilter(corsFilter());
         http.oauth2Login((config) -> {
