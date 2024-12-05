@@ -41,6 +41,19 @@ export const useStoreStore = defineStore("store", {
         return error.response.data;
       }
     },
+    // 스토어 단일 조회(스토어 인덱스, 예약페이지 접근제어용)
+    async searchStoreAsReserve(storeIdx, reserveIdx) {
+      try {
+        const res = await axios.get(
+          `${backend}/store/search/as-reserve?storeIdx=${storeIdx}&reserveIdx=${reserveIdx}`,
+          {withCredentials: true}
+        );
+        this.store = res.data.result;
+        return res.data;
+      } catch (error) {
+        return error.response.data;
+      }
+    },
 
     // 스토어 목록 조회(flag = 스토어 마감 여부)
     async searchAllStore(flag, page, size) {

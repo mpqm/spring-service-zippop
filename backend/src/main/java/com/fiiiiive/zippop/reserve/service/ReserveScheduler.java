@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class ReserveScheduler {
      */
 //    @Scheduled(fixedRate = 10000)
  @Scheduled(cron = "0 0 9 * * ?") // 매일 9시
-    public void processReserveQueues() {
+    public void createReserveQueues() {
         log.info("스케줄러 실행 시작: 예약 데이터를 처리합니다.");
 
         // 오늘 기준 모든 예약 데이터 조회
@@ -34,6 +35,12 @@ public class ReserveScheduler {
 
         for (Reserve reserve : reserveList) {
             try {
+                // endTime이 현재 시간보다 이전인 경우 건너뛰기
+                if (reserve.getEndTime().isBefore(LocalDateTime.now())) {
+                    log.info("endTime 초과로 큐 생성 생략 - 예약 ID: {}", reserve.getIdx());
+                    continue;
+                }
+
                 String workingUUID = reserve.getWorkingUUID();
                 String waitingUUID = reserve.getWaitingUUID();
 

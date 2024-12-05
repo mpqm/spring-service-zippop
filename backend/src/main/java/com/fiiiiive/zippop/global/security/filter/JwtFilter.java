@@ -72,7 +72,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 String email = jwtUtil.getUsername(accessToken);
                 String role = jwtUtil.getRole(accessToken);
                 String userId = jwtUtil.getUserId(accessToken);
-                CustomUserDetails customUserDetails = new CustomUserDetails(idx, email, role, userId);
+                CustomUserDetails customUserDetails = CustomUserDetails.builder()
+                        .idx(idx)
+                        .email(email)
+                        .role(role)
+                        .userId(userId)
+                        .build();
                 Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } catch (ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException | UsernameNotFoundException e) {

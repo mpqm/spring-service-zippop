@@ -29,16 +29,26 @@ public class OrdersController {
 
     private final OrdersService ordersService;
 
-    // 결제 검증
-    @GetMapping("/verify")
-    public ResponseEntity<BaseResponse<VerifyOrdersRes>> verify(
+    // 결제 검증(재고용)
+    @GetMapping("/verify/reserve")
+    public ResponseEntity<BaseResponse<VerifyOrdersRes>> verifyReserve(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam String impUid,
-        @RequestParam Boolean flag) throws BaseException, IamportResponseException, IOException{
+        @RequestParam String impUid ) throws BaseException, IamportResponseException, IOException{
 
-        VerifyOrdersRes response = ordersService.verifyOrders(customUserDetails, impUid, flag);
+        VerifyOrdersRes response = ordersService.verifyOrdersReserve(customUserDetails, impUid);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.ORDERS_PAY_SUCCESS,response));
     }
+
+    // 결제 검증(예약용)
+    @GetMapping("/verify/stock")
+    public ResponseEntity<BaseResponse<VerifyOrdersRes>> verifyStock(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam String impUid) throws BaseException, IamportResponseException, IOException{
+
+        VerifyOrdersRes response = ordersService.verifyOrdersStock(customUserDetails, impUid);
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.ORDERS_PAY_SUCCESS,response));
+    }
+
 
     // 결제 취소
     @GetMapping("/cancel")

@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         if (e instanceof BadCredentialsException) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.BAD_CREDENTIAL, e.getMessage()));
         } else if (e instanceof InternalAuthenticationServiceException | e instanceof InsufficientAuthenticationException) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.CHAT_USER_NOT_FOUND, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.ACCESS_DENIED, e.getMessage()));
         }else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.INVALID_TOKEN, e.getMessage()));
         }
