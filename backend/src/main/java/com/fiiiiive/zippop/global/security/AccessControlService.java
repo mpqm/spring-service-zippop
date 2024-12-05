@@ -35,7 +35,6 @@ public class AccessControlService {
         if (existUser == null) {
             return new AuthorizationDecision(false);
         }
-
         // 인가
         return new AuthorizationDecision(true);
     }
