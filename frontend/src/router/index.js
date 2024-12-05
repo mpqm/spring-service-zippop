@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import MainChatComponent from "@/components/chat/MainChatComponent.vue";
 import LoginPage from "@/pages/auth/LoginPage.vue";
 import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
 import CompanySignupPage from "@/pages/auth/CompanySignupPage.vue";
@@ -108,12 +107,7 @@ const router = createRouter({
         { path: 'orders', component: CustomerOrdersManagePage, }, // 주문 관리 메인 페이지
       ]
     },
-
-
-
-    // 채팅
-    { path: '/chats', component: MainChatComponent },
-
+    
     // 에러
     { path: '/:catchAll(.*)', redirect: '/error', },
     { path: '/error', component: ErrorPage },
