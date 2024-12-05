@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="showStep === 1" class="detail-page">
+        <div class="detail-page">
             <div class="detail-container">
                 <div class="left-section">
                     <h2>{{ store.storeName }}</h2>
@@ -47,7 +47,6 @@ const reserveStore = useReserveStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
-const showStep = ref(1);
 
 // 변수(store)
 const fileUrls = ref([]);
@@ -82,7 +81,7 @@ const cancel = async () => {
 
 // 스토어 조회 
 const search = async () => {
-    const res = await storeStore.searchStoreAsReserve(route.params.storeIdx, route.params.reserveIdx);
+    const res = await storeStore.searchStore(route.params.storeIdx);
     if (res.success) {
         store.value = storeStore.store;
         mapper();

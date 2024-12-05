@@ -3,7 +3,6 @@
         <div class="detail-page">
             <div class="detail-container">
                 <div class="right-section">
-                    <button class="orders-btn" @click="goCart">결제하기</button>
                     <button class="orders-btn" @click="goGoods">뒤로가기</button>
                 </div>
             </div>
@@ -111,11 +110,7 @@ const setPaymentData = async () => {
     router.push(`/reserve/${route.params.storeIdx}/${route.params.reserveIdx}/orders`)
 };
 
-// 장바구니로 이동
-const goCart = () => {
-    router.push(`/reserve/${route.params.storeIdx}/${route.params.reserveIdx}/cart`);
-};
-
+// 예약 굿즈로 이동
 const goGoods = () => {
     router.push(`/reserve/${route.params.storeIdx}/${route.params.reserveIdx}/goods`);
 };
