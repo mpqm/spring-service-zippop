@@ -1,14 +1,14 @@
-package com.fiiiiive.zippop.orders.controller;
+package com.fiiiiive.zippop.commerce.controller;
 
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.orders.model.dto.SearchOrdersDetailRes;
-import com.fiiiiive.zippop.orders.model.dto.SearchOrdersRes;
-import com.fiiiiive.zippop.orders.model.dto.VerifyOrdersRes;
-import com.fiiiiive.zippop.orders.service.OrdersService;
+import com.fiiiiive.zippop.commerce.model.dto.SearchOrdersDetailRes;
+import com.fiiiiive.zippop.commerce.model.dto.SearchOrdersRes;
+import com.fiiiiive.zippop.commerce.model.dto.VerifyOrdersRes;
+import com.fiiiiive.zippop.commerce.service.OrdersService;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -114,4 +114,5 @@ public class OrdersController {
         Page<SearchOrdersRes> response = ordersService.searchAllOrdersAsCompany(customUserDetails, storeIdx, page, size);
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.ORDERS_SEARCH_ALL_SUCCESS,response));
     }
+
 }

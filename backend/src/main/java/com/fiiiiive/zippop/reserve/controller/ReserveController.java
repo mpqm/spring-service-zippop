@@ -16,10 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,6 +63,15 @@ public class ReserveController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
+    // 예약 인가
+    @GetMapping("/access")
+    public ResponseEntity access(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam Long storeIdx,
+            @RequestParam Long reserveIdx) throws BaseException {
+        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_ACCESS_SUCCESS));
+    }
+
     // 예약 조회(기업)
     @GetMapping("/search-all/as-company")
     public ResponseEntity<BaseResponse> searchAllAsCompany (
@@ -89,15 +96,7 @@ public class ReserveController {
         return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
-//    // 폴링방식
-//    @GetMapping("/status")
-//    public ResponseEntity<BaseResponse> status(
-//        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-//        @RequestParam Long reserveIdx) throws BaseException {
-//
-//        String response = reserveService.status(customUserDetails, reserveIdx);
-//        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_SEARCH_STATUS_SUCCESS, response));
-//    }
+
     // 예약 상태(소켓통신)
     @MessageMapping("/reserve/status")
     public void status(
@@ -106,5 +105,16 @@ public class ReserveController {
 
         reserveService.status(principal, reserveStatusReq);
     }
+
+    //    // 폴링방식
+//    @GetMapping("/status")
+//    public ResponseEntity<BaseResponse> status(
+//        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+//        @RequestParam Long reserveIdx) throws BaseException {
+//
+//        String response = reserveService.status(customUserDetails, reserveIdx);
+//        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_SEARCH_STATUS_SUCCESS, response));
+//    }
+
 
 }

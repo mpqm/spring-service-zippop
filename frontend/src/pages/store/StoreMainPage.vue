@@ -52,7 +52,7 @@ const searchAll = async (flag) => {
     searchQuery.value = "";
     isKeywordSearch.value = false; // 일반 검색 상태로 전환
   }
-  const res = await storeStore.searchAllStore(true, currentPage.value, pageSize.value);
+  const res = await storeStore.searchAllStore("STORE_START", currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;
@@ -72,7 +72,7 @@ const searchAllByKeyword = async () => {
     currentPage.value = 0; // 키워드 검색 상태로 진입 시 페이지를 초기화
     isKeywordSearch.value = true; // 키워드 검색 상태 활성화
   }
-  const res = await storeStore.searchAllStoreByKeyword(true, searchQuery.value, currentPage.value, pageSize.value);
+  const res = await storeStore.searchAllStoreByKeyword("STORE_START", searchQuery.value, currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;

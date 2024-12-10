@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -32,19 +31,20 @@ public class StoreLikeService {
     private final StoreLikeRepository storeLikeRepository;
     private final CustomerRepository customerRepository;
 
-    // 팝업 스토어 좋아요 증감
+    /* 팝업 스토어 좋아요 증감 */
     @Transactional
     public void like(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
-        // 1. 예외: 팝업 스토어가 존재하지 않을때, 사용자가 존재하지 않을때
+        // 팝업 스토어 인덱스로 조회 없으면 예외 반환
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_NOT_FOUND)
         );
+        // 고객 회원 인덱스로 조회 없으면 예외 반환
         Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_INVALID_MEMBER)
         );
 
-        // 2. 좋아요 증감
-        // if : 이미 좋아요를 누른 상태면 좋아요 취소 / 스토어 좋아요 개수 감소(직접 쿼리 활용)
+        // 좋아요 증감
+        // if : 이미 좋아요를 누른 상태면 좋아요 삭제 / 스토어 좋아요 개수 감소(직접 쿼리 활용)
         // else : 좋아요를 처음 누르면 좋아요 저장 / 스토어 좋아요 개수 증가(직접 쿼리 활용)
         Optional<StoreLike> storeLikeOpt = storeLikeRepository.findByCustomerIdxAndStoreIdx(customer.getIdx(),storeIdx);
         if (storeLikeOpt.isPresent()) {
@@ -60,15 +60,15 @@ public class StoreLikeService {
         }
     }
 
-    // 팝업 스토어 좋아요 목록 조회(고객)
+    /* 팝업 스토어 좋아요 목록 (고객 회원) 조회 */
     public Page<SearchStoreLikeRes> searchAll(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
-        // 1. 예외 : 팝업 스토어 목록이 없을 때
+        // 팝업 스토어 목록 조회 없으면 예외 반환
         Page<StoreLike> storeLikePage = storeLikeRepository.findAllByCustomerIdx(customUserDetails.getIdx(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
-                ()->new BaseException(BaseResponseMessage.STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseResponseMessage.STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
-        // 2. StoreLike DTO Page 반환
-        Page<SearchStoreLikeRes> searchStoreLikeResPage = storeLikePage.map(storeLike -> {
+        // StoreLike Page DTO  반환
+        return storeLikePage.map(storeLike -> {
             List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
             for(StoreImage storeImage : storeLike.getStore().getStoreImageList()){
                 SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
@@ -95,6 +95,5 @@ public class StoreLikeService {
                     .searchStoreImageResList(searchStoreImageResList)
                     .build();
         });
-        return searchStoreLikeResPage;
     }
 }

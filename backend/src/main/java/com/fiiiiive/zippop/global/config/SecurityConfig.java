@@ -106,7 +106,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/reserve/status").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/reserve/search-all/as-company").hasAuthority("ROLE_COMPANY")
                             .requestMatchers("/api/v1/reserve/search-all").permitAll()
-//                            .requestMatchers("/api/v1/store/search/as-reserve").access(accessControlService::hasReserveAccess)
+                            .requestMatchers("/api/v1/reserve/access").access(accessControlService::hasReserveAccess)
                             .anyRequest().permitAll()
         );
         http.addFilter(corsFilter());

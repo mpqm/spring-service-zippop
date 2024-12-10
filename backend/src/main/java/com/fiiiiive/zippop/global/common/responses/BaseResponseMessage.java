@@ -96,15 +96,14 @@ public enum BaseResponseMessage {
     // 팝업 스토어 좋아요
     STORE_LIKE_SUCCESS(true, 4012, "팝업 스토어 좋아요 성공"),
     STORE_LIKE_FAIL_NOT_FOUND(false, 4013, "해당 팝업 스토어를 찾을 수 없습니다."),
-    STORE_LIKE_FAIL_INVALID_MEMBER(false, 4014, "해당 팝업 스토어에서 결제한 내역이 없습니다."),
-    STORE_LIKE_FAIL_INVALID_ROLE(false, 4015, "기업 회원은 좋아요 기능이 제한됩니다."),
-    STORE_LIKE_SEARCH_ALL_SUCCESS(true, 4016, "팝업 스토어 좋아요 목록을 불러오는데 성공했습니다."),
-    STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND(false, 4017, "팝업 스토어 좋아요 목록을 찾을 수 없습니다."),
+    STORE_LIKE_FAIL_INVALID_MEMBER(false, 4014, "인증되지않은 사용자는 좋아요 기능이 제한됩니다."),
+    STORE_LIKE_SEARCH_ALL_SUCCESS(true, 4015, "팝업 스토어 좋아요 목록을 불러오는데 성공했습니다."),
+    STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND(false, 4016, "팝업 스토어 좋아요 목록을 찾을 수 없습니다."),
     // 팝업 스토어 리뷰
     STORE_REVIEW_SUCCESS(true, 4018, "팝업 스토어 리뷰 등록에 성공했습니다."),
     STORE_REVIEW_FAIL_INVALID_ROLE(false, 4019, "기업 회원은 리뷰 작성 기능이 제한 됩니다."),
+    STORE_REVIEW_FAIL_INVALID_MEMBER(false, 4014, "해당 팝업 스토어에서 결제한 내역이 없습니다."),
     STORE_REVIEW_FAIL_NOT_FOUND(false, 4020, "해당 팝업 스토어를 찾을 수 없습니다."),
-    STORE_REVIEW_FAIL_INVALID_MEMBER(false, 4021, "인증된 사용자만이 리뷰를 등록할 수 있습니다."),
     STORE_REVIEW_FAIL_DUPLICATED(false, 4022,"리뷰는 팝업스토어당 한 글씩만 적을 수 있습니다."),
     STORE_REVIEW_SEARCH_ALL_SUCCESS(true, 4023, "팝업 스토어 리뷰 목록을 불러왔습니다."),
     STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND(false, 4024, "팝업 스토어 리뷰 목록을 찾을 수 없습니다."),
@@ -180,41 +179,14 @@ public enum BaseResponseMessage {
     RESERVE_ENROLL_FAIL_INVALID_ROLE(false, 7007, "기업 회원은 예약에 참여할 수 없습니다."),
     RESERVE_SEARCH_ALL_SUCCESS(true, 7008, "예약 목록을 불러왔습니다."),
     RESERVE_SEARCH_ALL_FAIL_NOT_FOUND(false, 7009, "해당 예약을 찾을 수 없습니다."),
-
     // 팝업 예약 취소
     RESERVE_CANCEL_SUCCESS(true, 7008, "예약취소에 성공했습니다."),
     RESERVE_CANCEL_FAIL(false,  7009, "예약 취소에 실패했습니다."),
     // 팝업 예약 조회
     RESERVE_SEARCH_STATUS_SUCCESS(true, 7010, "예약 대기자 및 Redis 상태를 불러왔습니다."),
     RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND(false, 7011, "예약을 조회할 수 없습니다."),
-
-    // 채팅 8000
-    // 채팅방 생성 8000
-    CHAT_ROOM_CREATE_SUCCESS(true, 8000, "채팅방 생성에 성공했습니다."),
-    CHAT_ROOM_CREATE_FAIL(false, 8001, "채팅방 생성에 실패했습니다."),
-    // 채팅방 참여 8100
-    CHAT_ROOM_JOIN_SUCCESS(true, 8100, "채팅방에 성공적으로 참여했습니다."),
-    CHAT_ROOM_JOIN_FAIL(false, 8101, "채팅방 참여에 실패했습니다."),
-    // 채팅방 나가기 8200
-    CHAT_ROOM_LEAVE_SUCCESS(true, 8200, "채팅방에서 성공적으로 나갔습니다."),
-    CHAT_ROOM_LEAVE_FAIL(false, 8201, "채팅방 나가기에 실패했습니다."),
-    // 채팅방 사용자 조회 8300
-    CHAT_USER_COUNT_SEARCH_SUCCESS(true, 8300, "채팅방 사용자 수 조회에 성공했습니다."),
-    CHAT_USER_COUNT_SEARCH_FAIL(false, 8301, "채팅방 사용자 수 조회에 실패했습니다."),
-
-    // 채팅방 기록 조회 8400
-    CHAT_HISTORY_SEARCH_SUCCESS(true, 8500, "채팅 기록 조회에 성공했습니다."),
-    CHAT_HISTORY_SEARCH_FAIL(false, 8501, "채팅 기록 조회에 실패했습니다."),
-    // 채팅방 조회 8500
-    CHAT_ROOM_SEARCH_SUCCESS(true, 8600, "채팅방 목록 조회에 성공했습니다."),
-    CHAT_ROOM_SEARCH_FAIL(false, 8601, "채팅 기록 조회에 실패했습니다."),
-    // 채팅 메세지 전송 8400
-    CHAT_MESSAGE_SEND_SUCCESS(true, 8300, "채팅 메시지 전송에 성공했습니다."),
-    CHAT_MESSAGE_SEND_FAIL(false, 8301, "채팅 메시지 전송에 실패했습니다."),
-
-    //채팅 유저 확인 8500
-    CHAT_USER_FOUND(true,8500,"사용자가 존재합니다."),
-    CHAT_USER_NOT_FOUND(false,8401 ,"사용자가 존재하지 않습니다" );
+    // 팝업 예약 인가
+    RESERVE_ACCESS_SUCCESS(true, 7012, "유효 사용자입니다.");
 
 
 
