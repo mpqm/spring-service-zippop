@@ -27,11 +27,12 @@ public class Store extends BaseEntity {
     private String endDate;
     private String category;
     private Integer likeCount;
-    private String status;
 
     // Setter
     @Setter
     private Integer totalPeople;
+    @Setter
+    private String status;
 
     // Update
     public Store update(String name, String content, String address, String category, Integer totalPeople, String startDate, String endDate){

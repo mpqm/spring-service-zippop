@@ -5,8 +5,8 @@ import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.orders.model.entity.Orders;
-import com.fiiiiive.zippop.orders.repository.OrdersRepository;
+import com.fiiiiive.zippop.commerce.model.entity.Orders;
+import com.fiiiiive.zippop.commerce.repository.OrdersRepository;
 import com.fiiiiive.zippop.store.model.entity.StoreReview;
 import com.fiiiiive.zippop.store.model.dto.CreateStoreReviewReq;
 import com.fiiiiive.zippop.store.model.dto.CreateStoreReviewRes;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,15 +35,17 @@ public class StoreReviewService {
     // 팝업 스토어 리뷰 등록
     @Transactional
     public CreateStoreReviewRes register(CustomUserDetails customUserDetails, Long storeIdx, CreateStoreReviewReq dto) throws BaseException {
-        // 1. 예외처리: 고객 사용자가 존재하지 않을 때, 팝업스토어가 존재하지 않을때, 기업회원 일 때, 결제를 완료하지 않은 사용자 일 때
+        // 결제 조회 및 예외 반환 (사용자 인덱스, 스토어 인덱스, 결제 완료 상태)
         Orders orders = ordersRepository.findByStoreIdxAndCustomerIdxAndStatus(storeIdx, customUserDetails.getIdx(), "_COMPLETE").orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_INVALID_MEMBER)
         );
+        // 스토어 조회 및 예외 반환 (스토어 인덱스)
         Store store = storeRepository.findById(storeIdx).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_NOT_FOUND)
         );
-        Optional<StoreReview> resultStoreReview = storeReviewRepository.findByStoreIdxAndCustomerIdx(storeIdx, customUserDetails.getIdx());
-        if(resultStoreReview.isPresent()){
+        // 스토어 리뷰 조회 및 예외 반환 (스토어 인덱스, 사용자 인덱스)
+        Optional<StoreReview> storeReviewOpt = storeReviewRepository.findByStoreIdxAndCustomerIdx(storeIdx, customUserDetails.getIdx());
+        if(storeReviewOpt.isPresent()){
             throw new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_DUPLICATED);
         }
 

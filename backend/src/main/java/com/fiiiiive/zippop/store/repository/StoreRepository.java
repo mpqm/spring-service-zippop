@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.store.repository;
 
+import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
@@ -15,6 +17,11 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
     @Query("SELECT s FROM Store s " +
             "WHERE s.idx = :storeIdx")
     Optional<Store> findByStoreIdx(@Param("storeIdx") Long storeIdx);
+
+    // 스토어 인덱스 및 기업 이메일로 조회
+    @Query("SELECT s FROM Store s " +
+            "WHERE s.idx = :storeIdx AND s.companyEmail = :companyEmail")
+    Optional<Store> findByStoreIdxAndCompanyEmail(@Param("storeIdx") Long storeIdx, @Param("companyEmail") String companyEmail);
 
     // 스토어 인덱스로 좋아요 증가
     @Modifying
@@ -48,5 +55,9 @@ public interface StoreRepository extends JpaRepository<Store, Long> {
             "WHERE s.companyEmail = :companyEmail " +
             "AND (s.address LIKE %:keyword% OR s.name LIKE %:keyword% OR s.category LIKE %:keyword% OR s.startDate LIKE %:keyword%)")
     Page<Store> findAllByKeywordAndCompanyEmail(@Param("keyword") String keyword, @Param("companyEmail") String companyEmail, Pageable pageable);
+
+    // 스토어 종료일 조회
+    @Query("SELECT s FROM Store s WHERE DATE(s.endDate) = :endDate")
+    List<Store> findAllByEndDate(@Param("endDate") LocalDate endDate);
 
 }

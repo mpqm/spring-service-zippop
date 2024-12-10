@@ -14,4 +14,5 @@ public class SearchStoreImageRes {
     private String storeImageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
 }

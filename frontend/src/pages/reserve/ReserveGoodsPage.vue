@@ -64,9 +64,20 @@ const isKeywordSearch = ref(false);
 
 // onMounted 
 onMounted(async () => {
+    await access();
     await search();
     await searchAll();
 });
+
+const access = async () => {
+    const res = await reserveStore.access(route.params.reserveIdx, route.params.storeIdx);
+    if (res.success) {
+        toast.success(res.message)
+    } else {
+        router.push("/")
+        toast.error(res.message)
+    }
+}
 
 const cancel = async () => {
     const res = await reserveStore.cancel(route.params.reserveIdx);

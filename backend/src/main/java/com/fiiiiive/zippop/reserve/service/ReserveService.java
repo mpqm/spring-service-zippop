@@ -15,7 +15,6 @@ import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.global.utils.JwtUtil;
 import com.fiiiiive.zippop.global.utils.RedisUtil;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

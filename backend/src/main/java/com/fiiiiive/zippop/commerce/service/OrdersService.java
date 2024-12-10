@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.orders.service;
+package com.fiiiiive.zippop.commerce.service;
 
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
@@ -8,15 +8,14 @@ import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
-import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
-import com.fiiiiive.zippop.orders.model.entity.Orders;
-import com.fiiiiive.zippop.orders.model.entity.OrdersDetail;
-import com.fiiiiive.zippop.orders.model.dto.*;
-import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
-import com.fiiiiive.zippop.orders.repository.OrdersRepository;
+import com.fiiiiive.zippop.commerce.model.entity.Orders;
+import com.fiiiiive.zippop.commerce.model.entity.OrdersDetail;
+import com.fiiiiive.zippop.commerce.model.dto.*;
+import com.fiiiiive.zippop.commerce.repository.OrdersDetailRepository;
+import com.fiiiiive.zippop.commerce.repository.OrdersRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import com.google.gson.Gson;

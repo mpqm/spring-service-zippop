@@ -8,6 +8,7 @@ export const useReserveStore = defineStore("reserve", {
         reserve: {},
         totalElements: null,
         totalPages: null,
+        access : false,
     }),
     persist: { storage: sessionStorage, },
     actions: {
@@ -31,6 +32,22 @@ export const useReserveStore = defineStore("reserve", {
                     `${backend}/reserve/enroll?reserveIdx=${reserveIdx}`,
                     { withCredentials: true }
                 );
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        },
+        // 예약 대기열 접근 제어
+        async access(reserveIdx, storeIdx){
+            try {
+                const res = await axios.get(
+                    `${backend}/reserve/access?reserveIdx=${reserveIdx}&storeIdx=${storeIdx}`,
+                    { withCredentials: true }
+                );
+                if(res.data.success){
+                    this.access = true;
+                }
+                this.access = false;
                 return res.data
             } catch (error) {
                 return error.response.data

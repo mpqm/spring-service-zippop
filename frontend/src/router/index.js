@@ -121,10 +121,7 @@ router.beforeEach(async (to, from, next) => {
   const reserveStore = useReserveStore();
   const storeIdx = from.params.storeIdx;
   const reserveIdx = from.params.reserveIdx;
-
-
   const isGoodsPage = (path) => path && path.includes('/reserve/') && path.includes('/goods');
-  
   const isQueuePage = (path) => path && path.includes('/reserve/') && path.split('/').length === 4;
 
   // `/goods`에서 대기열로 이동 시 스토어 페이지로 리디렉션
@@ -141,7 +138,7 @@ router.beforeEach(async (to, from, next) => {
     path.startsWith('/reserve/') &&
     (path.includes('/goods') || path.includes('/cart') || path.includes('/orders'));
 
-  if (isReserveRoute(from.path) && !isReserveRoute(to.path)) {
+  if (isReserveRoute(from.path) && !isReserveRoute(to.path) && !reserveStore.access) {
     const confirmLeave = confirm("페이지를 떠나시겠습니까? 예약이 취소됩니다.");
     if (confirmLeave) {
       cartStore.deleteAllCartItems(storeIdx);

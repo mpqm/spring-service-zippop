@@ -1,8 +1,6 @@
 package com.fiiiiive.zippop.cart.model.dto;
 
-import com.fiiiiive.zippop.goods.model.dto.SearchGoodsRes;
 import com.fiiiiive.zippop.store.model.dto.SearchStoreImageRes;
-import com.fiiiiive.zippop.store.model.dto.SearchStoreReviewRes;
 import lombok.*;
 
 import java.time.LocalDateTime;
