@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.commerce.model.dto;
+package com.fiiiiive.zippop.orders.model.dto;
 
 import lombok.*;
 

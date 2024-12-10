@@ -1,6 +1,6 @@
-package com.fiiiiive.zippop.commerce.repository;
+package com.fiiiiive.zippop.orders.repository;
 
-import com.fiiiiive.zippop.commerce.model.entity.Orders;
+import com.fiiiiive.zippop.orders.model.entity.Orders;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

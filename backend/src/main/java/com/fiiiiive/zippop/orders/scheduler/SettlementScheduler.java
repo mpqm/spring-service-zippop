@@ -1,9 +1,9 @@
-package com.fiiiiive.zippop.commerce.scheduler;
+package com.fiiiiive.zippop.orders.scheduler;
 
-import com.fiiiiive.zippop.commerce.model.entity.Orders;
-import com.fiiiiive.zippop.commerce.model.entity.Settlement;
-import com.fiiiiive.zippop.commerce.repository.OrdersRepository;
-import com.fiiiiive.zippop.commerce.repository.SettlementRepository;
+import com.fiiiiive.zippop.orders.model.entity.Orders;
+import com.fiiiiive.zippop.orders.model.entity.Settlement;
+import com.fiiiiive.zippop.orders.repository.OrdersRepository;
+import com.fiiiiive.zippop.orders.repository.SettlementRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
