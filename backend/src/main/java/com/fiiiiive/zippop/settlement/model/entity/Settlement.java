@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.orders.model.entity;
+package com.fiiiiive.zippop.settlement.model.entity;
 
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import jakarta.persistence.*;
