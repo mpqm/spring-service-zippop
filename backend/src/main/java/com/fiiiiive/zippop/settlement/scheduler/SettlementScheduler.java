@@ -1,9 +1,9 @@
-package com.fiiiiive.zippop.orders.scheduler;
+package com.fiiiiive.zippop.settlement.scheduler;
 
 import com.fiiiiive.zippop.orders.model.entity.Orders;
-import com.fiiiiive.zippop.orders.model.entity.Settlement;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
-import com.fiiiiive.zippop.orders.repository.SettlementRepository;
+import com.fiiiiive.zippop.settlement.model.entity.Settlement;
+import com.fiiiiive.zippop.settlement.repository.SettlementRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,21 +23,21 @@ public class SettlementScheduler {
     private final OrdersRepository ordersRepository;
     private final SettlementRepository settlementRepository;
 
-//    @Scheduled(cron = "0 0 9 * * ?")
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(cron = "0 0 6 * * ?")
+//    @Scheduled(fixedRate = 1000)
     public void createSettlement() {
 
         log.info("스케줄러 실행 시작 : 팝업 스토어 별 판매 금액 정산");
         // 어제 날짜 기준으로 조회
-        List<Orders> ordersList = ordersRepository.findByStatusAndUpdatedAt("_DELIVERY", LocalDate.now());
+        List<Orders> ordersList = ordersRepository.findByStatusAndUpdatedAt("_DELIVERY", LocalDate.now().minusDays(1));
 
-        // 2. 스토어별 매출 계산
+        // 스토어별 매출 계산
         Map<Long, Integer> storeRevenueMap = new HashMap<>();
         for (Orders order : ordersList) {
             storeRevenueMap.merge(order.getStoreIdx(), order.getTotalPrice(), Integer::sum);
         }
 
-        // 3. Settlement 저장
+        // Settlement 저장
         for (Map.Entry<Long, Integer> entry : storeRevenueMap.entrySet()) {
             Long storeIdx = entry.getKey();
             Integer totalRevenue = entry.getValue();

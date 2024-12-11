@@ -89,12 +89,12 @@ public class OrdersController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
 
         Page<SearchOrdersRes> response = ordersService.searchAllOrdersAsCustomer(customUserDetails, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.ORDERS_SEARCH_ALL_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_SEARCH_ALL_SUCCESS,response));
     }
 
     // 기업 고객 주문 상세 조회
     @GetMapping("/search/as-company")
-    public ResponseEntity<BaseResponse<List<SearchOrdersDetailRes>>> searchOrdersAsCompany (
+    public ResponseEntity<BaseResponse<SearchOrdersDetailRes>> searchOrdersAsCompany (
         @RequestParam Long ordersIdx,
         @RequestParam Long storeIdx,
         @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {

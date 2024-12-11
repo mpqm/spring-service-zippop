@@ -19,8 +19,8 @@ public class StoreScheduler {
 
     private final StoreRepository storeRepository;
 
-//    @Scheduled(cron = "0 0 9 * * ?")
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(cron = "0 0 9 * * ?")
+//    @Scheduled(fixedRate = 1000)
     public void updateStoreStatus() {
         log.info("스케줄러 실행 시작 - 팝업스토어 상태 변경 시작");
         // 오늘 날짜 기준으로 스토어 조회

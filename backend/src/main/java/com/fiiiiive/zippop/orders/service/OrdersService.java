@@ -16,6 +16,7 @@ import com.fiiiiive.zippop.orders.model.entity.OrdersDetail;
 import com.fiiiiive.zippop.orders.model.dto.*;
 import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
+import com.fiiiiive.zippop.settlement.repository.SettlementRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import com.google.gson.Gson;
@@ -50,6 +51,7 @@ public class OrdersService {
     private final OrdersRepository ordersRepository;
     private final GoodsRepository goodsRepository;
     private final StoreRepository storeRepository;
+    private final SettlementRepository settlementRepository;
 
     // 결제 검증(예약용)
     @Transactional
@@ -535,5 +537,7 @@ public class OrdersService {
         });
         return searchOrdersResPage;
     }
+
+
 }
 

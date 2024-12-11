@@ -186,9 +186,14 @@ public enum BaseResponseMessage {
     RESERVE_SEARCH_STATUS_SUCCESS(true, 7010, "예약 대기자 및 Redis 상태를 불러왔습니다."),
     RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND(false, 7011, "예약을 조회할 수 없습니다."),
     // 팝업 예약 인가
-    RESERVE_ACCESS_SUCCESS(true, 7012, "유효 사용자입니다.");
+    RESERVE_ACCESS_SUCCESS(true, 7012, "유효 사용자입니다."),
 
-
+    // ========================================================================================================================
+    // 팝업 스토어 정산 8000
+    SETTLEMENT_SEARCH_SUCCESS(true, 8000, "팝업 스토어 정산 내역을 조회했습니다."),
+    SETTLEMENT_SEARCH_FAIL_NOT_FOUND(false, 8001, "팝업 스토어 정산 내역을 찾을 수 없습니다."),
+    SETTLEMENT_SEARCH_FAIL_NOT_FOUND_STORE(false, 8002, "팝업 스토어 정산 내역을 찾을 수 없습니다."),
+    SETTLEMENT_SEARCH_FAIL_INVALID_MEMBER(false, 8003, "해당 팝업 스토어의 관리자가 아닙니다.");
 
     // ========================================================================================================================
     private Boolean success;
