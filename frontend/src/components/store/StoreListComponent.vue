@@ -33,6 +33,10 @@
     <div v-if="showControl === 4" class="btn-container">
       <router-link class="ud-btn" :to="store ? `/mypage/company/reserve/${store.storeIdx}` : '#'">예약 보기</router-link>
     </div>
+    <!-- SettlementManagementPage1 용 -->
+    <div v-if="showControl === 5" class="btn-container">
+      <router-link class="ud-btn" :to="store ? `/mypage/company/settlement/${store.storeIdx}` : '#'">정산내역 보기</router-link>
+    </div>
   </div>
 </template>
 
