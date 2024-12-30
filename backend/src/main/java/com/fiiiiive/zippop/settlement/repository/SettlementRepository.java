@@ -14,4 +14,5 @@ public interface SettlementRepository extends JpaRepository<Settlement, Long> {
 
     @Query("SELECT s FROM Settlement s WHERE s.storeIdx = :storeIdx")
     Optional<Page<Settlement>> findAllByStoreIdx(Long storeIdx, Pageable pageable);
+
 }

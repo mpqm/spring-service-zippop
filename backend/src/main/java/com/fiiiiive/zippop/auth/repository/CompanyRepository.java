@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
+
     // 기업 회원 인덱스로 조회
     @Query("SELECT cp FROM Company cp " +
             "WHERE cp.idx = :companyIdx")
@@ -23,4 +24,5 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
     @Query("SELECT cp FROM Company cp " +
             "WHERE cp.email = :companyEmail")
     Optional<Company> findByCompanyEmail(@Param("companyEmail") String companyEmail);
+
 }

@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.orders.repository;
 
+import com.fiiiiive.zippop.global.common.constants.BaseStatus;
 import com.fiiiiive.zippop.orders.model.entity.Orders;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
@@ -39,12 +40,15 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     // 주문, 스토어 인덱스 및 주문 상태로 조회
     @Query("SELECT o FROM Orders o " +
             "JOIN FETCH o.customer oc " +
-            "WHERE o.storeIdx = :storeIdx AND oc.idx = :customerIdx AND o.status LIKE %:status%")
-    Optional<Orders> findByStoreIdxAndCustomerIdxAndStatus(@Param("storeIdx") Long storeIdx, @Param("customerIdx") Long customerIdx, @Param("status") String status);
+            "WHERE o.storeIdx = :storeIdx AND oc.idx = :customerIdx " +
+            "AND (o.status = :status1 OR o.status = :status2)")
+    Optional<Orders> findByStoreIdxAndCustomerIdxAndStatus(@Param("storeIdx") Long storeIdx, @Param("customerIdx") Long customerIdx, @Param("status1") BaseStatus status1, @Param("status1") BaseStatus status2);
 
     // 주문 상태 및 결제 완료 날짜로 조회
-    @Query("SELECT o FROM Orders o WHERE o.status LIKE %:status AND FUNCTION('DATE', o.updatedAt) = :updatedAt")
-    List<Orders> findByStatusAndUpdatedAt(@Param("status") String status, @Param("updatedAt") LocalDate updatedAt);
+    @Query("SELECT o FROM Orders o " +
+            "WHERE (o.status = :status1 OR o.status = :status2) " +
+            " AND FUNCTION('DATE', o.updatedAt) = :updatedAt")
+    List<Orders> findByStatusAndUpdatedAt(@Param("status1") BaseStatus status1, @Param("status1") BaseStatus status2, @Param("updatedAt") LocalDate updatedAt);
 
 
 }

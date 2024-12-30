@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.reserve.repository;
 
+import com.fiiiiive.zippop.global.common.constants.BaseStatus;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
@@ -26,15 +27,15 @@ public interface ReserveRepository extends JpaRepository<Reserve, Long> {
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.store rs " +
             "WHERE rs.status = :status")
-    Page<Reserve> findAllByStatus(@Param("status") String status, Pageable pageable);
+    Page<Reserve> findAllByStatus(@Param("status") BaseStatus status, Pageable pageable);
 
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.store rs " +
             "WHERE rs.status = :status " +
              "AND (rs.address LIKE %:keyword% OR rs.name LIKE %:keyword% OR rs.category LIKE %:keyword% OR rs.startDate LIKE %:keyword% OR rs.companyEmail LIKE %:keyword%)")
-    Page<Reserve> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") String status, Pageable pageable);
+    Page<Reserve> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") BaseStatus status, Pageable pageable);
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.store rs " +
             "WHERE rs.idx = :storeIdx AND rs.status = :status")
-    Page<Reserve> findAllByStoreIdx(@Param("storeIdx") Long storeIdx, @Param("status") String status, Pageable pageable);
+    Page<Reserve> findAllByStoreIdx(@Param("storeIdx") Long storeIdx, @Param("status") BaseStatus status, Pageable pageable);
 }

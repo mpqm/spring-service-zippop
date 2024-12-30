@@ -25,7 +25,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         CustomOauth2UserDetails oAuth2Member = (CustomOauth2UserDetails) authentication.getPrincipal();
         Long idx = oAuth2Member.getIdx();
         String username = oAuth2Member.getUsername();
-        String role = oAuth2Member.getCustomer().getRole();
+        String role = oAuth2Member.getCustomer().getRole().name();
         String token = jwtUtil.createAccessToken(idx, username, role, username);
         log.info(idx + " " + role + " " + username);
         Cookie aToken = new Cookie("ATOKEN", token);

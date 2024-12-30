@@ -1,5 +1,8 @@
 package com.fiiiiive.zippop.global.common.responses;
 
+import lombok.Getter;
+
+@Getter
 public enum BaseResponseMessage {
     // 200~500 Internal
     REQUEST_SUCCESS(true, 200, "요청이 정상적으로 처리되었습니다"),
@@ -18,6 +21,7 @@ public enum BaseResponseMessage {
     UNPARSE_JSON(false, 312, "json 형식을 매핑할 수 없습니다."),
     INTERNAL_SERVER_ERROR(false, 500, "내부 서버 오류가 발생해서 처리할 수 없습니다."),
     IAMPORT_ERROR(false,  314,"PG 사에 오류가 발생했습니다. 관리자에게 문의해주세요."),
+    VALIDATION_ERROR(false, 315, "입력값이 잘못되었습니다."),
     // REDIS 예외처리 9000
     CACHE_FAIL_NOT_FOUND(false, 999, "예약을 하지 않은 사용자입니다."),
 
@@ -88,11 +92,11 @@ public enum BaseResponseMessage {
     // 팝업 스토어 수정
     STORE_UPDATE_SUCCESS(true, 4006, "팝업 스토어 수정에 성공했습니다."),
     STORE_UPDATE_FAIL_NOT_FOUND(false, 4007, "팝업 스토어를 찾을 수 없습니다."),
-    STORE_UPDATE_FAIL_INVALID_MEMBER(false, 4008, "해당 팝업스토어를 등록한 기업회원이 아닙니다."),
     // 팝업 스토어 삭제
     STORE_DELETE_SUCCESS(true, 4009, "팝업 스토어 삭제에 성공했습니다."),
     STORE_DELETE_FAIL_NOT_FOUND(false, 4010, "팝업 스토어를 찾을 수 없어 삭제에 실패했습니다."),
-    STORE_DELETE_FAIL_INVALID_MEMBER(false, 4011, "해당 팝업 스토어를 등록한 기업 회원이 아닙니다."),
+    // 소유권 확인
+    STORE_OWN_FAIL_INVALID_MEMBER(false, 4008, "해당 팝업스토어를 등록한 기업회원이 아닙니다."),
     // 팝업 스토어 좋아요
     STORE_LIKE_SUCCESS(true, 4012, "팝업 스토어 좋아요 성공"),
     STORE_LIKE_FAIL_NOT_FOUND(false, 4013, "해당 팝업 스토어를 찾을 수 없습니다."),
@@ -102,8 +106,8 @@ public enum BaseResponseMessage {
     // 팝업 스토어 리뷰
     STORE_REVIEW_SUCCESS(true, 4018, "팝업 스토어 리뷰 등록에 성공했습니다."),
     STORE_REVIEW_FAIL_INVALID_ROLE(false, 4019, "기업 회원은 리뷰 작성 기능이 제한 됩니다."),
-    STORE_REVIEW_FAIL_INVALID_MEMBER(false, 4014, "해당 팝업 스토어에서 결제한 내역이 없습니다."),
-    STORE_REVIEW_FAIL_NOT_FOUND(false, 4020, "해당 팝업 스토어를 찾을 수 없습니다."),
+    STORE_REVIEW_FAIL_INVALID_MEMBER(false, 4020, "해당 팝업 스토어에서 결제한 내역이 없습니다."),
+    STORE_REVIEW_FAIL_NOT_FOUND(false, 4021, "해당 팝업 스토어를 찾을 수 없습니다."),
     STORE_REVIEW_FAIL_DUPLICATED(false, 4022,"리뷰는 팝업스토어당 한 글씩만 적을 수 있습니다."),
     STORE_REVIEW_SEARCH_ALL_SUCCESS(true, 4023, "팝업 스토어 리뷰 목록을 불러왔습니다."),
     STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND(false, 4024, "팝업 스토어 리뷰 목록을 찾을 수 없습니다."),
@@ -193,25 +197,37 @@ public enum BaseResponseMessage {
     SETTLEMENT_SEARCH_SUCCESS(true, 8000, "팝업 스토어 정산 내역을 조회했습니다."),
     SETTLEMENT_SEARCH_FAIL_NOT_FOUND(false, 8001, "팝업 스토어 정산 내역을 찾을 수 없습니다."),
     SETTLEMENT_SEARCH_FAIL_NOT_FOUND_STORE(false, 8002, "팝업 스토어 정산 내역을 찾을 수 없습니다."),
-    SETTLEMENT_SEARCH_FAIL_INVALID_MEMBER(false, 8003, "해당 팝업 스토어의 관리자가 아닙니다.");
+    SETTLEMENT_SEARCH_FAIL_INVALID_MEMBER(false, 8003, "해당 팝업 스토어의 관리자가 아닙니다."),
 
     // ========================================================================================================================
-    private Boolean success;
-    private Integer code;
-    private String message;
+    // 레디스 큐 9000
+    REDIS_CACHE_FAIL_NOT_FOUND(false, 999, "예약을 하지 않은 사용자입니다."),
+    REDIS_CONNECTION_ERROR(false, 9000, "Redis 연결 중 오류가 발생했습니다."),
+    REDIS_SAVE_ERROR(false, 9001, "Redis 데이터 저장 중 오류가 발생했습니다."),
+    REDIS_READ_ERROR(false, 9002, "Redis 데이터 조회 중 오류가 발생했습니다."),
+    REDIS_DELETE_ERROR(false, 9003, "Redis 데이터 삭제 중 오류가 발생했습니다."),
+    REDIS_QUEUE_CREATE_ERROR(false, 9004, "Redis 큐 생성 중 오류가 발생했습니다."),
+    REDIS_QUEUE_ENROLL_ERROR(false, 9005, "Redis 큐 등록 중 오류가 발생했습니다."),
+    REDIS_QUEUE_SIZE_ERROR(false, 9006, "Redis 큐 크기 조회 중 오류가 발생했습니다."),
+    REDIS_QUEUE_UPDATE_ERROR(false, 9007, "Redis 큐 값 갱신 중 오류가 발생했습니다."),
+    REDIS_QUEUE_ORDER_ERROR(false, 9008, "Redis 큐 순위 조회 중 오류가 발생했습니다."),
+    REDIS_QUEUE_REMOVE_ERROR(false, 9009, "Redis 큐 값 삭제 중 오류가 발생했습니다."),
+    REDIS_QUEUE_FIRST_USER_ERROR(false, 9010, "Redis 대기열 첫 사용자 작업 전환 중 오류가 발생했습니다.");
+
+    // ========================================================================================================================
+    private final Boolean success;
+    private final Integer code;
+    private final String message;
 
     BaseResponseMessage(Boolean success, Integer code, String message) {
         this.success = success;
         this.code = code;
         this.message = message;
     }
+
     public static BaseResponseMessage findByCode(Integer code) {
         for (BaseResponseMessage message : values()) { if (message.getCode().equals(code)) { return message; }}
         return null;
     }
-    public Boolean getSuccess() { return success; }
 
-    public Integer getCode() { return code; }
-
-    public String getMessage() { return message; }
 }

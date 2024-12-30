@@ -5,13 +5,11 @@ import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
-import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
-import com.fiiiiive.zippop.reserve.model.dto.ReserveStatusReq;
-import com.fiiiiive.zippop.reserve.model.dto.SearchReserveRes;
+import com.fiiiiive.zippop.reserve.model.dto.ReserveDto;
 import com.fiiiiive.zippop.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,84 +27,84 @@ import java.security.Principal;
 @RequestMapping("/api/v1/reserve")
 @RequiredArgsConstructor
 public class ReserveController {
+
     private final ReserveService reserveService;
 
     // 예약 생성
     @PostMapping("/register")
-    public ResponseEntity<BaseResponse> register(
+    public ResponseEntity<BaseResponse<ReserveDto.CreateReserveRes>> registerReserve(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestBody CreateReserveReq dto) throws BaseException {
+        @Valid @RequestBody ReserveDto.CreateReserveReq dto) throws BaseException {
 
-        CreateReserveRes response = reserveService.register(customUserDetails, dto);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_REGISTER_SUCCESS,response));
+        ReserveDto.CreateReserveRes response = reserveService.registerReserve(customUserDetails, dto);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_REGISTER_SUCCESS,response));
     }
 
-    // 예약 신청: email -> @AuthenticationPrincipal CustomUserDetails customUserDetails // 테스트 중
+    // 예약 신청
     @GetMapping("/enroll")
-    public ResponseEntity<BaseResponse> enroll(
-        HttpServletResponse res,
+    public ResponseEntity<BaseResponse<ReserveDto.EnrollReserveRes>> enrollReserve(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        HttpServletResponse res,
         @RequestParam Long reserveIdx) throws BaseException {
 
-        String response = reserveService.enroll(res, customUserDetails, reserveIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_ENROLL_SUCCESS, response));
+        ReserveDto.EnrollReserveRes response = reserveService.enrollReserve(res, customUserDetails, reserveIdx);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_ENROLL_SUCCESS, response));
     }
 
-    // 예약 취소: email -> @AuthenticationPrincipal CustomUserDetails customUserDetails // 테스트 중
+    // 예약 취소
     @GetMapping("/cancel")
-    public ResponseEntity<BaseResponse> cancel(
-        HttpServletResponse res,
+    public ResponseEntity<BaseResponse<String>> cancelReserve(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        HttpServletResponse res,
         @RequestParam Long reserveIdx) throws BaseException {
 
-        String response = reserveService.cancel(res, customUserDetails, reserveIdx);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+        String response = reserveService.cancelReserve(res, customUserDetails, reserveIdx);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
     // 예약 인가
     @GetMapping("/access")
-    public ResponseEntity access(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestParam Long storeIdx,
-            @RequestParam Long reserveIdx) throws BaseException {
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_ACCESS_SUCCESS));
-    }
-
-    // 예약 조회(기업)
-    @GetMapping("/search-all/as-company")
-    public ResponseEntity<BaseResponse> searchAllAsCompany (
+    public ResponseEntity<BaseResponse<Void>> access(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long storeIdx,
-        @RequestParam int page,
-        @RequestParam int size ) throws BaseException {
-
-        Page<SearchReserveRes> response = reserveService.searchAllAsCompany(customUserDetails,storeIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+        @RequestParam Long reserveIdx) throws BaseException {
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_ACCESS_SUCCESS));
     }
 
-    // 예약 조회(전체)
+    // 예약 목록 조회
     @GetMapping("/search-all")
-    public ResponseEntity<BaseResponse> searchAll (
+    public ResponseEntity<BaseResponse<Page<ReserveDto.SearchReserveRes>>> searchAllReserve (
         @RequestParam(required = false) String keyword,
         @RequestParam(required = false) Long storeIdx,
         @RequestParam int page,
         @RequestParam int size ) throws BaseException {
 
-        Page<SearchReserveRes> response = reserveService.searchAll(storeIdx, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+        Page<ReserveDto.SearchReserveRes> response = reserveService.searchAllReserve(storeIdx, keyword, page, size);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
+    // 예약 목록 조회(기업용)
+    @GetMapping("/search-all/as-company")
+    public ResponseEntity<BaseResponse<Page<ReserveDto.SearchReserveRes>>> searchAllReserveAsCompany(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long storeIdx,
+        @RequestParam int page,
+        @RequestParam int size ) throws BaseException {
+
+        Page<ReserveDto.SearchReserveRes> response = reserveService.searchAllReserveAsCompany(customUserDetails,storeIdx, page, size);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+    }
 
     // 예약 상태(소켓통신)
     @MessageMapping("/reserve/status")
     public void status(
         @AuthenticationPrincipal Principal principal,
-        @Payload ReserveStatusReq reserveStatusReq) throws BaseException {
+        @Payload ReserveDto.StatusReserveReq statusReserveReq) throws BaseException {
 
-        reserveService.status(principal, reserveStatusReq);
+        reserveService.status(principal, statusReserveReq);
     }
 
-    //    // 폴링방식
+//    // 폴링방식
 //    @GetMapping("/status")
 //    public ResponseEntity<BaseResponse> status(
 //        @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -115,6 +113,5 @@ public class ReserveController {
 //        String response = reserveService.status(customUserDetails, reserveIdx);
 //        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_SEARCH_STATUS_SUCCESS, response));
 //    }
-
 
 }

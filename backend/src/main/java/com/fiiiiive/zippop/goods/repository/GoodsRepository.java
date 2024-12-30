@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface GoodsRepository extends JpaRepository<Goods, Long> {
+
     // 굿즈 인덱스로 조회
     // 비관적락 잠금 설정
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -36,4 +37,5 @@ public interface GoodsRepository extends JpaRepository<Goods, Long> {
             "JOIN FETCH g.store gs " +
             "WHERE gs.idx = :storeIdx AND (gs.name LIKE %:keyword% OR g.name LIKE %:keyword%)")
     Page<Goods> findAllByStoreIdxAndKeyword(@Param("storeIdx") Long storeIdx, @Param("keyword") String keyword, Pageable pageable);
+
 }

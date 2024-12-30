@@ -131,7 +131,7 @@ router.beforeEach(async (to, from, next) => {
 
   // `/goods`에서 대기열로 이동 시 스토어 페이지로 리디렉션
   if (isGoodsPage(from.path) && isQueuePage(to.path)) {
-    cartStore.deleteAllCartItems(storeIdx);
+    cartStore.deleteCart(storeIdx);
     reserveStore.cancel(reserveIdx);
     next(`/store/${storeIdx}`); // 스토어 페이지로 리디렉션
     return;
@@ -146,7 +146,7 @@ router.beforeEach(async (to, from, next) => {
   if (isReserveRoute(from.path) && !isReserveRoute(to.path) && !reserveStore.access) {
     const confirmLeave = confirm("페이지를 떠나시겠습니까? 예약이 취소됩니다.");
     if (confirmLeave) {
-      cartStore.deleteAllCartItems(storeIdx);
+      cartStore.deleteCart(storeIdx);
       reserveStore.cancel(reserveIdx);
       next(); // 이동 허용
     } else {

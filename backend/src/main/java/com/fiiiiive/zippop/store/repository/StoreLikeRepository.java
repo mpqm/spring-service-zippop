@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface StoreLikeRepository extends JpaRepository<StoreLike, Long> {
+
     // 고객, 스토어 인덱스로 조회
     @Query("SELECT sl FROM StoreLike sl " +
             "JOIN FETCH sl.customer slc " +
@@ -32,4 +33,5 @@ public interface StoreLikeRepository extends JpaRepository<StoreLike, Long> {
     @Query("DELETE FROM StoreLike sl " +
             "WHERE sl.customer.idx = :customerIdx AND sl.store.idx = :storeIdx")
     void deleteByCustomerIdxAndStoreIdx(@Param("customerIdx") Long customerIdx, @Param("storeIdx") Long storeIdx);
+
 }

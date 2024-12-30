@@ -14,53 +14,77 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<BaseResponse<String>> handleBaseException(BaseException e){
-        return ResponseEntity.badRequest().body(new BaseResponse(BaseResponseMessage.findByCode(e.getCode())));
+        return ResponseEntity.badRequest().body(new BaseResponse<>(Objects.requireNonNull(BaseResponseMessage.findByCode(e.getCode()))));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<BaseResponse<List<String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        List<String> errors = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(error -> {
+                    String fieldName = (error instanceof FieldError) ? ((FieldError) error).getField() : "unknown";
+                    return String.format("%s: %s", fieldName, error.getDefaultMessage());
+                })
+                .collect(Collectors.toList());
+
+        BaseResponse<List<String>> baseResponse = new BaseResponse<>(
+                BaseResponseMessage.VALIDATION_ERROR,
+                errors
+        );
+
+        return ResponseEntity.badRequest().body(baseResponse);
     }
 
     @ExceptionHandler(MailException.class)
-    public ResponseEntity<BaseResponse> handleMailException(MailException e){
+    public ResponseEntity<BaseResponse<String>> handleMailException(MailException e){
         BaseResponse<String> baseResponse = new BaseResponse<>(BaseResponseMessage.EMAIL_SEND_FAIL, e.getMessage());
         return ResponseEntity.badRequest().body(baseResponse);
     }
 
     @ExceptionHandler(IamportResponseException.class)
-    public ResponseEntity<BaseResponse> handleIamportResponseException(IamportResponseException e){
+    public ResponseEntity<BaseResponse<String>> handleIamportResponseException(IamportResponseException e){
         BaseResponse<String> baseResponse = new BaseResponse<>(BaseResponseMessage.INTERNAL_SERVER_ERROR, e.getMessage());
         return ResponseEntity.badRequest().body(baseResponse);
     }
 
     @ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleAccessDeniedException(AccessDeniedException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new BaseResponse(BaseResponseMessage.ACCESS_DENIED));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new BaseResponse<>(BaseResponseMessage.ACCESS_DENIED));
     }
 
     @ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleAuthenticationException(AuthenticationException e) {
         if (e instanceof BadCredentialsException) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.BAD_CREDENTIAL, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(BaseResponseMessage.BAD_CREDENTIAL, e.getMessage()));
         } else if (e instanceof InternalAuthenticationServiceException | e instanceof InsufficientAuthenticationException) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.ACCESS_DENIED, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(BaseResponseMessage.ACCESS_DENIED, e.getMessage()));
         }else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.INVALID_TOKEN, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(BaseResponseMessage.INVALID_TOKEN, e.getMessage()));
         }
     }
 
     @ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleJwtException(JwtException e) {
         if(e instanceof ExpiredJwtException){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(BaseResponseMessage.JWT_TOKEN_EXPIRED, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(BaseResponseMessage.JWT_TOKEN_EXPIRED, e.getMessage()));
         } else if(e instanceof UnsupportedJwtException) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(BaseResponseMessage.JWT_TOKEN_UNSUPPORTED, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(BaseResponseMessage.JWT_TOKEN_UNSUPPORTED, e.getMessage()));
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse(BaseResponseMessage.INTERNAL_SERVER_ERROR, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(BaseResponseMessage.INTERNAL_SERVER_ERROR, e.getMessage()));
         }
     }
 }

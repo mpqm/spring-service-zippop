@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fiiiiive.zippop.auth.model.dto.AuthDto;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.global.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -18,8 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
-import com.fiiiiive.zippop.auth.model.dto.PostLoginReq;
-
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,12 +32,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        PostLoginReq dto;
+        AuthDto.LoginReq dto;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            dto = objectMapper.readValue(messageBody, PostLoginReq.class);
+            dto = objectMapper.readValue(messageBody, AuthDto.LoginReq.class);
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(dto.getUserId(), dto.getPassword(), null);
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {

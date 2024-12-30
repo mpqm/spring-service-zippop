@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+
     // 고객 회원 인덱스로 조회
     @Query("SELECT c FROM Customer c " +
             "WHERE c.idx = :customerIdx")
@@ -22,4 +23,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT c FROM Customer c " +
             "WHERE c.email = :customerEmail")
     Optional<Customer> findByCustomerEmail(@Param("customerEmail") String customerEmail);
+
 }
