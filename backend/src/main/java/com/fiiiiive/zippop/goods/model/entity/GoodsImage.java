@@ -1,8 +1,12 @@
 package com.fiiiiive.zippop.goods.model.entity;
 
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
+import com.fiiiiive.zippop.goods.model.dto.GoodsDto;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -11,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class GoodsImage extends BaseEntity {
+
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +26,20 @@ public class GoodsImage extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="goods_idx")
     private Goods goods;
+
+    // ToDto
+    public GoodsDto.SearchGoodsImageRes toDto() {
+        return GoodsDto.SearchGoodsImageRes.builder()
+                .goodsImageIdx(this.getIdx())
+                .goodsImageUrl(this.getUrl())
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
+                .build();
+    }
+
+    public static List<GoodsDto.SearchGoodsImageRes> toDtoList(List<GoodsImage> goodsImageList) {
+        return goodsImageList.stream()
+                .map(GoodsImage::toDto)
+                .collect(Collectors.toList());
+    }
 }

@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.global.utils;
 
 import com.fiiiiive.zippop.global.common.exception.BaseException;
+import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,8 +17,42 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
     private final RedisTemplate<String, Object> redisTemplate;
 
-    // SortedSet 생성 초기화 및 만료 시간 설정
-    public void create(String key, long expirationTimeMinutes) {
+
+    // 이메일 인증 UUID 저장 (key: email, value: uuid, expirationTime: 3 minutes)
+    public String saveEmailVerifyUuid(String email, String uuid, long expirationTimeMinutes) {
+        try {
+            redisTemplate.opsForValue().set("emailVerify:" + email, uuid, expirationTimeMinutes, TimeUnit.MINUTES);
+            return uuid;
+        } catch (Exception e) {
+            log.error("이메일 인증 UUID 저장 중 오류: {}", e.getMessage());
+            throw new RuntimeException("이메일 인증 UUID 조회에 실패했습니다.", e);
+        }
+    }
+
+    // 이메일 인증 UUID 조회
+    public String getEmailVerifyUuid(String email) {
+        try {
+            Object value = redisTemplate.opsForValue().get("emailVerify:" + email);
+            return value != null ? value.toString() : null;
+        } catch (Exception e) {
+            log.error("이메일 인증 UUID 조회 중 오류: {}", e.getMessage());
+            throw new RuntimeException("이메일 인증 UUID 조회에 실패했습니다.", e);
+        }
+    }
+
+    // 이메일 인증 UUID 삭제
+    public void deleteEmailVerifyUuid(String email) {
+        try {
+            redisTemplate.delete("emailVerify:" + email);
+        } catch (Exception e) {
+            log.error("이메일 인증 UUID 삭제 중 오류: {}", e.getMessage());
+            throw new RuntimeException("이메일 인증 UUID 삭제에 실패했습니다.", e);
+        }
+    }
+
+
+    // 대기열 큐 생성 초기화 및 만료 시간 설정
+    public void createQueue(String key, long expirationTimeMinutes) {
         try {
             ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
             zSetOperations.add(key, "start", System.currentTimeMillis());
@@ -28,18 +63,13 @@ public class RedisUtil {
         }
     }
 
-    // Redis에서 키 존재 여부 확인
-    public boolean exists(String key) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    // 큐 존재 여부 확인
+    public boolean existQueue(String key) {
+        return !Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
-    public Long getTTL(String key) {
-        return redisTemplate.getExpire(key, TimeUnit.SECONDS);
-    }
-
-
-    // SortedSet 값 저장(key, value, score), 타임스탬프를 기준으로 value를 저장 및 정렬
-    public void save(String key, String value, long timestamp) {
+    // 대기열 큐 등록
+    public void enrollQueue(String key, String value, long timestamp) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         zSetOperations.add(key, value, timestamp);
     }
@@ -82,7 +112,7 @@ public class RedisUtil {
         zSetOperations.remove(key, value);
     }
 
-    public String firstWatingUserToWorking(String key1, String key2, Integer fixedSize) {
+    public String firstWaitingUserToWorking(String key1, String key2, Integer fixedSize) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
         Set<ZSetOperations.TypedTuple<Object>> waitingList = zSetOperations.rangeWithScores(key2, 0, 0);
         if (waitingList != null && !waitingList.isEmpty() && getSize(key1) < fixedSize) {

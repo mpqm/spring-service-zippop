@@ -105,7 +105,7 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
     }
 
     public String getRole() {
-        return customer.getRole();
+        return customer.getRole().name();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return customer.getRole();
+                return customer.getRole().name();
             }
         });
         return collection;

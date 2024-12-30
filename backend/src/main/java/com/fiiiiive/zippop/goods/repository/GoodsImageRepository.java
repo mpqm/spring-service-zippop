@@ -10,10 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface GoodsImageRepository extends JpaRepository<GoodsImage, Long> {
+
     // 굿즈 인덱스로 전체 삭제
     @Modifying
     @Transactional
     @Query("DELETE FROM GoodsImage gi " +
             "WHERE gi.goods.idx = :goodsIdx")
     void deleteAllByGoodsIdx(@Param("goodsIdx") Long goodsIdx);
+
 }

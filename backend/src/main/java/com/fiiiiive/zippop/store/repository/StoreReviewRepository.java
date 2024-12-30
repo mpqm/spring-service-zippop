@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface StoreReviewRepository extends JpaRepository<StoreReview, Long> {
+
     // 리뷰 인덱스로 조회
     @Query("SELECT sr From StoreReview sr " +
             "JOIN FETCH sr.customer src JOIN FETCH sr.store srs " +
@@ -27,4 +28,5 @@ public interface StoreReviewRepository extends JpaRepository<StoreReview, Long> 
             "JOIN FETCH sr.customer src " +
             "WHERE src.idx = :customerIdx")
     Optional<Page<StoreReview>> findAllByCustomerIdx(@Param("customerIdx") Long customerIdx, Pageable pageable);
+
 }

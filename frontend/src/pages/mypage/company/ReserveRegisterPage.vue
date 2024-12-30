@@ -3,7 +3,7 @@
       <form class="register-form" @submit.prevent="register">
         <div>
           <label>팝업 스토어 예약 인원</label>
-          <input class="register-input" v-model="reservePeople" type="numver" placeholder="팝업 스토어 예약 인원을 입력해주세요." />
+          <input class="register-input" v-model="reservePeople" type="number" placeholder="팝업 스토어 예약 인원을 입력해주세요." />
         </div>
         <div>
           <label>팝업스토어 예약 시작일</label>

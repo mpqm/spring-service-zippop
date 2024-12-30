@@ -1,8 +1,12 @@
 package com.fiiiiive.zippop.settlement.model.entity;
 
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.settlement.model.dto.SettlementDto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 
@@ -17,16 +21,34 @@ public class Settlement extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    @Column
-    private Long storeIdx; // 정산 대상 스토어 ID
+    // 정산 대상 스토어 ID (필수)
+    @Column(nullable = false)
+    private Long storeIdx;
 
-    @Column
-    private Integer totalRevenue; // 총 매출
+    // 총 매출 (필수, 0 이상)
+    @Column(nullable = false)
+    @PositiveOrZero(message = "총 매출은 0 이상이어야 합니다.")
+    private Integer totalRevenue;
 
-    @Column
-    private LocalDate settlementDate; // 정산일
+    // 정산일 (필수)
+    @Column(nullable = false)
+    private LocalDate settlementDate;
 
-    @Column
-    private String status; // 정산 상태
+    // 정산 상태 (필수, 최대 50자)
+    @Setter
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BaseStatus status;
+
+    public SettlementDto.SearchSettlementRes toDto() {
+        return SettlementDto.SearchSettlementRes.builder()
+                .settlementDate(this.getSettlementDate())
+                .totalRevenue(this.getTotalRevenue())
+                .build();
+    }
+
+    public static Page<SettlementDto.SearchSettlementRes> toDtoPage(Page<Settlement> settlementPage) {
+        return settlementPage.map(Settlement::toDto);
+    }
 }
 

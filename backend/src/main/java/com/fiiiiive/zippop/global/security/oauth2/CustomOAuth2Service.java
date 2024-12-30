@@ -2,6 +2,7 @@ package com.fiiiiive.zippop.global.security.oauth2;
 
 import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
+import com.fiiiiive.zippop.global.common.constants.BaseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -35,7 +36,7 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
         Customer customer = null;
         if(result.isEmpty()){
             customer = Customer.builder()
-                    .role(role)
+                    .role(BaseStatus.valueOf(role))
                     .name(name)
                     .email(email)
                     .point(3000)

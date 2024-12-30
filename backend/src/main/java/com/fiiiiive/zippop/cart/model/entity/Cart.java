@@ -1,10 +1,13 @@
 package com.fiiiiive.zippop.cart.model.entity;
 
+import com.fiiiiive.zippop.cart.model.dto.CartDto;
 import com.fiiiiive.zippop.global.common.base.BaseEntity;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.store.model.entity.Store;
+import com.fiiiiive.zippop.store.model.entity.StoreImage;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Cart extends BaseEntity {
+
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +37,27 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "store_idx")
     private Store store;
 
+    // toDTO
+    public CartDto.SearchCartRes toDto() {
+        return CartDto.SearchCartRes.builder()
+                .storeIdx(this.getStore().getIdx())
+                .companyEmail(this.getStore().getCompanyEmail())
+                .storeName(this.getStore().getName())
+                .storeContent(this.getStore().getContent())
+                .storeAddress(this.getStore().getAddress())
+                .category(this.getStore().getCategory())
+                .likeCount(this.getStore().getLikeCount())
+                .totalPeople(this.getStore().getTotalPeople())
+                .storeStartDate(this.getStore().getStartDate())
+                .storeEndDate(this.getStore().getEndDate())
+                .storeStatus(this.getStore().getStatus().name())
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
+                .searchStoreImageResList(StoreImage.toDtoList(this.getStore().getStoreImageList()))
+                .build();
+    }
+
+    public static Page<CartDto.SearchCartRes> toDtoPage(Page<Cart> cartPage) {
+        return cartPage.map(Cart::toDto);
+    }
 }

@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.global.utils;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CloudFileUpload  {
+public class S3FileUpload  {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
     private final AmazonS3 amazonS3;
@@ -32,7 +33,7 @@ public class CloudFileUpload  {
                 String saveFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                 amazonS3.putObject(bucketName, saveFileName, file.getInputStream(), metadata);
                 return "https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + saveFileName;
-            } catch (IOException e) {
+            } catch (IOException | AmazonS3Exception e) {
                 throw new BaseException(BaseResponseMessage.FILE_UPLOAD_FAIL, e.getMessage());
             }
         }else {
@@ -52,7 +53,7 @@ public class CloudFileUpload  {
                     String saveFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                     amazonS3.putObject(bucketName, saveFileName, file.getInputStream(), metadata);
                     fileNames.add("https://" + bucketName + ".s3.ap-northeast-2.amazonaws.com/" + saveFileName);
-                } catch (IOException e) {
+                } catch (IOException | AmazonS3Exception e) {
                     throw new BaseException(BaseResponseMessage.FILE_UPLOAD_FAIL, e.getMessage());
                 }
             }

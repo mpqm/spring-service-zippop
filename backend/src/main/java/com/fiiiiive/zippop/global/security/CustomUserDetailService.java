@@ -28,7 +28,7 @@ public class CustomUserDetailService implements UserDetailsService {
                     .name(customer.getName())
                     .email(customer.getEmail())
                     .password(customer.getPassword())
-                    .role(customer.getRole())
+                    .role(customer.getRole().name())
                     .isEmailAuth(customer.getIsEmailAuth())
                     .build();
         }
@@ -41,7 +41,7 @@ public class CustomUserDetailService implements UserDetailsService {
                     .name(company.getName())
                     .email(company.getEmail())
                     .password(company.getPassword())
-                    .role(company.getRole())
+                    .role(company.getRole().name())
                     .isEmailAuth(company.getIsEmailAuth())
                     .build();
         } else {

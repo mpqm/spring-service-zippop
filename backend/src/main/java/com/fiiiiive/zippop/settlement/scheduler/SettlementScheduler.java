@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.settlement.scheduler;
 
+import com.fiiiiive.zippop.global.common.constants.BaseStatus;
 import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.settlement.model.entity.Settlement;
@@ -28,14 +29,13 @@ public class SettlementScheduler {
     public void createSettlement() {
 
         log.info("스케줄러 실행 시작 : 팝업 스토어 별 판매 금액 정산");
+
         // 어제 날짜 기준으로 조회
-        List<Orders> ordersList = ordersRepository.findByStatusAndUpdatedAt("_DELIVERY", LocalDate.now().minusDays(1));
+        List<Orders> ordersList = ordersRepository.findByStatusAndUpdatedAt(BaseStatus.valueOf("STOCK_DELIVERY"),BaseStatus.valueOf("RESERVE_DELIVERY"), LocalDate.now().minusDays(1));
 
         // 스토어별 매출 계산
         Map<Long, Integer> storeRevenueMap = new HashMap<>();
-        for (Orders order : ordersList) {
-            storeRevenueMap.merge(order.getStoreIdx(), order.getTotalPrice(), Integer::sum);
-        }
+        for (Orders order : ordersList) storeRevenueMap.merge(order.getStoreIdx(), order.getTotalPrice(), Integer::sum);
 
         // Settlement 저장
         for (Map.Entry<Long, Integer> entry : storeRevenueMap.entrySet()) {
@@ -46,11 +46,13 @@ public class SettlementScheduler {
                     .storeIdx(storeIdx)
                     .totalRevenue(totalRevenue)
                     .settlementDate(LocalDate.now().minusDays(1))
-                    .status("COMPLETE")
+                    .status(BaseStatus.COMPLETE)
                     .build();
 
             settlementRepository.save(settlement);
             log.info("정산 생성 완료 - 스토어 ID: {}, 정산 금액: {}", storeIdx, totalRevenue);
         }
+
+        log.info("스케줄러 종료 : 팝업 스토어 별 판매 금액 정산");
     }
 }

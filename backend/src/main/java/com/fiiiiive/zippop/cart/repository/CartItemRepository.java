@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem,Long> {
+
     // 카트 아이템 인덱스. 고객 회원 인덱스로 조회
     @Query("SELECT ci FROM CartItem ci " +
             "JOIN FETCH ci.cart cic " +

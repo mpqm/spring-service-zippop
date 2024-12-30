@@ -82,10 +82,10 @@ export const useCartStore = defineStore('cart', {
     },
 
     // 장바구니 아이템 전체 삭제
-    async deleteAllCartItems(storeIdx) {
+    async deleteCart(storeIdx) {
       try {
         const res = await axios.delete(
-          `${backend}/cart/item/delete-all?storeIdx=${storeIdx}`,
+          `${backend}/cart/delete?storeIdx=${storeIdx}`,
           { withCredentials: true }
         );
         this.cartItemList = [];

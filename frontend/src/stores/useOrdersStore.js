@@ -19,10 +19,10 @@ export const useOrdersStore = defineStore('orders', {
         },
 
         // 결제 정보 검증 요청
-        async verifyReserve(imp_uid) {
+        async verifyReserve(storeIdx, imp_uid) {
             try {
                 const res = await axios.get(
-                    `${backend}/orders/verify/reserve?impUid=${imp_uid}`,
+                    `${backend}/orders/verify/reserve?storeIdx=${storeIdx}&impUid=${imp_uid}`,
                     { withCredentials: true }
                 );
                 return res.data;
@@ -30,10 +30,10 @@ export const useOrdersStore = defineStore('orders', {
                 return error.response.data;
             }
         },
-        async verifyStock(imp_uid) {
+        async verifyStock(storeIdx, imp_uid) {
             try {
                 const res = await axios.get(
-                    `${backend}/orders/verify/stock?impUid=${imp_uid}`,
+                    `${backend}/orders/verify/stock?storeIdx=${storeIdx}&impUid=${imp_uid}`,
                     { withCredentials: true }
                 );
                 return res.data;

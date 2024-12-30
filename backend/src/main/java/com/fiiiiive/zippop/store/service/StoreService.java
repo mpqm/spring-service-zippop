@@ -1,24 +1,28 @@
 package com.fiiiiive.zippop.store.service;
 
+import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.auth.repository.CustomerRepository;
+import com.fiiiiive.zippop.global.common.constants.BaseStatus;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.orders.model.entity.Orders;
+import com.fiiiiive.zippop.orders.repository.OrdersRepository;
+import com.fiiiiive.zippop.store.model.dto.StoreDto;
 import com.fiiiiive.zippop.store.model.entity.Store;
-import com.fiiiiive.zippop.store.model.entity.StoreImage;
-import com.fiiiiive.zippop.store.model.dto.UpdateStoreReq;
-import com.fiiiiive.zippop.store.model.dto.SearchStoreRes;
-import com.fiiiiive.zippop.store.model.dto.CreateStoreReq;
-import com.fiiiiive.zippop.store.model.dto.CreateStoreRes;
-import com.fiiiiive.zippop.store.model.dto.SearchStoreImageRes;
-import com.fiiiiive.zippop.store.model.dto.UpdateStoreRes;
+import com.fiiiiive.zippop.store.model.entity.StoreLike;
+import com.fiiiiive.zippop.store.model.entity.StoreReview;
 import com.fiiiiive.zippop.store.repository.StoreImageRepository;
+import com.fiiiiive.zippop.store.repository.StoreLikeRepository;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
+import com.fiiiiive.zippop.store.repository.StoreReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -30,203 +34,217 @@ import java.util.*;
 public class StoreService {
 
     private final StoreRepository storeRepository;
-    private final CompanyRepository companyRepository;
     private final StoreImageRepository storeImageRepository;
+    private final StoreLikeRepository storeLikeRepository;
+    private final CustomerRepository customerRepository;
+    private final CompanyRepository companyRepository;
+    private final OrdersRepository ordersRepository;
+    private final StoreReviewRepository storeReviewRepository;
 
-    /* 팝업 스토어 등록 */
+    // 스토어 등록
     @Transactional
-    public CreateStoreRes register(CustomUserDetails customUserDetails, CreateStoreReq dto, List<String> fileNameList) throws BaseException {
-        // 기업 회원 조회 없으면 예외 반환 (기업 회원 인덱스)
+    public StoreDto.CreateStoreRes registerStore(CustomUserDetails customUserDetails, StoreDto.CreateStoreReq dto, List<String> urls) throws BaseException {
+
+        // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx()).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_REGISTER_FAIL_UNAUTHORIZED)
         );
 
-        // Store 생성 및 저장
-        Store store = Store.builder()
-                .companyEmail(customUserDetails.getEmail())
-                .name(dto.getStoreName())
-                .content(dto.getStoreContent())
-                .address(dto.getStoreAddress())
-                .category(dto.getCategory())
-                .totalPeople(dto.getTotalPeople())
-                .startDate(dto.getStoreStartDate())
-                .endDate(dto.getStoreEndDate())
-                .likeCount(0)
-                .status("STORE_START")
-                .company(company)
-                .build();
+        // Store 생성
+        Store store = dto.toEntity(customUserDetails, company);
         storeRepository.save(store);
 
-        // Store Image 생성 및 저장
-        for(String fileName : fileNameList){
-            StoreImage storeImage = StoreImage.builder()
-                    .url(fileName)
-                    .store(store)
-                    .build();
-            storeImageRepository.save(storeImage);
-        }
+        // Store Image
+        for(String url : urls) storeImageRepository.save(StoreDto.CreateStoreImageReq.toEntity(store, url));
 
-        // Store 인덱스 반환
-        return CreateStoreRes.builder().storeIdx(store.getIdx()).build();
+        // DTO 반환
+        return StoreDto.CreateStoreRes.builder().storeIdx(store.getIdx()).build();
+
     }
 
-    /* 팝업 스토어 단일 조회 */
-    public SearchStoreRes search(Long storeIdx) throws BaseException {
-        // 팝업 스토어 조회 없으면 예외 반환 (팝업 스토어 인덱스)
+    // 스토어 조회
+    public StoreDto.SearchStoreRes searchStore(Long storeIdx) throws BaseException {
+
+        // 스토어 조회(storeIdx)
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_SEARCH_FAIL_NOT_FOUND)
         );
 
-        // Store Dto 반환
-        List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
-        for (StoreImage storeImage : store.getStoreImageList()) {
-            SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
-                    .storeImageIdx(storeImage.getIdx())
-                    .storeImageUrl(storeImage.getUrl())
-                    .createdAt(storeImage.getCreatedAt())
-                    .updatedAt(storeImage.getUpdatedAt())
-                    .build();
-            searchStoreImageResList.add(searchStoreImageRes);
-        }
-        return SearchStoreRes.builder()
-                .storeIdx(store.getIdx())
-                .companyEmail(store.getCompanyEmail())
-                .storeName(store.getName())
-                .storeContent(store.getContent())
-                .storeAddress(store.getAddress())
-                .category(store.getCategory())
-                .likeCount(store.getLikeCount())
-                .totalPeople(store.getTotalPeople())
-                .storeStatus(store.getStatus())
-                .storeStartDate(store.getStartDate())
-                .storeEndDate(store.getEndDate())
-                .searchStoreImageResList(searchStoreImageResList)
-                .build();
+        // DTO 반환
+        return store.toDto();
+
     }
 
-    /* 팝업 스토어 목록 (전체 회원, 상태, 검색어) 조회 */
-    public Page<SearchStoreRes> searchAll(String status, String keyword, int page, int size) throws BaseException {
-        // 팝업 스토어 목록 조회 없으면 예외 반환 (팝업 스토어 상태, 검색어, 페이징)
-        // 참 : 검색어가 있는 경우, 상태에 따라 활성화된 또는 종료된 팝업 스토어를 검색어로 페이징 조회
-        // 거짓 : 검색어가 없는 경우, 상태에 따라 활성화 또는 종료된 팝업 스토어를 페이징 조회
+    // 스토어 목록 조회
+    public Page<StoreDto.SearchStoreRes> searchAllStore(String status, String keyword, int page, int size) throws BaseException {
+
+        // 스토어 페이지 조회(keyword, status, pageable) 조회
+        // true : 검색어가 있는 경우, 상태에 따라 활성화된 또는 종료된 팝업 스토어를 검색어로 페이징 조회
+        // false : 검색어가 없는 경우, 상태에 따라 활성화 또는 종료된 팝업 스토어를 페이징 조회
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Store> storePage = (keyword != null)
-                ? storeRepository.findAllByKeywordAndStatus(keyword, status, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")))
-                : storeRepository.findAllByStatus(status, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
-        if (storePage.isEmpty()) {
-            throw new BaseException(BaseResponseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
-        }
+                ? storeRepository.findAllByKeywordAndStatus(keyword, BaseStatus.valueOf(status), pageable)
+                : storeRepository.findAllByStatus(BaseStatus.valueOf(status), pageable);
 
-        // Store Page DTO 반환
-        return storePage.map(store -> {
-            List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
-            for (StoreImage storeImage : store.getStoreImageList()) {
-                SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
-                        .storeImageIdx(storeImage.getIdx())
-                        .storeImageUrl(storeImage.getUrl())
-                        .createdAt(storeImage.getCreatedAt())
-                        .updatedAt(storeImage.getUpdatedAt())
-                        .build();
-                searchStoreImageResList.add(searchStoreImageRes);
-            }
-            return SearchStoreRes.builder()
-                    .storeIdx(store.getIdx())
-                    .companyEmail(store.getCompanyEmail())
-                    .storeName(store.getName())
-                    .storeContent(store.getContent())
-                    .storeAddress(store.getAddress())
-                    .category(store.getCategory())
-                    .likeCount(store.getLikeCount())
-                    .totalPeople(store.getTotalPeople())
-                    .storeStartDate(store.getStartDate())
-                    .storeStatus(store.getStatus())
-                    .storeEndDate(store.getEndDate())
-                    .searchStoreImageResList(searchStoreImageResList)
-                    .build();
-        });
+        //  예외 : 조회 결과가 없을때
+        if (storePage.isEmpty()) throw new BaseException(BaseResponseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
+
+        // DTO 반환
+        return Store.toDtoPage(storePage);
+
     }
 
-    /* 팝업 스토어 목록 (기업 회원, 검색어) 조회 */
-    public Page<SearchStoreRes> searchAllAsCompany(CustomUserDetails customUserDetails, String keyword, int page, int size) throws BaseException {
-        // 팝업 스토어 목록 조회 없으면 예외 반환 (등록된 기업회원 이메일, 키워드, 페이징)
-        // 참 : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
-        // 거짓 : 키워드(keyword)가 없는 경우, 등록된 기업회원의 이메일로 페이징 조회
+    // 스토어 목록 조회(기업용)
+    public Page<StoreDto.SearchStoreRes> searchAllStoreAsCompany(CustomUserDetails customUserDetails, String keyword, int page, int size) throws BaseException {
+
+        // 스토어 페이지 조회(keyword, email, pageable) 조회
+        // true : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
+        // false : 키워드(keyword)가 없는 경우, 등록된 기업회원의 이메일로 페이징 조회
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Store> storePage = (keyword != null)
-            ? storeRepository.findAllByKeywordAndCompanyEmail(keyword, customUserDetails.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")))
-            : storeRepository.findAllByCompanyEmail(customUserDetails.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
-        if (storePage.isEmpty()) {
-            throw new BaseException(BaseResponseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
-        }
+            ? storeRepository.findAllByKeywordAndCompanyEmail(keyword, customUserDetails.getEmail(), pageable)
+            : storeRepository.findAllByCompanyEmail(customUserDetails.getEmail(), pageable);
 
-        // Store Page DTO 반환
-        return storePage.map(store -> {
-            List<SearchStoreImageRes> searchStoreImageResList = new ArrayList<>();
-            for (StoreImage storeImage : store.getStoreImageList()) {
-                SearchStoreImageRes searchStoreImageRes = SearchStoreImageRes.builder()
-                        .storeImageIdx(storeImage.getIdx())
-                        .storeImageUrl(storeImage.getUrl())
-                        .createdAt(storeImage.getCreatedAt())
-                        .updatedAt(storeImage.getUpdatedAt())
-                        .build();
-                searchStoreImageResList.add(searchStoreImageRes);
-            }
-            return SearchStoreRes.builder()
-                    .storeIdx(store.getIdx())
-                    .companyEmail(store.getCompanyEmail())
-                    .storeName(store.getName())
-                    .storeContent(store.getContent())
-                    .storeAddress(store.getAddress())
-                    .category(store.getCategory())
-                    .likeCount(store.getLikeCount())
-                    .totalPeople(store.getTotalPeople())
-                    .storeStartDate(store.getStartDate())
-                    .storeEndDate(store.getEndDate())
-                    .storeStatus(store.getStatus())
-                    .searchStoreImageResList(searchStoreImageResList)
-                    .build();
-        });
+        // 예외: 조회 결과가 없을때
+        if (storePage.isEmpty()) throw new BaseException(BaseResponseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
+
+        // DTO 반환
+        return Store.toDtoPage(storePage);
+
     }
 
-    /* 팝업 스토어 수정 */
+    // 스토어 수정
     @Transactional
-    public UpdateStoreRes update(CustomUserDetails customUserDetails, Long storeIdx, UpdateStoreReq dto, List<String> fileNames) throws BaseException {
-        // 팝업 스토어 조회 없으면 예외 반환 (팝업 스토어 인덱스, 기업 회원 이메일)
+    public StoreDto.UpdateStoreRes updateStore(CustomUserDetails customUserDetails, Long storeIdx, StoreDto.UpdateStoreReq dto, List<String> urls) throws BaseException {
+
+        // 팝업 스토어 조회(storeIdx, email)
         Store store = storeRepository.findByStoreIdxAndCompanyEmail(storeIdx, customUserDetails.getEmail()).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_UPDATE_FAIL_NOT_FOUND)
         );
 
-        // 팝업 스토어 업데이트
-        store.update(
-                dto.getStoreName(),
-                dto.getStoreContent(),
-                dto.getStoreAddress(),
-                dto.getCategory(),
-                dto.getTotalPeople(),
-                dto.getStoreStartDate(),
-                dto.getStoreEndDate()
-        );
-        storeRepository.save(store);
+        // 팝업 스토어 수정
+        storeRepository.save(store.update(dto));
 
         // 팝업 스토어 이미지가 재등록 되었다면 기존의 이미지는 삭제하고 입력받은 이미지 저장
-        if(fileNames != null){
+        if(urls != null){
             storeImageRepository.deleteAllByStoreIdx(storeIdx);
-            for (String fileName : fileNames) {
-                StoreImage storeImage = StoreImage.builder()
-                        .url(fileName)
-                        .store(store)
-                        .build();
-                storeImageRepository.save(storeImage);
-            }
+            for (String url : urls) storeImageRepository.save(StoreDto.CreateStoreImageReq.toEntity(store, url));
         }
-        return UpdateStoreRes.builder().storeIdx(store.getIdx()).build();
+
+        // DTO 반환
+        return StoreDto.UpdateStoreRes.builder().storeIdx(store.getIdx()).build();
+
     }
 
-    /* 팝업 스토어 삭제 */
+    // 스토어 삭제
     @Transactional
-    public void delete(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException{
-        // 팝업 스토어 조회 없으면 예외 반환 (인덱스, 기업 회원 이메일)
+    public void deleteStore(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException{
+
+        // 스토어 조회(storeIdx, email)
         storeRepository.findByStoreIdxAndCompanyEmail(storeIdx, customUserDetails.getEmail()).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.STORE_DELETE_FAIL_NOT_FOUND)
         );
+
+        // 스토어 삭제
         storeRepository.deleteById(storeIdx);
+
     }
+
+    // 스토어 좋아요 증감
+    @Transactional
+    public void registerStoreLike(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
+
+        // 팝업 스토어 인덱스로 조회 없으면 예외 반환
+        Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_NOT_FOUND)
+        );
+        // 고객 회원 인덱스로 조회 없으면 예외 반환
+        Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_INVALID_MEMBER)
+        );
+
+        // 좋아요 증감
+        // if : 이미 좋아요를 누른 상태면 좋아요 삭제 / 스토어 좋아요 개수 감소(직접 쿼리 활용)
+        // else : 좋아요를 처음 누르면 좋아요 저장 / 스토어 좋아요 개수 증가(직접 쿼리 활용)
+        Optional<StoreLike> storeLikeOpt = storeLikeRepository.findByCustomerIdxAndStoreIdx(customer.getIdx(),storeIdx);
+        if (storeLikeOpt.isPresent()) {
+            storeLikeRepository.deleteByCustomerIdxAndStoreIdx(customer.getIdx(), storeIdx);
+            storeRepository.decrementLikeCount(storeIdx);
+        } else {
+            storeLikeRepository.save(StoreDto.CreateStoreLikeReq.toEntity(store, customer));
+            storeRepository.incrementLikeCount(storeIdx);
+        }
+
+    }
+
+    // 스토어 좋아요 목록 조회(고객용)
+    public Page<StoreDto.SearchStoreLikeRes> searchAllStoreLike(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
+
+        // 스토어 페이지 조회(customerIdx)
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<StoreLike> storeLikePage = storeLikeRepository.findAllByCustomerIdx(customUserDetails.getIdx(), pageable).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+
+        // DTO 반환
+        return StoreLike.toDtoPage(storeLikePage);
+
+    }
+
+    // 스토어 리뷰 등록
+    @Transactional
+    public StoreDto.CreateStoreReviewRes registerStoreReview(CustomUserDetails customUserDetails, Long storeIdx, StoreDto.CreateStoreReviewReq dto) throws BaseException {
+
+        // 결제 조회(storeIdx, customerIdx, 결제 완료 상태) / 결제한 사람만 리뷰 작성 가능
+        Orders orders = ordersRepository.findByStoreIdxAndCustomerIdxAndStatus(storeIdx, customUserDetails.getIdx(), BaseStatus.valueOf("STOCK_COMPLETE"), BaseStatus.valueOf("RESERVE_COMPLETE")).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_INVALID_MEMBER)
+        );
+
+        // 스토어 조회 (storeIdx)
+        Store store = storeRepository.findById(storeIdx).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_NOT_FOUND)
+        );
+
+        // 스토어 리뷰 조회(storeIdx, customerIdx) / 스토어 하나당 한개의 리뷰 작성 가능
+        Optional<StoreReview> storeReviewOpt = storeReviewRepository.findByStoreIdxAndCustomerIdx(storeIdx, customUserDetails.getIdx());
+        if(storeReviewOpt.isPresent()) throw new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_DUPLICATED);
+
+
+        // 스토어 리뷰 저장
+        StoreReview storeReview = dto.toEntity(customUserDetails.getEmail(), store, orders);
+        storeReviewRepository.save(storeReview);
+
+        // DTO 반환
+        return StoreDto.CreateStoreReviewRes.builder().reviewIdx(storeReview.getIdx()).build();
+
+    }
+
+    // 스토어 리뷰 목록 조회
+    public Page<StoreDto.SearchStoreReviewRes> searchAllStoreReview(Long storeIdx, int page, int size) throws BaseException {
+
+        // 리뷰 조회(storeIdx, pageable)
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByStoreIdx(storeIdx, pageable).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+
+        // DTO 반환
+        return StoreReview.toDtoPage(storeReviewPage);
+
+    }
+
+    // 스토어 리뷰 목록 조회(고객용)
+    public Page<StoreDto.SearchStoreReviewRes> searchAllStoreReviewAsCustomer(CustomUserDetails customUserDetails, int page, int size) throws BaseException {
+
+        // 리뷰 목록 조회(customerIdx, pageable)
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByCustomerIdx(customUserDetails.getIdx(), pageable).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+
+        // DTO 반환
+        return StoreReview.toDtoPage(storeReviewPage);
+
+    }
+
 }

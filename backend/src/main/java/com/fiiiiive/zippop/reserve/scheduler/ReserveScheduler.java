@@ -31,20 +31,15 @@ public class ReserveScheduler {
 
         for (Reserve reserve : reserveList) {
             try {
-                // Working Queue 식별자(UUID)
-                String workingUUID = reserve.getWorkingUUID();
-
-                // Waiting Queue 식별자(UUID)
-                String waitingUUID = reserve.getWaitingUUID();
 
                 // TTL: 시작 시간과 종료 시간의 차이 초 계산
                 long ttl = Duration.between(reserve.getStartTime(), reserve.getEndTime()).getSeconds();
 
                 // Working Queue 확인 및 생성
-                if(!redisUtil.exists(workingUUID)) redisUtil.create(workingUUID, ttl);
+                if(redisUtil.existQueue(reserve.getWorkingUUID())) redisUtil.createQueue(reserve.getWorkingUUID(), ttl);
 
-                // Wating Queue 확인 및 생성
-                if(!redisUtil.exists(waitingUUID)) redisUtil.create(waitingUUID, ttl);
+                // Waiting Queue 확인 및 생성
+                if(redisUtil.existQueue(reserve.getWaitingUUID())) redisUtil.createQueue(reserve.getWaitingUUID(), ttl);
 
             } catch (Exception e) {
                 log.error("레디스 큐 생성 중 오류 발생 - 예약 ID: {}, 오류: {}", reserve.getIdx(), e.getMessage());

@@ -34,7 +34,7 @@
               <span>포인트적립: 결제 금액의 10% 적립</span><br>
             </div>
             <a v-if="cartItemList.length > 0" href="#" class="cart-btn" @click="setPaymentData">구매하기</a>
-            <a href="#" class="cart-btn" @click="deleteAllCartItems">장바구니 비우기</a>
+            <a href="#" class="cart-btn" @click="deleteCart">장바구니 비우기</a>
           </div>
         </div>
       </div>
@@ -135,8 +135,8 @@
   };
   
   // 카트 삭제(=전체 카트 아이템 삭제) 삭제
-  const deleteAllCartItems = async () => {
-    const res = await cartStore.deleteAllCartItems(route.params.storeIdx)
+  const deleteCart = async () => {
+    const res = await cartStore.deleteCart(route.params.storeIdx)
     if (res.success) {
       cartItemList.value = [];
       cartStore.cartItemList = cartItemList.value
@@ -174,6 +174,7 @@
       deliveryFee: deliveryFee.value,
       usePoints: usePoints.value,
       finalOrderPrice: finalOrderPrice.value,
+      storeIdx: route.params.storeIdx,
     };
     await ordersStore.setPaymentData(paymentData);
     // `ordersPage`로 데이터 전달 (라우터 사용)
