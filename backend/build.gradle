@@ -67,6 +67,10 @@ dependencies {
 	// validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// promethues
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -117,11 +121,4 @@ task dockerComposeUpBackend(type: Exec, dependsOn: buildDockerBackend) {
 task dockerComposeUpFrontend(type: Exec, dependsOn: buildDockerFrontend) {
 	environment 'DOCKER_IMAGE_TAG', version
 	commandLine 'docker-compose', '-f', '../cicd/docker-compose.yml', 'up', '--build', '-d'
-}
-
-// backend + frontend start
-task buildAll(type: Exec, dependsOn: ['dockerComposeUpBackend', 'dockerComposeUpFrontend']) {
-	doLast {
-		println "Backend and frontend images are built and containers are up."
-	}
 }

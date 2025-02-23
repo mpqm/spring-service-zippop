@@ -9,3 +9,4 @@ innodb_log_buffer_size = 32M
 innodb_io_capacity = 200
 wait_timeout = 10
 interactive_timeout = 10
+performance_schema = ON
