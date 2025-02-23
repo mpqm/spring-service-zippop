@@ -25,6 +25,17 @@ export const useReserveStore = defineStore("reserve", {
                 return error.response.data
             }
         },
+        async delete(storeIdx, reserveIdx) {
+            try {
+                const res = await axios.delete(
+                    `${backend}/reserve/delete?storeIdx=${storeIdx}&reserveIdx=${reserveIdx}`,
+                    { withCredentials: true }
+                );
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        },
         // 예약 대기열 접속
         async enroll(reserveIdx) {
             try {
@@ -46,8 +57,9 @@ export const useReserveStore = defineStore("reserve", {
                 );
                 if(res.data.success){
                     this.access = true;
+                } else {
+                    this.access = false;
                 }
-                this.access = false;
                 return res.data
             } catch (error) {
                 return error.response.data

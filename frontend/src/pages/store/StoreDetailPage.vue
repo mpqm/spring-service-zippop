@@ -63,7 +63,7 @@
       </div>
       <div v-if="activeMenu == 'reserve'">
         <div class="review-list" v-if="reserveList && reserveList.length">
-          <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl="true" /> 
+          <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl=0 /> 
         </div>
         <div class="notice" v-else>
           <p>등록된 예약이 없습니다.</p>

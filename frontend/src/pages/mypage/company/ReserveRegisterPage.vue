@@ -50,7 +50,7 @@ import { ref } from "vue";
     const formattedEndTime = `${reserveStartDate.value}T${reserveEndTime.value}:00`;
 
     const req = {
-        storeIdx: route.params.storeIdx,
+        storeIdx: Number(route.params.storeIdx),
         reservePeople: reservePeople.value,
         reserveStartDate: reserveStartDate.value,
         reserveStartTime: formattedStartTime,

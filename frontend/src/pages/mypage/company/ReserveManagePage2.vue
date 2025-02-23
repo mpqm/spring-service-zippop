@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="reserve-list" v-if="reserveList && reserveList.length">
-        <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl="false" />
+        <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl=1 />
       </div>
       <div class="notice" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
       <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />

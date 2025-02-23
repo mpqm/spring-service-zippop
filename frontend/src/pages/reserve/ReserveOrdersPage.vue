@@ -52,6 +52,7 @@ import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 import { IAMPORT_NAME, IAMPORT_PG, IAMPORT_UID } from '@/config';
 import { useCartStore } from '@/stores/useCartStore';
+import { useReserveStore } from "@/stores/useReserveStore";
 import { useRoute, useRouter } from 'vue-router';
 
 // store, router, route, toast
@@ -59,6 +60,7 @@ const toast = useToast();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
 const ordersStore = useOrdersStore();
+const reserveStore = useReserveStore();
 const router = useRouter();
 const route = useRoute();
 
@@ -107,6 +109,7 @@ const payment = () => {
                 const res = await ordersStore.verifyReserve(route.params.storeIdx, rsp.imp_uid, true);
                 if (res.success) {
                     await cartStore.deleteCart(route.params.storeIdx);
+                    await reserveStore.cancel(route.params.reserveIdx)
                     toast.success("결제를 처리했습니다.");
                     router.push("/")
                 } else {
