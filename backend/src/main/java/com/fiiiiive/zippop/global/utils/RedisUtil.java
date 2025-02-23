@@ -74,6 +74,11 @@ public class RedisUtil {
         zSetOperations.add(key, value, timestamp);
     }
 
+    public void deleteQueue(String workingQueueUUID, String waitingQueueUUID) {
+        redisTemplate.delete(workingQueueUUID);
+        redisTemplate.delete(waitingQueueUUID);
+    }
+
     // SortedSet 전체 값 조회
     public String getAllValues(String key) {
         ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();

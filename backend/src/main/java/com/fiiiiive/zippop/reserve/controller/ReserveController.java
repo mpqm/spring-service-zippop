@@ -40,6 +40,16 @@ public class ReserveController {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_REGISTER_SUCCESS,response));
     }
 
+    // 예약 삭제
+    @DeleteMapping("/delete")
+    public ResponseEntity<BaseResponse<String>> deleteReserve(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @RequestParam Long storeIdx,
+        @RequestParam Long reserveIdx) throws BaseException {
+        reserveService.deleteReserve(customUserDetails, storeIdx, reserveIdx);
+        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_DELETE_SUCCESS));
+    }
+
     // 예약 신청
     @GetMapping("/enroll")
     public ResponseEntity<BaseResponse<ReserveDto.EnrollReserveRes>> enrollReserve(
@@ -51,7 +61,7 @@ public class ReserveController {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_ENROLL_SUCCESS, response));
     }
 
-    // 예약 취소
+    // 예약 취소 (사용자)
     @GetMapping("/cancel")
     public ResponseEntity<BaseResponse<String>> cancelReserve(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,

@@ -37,8 +37,8 @@ import ReserveQueuePage from "@/pages/reserve/ReserveQueuePage.vue";
 import ReserveGoodsPage from "@/pages/reserve/ReserveGoodsPage.vue";
 import ReserveOrdersPage from "@/pages/reserve/ReserveOrdersPage.vue";
 import ReserveCartPage from "@/pages/reserve/ReserveCartPage.vue";
-import { useCartStore } from "@/stores/useCartStore";
-import { useReserveStore } from "@/stores/useReserveStore";
+// import { useCartStore } from "@/stores/useCartStore";
+// import { useReserveStore } from "@/stores/useReserveStore";
 import SettlementManagePage1 from "@/pages/mypage/company/SettlementManagePage1.vue";
 import SettlementManagePage2 from "@/pages/mypage/company/SettlementManagePage2.vue";
 
@@ -121,40 +121,40 @@ const router = createRouter({
 });
 
 
-router.beforeEach(async (to, from, next) => {
-  const cartStore = useCartStore();
-  const reserveStore = useReserveStore();
-  const storeIdx = from.params.storeIdx;
-  const reserveIdx = from.params.reserveIdx;
-  const isGoodsPage = (path) => path && path.includes('/reserve/') && path.includes('/goods');
-  const isQueuePage = (path) => path && path.includes('/reserve/') && path.split('/').length === 4;
+// router.beforeEach(async (to, from, next) => {
+//   const cartStore = useCartStore();
+//   const reserveStore = useReserveStore();
+//   const storeIdx = from.params.storeIdx;
+//   const reserveIdx = from.params.reserveIdx;
+//   const isGoodsPage = (path) => path && path.includes('/reserve/') && path.includes('/goods');
+//   const isQueuePage = (path) => path && path.includes('/reserve/') && path.split('/').length === 4;
 
-  // `/goods`에서 대기열로 이동 시 스토어 페이지로 리디렉션
-  if (isGoodsPage(from.path) && isQueuePage(to.path)) {
-    cartStore.deleteCart(storeIdx);
-    reserveStore.cancel(reserveIdx);
-    next(`/store/${storeIdx}`); // 스토어 페이지로 리디렉션
-    return;
-  }
+//   // `/goods`에서 대기열로 이동 시 스토어 페이지로 리디렉션
+//   if (isGoodsPage(from.path) && isQueuePage(to.path)) {
+//     cartStore.deleteCart(storeIdx);
+//     reserveStore.cancel(reserveIdx);
+//     next(`/store/${storeIdx}`); // 스토어 페이지로 리디렉션
+//     return;
+//   }
 
-  // `/goods`, `/cart`, `/orders`에서 벗어나려 할 때 알림창 표시
-  const isReserveRoute = (path) =>
-    path &&
-    path.startsWith('/reserve/') &&
-    (path.includes('/goods') || path.includes('/cart') || path.includes('/orders'));
+//   // `/goods`, `/cart`, `/orders`에서 벗어나려 할 때 알림창 표시
+//   const isReserveRoute = (path) =>
+//     path &&
+//     path.startsWith('/reserve/') &&
+//     (path.includes('/goods') || path.includes('/cart') || path.includes('/orders'));
 
-  if (isReserveRoute(from.path) && !isReserveRoute(to.path) && !reserveStore.access) {
-    const confirmLeave = confirm("페이지를 떠나시겠습니까? 예약이 취소됩니다.");
-    if (confirmLeave) {
-      cartStore.deleteCart(storeIdx);
-      reserveStore.cancel(reserveIdx);
-      next(); // 이동 허용
-    } else {
-      next(false); // 이동 차단
-    }
-  } else {
-    next(); // 다른 경우 이동 허용
-  }
-});
+//   if (isReserveRoute(from.path) && !isReserveRoute(to.path)) {
+//     const confirmLeave = confirm("페이지를 떠나시겠습니까? 예약이 취소됩니다.");
+//     if (confirmLeave) {
+//       cartStore.deleteCart(storeIdx);
+//       reserveStore.cancel(reserveIdx);
+//       next(); // 이동 허용
+//     } else {
+//       next(false); // 이동 차단
+//     }
+//   } else {
+//     next(); // 다른 경우 이동 허용
+//   }
+// });
 
 export default router;

@@ -1,13 +1,16 @@
 <template>
-  <div class="store-list-item">
-    <div class="store-info1">
+  <div class="reserve-list-item">
+    <div class="reserve-info1">
       <p class="t1">예약 인원수 : {{ reserve.reservePeople }}</p>
       <p class="t2">예약 시작 날짜 : {{ reserve.reserveStartDate }} </p>
       <p class="t2">예약 시간: {{ formatTime(reserve.reserveStartTime) }} ~ {{ formatTime(reserve.reserveEndTime) }}</p>
       <CountDownTimer :targetTime="reserve.reserveStartTime" :flag="false"></CountDownTimer>
     </div>
-    <div v-if="showControl" class="btn-container">
-      <button  class="normal-btn" @click="goReserve">
+    <div class="reserve-info2">
+      <button v-if="showControl === 1" class="ud-btn" @click="deleteReserve">삭제</button>
+    </div>
+    <div v-if="showControl === 0" class="btn-container">
+      <button class="normal-btn" @click="goReserve">
         <img src="../../assets/img/reserve-none.png" alt="">
         &nbsp;<p>예약 참여</p>
       </button>
@@ -19,8 +22,14 @@
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
 import CountDownTimer from "../common/CountDownTimer.vue";
+import { useReserveStore } from "@/stores/useReserveStore";
+import { useToast } from "vue-toastification";
+
 const router = useRouter();
-// props 정의(store, showControl)
+const reserveStore = useReserveStore();
+const toast = useToast();
+
+// props 정의(reserve, showControl)
 const props = defineProps({
   reserve: Object,
   showControl: Boolean,
@@ -36,10 +45,21 @@ function formatTime(dateTimeString) {
 const goReserve = () => {
   router.push(`/reserve/${props.reserve.storeIdx}/${props.reserve.reserveIdx}`);
 }
+
+const deleteReserve = async() => {
+  const res = await reserveStore.delete(props.reserve.storeIdx, props.reserve.reserveIdx);
+  if (res.success) {
+    toast.success(res.message)
+    router.go(0)
+  } else {
+    toast.error(res.message);
+  }
+}
+
 </script>
 
 <style scoped>
-.store-list-item {
+.reserve-list-item {
   display: flex;
   align-items: center;
   padding: 12px;
@@ -47,9 +67,10 @@ const goReserve = () => {
   border-radius: 8px;
   background-color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
 }
 
-.store-img {
+.reserve-img {
   width: 100px;
   height: 100px;
   object-fit: cover;
@@ -57,13 +78,13 @@ const goReserve = () => {
   margin-right: 12px;
 }
 
-.store-info1 {
+.reserve-info1 {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.store-info2 {
+.reserve-info2 {
   padding: 10px;
   justify-content: space-between;
   margin: 0;

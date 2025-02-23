@@ -177,6 +177,7 @@ public enum BaseResponseMessage {
     RESERVE_REGISTER_FAIL_TIME_CLOSED(false, 7003, "해당 시간대는 예약이 마감되었습니다."),
     RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED(false, 7003, "팝업 스토어의 총 예약 인원수를 초과합니다."),
     RESERVE_REGISTER_FAIL_NOT_FOUND_STORE(false, 7004, "해당 팝업 스토어를 찾을 수 없습니다."),
+
     // 팝업 예약 접속
     RESERVE_ENROLL_SUCCESS(true, 7005, "예약에 성공했습니다."),
     RESERVE_ENROLL_FAIL_NOT_FOUND(false, 7006, "생성된 예약을 찾을 수 없습니다."),
@@ -191,7 +192,11 @@ public enum BaseResponseMessage {
     RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND(false, 7011, "예약을 조회할 수 없습니다."),
     // 팝업 예약 인가
     RESERVE_ACCESS_SUCCESS(true, 7012, "유효 사용자입니다."),
-
+    // 팝업 예약 삭제
+    RESERVE_DELETE_SUCCESS(true, 7013, "팝업스토어 예약 삭제에 서공했습니다."),
+    RESERVE_DELETE_FAIL_NOT_FOUND_STORE(false, 7014, "해당 팝업 스토어를 찾을 수 없습니다."),
+    RESERVE_DELETE_FAIL_INVALID_MEMBER(false, 7015, "해당 팝업 스토어의 소유자가 아닙니다."),
+    RESERVE_DELETE_FAIL_NOT_FOUND(false, 7016, "해당 예약을 찾을 수 없습니다."),
     // ========================================================================================================================
     // 팝업 스토어 정산 8000
     SETTLEMENT_SEARCH_SUCCESS(true, 8000, "팝업 스토어 정산 내역을 조회했습니다."),

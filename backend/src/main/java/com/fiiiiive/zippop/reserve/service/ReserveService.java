@@ -87,6 +87,25 @@ public class ReserveService {
 
     }
 
+    public void deleteReserve(CustomUserDetails customUserDetails, Long storeIdx, Long reserveIdx) throws BaseException {
+
+        // 스토어 조회(storeIdx)
+        Store store = storeRepository.findById(storeIdx).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.RESERVE_DELETE_FAIL_NOT_FOUND_STORE)
+        );
+
+        // 스토어 소유 확인
+        if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseResponseMessage.RESERVE_DELETE_FAIL_INVALID_MEMBER);
+
+        // 예약 조회
+        Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.RESERVE_DELETE_FAIL_NOT_FOUND)
+        );
+        reserveRepository.deleteById(reserveIdx);
+        redisUtil.deleteQueue(reserve.getWorkingUUID(), reserve.getWaitingUUID());
+
+    }
+
     // 예약 등록
     public ReserveDto.EnrollReserveRes enrollReserve(HttpServletResponse res, CustomUserDetails customUserDetails, Long reserveIdx) throws BaseException {
         // 예약 조회(reserveIdx)
