@@ -50,7 +50,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useOrdersStore } from '@/stores/useOrdersStore';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
-import { IAMPORT_NAME, IAMPORT_PG, IAMPORT_UID } from '@/env';
+import { IAMPORT_NAME, IAMPORT_PG, IAMPORT_UID } from '@/config';
 import { useCartStore } from '@/stores/useCartStore';
 import { useRoute, useRouter } from 'vue-router';
 

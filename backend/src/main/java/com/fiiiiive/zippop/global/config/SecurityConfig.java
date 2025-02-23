@@ -43,7 +43,11 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://d3iaa8b0a37h7p.cloudfront.net", "http://localhost:8081"));
+        config.setAllowedOrigins(List.of(
+                "https://d3iaa8b0a37h7p.cloudfront.net",
+                "http://localhost:8081",
+                "http://zippop-backend:8080"
+        ));
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);
@@ -57,7 +61,6 @@ public class SecurityConfig {
         http.csrf((auth) -> auth.disable());
         http.httpBasic((auth) -> auth.disable());
         http.sessionManagement((auth) -> auth.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.addFilter(corsFilter());
         http.authorizeHttpRequests((auth) ->
                         auth
                             // 소켓
@@ -109,7 +112,6 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/reserve/access").access(accessControlService::hasReserveAccess)
                             .anyRequest().permitAll()
         );
-        http.addFilter(corsFilter());
         http.oauth2Login((config) -> {
             config.successHandler(oAuth2AuthenticationSuccessHandler);
             config.userInfoEndpoint((endpoint) -> endpoint.userService(customOAuth2Service));
@@ -125,7 +127,6 @@ public class SecurityConfig {
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
         loginFilter.setAuthenticationFailureHandler(customLoginFailureHandler);
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

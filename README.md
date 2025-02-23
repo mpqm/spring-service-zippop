@@ -60,7 +60,7 @@
         <li>
              <p>대학원생 한지선씨(30)는 인기 유튜버 '침착맨'의 팝업스토어에 방문하기 위해 치열한 예약 경쟁을 뚫었다. 침착맨 팬 커뮤니티에서 예약 팁도 전수받았지만 "인기 상품이 모두 품절돼 아쉬워 아침 일찍 다시 방문해 볼까 생각 중이다"라고 말했다.</p><br>
             <div align="left">
-                <img src="./docs/img/기사1.png" width=500, height=310><br>
+                <img src="meta/img/기사1.png" width=500, height=310><br>
                 <a>https://news.mt.co.kr/mtview.php?no=2024051609573785999</a>
             </div>
         </li>
@@ -68,7 +68,7 @@
         <li>
             <p>더현대서울은 2021년 2월 개점 후 2023년 11월 중순까지 약 460회의 팝업스토어를 운영했다. 이틀에 한 개꼴로 새로운 팝업스토어를 연 셈이다. <br>‘임시 매장’의 이미지였던 팝업스토어가 ‘한정판 전문 매장’으로 진화했다고 본다. 운영 기간 제한이라는 팝업스토어의 특징이 ‘이때 아니면 못 산다’는 인식을 주게 되었다.</p><br>
             <div align="left">
-                <img src="./docs/img/기사2.png" width=500, height=300><br>
+                <img src="meta/img/기사2.png" width=500, height=300><br>
                 <a>https://www.donga.com/news/Economy/article/all/20231201/122446644/1</a>
             </div>
         </li>

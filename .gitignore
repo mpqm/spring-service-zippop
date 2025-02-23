@@ -37,8 +37,6 @@ backend/.nb-gradle/
 ### VS Code ###
 backend/.vscode/
 
-
-
 # Logs
 frontend/logs
 frontend/*.log
@@ -74,3 +72,5 @@ frontend/vite.config.js
 cicd/mariadb/data/**
 cicd/redis/**
 cicd/.env
+frontend/.env
+cicd/grafana/state/**

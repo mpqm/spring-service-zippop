@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import { backend } from '@/env';
+import { backend } from "@/config";
 
 export const useOrdersStore = defineStore('orders', {
     state: () => ({

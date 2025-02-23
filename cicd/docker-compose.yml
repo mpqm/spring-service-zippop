@@ -17,9 +17,9 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
       - KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
-      - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
-      - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
-      - NAVER_REDIRECT_URL=${NAVER_REDIRECT_URL}
+#      - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
+#      - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
+#      - NAVER_REDIRECT_URL=${NAVER_REDIRECT_URL}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL}
@@ -48,10 +48,21 @@ services:
       - MARIADB_DATABASE=${MARIADB_DATABASE}
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
     volumes:
-      - ../cicd/mariadb/data/:/var/lib/mysql
-      - ../cicd/mariadb/mariadb.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-    mem_limit: 2g        # 메모리 제한 (2GB)
-    cpus: 2.0           # CPU 할당 (2 CPU 코어)
+      - ./mariadb/data/:/var/lib/mysql
+      - ./mariadb/mariadb.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    mem_limit: 2g
+    cpus: 2.0
+
+  mysqld_exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: zippop-mariadb-exporter
+    volumes:
+      - ./exporter/my.cnf:/.my.cnf
+    depends_on:
+      - mariadb
+    ports:
+      - "9104:9104"
 
   redis:
     container_name: zippop-redis
@@ -63,3 +74,27 @@ services:
       exec redis-server /usr/local/etc/redis/redis.conf"
     volumes:
       - ./redis:/usr/local/etc/redis
+
+  prometheus:
+      image: prom/prometheus
+      container_name: zippop-prometheus
+      command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+      volumes:
+        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      ports:
+        - "9090:9090"
+
+  # grafana
+  # https://grafana.com/grafana/dashboards/4701-jvm-micrometer/
+  # https://grafana.com/grafana/dashboards/7362-mysql-overview/
+  grafana:
+    image: grafana/grafana
+    container_name: zippop-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/state:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
