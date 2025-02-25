@@ -6,6 +6,7 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
@@ -29,6 +30,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse<String>> handleBaseException(BaseException e){
         return ResponseEntity.badRequest().body(new BaseResponse<>(Objects.requireNonNull(BaseResponseMessage.findByCode(e.getCode()))));
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<BaseResponse<List<String>>> handleConstraintViolationException(ConstraintViolationException ex) {
+        List<String> errors = ex.getConstraintViolations()
+                .stream()
+                .map(violation -> String.format("%s: %s", violation.getPropertyPath(), violation.getMessage()))
+                .collect(Collectors.toList());
+
+        BaseResponse<List<String>> baseResponse = new BaseResponse<>(
+                BaseResponseMessage.VALIDATION_ERROR,
+                errors
+        );
+
+        return ResponseEntity.badRequest().body(baseResponse);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<BaseResponse<List<String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {

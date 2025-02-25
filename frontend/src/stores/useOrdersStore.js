@@ -19,10 +19,10 @@ export const useOrdersStore = defineStore('orders', {
         },
 
         // 결제 정보 검증 요청
-        async verifyReserve(storeIdx, imp_uid) {
+        async verifyReserve(storeIdx, imp_uid, reserveIdx) {
             try {
                 const res = await axios.get(
-                    `${backend}/orders/verify/reserve?storeIdx=${storeIdx}&impUid=${imp_uid}`,
+                    `${backend}/orders/verify/reserve?storeIdx=${storeIdx}&impUid=${imp_uid}&reserveIdx=${reserveIdx}`,
                     { withCredentials: true }
                 );
                 return res.data;

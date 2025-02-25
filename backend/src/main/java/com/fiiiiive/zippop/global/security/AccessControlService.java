@@ -19,12 +19,23 @@ import java.util.function.Supplier;
 public class AccessControlService {
     public final RedisUtil redisUtil;
     public final ReserveRepository reserveRepository;
+
     public AuthorizationDecision hasReserveAccess(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
+
         String reserveIdx = object.getRequest().getParameter("reserveIdx");
+        boolean flag = false;
+        // 인증되지 않은 사용자는 false 반환
+        Authentication auth = authentication.get();
+        if (auth == null || !auth.isAuthenticated() || auth.getName().equals("anonymousUser")) {
+            return new AuthorizationDecision(false);
+        }
+
+        // reserveIdx가 없으면 false 반환
         Optional<Reserve> reserveOpt = reserveRepository.findById(Long.valueOf(reserveIdx));
         if (reserveOpt.isEmpty()) {
             return new AuthorizationDecision(false);
         }
+
         Reserve reserve = reserveOpt.get();
         if (reserve.getEndTime().isBefore(LocalDateTime.now())) {
             return new AuthorizationDecision(false);
@@ -32,7 +43,8 @@ public class AccessControlService {
         String userEmail = authentication.get().getName();
         // 작업큐에 유저가 있는지 확인
         Long existUser = redisUtil.getOrder(reserve.getWorkingUUID(), userEmail);
-        if (existUser == null) {
+
+    if (existUser == null) {
             return new AuthorizationDecision(false);
         }
         // 인가

@@ -18,7 +18,7 @@ public interface GoodsRepository extends JpaRepository<Goods, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT g FROM Goods g " +
             "WHERE g.idx = :goodsIdx")
-    Optional<Goods> findByGoodsIdx(Long goodsIdx);
+    Optional<Goods> findByGoodsIdx(@Param("goodsIdx") Long goodsIdx);
 
     // 굿즈, 스토어 인덱스로 조회
     @Query("SELECT g FROM Goods g " +

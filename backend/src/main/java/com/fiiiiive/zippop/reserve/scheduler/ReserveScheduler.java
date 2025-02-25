@@ -22,7 +22,8 @@ public class ReserveScheduler {
     private final RedisUtil redisUtil;
 
     /* 매일 아침 9시에 예약 데이터를 순회하여 Redis 큐를 생성 */
-    @Scheduled(cron = "0 0 9 * * ?")
+//    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(cron = "*/15 * * * * *")  // 매 1초마다 실행
     public void createReserveQueue() {
         log.info("스케줄러 실행 시작: 예약 큐 생성 시작");
 

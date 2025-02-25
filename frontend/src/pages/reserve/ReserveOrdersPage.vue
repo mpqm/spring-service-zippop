@@ -106,10 +106,10 @@ const payment = () => {
         },
         async (rsp) => {
             if (rsp.success) {
-                const res = await ordersStore.verifyReserve(route.params.storeIdx, rsp.imp_uid, true);
+                const res = await ordersStore.verifyReserve(route.params.storeIdx, rsp.imp_uid, route.params.reserveIdx);
                 if (res.success) {
                     await cartStore.deleteCart(route.params.storeIdx);
-                    await reserveStore.cancel(route.params.reserveIdx)
+                    await reserveStore.cancel(route.params.reserveIdx);
                     toast.success("결제를 처리했습니다.");
                     router.push("/")
                 } else {

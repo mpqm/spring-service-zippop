@@ -23,8 +23,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -61,6 +63,7 @@ public class ReserveService {
     }
 
     // 예약 생성
+    @Transactional
     public ReserveDto.CreateReserveRes registerReserve(CustomUserDetails customUserDetails, ReserveDto.CreateReserveReq dto) throws BaseException {
 
         // 스토어 조회(storeIdx)
@@ -87,6 +90,8 @@ public class ReserveService {
 
     }
 
+    // 예약삭제
+    @Transactional
     public void deleteReserve(CustomUserDetails customUserDetails, Long storeIdx, Long reserveIdx) throws BaseException {
 
         // 스토어 조회(storeIdx)
@@ -101,6 +106,15 @@ public class ReserveService {
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
                 () -> new BaseException(BaseResponseMessage.RESERVE_DELETE_FAIL_NOT_FOUND)
         );
+
+        // 예약 종료시간이 지나서 취소할때
+        if(reserve.getEndTime().isBefore(LocalDateTime.now())) throw new  BaseException(BaseResponseMessage.RESERVE_DELETE_FAIL_END_TIME);
+
+        // 인원수 복구
+        store.setTotalPeople(store.getTotalPeople() + reserve.getTotalPeople());
+        storeRepository.save(store);
+
+        // 예약 삭제
         reserveRepository.deleteById(reserveIdx);
         redisUtil.deleteQueue(reserve.getWorkingUUID(), reserve.getWaitingUUID());
 
@@ -221,7 +235,7 @@ public class ReserveService {
         Long currentWorkingOrder = redisUtil.getOrder(reserve.getWorkingUUID(), principal.getName());
 
         // 결제 페이지로 접근 가능한지 여부
-        boolean access;
+        int access;
 
         // 클라이언트로 전송할 상태 메시지
         String statusMessage;
@@ -229,10 +243,20 @@ public class ReserveService {
 
             Long currentWaitingOrder = redisUtil.getOrder(reserve.getWaitingUUID(), principal.getName());
             statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 예약 대기자 순번: " + (currentWaitingOrder + 1);
-            access = false; // 대기 큐에 있으면 access는 false
+            access = 0; // 대기 큐에 있으면 access는 0
         } else {
             statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 예약 접속자 순번: " + (currentWorkingOrder + 1);
-            access = true; // 예약 접속 큐에 있으면 access는 true
+            access = 1; // 예약 접속 큐에 있으면 access는 1
+        }
+
+        if(reserve.getEndTime().isBefore(LocalDateTime.now())) {
+            statusMessage = "예약이 종료되었습니다.";
+            access = 2; // 예약 종료 2
+        }
+
+        if(reserve.getTotalPeople() <= 0) {
+            statusMessage = "예약이 마감되었습니다.";
+            access = 3; // 예약 마감 3
         }
 
         // 특정 사용자에게만 상태 정보 전송

@@ -135,7 +135,7 @@ public enum BaseResponseMessage {
     // 굿즈 주문 6000
     // 굿즈 구매
     ORDERS_PAY_SUCCESS(true, 6000,"결제에 성공했습니다."),
-    ORDERS_PAY_FAIL(false, 6001, "결제에 실패했습니다. 주문한 내역이 없습니다."),
+    ORDERS_PAY_FAIL(false, 6001, "결제에 실패했습니다."),
     ORDERS_PAY_FAIL_INVALID_ROLE(false, 6002, "기업회원은 결제를 진행할 수 없습니다."),
     ORDERS_PAY_FAIL_NOT_FOUND_MEMBER(false, 6003, "결제 정보에 해당하는 유저가 없습니다."),
     ORDERS_PAY_FAIL_NOT_FOUND_GOODS(false, 6004, "결제 정보에 해당하는 팝업 굿즈가 없습니다."),
@@ -192,11 +192,13 @@ public enum BaseResponseMessage {
     RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND(false, 7011, "예약을 조회할 수 없습니다."),
     // 팝업 예약 인가
     RESERVE_ACCESS_SUCCESS(true, 7012, "유효 사용자입니다."),
+    RESERVE_ACCESS_FAIL(false, 7013, "유효하지 않은 사용자입니다."),
     // 팝업 예약 삭제
-    RESERVE_DELETE_SUCCESS(true, 7013, "팝업스토어 예약 삭제에 서공했습니다."),
-    RESERVE_DELETE_FAIL_NOT_FOUND_STORE(false, 7014, "해당 팝업 스토어를 찾을 수 없습니다."),
-    RESERVE_DELETE_FAIL_INVALID_MEMBER(false, 7015, "해당 팝업 스토어의 소유자가 아닙니다."),
-    RESERVE_DELETE_FAIL_NOT_FOUND(false, 7016, "해당 예약을 찾을 수 없습니다."),
+    RESERVE_DELETE_SUCCESS(true, 7014, "팝업스토어 예약 삭제에 서공했습니다."),
+    RESERVE_DELETE_FAIL_NOT_FOUND_STORE(false, 7015, "해당 팝업 스토어를 찾을 수 없습니다."),
+    RESERVE_DELETE_FAIL_INVALID_MEMBER(false, 7016, "해당 팝업 스토어의 소유자가 아닙니다."),
+    RESERVE_DELETE_FAIL_NOT_FOUND(false, 7017, "해당 예약을 찾을 수 없습니다."),
+    RESERVE_DELETE_FAIL_END_TIME(false, 7018, "종료된 팝업 예약은 삭제할 수 없습니다."),
     // ========================================================================================================================
     // 팝업 스토어 정산 8000
     SETTLEMENT_SEARCH_SUCCESS(true, 8000, "팝업 스토어 정산 내역을 조회했습니다."),

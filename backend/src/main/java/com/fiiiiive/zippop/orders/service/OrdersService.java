@@ -14,6 +14,7 @@ import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.orders.model.entity.OrdersDetail;
 import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
+import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import com.google.gson.Gson;
@@ -46,6 +47,7 @@ public class OrdersService {
     private final OrdersRepository ordersRepository;
     private final GoodsRepository goodsRepository;
     private final StoreRepository storeRepository;
+    private final ReserveRepository reserveRepository;
 
     // 고객 회원 확인 및 조회
     public Customer checkCustomer(CustomUserDetails customUserDetails) throws BaseException {
@@ -58,7 +60,9 @@ public class OrdersService {
     // 결제 정보 확인
     public Payment checkPaymentData(String impUid) throws BaseException, IamportResponseException, IOException {
         Payment payment = iamportClient.paymentByImpUid(impUid).getResponse();
-        if (payment == null) throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL);
+        if (payment == null) {
+            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL);
+        }
         return payment;
     }
 
@@ -159,22 +163,28 @@ public class OrdersService {
         return usedPoint;
     }
 
+
+    @Transactional
+    public Goods adjustAmountWithLock(Long key, Integer purchaseGoodsAmount) throws BaseException {
+        Goods goods = goodsRepository.findByGoodsIdx(key).orElseThrow(
+                () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
+        );
+        // 수량 감소
+        goods.setAmount(goods.getAmount() - purchaseGoodsAmount);
+        goodsRepository.save(goods);
+        return goods;
+    }
+
     // 굿즈 차감 및 주문 상세 정보 저장
     public void adjustGoodsAmount(Orders orders, Map<String, Double> goodsMap) throws BaseException {
-        Goods goods = null;
         for (String key : goodsMap.keySet()) {
             // 구매 수량
             Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
 
             // 굿즈 조회(goodsIdx)
-            goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
-            );
-            // 수량 감소
-            goods.setAmount(goods.getAmount() - purchaseGoodsAmount);
-            goodsRepository.save(goods);
+            Goods goods = adjustAmountWithLock(Long.parseLong(key), purchaseGoodsAmount);
 
-            // 주문 상세 정보 생성
+            // 주문 상세 정보 생성 => 밖으로 빼야됨
             OrdersDetail ordersDetail = OrdersDto.CreateOrdersDetailReq.toEntity(orders, goods, goods.getPrice() * purchaseGoodsAmount);
             ordersDetailRepository.save(ordersDetail);
         }
@@ -210,36 +220,43 @@ public class OrdersService {
 
     // 결제 검증(예약용)
     @Transactional
-    public OrdersDto.VerifyOrdersRes verifyOrdersReserve(CustomUserDetails customUserDetails, String impUid, Long storeIdx) throws BaseException, IamportResponseException, IOException {
+    public OrdersDto.VerifyOrdersRes verifyOrdersReserve(CustomUserDetails customUserDetails, String impUid, Long storeIdx, Long reserveIdx) throws BaseException, IamportResponseException, IOException {
+        Payment payment = null;
+        try {
+            // 결제 정보 확인
+            payment = checkPaymentData(impUid);
 
-        // 고객 회원 시스템 역할(ROLE)확인 및 조회
-        Customer customer = checkCustomer(customUserDetails);
+            // 고객 회원 시스템 역할(ROLE)확인 및 조회
+            Customer customer = checkCustomer(customUserDetails);
 
-        // 결제 정보 확인
-        Payment payment = checkPaymentData(impUid);
+            // 결제 굿즈 정보 확인
+            Map<String, Double> goodsMap = checkGoodsData(payment);
 
-        // 결제 굿즈 정보 확인
-        Map<String, Double> goodsMap = checkGoodsData(payment);
+            // 총 구매 금액 계산 및 IamPort 결제 금액과 비교
+            int totalPurchasePrice = getTotalPurchasePriceForReserve(payment, goodsMap);
 
-        // 총 구매 금액 계산 및 IamPort 결제 금액과 비교
-        int totalPurchasePrice = getTotalPurchasePriceForReserve(payment, goodsMap);
+            // 포인트 적립, 배송비 적용 x 포인트 사용 x , 최종 구매 금액 조정 및 갱신
+            int addPoint = addPointForReserve(customer, totalPurchasePrice);
 
-        // 포인트 적립, 배송비 적용 x 포인트 사용 x , 최종 구매 금액 조정 및 갱신
-        int addPoint = addPointForReserve(customer, totalPurchasePrice);
+            // IamPort 결제 금액과 총 구매 금액 비교 불일치 시 환불
+            comparePrice(payment, totalPurchasePrice);
 
-        // IamPort 결제 금액과 총 구매 금액 비교 불일치 시 환불
-        comparePrice(payment, totalPurchasePrice);
+            // 예약 굿즈 주문 생성: 배송비 0, 포인트 사용 x, 상태 RESERVE_READY
+            Orders orders = OrdersDto.CreateReserveOrdersReq.toEntity(impUid, totalPurchasePrice, customer, storeIdx);
+            ordersRepository.save(orders);
 
-        // 예약 굿즈 주문 생성: 배송비 0, 포인트 사용 x, 상태 RESERVE_READY
-        Orders orders = OrdersDto.CreateReserveOrdersReq.toEntity(impUid, totalPurchasePrice, customer, storeIdx);
-        ordersRepository.save(orders);
+            // 굿즈 재고 차감 및 주문 상세 정보 저장
+            adjustGoodsAmount(orders, goodsMap);
 
-        // 굿즈 재고 차감 및 주문 상세 정보 저장
-        adjustGoodsAmount(orders, goodsMap);
+            // 예약 정보 갱신
+            reserveRepository.decreaseTotalPeople(reserveIdx, 1);
 
-        // DTO 반환
-        return OrdersDto.VerifyOrdersRes.builder().ordersIdx(orders.getIdx()).build();
-
+            // DTO 반환
+            return OrdersDto.VerifyOrdersRes.builder().ordersIdx(orders.getIdx()).build();
+        } catch (Exception e) {
+            refund(payment);
+            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL);
+        }
     }
 
     // 결제 검증(재고용)
