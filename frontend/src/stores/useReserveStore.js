@@ -49,7 +49,7 @@ export const useReserveStore = defineStore("reserve", {
             }
         },
         // 예약 대기열 접근 제어
-        async access(reserveIdx, storeIdx){
+        async accessConfirm(reserveIdx, storeIdx){
             try {
                 const res = await axios.get(
                     `${backend}/reserve/access?reserveIdx=${reserveIdx}&storeIdx=${storeIdx}`,
@@ -62,6 +62,7 @@ export const useReserveStore = defineStore("reserve", {
                 }
                 return res.data
             } catch (error) {
+                this.access = false;
                 return error.response.data
             }
         },

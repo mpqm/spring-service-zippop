@@ -93,8 +93,11 @@ const connectWebSocket = () => {
           waitingTotal.value = data.waitingTotal;
           workingTotal.value = data.workingTotal;
           statusMessage.value = data.statusMessage;
-          if (data.access) {
+          if (data.access === 1) {
             router.push(`/reserve/${route.params.storeIdx}/${route.params.reserveIdx}/goods`); // 이동할 페이지 경로
+          } else if(data.access === 2 || data.access == 3) {
+            toast.error(data.statusMessage)
+            router.push('/')
           }
         } catch (error) {
           console.error("메시지 파싱 실패", error);

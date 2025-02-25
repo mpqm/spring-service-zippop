@@ -33,9 +33,10 @@ public class OrdersController {
     public ResponseEntity<BaseResponse<OrdersDto.VerifyOrdersRes>> verifyOrdersReserve(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @RequestParam Long storeIdx,
+        @RequestParam Long reserveIdx,
         @RequestParam String impUid) throws BaseException, IamportResponseException, IOException{
 
-        OrdersDto.VerifyOrdersRes response = ordersService.verifyOrdersReserve(customUserDetails, impUid, storeIdx);
+        OrdersDto.VerifyOrdersRes response = ordersService.verifyOrdersReserve(customUserDetails, impUid, storeIdx, reserveIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_PAY_SUCCESS,response));
     }
 

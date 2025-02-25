@@ -34,7 +34,6 @@ public class Reserve extends BaseEntity {
 
     // 총 인원수 (필수, 최소값 1)
     @Column(nullable = false)
-    @Min(value = 1, message = "총 인원수는 최소 1명 이상이어야 합니다.")
     private Integer totalPeople;
 
     // 예약 시작 날짜 (필수)

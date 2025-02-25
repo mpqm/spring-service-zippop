@@ -74,10 +74,7 @@ public class ReserveController {
 
     // 예약 인가
     @GetMapping("/access")
-    public ResponseEntity<BaseResponse<Void>> access(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @RequestParam Long storeIdx,
-        @RequestParam Long reserveIdx) throws BaseException {
+    public ResponseEntity<BaseResponse<Void>> access() throws BaseException {
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_ACCESS_SUCCESS));
     }
 

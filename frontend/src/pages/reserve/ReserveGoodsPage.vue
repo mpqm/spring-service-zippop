@@ -64,10 +64,21 @@ const isKeywordSearch = ref(false);
 
 // onMounted 
 onMounted(async () => {
+    await accessConfirm();
     await search();
     await searchAll();
 });
 
+const accessConfirm = async () => {
+    const res = await reserveStore.accessConfirm(route.params.reserveIdx, route.params.storeIdx);
+    if (res.success && reserveStore.access) {
+        toast.success(res.message)
+    } else {
+        router.push("/")
+        toast.error(res.message)
+    }
+    return true;
+}
 
 const cancel = async () => {
     const res = await reserveStore.cancel(route.params.reserveIdx);

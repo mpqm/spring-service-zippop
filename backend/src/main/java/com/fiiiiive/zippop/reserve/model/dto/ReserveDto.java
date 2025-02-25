@@ -70,9 +70,9 @@ public class ReserveDto {
         private String waitingTotal;
         private String workingTotal;
         private String statusMessage;
-        private Boolean access;
+        private Integer access;
 
-        public static StatusReserveRes toData(String workingTotal, String waitingTotal, String statusMessage, Boolean access) {
+        public static StatusReserveRes toData(String workingTotal, String waitingTotal, String statusMessage, Integer access) {
             return StatusReserveRes.builder()
                     .workingTotal(workingTotal)
                     .waitingTotal(waitingTotal)

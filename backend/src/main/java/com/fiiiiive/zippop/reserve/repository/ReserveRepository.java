@@ -6,6 +6,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +35,14 @@ public interface ReserveRepository extends JpaRepository<Reserve, Long> {
             "WHERE rs.status = :status " +
              "AND (rs.address LIKE %:keyword% OR rs.name LIKE %:keyword% OR rs.category LIKE %:keyword% OR rs.startDate LIKE %:keyword% OR rs.companyEmail LIKE %:keyword%)")
     Page<Reserve> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") BaseStatus status, Pageable pageable);
+
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.store rs " +
             "WHERE rs.idx = :storeIdx AND rs.status = :status")
     Page<Reserve> findAllByStoreIdx(@Param("storeIdx") Long storeIdx, @Param("status") BaseStatus status, Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE Reserve r SET r.totalPeople = r.totalPeople - :decreasePeople WHERE r.idx = :reserveIdx")
+    int decreaseTotalPeople(@Param("reserveIdx") Long reserveIdx, @Param("decreasePeople") Integer decreasePeople);
+
 }
