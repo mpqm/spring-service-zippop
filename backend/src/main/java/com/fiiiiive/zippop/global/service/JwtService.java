@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.utils;
+package com.fiiiiive.zippop.global.service;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -11,11 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
-public class JwtUtil {
+public class JwtService {
+
     private final SecretKey secretKey;
 
-    // JwtUtil 생성자
-    public JwtUtil(@Value("${spring.jwt.secret}") String secret) {
+    // JwtService 생성자
+    public JwtService(@Value("${spring.security.jwt.secret}") String secret) {
         this.secretKey = new SecretKeySpec(
                 secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm()
@@ -89,4 +90,5 @@ public class JwtUtil {
     public String getEmail(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
+
 }

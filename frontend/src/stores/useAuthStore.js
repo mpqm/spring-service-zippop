@@ -133,5 +133,24 @@ export const useAuthStore = defineStore("auth", {
                 return error.response.data
             }
         },
+
+        // 비밀번호 찾기
+        async inActive () {
+            try {
+                const res = await axios.get(
+                    `${backend}/auth/inactive`,
+                    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+                );
+                this.userInfo.userId = null;
+                this.userInfo.email = null;
+                this.userInfo.name = null;
+                this.userInfo.role = null;
+                this.userInfo.profileImageUrl = null;
+                this.isLoggedIn = false;
+                return res.data;
+            } catch (error) {
+                return error.response.data
+            }
+        },
     },
 });

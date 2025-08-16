@@ -30,6 +30,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         }  else {
             handlerExceptionResolver.resolveException(request, response, null, authenticationException);
         }
-
     }
+
 }

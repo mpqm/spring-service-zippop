@@ -1,12 +1,12 @@
 package com.fiiiiive.zippop.store.controller;
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponse;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.service.StoreService;
-import com.fiiiiive.zippop.global.upload.S3FileUpload;
+import com.fiiiiive.zippop.global.service.S3FileUploadService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import java.util.List;
 public class StoreController {
 
     private final StoreService storeService;
-    private final S3FileUpload s3FileUpload;
+    private final S3FileUploadService s3FileUploadService;
 
     // 스토어 등록
     @PostMapping("/register")
@@ -35,9 +35,9 @@ public class StoreController {
         @RequestPart(name = "files", required = false) MultipartFile[] files,
         @Valid @RequestPart(name = "dto") StoreDto.CreateStoreReq dto) throws BaseException {
 
-        List<String> urls = s3FileUpload.multipleUpload(files);
+        List<String> urls = s3FileUploadService.multipleUpload(files);
         StoreDto.CreateStoreRes response = storeService.registerStore(customUserDetails, dto, urls);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_REGISTER_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_REGISTER_SUCCESS, response));
     }
 
     // 스토어 수정
@@ -48,9 +48,9 @@ public class StoreController {
         @RequestPart(name = "files", required = false) MultipartFile[] files,
         @Valid @RequestPart(name = "dto") StoreDto.UpdateStoreReq dto) throws BaseException {
 
-        List<String> urls = s3FileUpload.multipleUpload(files);
+        List<String> urls = s3FileUploadService.multipleUpload(files);
         StoreDto.UpdateStoreRes response = storeService.updateStore(customUserDetails, storeIdx, dto, urls);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_UPDATE_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_UPDATE_SUCCESS,response));
     }
 
     // 스토어 조회
@@ -59,7 +59,7 @@ public class StoreController {
         @RequestParam Long storeIdx) throws BaseException {
 
         StoreDto.SearchStoreRes searchStoreRes = storeService.searchStore(storeIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_SEARCH_SUCCESS, searchStoreRes));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_SEARCH_SUCCESS, searchStoreRes));
     }
 
     // 스토어 목록 조회
@@ -71,7 +71,7 @@ public class StoreController {
         @RequestParam int size ) throws BaseException {
 
         Page<StoreDto.SearchStoreRes> response = storeService.searchAllStore(status, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_SEARCH_ALL_SUCCESS, response));
     }
 
     // 스토어 목록 조회(기업용)
@@ -83,7 +83,7 @@ public class StoreController {
         @RequestParam int size ) throws BaseException {
 
         Page<StoreDto.SearchStoreRes> response = storeService.searchAllStoreAsCompany(customUserDetails, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_SEARCH_ALL_SUCCESS, response));
     }
 
     // 스토어 삭제
@@ -93,7 +93,7 @@ public class StoreController {
         @RequestParam Long storeIdx) throws BaseException {
 
         storeService.deleteStore(customUserDetails, storeIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_DELETE_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_DELETE_SUCCESS));
     }
 
     // 스토어 좋아요 증감
@@ -103,7 +103,7 @@ public class StoreController {
         @RequestParam Long storeIdx) throws BaseException {
 
         storeService.registerStoreLike(customUserDetails, storeIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_LIKE_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_LIKE_SUCCESS));
     }
 
     // 스토어 좋아요 목록 (고객 회원) 조회
@@ -114,7 +114,7 @@ public class StoreController {
         @RequestParam int size) throws BaseException {
 
         Page<StoreDto.SearchStoreLikeRes> response = storeService.searchAllStoreLike(customUserDetails, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_LIKE_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_LIKE_SEARCH_ALL_SUCCESS, response));
     }
 
     // 스토어 리뷰 등록
@@ -125,7 +125,7 @@ public class StoreController {
         @Valid @RequestBody StoreDto.CreateStoreReviewReq dto) throws BaseException {
 
         StoreDto.CreateStoreReviewRes response = storeService.registerStoreReview(customUserDetails, storeIdx, dto);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_REVIEW_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_REVIEW_SUCCESS, response));
     }
 
     // 팝업 스토어 리뷰 목록 조회
@@ -136,7 +136,7 @@ public class StoreController {
         @RequestParam int size) throws BaseException {
 
         Page<StoreDto.SearchStoreReviewRes> response = storeService.searchAllStoreReview(storeIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_REVIEW_SEARCH_ALL_SUCCESS, response));
     }
 
     // 팝업 스토어 리뷰 목록 조회(고객)
@@ -147,6 +147,6 @@ public class StoreController {
         @RequestParam int size) throws BaseException {
 
         Page<StoreDto.SearchStoreReviewRes> response = storeService.searchAllStoreReviewAsCustomer(customUserDetails, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_REVIEW_SEARCH_ALL_SUCCESS, response));
     }
 }

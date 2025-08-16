@@ -159,4 +159,5 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
     public boolean isEnabled() {
         return customer.getIsEmailAuth();
     }
+
 }

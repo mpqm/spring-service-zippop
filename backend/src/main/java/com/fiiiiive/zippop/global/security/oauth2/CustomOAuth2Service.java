@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.global.security.oauth2;
 
 import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -17,7 +17,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2Service extends DefaultOAuth2UserService {
+
     private final CustomerRepository customerRepository;
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -48,4 +50,5 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
         }
         return new CustomOauth2UserDetails(customer, oAuth2User.getAttributes());
     }
+
 }

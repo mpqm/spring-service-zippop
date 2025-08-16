@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PortOneConfig {
+
     @Value("${imp.imp_key}")
     private String impKey;
+
     @Value("${imp.imp_secret}")
     private String impSecret;
 
@@ -16,4 +18,5 @@ public class PortOneConfig {
     public IamportClient iamportClient() {
         return new IamportClient(impKey, impSecret);
     }
+
 }

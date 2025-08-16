@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.common.base;
+package com.fiiiiive.zippop.global.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -22,4 +22,5 @@ public abstract class BaseEntity {
     @LastModifiedDate
     @Column(insertable = false)
     private LocalDateTime updatedAt;
+
 }

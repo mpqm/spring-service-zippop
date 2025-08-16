@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.settlement.model.entity;
 
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseEntity;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.settlement.model.dto.SettlementDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;

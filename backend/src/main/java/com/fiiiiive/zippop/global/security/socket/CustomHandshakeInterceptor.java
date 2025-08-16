@@ -1,7 +1,7 @@
-package com.fiiiiive.zippop.global.socket;
+package com.fiiiiive.zippop.global.security.socket;
 
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.global.utils.JwtUtil;
+import com.fiiiiive.zippop.global.service.JwtService;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,8 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomHandshakeInterceptor implements HandshakeInterceptor {
-    private final JwtUtil jwtUtil;
+
+    private final JwtService jwtService;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
@@ -40,10 +41,10 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
                     }
                 }
             }
-            Long idx = jwtUtil.getIdx(accessToken);
-            String email = jwtUtil.getUsername(accessToken);
-            String role = jwtUtil.getRole(accessToken);
-            String userId = jwtUtil.getUserId(accessToken);
+            Long idx = jwtService.getIdx(accessToken);
+            String email = jwtService.getUsername(accessToken);
+            String role = jwtService.getRole(accessToken);
+            String userId = jwtService.getUserId(accessToken);
             CustomUserDetails customUserDetails = CustomUserDetails.builder()
                     .idx(idx)
                     .email(email)
@@ -58,4 +59,5 @@ public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception ex) {}
+
 }

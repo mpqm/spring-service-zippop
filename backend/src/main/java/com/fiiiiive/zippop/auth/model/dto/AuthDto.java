@@ -2,12 +2,11 @@ package com.fiiiiive.zippop.auth.model.dto;
 
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import jdk.jshell.Snippet;
 import lombok.*;
 
 public class AuthDto {

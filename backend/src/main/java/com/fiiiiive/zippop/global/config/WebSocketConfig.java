@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.global.config;
-import com.fiiiiive.zippop.global.socket.CustomAuthenticationInterceptor;
-import com.fiiiiive.zippop.global.socket.CustomHandshakeInterceptor;
-import com.fiiiiive.zippop.global.utils.JwtUtil;
+import com.fiiiiive.zippop.global.security.socket.CustomAuthenticationInterceptor;
+import com.fiiiiive.zippop.global.security.socket.CustomHandshakeInterceptor;
+import com.fiiiiive.zippop.global.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -10,13 +10,12 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    private final JwtUtil jwtUtil;
+
+    private final JwtService jwtService;
     private final CustomAuthenticationInterceptor customAuthenticationInterceptor;
 
     @Override
@@ -30,7 +29,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOrigins("https://d3iaa8b0a37h7p.cloudfront.net", "http://localhost:8081")
-                .addInterceptors(new CustomHandshakeInterceptor(jwtUtil))
+                .addInterceptors(new CustomHandshakeInterceptor(jwtService))
                 .withSockJS();
     }
 

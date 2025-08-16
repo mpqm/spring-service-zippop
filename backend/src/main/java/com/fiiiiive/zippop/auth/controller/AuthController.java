@@ -2,13 +2,11 @@ package com.fiiiiive.zippop.auth.controller;
 
 import com.fiiiiive.zippop.auth.model.dto.AuthDto;
 import com.fiiiiive.zippop.auth.service.AuthService;
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponse;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.config.FileUploadConfig;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.global.upload.FileUpload;
-import com.fiiiiive.zippop.global.upload.S3FileUpload;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import com.fiiiiive.zippop.global.service.FileUploadService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +26,7 @@ import java.net.URI;
 public class AuthController {
 
     private final AuthService authService;
-    private final FileUpload fileUpload;
+    private final FileUploadService fileUpload;
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<Void>> signup(
@@ -37,7 +35,7 @@ public class AuthController {
 
         String url = fileUpload.upload(file);
         Boolean response = authService.signup(dto, url);
-        return ResponseEntity.ok(new BaseResponse<>(response ? BaseResponseMessage.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : BaseResponseMessage.AUTH_SIGNUP_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(response ? BaseMessage.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : BaseMessage.AUTH_SIGNUP_SUCCESS));
     }
 
     // 이메일 검증
@@ -57,7 +55,7 @@ public class AuthController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException {
 
         authService.inactive(customUserDetails);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.AUTH_INACTIVE_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_INACTIVE_SUCCESS));
     }
 
     // 계정 ID 찾기
@@ -66,7 +64,7 @@ public class AuthController {
         @RequestBody AuthDto.FindUserIdReq dto) throws BaseException {
 
         authService.findId(dto);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.AUTH_FIND_ID_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_ID_SUCCESS));
     }
 
     // 계정 PW 찾기
@@ -75,7 +73,7 @@ public class AuthController {
         @RequestBody AuthDto.FindPasswordReq dto) throws BaseException {
 
         authService.findPassword(dto);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.AUTH_FIND_PASSWORD_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_PASSWORD_SUCCESS));
     }
 
     // 회원 정보 수정
@@ -85,9 +83,10 @@ public class AuthController {
         @RequestPart(name = "dto") AuthDto.EditInfoReq dto,
         @RequestPart(name = "file", required = false) MultipartFile file) throws BaseException {
 
+        // 파일이 있으면 업로드하고, 없으면 DTO의 profileImageUrl 사용
         String url = fileUpload.upload(file);
         authService.editInfo(customUserDetails, dto, url);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.AUTH_EDIT_INFO_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_EDIT_INFO_SUCCESS));
     }
 
     // 회원 비밀번호 수정
@@ -97,7 +96,7 @@ public class AuthController {
         @RequestBody AuthDto.EditPasswordReq dto) throws BaseException {
 
         authService.editPassword(customUserDetails, dto);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.AUTH_EDIT_PASSWORD_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_EDIT_PASSWORD_SUCCESS));
     }
 
     // 회원 정보 조회
@@ -106,7 +105,7 @@ public class AuthController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails) throws BaseException{
 
         AuthDto.GetInfoRes response = authService.getInfo(customUserDetails);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.AUTH_GET_PROFILE_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_GET_PROFILE_SUCCESS, response));
     }
 
 }

@@ -5,12 +5,12 @@ import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.global.utils.MailUtil;
-import com.fiiiiive.zippop.global.utils.RedisUtil;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import com.fiiiiive.zippop.global.service.MailService;
+import com.fiiiiive.zippop.global.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final MailUtil mailUtil;
-    private final RedisUtil redisUtil;
+    private final MailService mailService;
+    private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
     private final CompanyRepository companyRepository;
     private final CustomerRepository customerRepository;
@@ -39,7 +39,7 @@ public class AuthService {
         if(dto.getRole() == BaseStatus.ROLE_CUSTOMER){
 
             // 기업 회원으로 가입한 이메일로 고객 회원 가입 할 수 없음
-            if(companyRepository.findByCompanyEmail(dto.getEmail()).isPresent()) throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY);
+            if(companyRepository.findByCompanyEmail(dto.getEmail()).isPresent()) throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY);
 
             // 고객 회원(email) 조회
             Optional<Customer> customerOpt = customerRepository.findByCustomerEmail(dto.getEmail());
@@ -50,7 +50,7 @@ public class AuthService {
             // return : 복구 회원과 신규회원의 구분을 위해 isInActive 반환
             if(customerOpt.isPresent()){
                 customer = customerOpt.get();
-                if(customer.getIsEmailAuth()) throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_EXIST);
+                if(customer.getIsEmailAuth()) throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_ALREADY_EXIST);
                 sendVerifyEmail(customer.getEmail(), customer.getRole().name(), false, customer.getIsInActive());
             }
             else {
@@ -63,7 +63,7 @@ public class AuthService {
         } else {
 
             // 고객 회원으로 가입한 이메일로 기업 회원 가입 할 수 없음
-            if(customerRepository.findByCustomerEmail(dto.getEmail()).isPresent()) throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_CUSTOMER);
+            if(customerRepository.findByCustomerEmail(dto.getEmail()).isPresent()) throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_CUSTOMER);
 
             // 기업 회원(email) 조회
             Optional<Company> companyOpt = companyRepository.findByCompanyEmail(dto.getEmail());
@@ -74,7 +74,7 @@ public class AuthService {
             // return : 복구 회원과 신규회원의 구분을 위해 isInActive 반환
             if(companyOpt.isPresent()){
                 company = companyOpt.get();
-                if(company.getIsEmailAuth()) throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_EXIST);
+                if(company.getIsEmailAuth()) throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_ALREADY_EXIST);
                 sendVerifyEmail(company.getEmail(), company.getRole().name(), false, company.getIsInActive());
             } else {
                 company = dto.toCompanyEntity(passwordEncoder.encode(dto.getPassword()), url);
@@ -92,10 +92,10 @@ public class AuthService {
     public void sendVerifyEmail(String email, String role, Boolean isEmailAuth, Boolean isInActive) {
 
         // Redis에 랜덤 UUID와 이메일을 저장, 유효시간 3분으로 설정
-        String uuid = redisUtil.saveEmailVerifyUuid(email, UUID.randomUUID().toString(), 3);
+        String uuid = redisService.saveEmailVerifyUuid(email, UUID.randomUUID().toString(), 3);
 
         // 회원가입 인증 이메일 전송
-        mailUtil.sendSignupEmail(uuid, email, role, isEmailAuth, isInActive);
+        mailService.sendSignupEmail(uuid, email, role, isEmailAuth, isInActive);
 
     }
 
@@ -104,7 +104,7 @@ public class AuthService {
     public String verify(String email, String role, String inputUuid) throws BaseException {
 
         // 이메일에 해당하는 UUID 값 조회
-        String storeUuid = redisUtil.getEmailVerifyUuid(email);
+        String storeUuid = redisService.getEmailVerifyUuid(email);
 
         // Redis에 저장된 값이 없거나 전달 받은 uuid와 다르면 이메일 인증 실패 리다이렉트 URL 반환
         if (storeUuid == null || !storeUuid.equals(inputUuid))  return "http://localhost:8081/login?error=true";
@@ -114,7 +114,7 @@ public class AuthService {
 
             // 고객 조회(email)
             Customer customer = customerRepository.findByCustomerEmail(email).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.AUTH_VERIFY_FAIL)
+                    () -> new BaseException(BaseMessage.AUTH_VERIFY_FAIL)
             );
 
             // 고객 회원 이메일 인증, 비활성화 여부 수정 후 저장 / isEmailAuth && isInActive: 이메일 인증 완료 회원(1, 0)
@@ -126,7 +126,7 @@ public class AuthService {
 
             // 기업 조회(email)
             Company company = companyRepository.findByCompanyEmail(email).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.AUTH_VERIFY_FAIL)
+                    () -> new BaseException(BaseMessage.AUTH_VERIFY_FAIL)
             );
 
             // 기업 회원 이메일 인증, 비활성화 여부 수정 후 저장 / isEmailAuth && isInActive: 이메일 인증 완료 회원(1, 0)
@@ -136,7 +136,7 @@ public class AuthService {
         }
 
         // 인증 성공 후 Redis 에서 해당 이메일 관련 UUID 삭제 후 성공 리다이렉트 URL 반환
-        redisUtil.deleteEmailVerifyUuid(email);
+        redisService.deleteEmailVerifyUuid(email);
         return "http://localhost:8081/login?success=true";
 
     }
@@ -150,7 +150,7 @@ public class AuthService {
 
             // 고객 조회(email)
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.AUTH_INACTIVE_FAIL)
+                    () -> new BaseException(BaseMessage.AUTH_INACTIVE_FAIL)
             );
 
             // 고객 회원 이메일 인증, 비활성화 여부 수정 후 저장 / isEmailAuth && isInActive: 비활성화 회원(0, 1)
@@ -162,7 +162,7 @@ public class AuthService {
 
             // 기업 조회(email)
             Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx()).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.AUTH_INACTIVE_FAIL)
+                    () -> new BaseException(BaseMessage.AUTH_INACTIVE_FAIL)
             );
 
             // 기업 회원 이메일 인증, 비활성화 여부 수정 후 저장 / isEmailAuth && isInActive: 비활성화 회원(0, 1)
@@ -186,9 +186,9 @@ public class AuthService {
             // if: 이메일 인증한 회원
             // else if: 비활성화 회원
             // else: 이메일 인증을 하지 않은 회원(예외)
-            if(customer.getIsEmailAuth() && !customer.getIsInActive()) mailUtil.sendFindUserId(customer.getEmail(), customer.getUserId(), false);
-            else if (!customer.getIsEmailAuth() && customer.getIsInActive()) mailUtil.sendFindUserId(customer.getEmail(), customer.getUserId(), true);
-            else throw new BaseException(BaseResponseMessage.AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY);
+            if(customer.getIsEmailAuth() && !customer.getIsInActive()) mailService.sendFindUserId(customer.getEmail(), customer.getUserId(), false);
+            else if (!customer.getIsEmailAuth() && customer.getIsInActive()) mailService.sendFindUserId(customer.getEmail(), customer.getUserId(), true);
+            else throw new BaseException(BaseMessage.AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY);
 
         }
 
@@ -202,9 +202,9 @@ public class AuthService {
             // if: 이메일 인증한 회원
             // else if: 비활성화 회원
             // else: 이메일 인증을 하지 않은 회원(예외)
-            if(company.getIsEmailAuth() && !company.getIsInActive()) mailUtil.sendFindUserId(company.getEmail(), company.getUserId(), false);
-            else if (!company.getIsEmailAuth() && company.getIsInActive()) mailUtil.sendFindUserId(company.getEmail(), company.getUserId(), true);
-            else throw new BaseException(BaseResponseMessage.AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY);
+            if(company.getIsEmailAuth() && !company.getIsInActive()) mailService.sendFindUserId(company.getEmail(), company.getUserId(), false);
+            else if (!company.getIsEmailAuth() && company.getIsInActive()) mailService.sendFindUserId(company.getEmail(), company.getUserId(), true);
+            else throw new BaseException(BaseMessage.AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY);
 
         }
 
@@ -230,9 +230,9 @@ public class AuthService {
             // if: 이메일 인증한 회원
             // else if: 비활성화 회원
             // else: 이메일 인증을 하지 않은 회원(예외)
-            if (!customer.getIsInActive() && customer.getIsEmailAuth()) mailUtil.sendFindUserPassword(customer.getEmail(), rawPassword, false);
-            else if (customer.getIsInActive() && !customer.getIsEmailAuth()) mailUtil.sendFindUserPassword(customer.getEmail(), rawPassword, true);
-            else throw new BaseException(BaseResponseMessage.AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY);
+            if (!customer.getIsInActive() && customer.getIsEmailAuth()) mailService.sendFindUserPassword(customer.getEmail(), rawPassword, false);
+            else if (customer.getIsInActive() && !customer.getIsEmailAuth()) mailService.sendFindUserPassword(customer.getEmail(), rawPassword, true);
+            else throw new BaseException(BaseMessage.AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY);
 
         }
 
@@ -248,9 +248,9 @@ public class AuthService {
             // if: 이메일 인증한 회원
             // else if: 비활성화 회원
             // else: 이메일 인증을 하지 않은 회원(예외)
-            if(!company.getIsInActive() && company.getIsEmailAuth()) mailUtil.sendFindUserPassword(company.getEmail(), rawPassword, false);
-            else if (company.getIsInActive() && !company.getIsEmailAuth()) mailUtil.sendFindUserPassword(company.getEmail(), rawPassword, true);
-            else throw new BaseException(BaseResponseMessage.AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY);
+            if(!company.getIsInActive() && company.getIsEmailAuth()) mailService.sendFindUserPassword(company.getEmail(), rawPassword, false);
+            else if (company.getIsInActive() && !company.getIsEmailAuth()) mailService.sendFindUserPassword(company.getEmail(), rawPassword, true);
+            else throw new BaseException(BaseMessage.AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY);
 
         }
 
@@ -260,12 +260,14 @@ public class AuthService {
     @Transactional
     public void editInfo(CustomUserDetails customUserDetails, AuthDto.EditInfoReq dto, String url) throws BaseException {
 
+        if(url == null) url = dto.getProfileImageUrl();
+
         // 시스템 역할 확인 (ROLE_CUSTOMER, ROLE_COMPANY)
         if(Objects.equals(customUserDetails.getRole(), "ROLE_CUSTOMER")){
 
             // 고객 회원 조회(email)
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
+                    () -> new BaseException(BaseMessage.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
             );
 
             // 고객 회원 정보 수정
@@ -276,7 +278,7 @@ public class AuthService {
 
             // 기업 회원 조회(email)
             Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx()).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
+                    () -> new BaseException(BaseMessage.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
             );
 
             // 기업 회원 정보 수정
@@ -295,11 +297,11 @@ public class AuthService {
 
             // 고객 회원 조회 (customerIdx)
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
-                    () ->  new BaseException(BaseResponseMessage.AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER)
+                    () ->  new BaseException(BaseMessage.AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER)
             );
 
             // 비밀 번호 일치 여부 검사
-            if(!passwordEncoder.matches(dto.getOriginPassword(), customer.getPassword())) throw new BaseException(BaseResponseMessage.AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH);
+            if(!passwordEncoder.matches(dto.getOriginPassword(), customer.getPassword())) throw new BaseException(BaseMessage.AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH);
 
             // 변경된 비밀 번호로 수정
             customer.setPassword(passwordEncoder.encode(dto.getNewPassword()));
@@ -309,11 +311,11 @@ public class AuthService {
 
             // 기업 회원 조회(companyIdx)
             Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx()).orElseThrow(
-                    () ->  new BaseException(BaseResponseMessage.AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER)
+                    () ->  new BaseException(BaseMessage.AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER)
             );
 
             // 비밀 번호 일치 여부 검사
-            if(!passwordEncoder.matches(dto.getOriginPassword(), company.getPassword())) throw new BaseException(BaseResponseMessage.AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH);
+            if(!passwordEncoder.matches(dto.getOriginPassword(), company.getPassword())) throw new BaseException(BaseMessage.AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH);
 
             // 변경된 비밀 번호로 수정
             company.setPassword(passwordEncoder.encode(dto.getNewPassword()));
@@ -331,7 +333,7 @@ public class AuthService {
 
             // 고객 회원 조회(customerIdx)
             Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.AUTH_GET_PROFILE_FAIL)
+                    () -> new BaseException(BaseMessage.AUTH_GET_PROFILE_FAIL)
             );
 
             // DTO 반환
@@ -341,7 +343,7 @@ public class AuthService {
 
             // 기업 회원 조회(companyIdx)
             Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx()).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.AUTH_GET_PROFILE_FAIL)
+                    () -> new BaseException(BaseMessage.AUTH_GET_PROFILE_FAIL)
             );
 
             // DTO 반환

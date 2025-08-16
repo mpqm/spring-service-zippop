@@ -1,7 +1,5 @@
-package com.fiiiiive.zippop.global.utils;
+package com.fiiiiive.zippop.global.service;
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,9 +12,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class RedisUtil {
-    private final RedisTemplate<String, Object> redisTemplate;
+public class RedisService {
 
+    private final RedisTemplate<String, Object> redisTemplate;
 
     // 이메일 인증 UUID 저장 (key: email, value: uuid, expirationTime: 3 minutes)
     public String saveEmailVerifyUuid(String email, String uuid, long expirationTimeMinutes) {
@@ -49,7 +47,6 @@ public class RedisUtil {
             throw new RuntimeException("이메일 인증 UUID 삭제에 실패했습니다.", e);
         }
     }
-
 
     // 대기열 큐 생성 초기화 및 만료 시간 설정
     public void createQueue(String key, long expirationTimeMinutes) {
@@ -131,4 +128,5 @@ public class RedisUtil {
             return null;
         }
     }
+
 }

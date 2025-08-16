@@ -2,10 +2,10 @@ package com.fiiiiive.zippop.cart.controller;
 
 import com.fiiiiive.zippop.cart.model.dto.CartDto;
 import com.fiiiiive.zippop.cart.service.CartService;
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponse;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class CartController {
         @Valid @RequestBody CartDto.CreateCartReq dto) throws BaseException {
 
         cartService.registerCart(customUserDetails, dto);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.CART_REGISTER_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_REGISTER_SUCCESS));
     }
 
     // 장바구니 목록 조회
@@ -44,7 +44,7 @@ public class CartController {
         @RequestParam Integer size) throws BaseException {
 
         Page<CartDto.SearchCartRes> response = cartService.searchAllCart(customUserDetails, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.CART_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_SEARCH_ALL_SUCCESS, response));
     }
 
     // 장바구니 삭제
@@ -54,7 +54,7 @@ public class CartController {
         @RequestParam Long storeIdx) throws BaseException {
 
         cartService.deleteAllCartItem(customUserDetails, storeIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.CART_ITEM_DELETE_ALL_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_DELETE_ALL_SUCCESS));
     }
 
     // 장바구니 아이템 수량 조절
@@ -65,7 +65,7 @@ public class CartController {
         @RequestParam Boolean operation) throws BaseException {
 
         cartService.countCartItem(customUserDetails, cartItemIdx, operation);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.CART_ITEM_COUNT_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_COUNT_SUCCESS));
     }
 
     // 장바구니 아이템 목록 조회
@@ -75,7 +75,7 @@ public class CartController {
         @RequestParam Long storeIdx) throws BaseException {
 
         List<CartDto.SearchCartItemRes> response = cartService.searchAllCartItem(customUserDetails, storeIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.CART_ITEM_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_SEARCH_ALL_SUCCESS, response));
     }
 
     // 장바구니 아이템 삭제
@@ -85,7 +85,7 @@ public class CartController {
         @RequestParam Long cartItemIdx) {
 
         cartService.deleteCartItem(customUserDetails, cartItemIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.CART_ITEM_DELETE_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_DELETE_SUCCESS));
     }
 
 }

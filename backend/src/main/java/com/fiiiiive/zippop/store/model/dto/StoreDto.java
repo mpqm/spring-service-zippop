@@ -2,8 +2,8 @@ package com.fiiiiive.zippop.store.model.dto;
 
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseStatus;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.dto.GoodsDto;
 import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.store.model.entity.Store;

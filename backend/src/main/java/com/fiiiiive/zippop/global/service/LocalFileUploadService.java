@@ -1,7 +1,7 @@
-package com.fiiiiive.zippop.global.upload;
+package com.fiiiiive.zippop.global.service;
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,30 +16,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Service("localFileUpload")
+@Service("localFileUploadService")
 @RequiredArgsConstructor
 @Slf4j
-public class LocalFileUpload implements FileUpload {
+public class LocalFileUploadService implements FileUploadService {
     
-    @Value("${file-upload.local.path}")
+    @Value("${upload.local.path}")
     private String uploadPath;
     
-    @Value("${server.port:8080}")
+    @Value("${server.port}")
     private String serverPort;
     
-    @Value("${server.address:localhost}")
+    @Value("${server.address}")
     private String serverAddress;
 
     // 단일 파일 업로드
     public String upload(MultipartFile file) throws BaseException {
-        if (file == null || file.isEmpty()) {
-            return null;
-        }
+        if (file == null || file.isEmpty()) return null;
 
         try {
             // 업로드 디렉토리 생성
-            createUploadDirectory();
-            
+            Path uploadDir = Paths.get(uploadPath);
+            if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
+
             // 파일명 생성 (UUID + 원본파일명)
             String originalFilename = file.getOriginalFilename();
             String saveFileName = UUID.randomUUID() + "_" + originalFilename;
@@ -58,7 +57,7 @@ public class LocalFileUpload implements FileUpload {
             
         } catch (IOException e) {
             log.error("파일 업로드 실패: {}", e.getMessage());
-            throw new BaseException(BaseResponseMessage.FILE_UPLOAD_FAIL, e.getMessage());
+            throw new BaseException(BaseMessage.FILE_UPLOAD_FAIL, e.getMessage());
         }
     }
 
@@ -72,7 +71,11 @@ public class LocalFileUpload implements FileUpload {
         
         try {
             // 업로드 디렉토리 생성
-            createUploadDirectory();
+            Path uploadDir = Paths.get(uploadPath);
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+                log.info("업로드 디렉토리 생성: {}", uploadPath);
+            }
             
             for (MultipartFile file : files) {
                 if (file != null && !file.isEmpty()) {
@@ -98,32 +101,13 @@ public class LocalFileUpload implements FileUpload {
             
         } catch (IOException e) {
             log.error("파일 업로드 실패: {}", e.getMessage());
-            throw new BaseException(BaseResponseMessage.FILE_UPLOAD_FAIL, e.getMessage());
+            throw new BaseException(BaseMessage.FILE_UPLOAD_FAIL, e.getMessage());
         }
     }
     
     // 업로드 디렉토리 생성
     private void createUploadDirectory() throws IOException {
-        Path uploadDir = Paths.get(uploadPath);
-        if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir);
-            log.info("업로드 디렉토리 생성: {}", uploadPath);
-        }
+
     }
-    
-//    // 파일 삭제
-//    public boolean deleteFile(String fileName) {
-//        try {
-//            Path filePath = Paths.get(uploadPath, fileName);
-//            if (Files.exists(filePath)) {
-//                Files.delete(filePath);
-//                log.info("파일 삭제 완료: {}", fileName);
-//                return true;
-//            }
-//            return false;
-//        } catch (IOException e) {
-//            log.error("파일 삭제 실패: {}", e.getMessage());
-//            return false;
-//        }
-//    }
+
 }

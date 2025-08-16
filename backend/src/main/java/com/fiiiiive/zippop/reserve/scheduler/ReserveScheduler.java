@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.reserve.scheduler;
 
-import com.fiiiiive.zippop.global.utils.RedisUtil;
+import com.fiiiiive.zippop.global.service.RedisService;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ReserveScheduler {
 
     private final ReserveRepository reserveRepository;
-    private final RedisUtil redisUtil;
+    private final RedisService redisService;
 
     /* 매일 아침 9시에 예약 데이터를 순회하여 Redis 큐를 생성 */
 //    @Scheduled(cron = "0 0 9 * * ?")
@@ -37,10 +37,10 @@ public class ReserveScheduler {
                 long ttl = Duration.between(reserve.getStartTime(), reserve.getEndTime()).getSeconds();
 
                 // Working Queue 확인 및 생성
-                if(redisUtil.existQueue(reserve.getWorkingUUID())) redisUtil.createQueue(reserve.getWorkingUUID(), ttl);
+                if(redisService.existQueue(reserve.getWorkingUUID())) redisService.createQueue(reserve.getWorkingUUID(), ttl);
 
                 // Waiting Queue 확인 및 생성
-                if(redisUtil.existQueue(reserve.getWaitingUUID())) redisUtil.createQueue(reserve.getWaitingUUID(), ttl);
+                if(redisService.existQueue(reserve.getWaitingUUID())) redisService.createQueue(reserve.getWaitingUUID(), ttl);
 
             } catch (Exception e) {
                 log.error("레디스 큐 생성 중 오류 발생 - 예약 ID: {}, 오류: {}", reserve.getIdx(), e.getMessage());

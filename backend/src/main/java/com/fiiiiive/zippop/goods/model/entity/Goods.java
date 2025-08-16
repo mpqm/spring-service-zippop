@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.goods.model.entity;
 
 import com.fiiiiive.zippop.cart.model.entity.CartItem;
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseEntity;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.goods.model.dto.GoodsDto;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;

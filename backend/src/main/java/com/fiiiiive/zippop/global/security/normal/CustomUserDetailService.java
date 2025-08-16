@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.security;
+package com.fiiiiive.zippop.global.security.normal;
 
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
@@ -15,8 +15,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
+
     private final CustomerRepository customerRepository;
     private final CompanyRepository companyRepository;
+
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
         Optional<Customer> resultCustomer = customerRepository.findByUserId(userId);
@@ -48,4 +50,5 @@ public class CustomUserDetailService implements UserDetailsService {
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
         }
     }
+
 }

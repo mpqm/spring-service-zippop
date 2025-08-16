@@ -1,10 +1,10 @@
 package com.fiiiiive.zippop.global.config;
 
-import com.fiiiiive.zippop.global.security.AccessControlService;
-import com.fiiiiive.zippop.global.security.CustomUserDetailService;
 import com.fiiiiive.zippop.global.security.filter.*;
+import com.fiiiiive.zippop.global.security.normal.AccessControlService;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetailService;
 import com.fiiiiive.zippop.global.security.oauth2.CustomOAuth2Service;
-import com.fiiiiive.zippop.global.utils.JwtUtil;
+import com.fiiiiive.zippop.global.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,8 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtUtil jwtUtil;
+
+    private final JwtService jwtService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CustomOAuth2Service customOAuth2Service;
@@ -122,8 +123,8 @@ public class SecurityConfig {
                 .logoutSuccessHandler(customLogoutSuccessHandler)
         );
         http.exceptionHandling(e ->e.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler));
-        http.addFilterBefore(new JwtFilter(jwtUtil, redisTemplate, customUserDetailService), LoginFilter.class);
-        LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager(authenticationConfiguration), redisTemplate);
+        http.addFilterBefore(new JwtFilter(jwtService, redisTemplate, customUserDetailService), LoginFilter.class);
+        LoginFilter loginFilter = new LoginFilter(jwtService, authenticationManager(authenticationConfiguration), redisTemplate);
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
         loginFilter.setAuthenticationFailureHandler(customLoginFailureHandler);
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
@@ -145,4 +146,5 @@ public class SecurityConfig {
         firewall.setAllowUrlEncodedSlash(true);
         return firewall;
     }
+
 }

@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.global.security.filter;
 
+import com.fiiiiive.zippop.global.service.JwtService;
 import com.fiiiiive.zippop.global.security.oauth2.CustomOauth2UserDetails;
-import com.fiiiiive.zippop.global.utils.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,8 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private final JwtUtil jwtUtil;
+
+    private final JwtService jwtService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -26,7 +27,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         Long idx = oAuth2Member.getIdx();
         String username = oAuth2Member.getUsername();
         String role = oAuth2Member.getCustomer().getRole().name();
-        String token = jwtUtil.createAccessToken(idx, username, role, username);
+        String token = jwtService.createAccessToken(idx, username, role, username);
         log.info(idx + " " + role + " " + username);
         Cookie aToken = new Cookie("ATOKEN", token);
         aToken.setHttpOnly(true);
@@ -36,5 +37,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         response.addCookie(aToken);
         super.onAuthenticationSuccess(request, response, authentication);
     }
+
 }
 

@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.store.model.entity;
 
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.store.model.dto.StoreDto;
 import jakarta.persistence.*;
 import lombok.*;

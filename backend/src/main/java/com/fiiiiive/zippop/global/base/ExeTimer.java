@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.common.annotation;
+package com.fiiiiive.zippop.global.base;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
