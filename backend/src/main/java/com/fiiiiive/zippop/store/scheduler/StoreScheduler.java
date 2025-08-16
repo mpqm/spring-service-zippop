@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.store.scheduler;
 
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;

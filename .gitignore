@@ -74,3 +74,5 @@ cicd/redis/**
 cicd/.env
 frontend/.env
 cicd/grafana/state/**
+upload
+log

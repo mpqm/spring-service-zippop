@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.cart.model.entity;
 
 import com.fiiiiive.zippop.cart.model.dto.CartDto;
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;

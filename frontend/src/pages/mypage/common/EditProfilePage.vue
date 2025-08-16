@@ -136,6 +136,7 @@ const editInfo = async () => {
         name: userInfo.value.name,
         phoneNumber: userInfo.value.phoneNumber,
         address: address.value + ',' + addressDetail.value,
+        profileImageUrl: file.value ? null : authStore.userInfo.profileImageUrl, // 새 파일이 있으면 null, 없으면 기존 URL 유지
         crn: userInfo.value.crn,
     }
     formData.append('dto', new Blob([JSON.stringify(req)], { type: 'application/json' }));
@@ -165,7 +166,7 @@ const editPassword = async () => {
     }
 }
 
-// 계정 비호라성화
+// 계정 비활성화화
 const inActive = async () => {
     const res = await authStore.inActive()
     if (res.success) {

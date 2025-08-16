@@ -1,17 +1,16 @@
 package com.fiiiiive.zippop.orders.controller;
 
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponse;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.model.dto.OrdersDto;
 import com.fiiiiive.zippop.orders.service.OrdersService;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +36,7 @@ public class OrdersController {
         @RequestParam String impUid) throws BaseException, IamportResponseException, IOException{
 
         OrdersDto.VerifyOrdersRes response = ordersService.verifyOrdersReserve(customUserDetails, impUid, storeIdx, reserveIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_PAY_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_PAY_SUCCESS,response));
     }
 
     // 주문 검증(예약용)
@@ -48,7 +47,7 @@ public class OrdersController {
         @RequestParam String impUid) throws BaseException, IamportResponseException, IOException{
 
         OrdersDto.VerifyOrdersRes response = ordersService.verifyOrdersStock(customUserDetails, impUid, storeIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_PAY_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_PAY_SUCCESS,response));
     }
 
 
@@ -59,7 +58,7 @@ public class OrdersController {
         @RequestParam Long ordersIdx) throws BaseException, IamportResponseException, IOException{
 
         ordersService.cancelOrders(customUserDetails, ordersIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_CANCEL_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_CANCEL_SUCCESS));
     }
 
     // 주문 확정
@@ -70,7 +69,7 @@ public class OrdersController {
         @RequestParam Long ordersIdx) throws BaseException {
 
         ordersService.completeOrders(customUserDetails, storeIdx, ordersIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_COMPLETE_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_COMPLETE_SUCCESS));
     }
 
     // 고객 주문 조회
@@ -80,7 +79,7 @@ public class OrdersController {
         @RequestParam Long ordersIdx )throws BaseException {
 
         OrdersDto.SearchOrdersRes response = ordersService.searchOrdersAsCustomer(customUserDetails, ordersIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_SEARCH_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_SEARCH_SUCCESS,response));
     }
 
     // 고객 주문 목록 조회
@@ -91,7 +90,7 @@ public class OrdersController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
 
         Page<OrdersDto.SearchOrdersRes> response = ordersService.searchAllOrdersAsCustomer(customUserDetails, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_SEARCH_ALL_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_SEARCH_ALL_SUCCESS,response));
     }
 
     // 기업 고객 주문 조회
@@ -102,7 +101,7 @@ public class OrdersController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
 
         OrdersDto.SearchOrdersRes response = ordersService.searchOrdersAsCompany(customUserDetails, storeIdx, ordersIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_SEARCH_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_SEARCH_SUCCESS, response));
     }
 
     // 기업 고객 주문 목록 조회
@@ -114,7 +113,7 @@ public class OrdersController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails )throws BaseException {
 
         Page<OrdersDto.SearchOrdersRes> response = ordersService.searchAllOrdersAsCompany(customUserDetails, storeIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.ORDERS_SEARCH_ALL_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_SEARCH_ALL_SUCCESS,response));
     }
 
 }

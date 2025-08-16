@@ -1,9 +1,8 @@
 package com.fiiiiive.zippop.settlement.service;
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.orders.model.dto.OrdersDto;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.settlement.model.dto.SettlementDto;
 import com.fiiiiive.zippop.settlement.model.entity.Settlement;
 import com.fiiiiive.zippop.settlement.repository.SettlementRepository;
@@ -31,16 +30,16 @@ public class SettlementService {
 
         // 스토어 조회(storeIdx)
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.SETTLEMENT_SEARCH_FAIL_NOT_FOUND_STORE)
+                () -> new BaseException(BaseMessage.SETTLEMENT_SEARCH_FAIL_NOT_FOUND_STORE)
         );
 
         // 스토어 소유 조회
-        if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseResponseMessage.SETTLEMENT_SEARCH_FAIL_INVALID_MEMBER);
+        if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseMessage.SETTLEMENT_SEARCH_FAIL_INVALID_MEMBER);
 
         // 스토어 페이지 조회(storeIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Settlement> settlementPage = settlementRepository.findAllByStoreIdx(storeIdx, pageable).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.SETTLEMENT_SEARCH_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.SETTLEMENT_SEARCH_FAIL_NOT_FOUND)
         );
 
         // DTO 반환

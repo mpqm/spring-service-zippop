@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.global.security.filter;
-import com.fiiiiive.zippop.global.security.CustomUserDetailService;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.global.utils.JwtUtil;
+import com.fiiiiive.zippop.global.service.JwtService;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetailService;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
@@ -20,12 +20,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    private final JwtUtil jwtUtil;
+
+    private final JwtService jwtService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final CustomUserDetailService customUserDetailService;
 
@@ -49,16 +49,16 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
         // Access Token 만료 여부 확인
-        if (accessToken == null || jwtUtil.isExpired(accessToken)) {
+        if (accessToken == null || jwtService.isExpired(accessToken)) {
             // Refresh Token이 존재하고 유효한 경우(저장된 Refresh Token과 일치하면) Access Token과 Refresh Token 재발급
-            if (refreshToken == null || jwtUtil.isExpired(refreshToken) || !validateRefreshToken(refreshToken)) {
+            if (refreshToken == null || jwtService.isExpired(refreshToken) || !validateRefreshToken(refreshToken)) {
                 filterChain.doFilter(request, response);
                 return;
             }
-            String userId = jwtUtil.getUserId(refreshToken);
+            String userId = jwtService.getUserId(refreshToken);
             CustomUserDetails userDetails = (CustomUserDetails) customUserDetailService.loadUserByUsername(userId);
-            String newAccessToken = jwtUtil.createAccessToken(userDetails.getIdx(), userDetails.getEmail(), userDetails.getRole(), userDetails.getUserId());
-            String newRefreshToken = jwtUtil.createRefreshToken(userDetails.getUserId());
+            String newAccessToken = jwtService.createAccessToken(userDetails.getIdx(), userDetails.getEmail(), userDetails.getRole(), userDetails.getUserId());
+            String newRefreshToken = jwtService.createRefreshToken(userDetails.getUserId());
             redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken);
             setTokenCookie(response, "ATOKEN", newAccessToken);
             setTokenCookie(response, "RTOKEN", newRefreshToken);
@@ -68,10 +68,10 @@ public class JwtFilter extends OncePerRequestFilter {
         // Access Token이 유효한 경우
         } else {
             try {
-                Long idx = jwtUtil.getIdx(accessToken);
-                String email = jwtUtil.getUsername(accessToken);
-                String role = jwtUtil.getRole(accessToken);
-                String userId = jwtUtil.getUserId(accessToken);
+                Long idx = jwtService.getIdx(accessToken);
+                String email = jwtService.getUsername(accessToken);
+                String role = jwtService.getRole(accessToken);
+                String userId = jwtService.getUserId(accessToken);
                 CustomUserDetails customUserDetails = CustomUserDetails.builder()
                         .idx(idx)
                         .email(email)
@@ -98,7 +98,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     // Refresh Token 검증
     private boolean validateRefreshToken(String refreshToken) {
-        String storedRefreshToken = (String) redisTemplate.opsForValue().get("refreshToken:" + jwtUtil.getUserId(refreshToken));
+        String storedRefreshToken = (String) redisTemplate.opsForValue().get("refreshToken:" + jwtService.getUserId(refreshToken));
         return storedRefreshToken != null && storedRefreshToken.equals(refreshToken);
     }
+
 }

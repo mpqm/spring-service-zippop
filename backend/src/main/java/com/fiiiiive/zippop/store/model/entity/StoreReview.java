@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.store.model.entity;
 
 import com.fiiiiive.zippop.auth.model.entity.Customer;
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.store.model.dto.StoreDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;

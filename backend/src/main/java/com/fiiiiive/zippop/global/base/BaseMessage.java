@@ -1,9 +1,10 @@
-package com.fiiiiive.zippop.global.common.responses;
+package com.fiiiiive.zippop.global.base;
 
 import lombok.Getter;
 
 @Getter
-public enum BaseResponseMessage {
+public enum BaseMessage {
+
     // 200~500 Internal
     REQUEST_SUCCESS(true, 200, "요청이 정상적으로 처리되었습니다"),
     REQUEST_FAIL(false, 300, "요청을 실패했습니다."),
@@ -19,9 +20,10 @@ public enum BaseResponseMessage {
     AUTH_FAIL(false, 310, "사용자 인증에 실패하였습니다."),
     EMAIL_SEND_FAIL(false, 311, "이메일 전송에 실패했습니다."),
     UNPARSE_JSON(false, 312, "json 형식을 매핑할 수 없습니다."),
-    INTERNAL_SERVER_ERROR(false, 500, "내부 서버 오류가 발생해서 처리할 수 없습니다."),
     IAMPORT_ERROR(false,  314,"PG 사에 오류가 발생했습니다. 관리자에게 문의해주세요."),
     VALIDATION_ERROR(false, 315, "입력값이 잘못되었습니다."),
+    INACTIVE_MEMBER(false, 316, "비활성화된 계정입니다."),
+    INTERNAL_SERVER_ERROR(false, 500, "내부 서버 오류가 발생해서 처리할 수 없습니다."),
     // REDIS 예외처리 9000
     CACHE_FAIL_NOT_FOUND(false, 999, "예약을 하지 않은 사용자입니다."),
 
@@ -168,7 +170,6 @@ public enum BaseResponseMessage {
     ORDERS_SEARCH_ALL_FAIL_NOT_FOUND_STORE(false, 6027, "팝업 스토어를 찾을 수 없습니다"),
     ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER(false, 6028, "해당 거래내역에 접근 권한이 없습니다."),
 
-    // ========================================================================================================================
     // 팝업 예약 7000
     // 팝업 예약 생성
     RESERVE_REGISTER_SUCCESS(true, 7000, "예약 등록에 성공했습니다."),
@@ -199,14 +200,13 @@ public enum BaseResponseMessage {
     RESERVE_DELETE_FAIL_INVALID_MEMBER(false, 7016, "해당 팝업 스토어의 소유자가 아닙니다."),
     RESERVE_DELETE_FAIL_NOT_FOUND(false, 7017, "해당 예약을 찾을 수 없습니다."),
     RESERVE_DELETE_FAIL_END_TIME(false, 7018, "종료된 팝업 예약은 삭제할 수 없습니다."),
-    // ========================================================================================================================
+
     // 팝업 스토어 정산 8000
     SETTLEMENT_SEARCH_SUCCESS(true, 8000, "팝업 스토어 정산 내역을 조회했습니다."),
     SETTLEMENT_SEARCH_FAIL_NOT_FOUND(false, 8001, "팝업 스토어 정산 내역을 찾을 수 없습니다."),
     SETTLEMENT_SEARCH_FAIL_NOT_FOUND_STORE(false, 8002, "팝업 스토어 정산 내역을 찾을 수 없습니다."),
     SETTLEMENT_SEARCH_FAIL_INVALID_MEMBER(false, 8003, "해당 팝업 스토어의 관리자가 아닙니다."),
 
-    // ========================================================================================================================
     // 레디스 큐 9000
     REDIS_CACHE_FAIL_NOT_FOUND(false, 999, "예약을 하지 않은 사용자입니다."),
     REDIS_CONNECTION_ERROR(false, 9000, "Redis 연결 중 오류가 발생했습니다."),
@@ -221,19 +221,18 @@ public enum BaseResponseMessage {
     REDIS_QUEUE_REMOVE_ERROR(false, 9009, "Redis 큐 값 삭제 중 오류가 발생했습니다."),
     REDIS_QUEUE_FIRST_USER_ERROR(false, 9010, "Redis 대기열 첫 사용자 작업 전환 중 오류가 발생했습니다.");
 
-    // ========================================================================================================================
     private final Boolean success;
     private final Integer code;
     private final String message;
 
-    BaseResponseMessage(Boolean success, Integer code, String message) {
+    BaseMessage(Boolean success, Integer code, String message) {
         this.success = success;
         this.code = code;
         this.message = message;
     }
 
-    public static BaseResponseMessage findByCode(Integer code) {
-        for (BaseResponseMessage message : values()) { if (message.getCode().equals(code)) { return message; }}
+    public static BaseMessage findByCode(Integer code) {
+        for (BaseMessage message : values()) { if (message.getCode().equals(code)) { return message; }}
         return null;
     }
 

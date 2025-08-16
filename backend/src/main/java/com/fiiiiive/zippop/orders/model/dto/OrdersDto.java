@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.orders.model.dto;
 
 import com.fiiiiive.zippop.auth.model.entity.Customer;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.goods.model.dto.GoodsDto;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.orders.model.entity.Orders;

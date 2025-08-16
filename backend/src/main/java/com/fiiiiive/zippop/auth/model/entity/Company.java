@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.auth.model.entity;
 
 import com.fiiiiive.zippop.auth.model.dto.AuthDto;
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseEntity;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;

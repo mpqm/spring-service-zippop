@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.store.repository;
 
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
-import com.fiiiiive.zippop.reserve.model.entity.Reserve;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;

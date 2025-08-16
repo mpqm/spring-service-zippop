@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.global.config;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -11,7 +10,7 @@ import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAsync
-public class AsyncConfig  implements AsyncConfigurer {
+public class AsyncConfig implements AsyncConfigurer {
 
     @Override
     public Executor getAsyncExecutor() {
@@ -19,7 +18,7 @@ public class AsyncConfig  implements AsyncConfigurer {
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(5);
         executor.setQueueCapacity(10);
-        executor.setThreadNamePrefix("Async MailExecutor-");
+        executor.setThreadNamePrefix("AsyncExecutor-");
         executor.initialize();
         return executor;
     }

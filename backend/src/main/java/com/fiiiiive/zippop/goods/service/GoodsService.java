@@ -1,11 +1,10 @@
 package com.fiiiiive.zippop.goods.service;
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.dto.GoodsDto;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
-import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
 import com.fiiiiive.zippop.goods.repository.GoodsImageRepository;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.store.model.entity.Store;
@@ -31,7 +30,7 @@ public class GoodsService {
 
     // 스토어 소유권 확인
     public void checkOwnership(Store store, CustomUserDetails customUserDetails) throws BaseException {
-        if (!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseResponseMessage.STORE_OWN_FAIL_INVALID_MEMBER);
+        if (!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseMessage.STORE_OWN_FAIL_INVALID_MEMBER);
     }
 
     // 굿즈 등록
@@ -40,7 +39,7 @@ public class GoodsService {
 
         // 스토어 조회(storeIdx)
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.GOODS_REGISTER_FAIL_NOT_FOUND_STORE)
+                () -> new BaseException(BaseMessage.GOODS_REGISTER_FAIL_NOT_FOUND_STORE)
         );
         
         // 스토어 소유 확인
@@ -64,7 +63,7 @@ public class GoodsService {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.GOODS_SEARCH_FAIL_NOT_FOUND_STORE)
+                () -> new BaseException(BaseMessage.GOODS_SEARCH_FAIL_NOT_FOUND_STORE)
         );
 
         // DTO 반환
@@ -84,7 +83,7 @@ public class GoodsService {
         else goodsPage = goodsRepository.findAllByStoreIdx(storeIdx, pageable);
 
         //  예외 : 조회 결과가 없을때
-        if (goodsPage.isEmpty()) throw new BaseException(BaseResponseMessage.GOODS_SEARCH_ALL_FAIL_STORE_NOT_NOT_FOUND);
+        if (goodsPage.isEmpty()) throw new BaseException(BaseMessage.GOODS_SEARCH_ALL_FAIL_STORE_NOT_NOT_FOUND);
 
         // DTO 반환
         return Goods.toDtoPage(goodsPage);
@@ -97,7 +96,7 @@ public class GoodsService {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.GOODS_UPDATE_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.GOODS_UPDATE_FAIL_NOT_FOUND)
         );
         
         // 스토어 소유 확인
@@ -123,7 +122,7 @@ public class GoodsService {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_DELETE_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_DELETE_FAIL_NOT_FOUND)
         );
         
         // 스토어 소유 확인

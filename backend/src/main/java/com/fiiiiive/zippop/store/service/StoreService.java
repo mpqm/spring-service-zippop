@@ -2,12 +2,12 @@ package com.fiiiiive.zippop.store.service;
 
 import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.model.entity.Company;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.store.model.dto.StoreDto;
@@ -47,7 +47,7 @@ public class StoreService {
 
         // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(customUserDetails.getIdx()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_REGISTER_FAIL_UNAUTHORIZED)
+                () -> new BaseException(BaseMessage.STORE_REGISTER_FAIL_UNAUTHORIZED)
         );
 
         // Store 생성
@@ -67,7 +67,7 @@ public class StoreService {
 
         // 스토어 조회(storeIdx)
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_SEARCH_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_SEARCH_FAIL_NOT_FOUND)
         );
 
         // DTO 반환
@@ -87,7 +87,7 @@ public class StoreService {
                 : storeRepository.findAllByStatus(BaseStatus.valueOf(status), pageable);
 
         //  예외 : 조회 결과가 없을때
-        if (storePage.isEmpty()) throw new BaseException(BaseResponseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
+        if (storePage.isEmpty()) throw new BaseException(BaseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
 
         // DTO 반환
         return Store.toDtoPage(storePage);
@@ -106,7 +106,7 @@ public class StoreService {
             : storeRepository.findAllByCompanyEmail(customUserDetails.getEmail(), pageable);
 
         // 예외: 조회 결과가 없을때
-        if (storePage.isEmpty()) throw new BaseException(BaseResponseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
+        if (storePage.isEmpty()) throw new BaseException(BaseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
 
         // DTO 반환
         return Store.toDtoPage(storePage);
@@ -119,7 +119,7 @@ public class StoreService {
 
         // 팝업 스토어 조회(storeIdx, email)
         Store store = storeRepository.findByStoreIdxAndCompanyEmail(storeIdx, customUserDetails.getEmail()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_UPDATE_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_UPDATE_FAIL_NOT_FOUND)
         );
 
         // 팝업 스토어 수정
@@ -142,7 +142,7 @@ public class StoreService {
 
         // 스토어 조회(storeIdx, email)
         storeRepository.findByStoreIdxAndCompanyEmail(storeIdx, customUserDetails.getEmail()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_DELETE_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_DELETE_FAIL_NOT_FOUND)
         );
 
         // 스토어 삭제
@@ -156,11 +156,11 @@ public class StoreService {
 
         // 팝업 스토어 인덱스로 조회 없으면 예외 반환
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_LIKE_FAIL_NOT_FOUND)
         );
         // 고객 회원 인덱스로 조회 없으면 예외 반환
         Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_LIKE_FAIL_INVALID_MEMBER)
+                () -> new BaseException(BaseMessage.STORE_LIKE_FAIL_INVALID_MEMBER)
         );
 
         // 좋아요 증감
@@ -183,7 +183,7 @@ public class StoreService {
         // 스토어 페이지 조회(customerIdx)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<StoreLike> storeLikePage = storeLikeRepository.findAllByCustomerIdx(customUserDetails.getIdx(), pageable).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_LIKE_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         // DTO 반환
@@ -197,17 +197,17 @@ public class StoreService {
 
         // 결제 조회(storeIdx, customerIdx, 결제 완료 상태) / 결제한 사람만 리뷰 작성 가능
         Orders orders = ordersRepository.findByStoreIdxAndCustomerIdxAndStatus(storeIdx, customUserDetails.getIdx(), BaseStatus.valueOf("STOCK_COMPLETE"), BaseStatus.valueOf("RESERVE_COMPLETE")).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_INVALID_MEMBER)
+                () -> new BaseException(BaseMessage.STORE_REVIEW_FAIL_INVALID_MEMBER)
         );
 
         // 스토어 조회 (storeIdx)
         Store store = storeRepository.findById(storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_REVIEW_FAIL_NOT_FOUND)
         );
 
         // 스토어 리뷰 조회(storeIdx, customerIdx) / 스토어 하나당 한개의 리뷰 작성 가능
         Optional<StoreReview> storeReviewOpt = storeReviewRepository.findByStoreIdxAndCustomerIdx(storeIdx, customUserDetails.getIdx());
-        if(storeReviewOpt.isPresent()) throw new BaseException(BaseResponseMessage.STORE_REVIEW_FAIL_DUPLICATED);
+        if(storeReviewOpt.isPresent()) throw new BaseException(BaseMessage.STORE_REVIEW_FAIL_DUPLICATED);
 
 
         // 스토어 리뷰 저장
@@ -225,7 +225,7 @@ public class StoreService {
         // 리뷰 조회(storeIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByStoreIdx(storeIdx, pageable).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         // DTO 반환
@@ -239,7 +239,7 @@ public class StoreService {
         // 리뷰 목록 조회(customerIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<StoreReview> storeReviewPage = storeReviewRepository.findAllByCustomerIdx(customUserDetails.getIdx(), pageable).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.STORE_REVIEW_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         // DTO 반환

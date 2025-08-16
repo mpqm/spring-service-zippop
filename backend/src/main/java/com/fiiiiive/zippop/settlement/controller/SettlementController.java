@@ -1,13 +1,11 @@
 package com.fiiiiive.zippop.settlement.controller;
 
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponse;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.settlement.model.dto.SettlementDto;
-import com.fiiiiive.zippop.settlement.model.entity.Settlement;
-import com.fiiiiive.zippop.settlement.repository.SettlementRepository;
 import com.fiiiiive.zippop.settlement.service.SettlementService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +31,7 @@ public class SettlementController {
         @RequestParam int size) throws BaseException {
 
         Page<SettlementDto.SearchSettlementRes> response = settlementService.searchSettlement(customUserDetails,storeIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.SETTLEMENT_SEARCH_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.SETTLEMENT_SEARCH_SUCCESS, response));
 
     }
 }

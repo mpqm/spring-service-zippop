@@ -24,4 +24,5 @@ public class CustomLoginFailureHandler extends SimpleUrlAuthenticationFailureHan
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         handlerExceptionResolver.resolveException(request, response, null, exception);
     }
+
 }

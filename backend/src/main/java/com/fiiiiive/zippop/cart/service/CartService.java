@@ -7,9 +7,9 @@ import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.cart.model.entity.CartItem;
 import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +37,12 @@ public class CartService {
 
         // 고객 회원(customerIdx) 조회
         Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_MEMBER_NOT_FOUND)
+                () -> new BaseException(BaseMessage.CART_REGISTER_FAIL_MEMBER_NOT_FOUND)
         );
 
         // 굿즈(goodsIdx, storeIdx) 조회
         Goods goods = goodsRepository.findByGoodsIdxAndStoreIdx(dto.getGoodsIdx(), dto.getStoreIdx()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_GOODS_NOT_FOUND)
+                () -> new BaseException(BaseMessage.CART_REGISTER_FAIL_GOODS_NOT_FOUND)
         );
 
         // 장바구니 조회 후 없으면 장바구니 생성
@@ -52,7 +52,7 @@ public class CartService {
 
         // 장바구니 아이템이 있으면 예외 없으면 생성
         if (cartItemRepository.findByGoodsIdxAndCartIdx(goods.getIdx(), cart.getIdx()).isPresent()) {
-            throw new BaseException(BaseResponseMessage.CART_REGISTER_FAIL_ITEM_EXIST);
+            throw new BaseException(BaseMessage.CART_REGISTER_FAIL_ITEM_EXIST);
         }
         cartItemRepository.save(CartDto.CreateCartItemReq.toEntity(cart, goods));
 
@@ -64,7 +64,7 @@ public class CartService {
         // 장바구니 조회(customerIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Cart> cartPage = cartRepository.findAllByCustomerIdx(customUserDetails.getIdx(), pageable).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.CART_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.CART_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         // DTO 반환
@@ -77,7 +77,7 @@ public class CartService {
 
         // 장바구니 조회(customerIdx, storeIdx)
         Cart cart = cartRepository.findByCustomerIdxAndStoreIdx(customUserDetails.getIdx(), storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.CART_ITEM_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.CART_ITEM_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         // DTO 반환
@@ -91,7 +91,7 @@ public class CartService {
 
         // 장바구니 아이템 조회(cartItemIdx, customerIdx)
         CartItem cartItem = cartItemRepository.findByCartItemIdxAndCustomerIdx(cartItemIdx, customUserDetails.getIdx()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
         );
 
         // if: operation = false -> 장바구니 아이템 증가
@@ -99,7 +99,7 @@ public class CartService {
         if (!operation){
             cartItemRepository.incrementCount(cartItemIdx);
         } else {
-            if (cartItem.getCount() <= 0) throw new BaseException(BaseResponseMessage.CART_ITEM_COUNT_FAIL_IS_ZERO);
+            if (cartItem.getCount() <= 0) throw new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_IS_ZERO);
             cartItemRepository.decrementCount(cartItemIdx);
         }
 
@@ -120,7 +120,7 @@ public class CartService {
 
         // 장바구니 삭제(customerIdx, storeIdx)
         Cart cart = cartRepository.findByCustomerIdxAndStoreIdx(customUserDetails.getIdx(), storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.CART_DELETE_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_NOT_FOUND)
         );
         cartRepository.delete(cart);
 

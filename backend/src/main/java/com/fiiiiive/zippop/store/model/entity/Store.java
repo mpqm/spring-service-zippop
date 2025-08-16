@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.store.model.entity;
 
 import com.fiiiiive.zippop.cart.model.entity.Cart;
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseEntity;
+import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;

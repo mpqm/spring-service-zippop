@@ -1,7 +1,6 @@
-package com.fiiiiive.zippop.global.security;
+package com.fiiiiive.zippop.global.security.normal;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -83,4 +82,5 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return isEmailAuth;
     }
+
 }

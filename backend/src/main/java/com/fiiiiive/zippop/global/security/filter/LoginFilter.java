@@ -2,8 +2,8 @@ package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiiiiive.zippop.auth.model.dto.AuthDto;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.global.utils.JwtUtil;
+import com.fiiiiive.zippop.global.service.JwtService;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
@@ -26,7 +26,8 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
-    private final JwtUtil jwtUtil;
+
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -54,8 +55,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String userId = member.getUserId();
 
         // 새로운 accessToken, refreshToken 발급
-        String accessToken = jwtUtil.createAccessToken(idx, email, role, userId);
-        String refreshToken = jwtUtil.createRefreshToken(userId);
+        String accessToken = jwtService.createAccessToken(idx, email, role, userId);
+        String refreshToken = jwtService.createRefreshToken(userId);
 
         // Redis에 리프레시 토큰 저장
         redisTemplate.opsForValue().set("refreshToken:" + userId, refreshToken);
@@ -88,4 +89,5 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         );
         response.getWriter().flush();
     }
+
 }

@@ -1,9 +1,7 @@
 package com.fiiiiive.zippop.orders.model.entity;
 
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
-import com.fiiiiive.zippop.goods.model.dto.GoodsDto;
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
-import com.fiiiiive.zippop.goods.model.entity.GoodsImage;
 import com.fiiiiive.zippop.orders.model.dto.OrdersDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;

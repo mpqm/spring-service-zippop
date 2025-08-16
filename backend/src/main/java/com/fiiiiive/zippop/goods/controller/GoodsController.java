@@ -1,11 +1,11 @@
 package com.fiiiiive.zippop.goods.controller;
 
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponse;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.global.upload.S3FileUpload;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import com.fiiiiive.zippop.global.service.S3FileUploadService;
 import com.fiiiiive.zippop.goods.model.dto.*;
 import com.fiiiiive.zippop.goods.service.GoodsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +26,7 @@ import java.util.List;
 public class GoodsController {
 
     private final GoodsService goodsService;
-    private final S3FileUpload s3FileUpload;
+    private final S3FileUploadService s3FileUploadService;
 
     // 굿즈 등록
     @PostMapping("/register")
@@ -36,9 +36,9 @@ public class GoodsController {
         @RequestPart("files") MultipartFile[] files,
         @Valid @RequestPart("dto") GoodsDto.CreateGoodsReq dto) throws BaseException {
 
-        List<String> urls = s3FileUpload.multipleUpload(files);
+        List<String> urls = s3FileUploadService.multipleUpload(files);
         GoodsDto.CreateGoodsRes response = goodsService.registerGoods(customUserDetails, storeIdx, urls, dto);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.GOODS_REGISTER_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_REGISTER_SUCCESS, response));
     }
 
     // 굿즈 수정
@@ -49,9 +49,9 @@ public class GoodsController {
         @RequestPart(name = "files") MultipartFile[] files,
         @Valid @RequestPart(name = "dto") GoodsDto.UpdateGoodsReq dto) throws BaseException {
 
-        List<String> urls = s3FileUpload.multipleUpload(files);
+        List<String> urls = s3FileUploadService.multipleUpload(files);
         GoodsDto.UpdateGoodsRes response = goodsService.updateGoods(customUserDetails, goodsIdx, urls, dto);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.GOODS_UPDATE_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_UPDATE_SUCCESS,response));
     }
 
     // 굿즈 조회
@@ -60,7 +60,7 @@ public class GoodsController {
         @RequestParam Long goodsIdx) throws Exception {
 
         GoodsDto.SearchGoodsRes response = goodsService.searchGoods(goodsIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.GOODS_SEARCH_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_SEARCH_SUCCESS, response));
     }
 
     // 굿즈 목록 조회
@@ -72,7 +72,7 @@ public class GoodsController {
         @RequestParam int size) throws BaseException {
 
         Page<GoodsDto.SearchGoodsRes> response = goodsService.searchAllGoods(storeIdx, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.GOODS_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_SEARCH_ALL_SUCCESS, response));
     }
 
 
@@ -84,7 +84,7 @@ public class GoodsController {
         @RequestParam Long goodsIdx) throws BaseException {
 
         goodsService.deleteGoods(customUserDetails, goodsIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.GOODS_DELETE_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_DELETE_SUCCESS));
     }
 
 }

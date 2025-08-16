@@ -7,6 +7,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 public class KakaoUserDetails implements OAuth2UserInfo {
+
     private Map<String, Object> attributes;
 
     @Override

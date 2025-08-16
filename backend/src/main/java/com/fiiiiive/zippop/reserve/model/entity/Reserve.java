@@ -1,11 +1,10 @@
 package com.fiiiiive.zippop.reserve.model.entity;
 
 
-import com.fiiiiive.zippop.global.common.base.BaseEntity;
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.reserve.model.dto.ReserveDto;
 import com.fiiiiive.zippop.store.model.entity.Store;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.springframework.data.domain.Page;
 

@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.utils;
+package com.fiiiiive.zippop.global.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class MailUtil {
+public class MailService {
 
     private final JavaMailSender emailSender;
 

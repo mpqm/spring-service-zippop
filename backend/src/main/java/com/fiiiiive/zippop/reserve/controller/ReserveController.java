@@ -1,10 +1,10 @@
 package com.fiiiiive.zippop.reserve.controller;
 
 
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponse;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.reserve.model.dto.ReserveDto;
 import com.fiiiiive.zippop.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +37,7 @@ public class ReserveController {
         @Valid @RequestBody ReserveDto.CreateReserveReq dto) throws BaseException {
 
         ReserveDto.CreateReserveRes response = reserveService.registerReserve(customUserDetails, dto);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_REGISTER_SUCCESS,response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_REGISTER_SUCCESS,response));
     }
 
     // 예약 삭제
@@ -47,7 +47,7 @@ public class ReserveController {
         @RequestParam Long storeIdx,
         @RequestParam Long reserveIdx) throws BaseException {
         reserveService.deleteReserve(customUserDetails, storeIdx, reserveIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_DELETE_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_DELETE_SUCCESS));
     }
 
     // 예약 신청
@@ -58,7 +58,7 @@ public class ReserveController {
         @RequestParam Long reserveIdx) throws BaseException {
 
         ReserveDto.EnrollReserveRes response = reserveService.enrollReserve(res, customUserDetails, reserveIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_ENROLL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_ENROLL_SUCCESS, response));
     }
 
     // 예약 취소 (사용자)
@@ -69,13 +69,13 @@ public class ReserveController {
         @RequestParam Long reserveIdx) throws BaseException {
 
         String response = reserveService.cancelReserve(res, customUserDetails, reserveIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
     // 예약 인가
     @GetMapping("/access")
     public ResponseEntity<BaseResponse<Void>> access() throws BaseException {
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_ACCESS_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_ACCESS_SUCCESS));
     }
 
     // 예약 목록 조회
@@ -87,7 +87,7 @@ public class ReserveController {
         @RequestParam int size ) throws BaseException {
 
         Page<ReserveDto.SearchReserveRes> response = reserveService.searchAllReserve(storeIdx, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
     // 예약 목록 조회(기업용)
@@ -99,7 +99,7 @@ public class ReserveController {
         @RequestParam int size ) throws BaseException {
 
         Page<ReserveDto.SearchReserveRes> response = reserveService.searchAllReserveAsCompany(customUserDetails,storeIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.RESERVE_CANCEL_SUCCESS, response));
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
     // 예약 상태(소켓통신)
@@ -118,7 +118,7 @@ public class ReserveController {
 //        @RequestParam Long reserveIdx) throws BaseException {
 //
 //        String response = reserveService.status(customUserDetails, reserveIdx);
-//        return ResponseEntity.ok(new BaseResponse(BaseResponseMessage.RESERVE_SEARCH_STATUS_SUCCESS, response));
+//        return ResponseEntity.ok(new BaseResponse(BaseMessage.RESERVE_SEARCH_STATUS_SUCCESS, response));
 //    }
 
 }

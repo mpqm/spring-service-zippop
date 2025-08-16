@@ -9,7 +9,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @Configuration
-public class TaskSchedulerConfig implements SchedulingConfigurer {
+public class SchedulerConfig implements SchedulingConfigurer {
+
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(taskScheduler());
@@ -20,4 +21,5 @@ public class TaskSchedulerConfig implements SchedulingConfigurer {
     public Executor taskScheduler() {
         return Executors.newScheduledThreadPool(2);
     }
+
 }

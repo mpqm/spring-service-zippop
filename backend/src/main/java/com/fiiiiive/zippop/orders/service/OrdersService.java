@@ -3,10 +3,10 @@ package com.fiiiiive.zippop.orders.service;
 
 import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
-import com.fiiiiive.zippop.global.common.exception.BaseException;
-import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
-import com.fiiiiive.zippop.global.security.CustomUserDetails;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseStatus;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.orders.model.dto.OrdersDto;
@@ -51,9 +51,9 @@ public class OrdersService {
 
     // 고객 회원 확인 및 조회
     public Customer checkCustomer(CustomUserDetails customUserDetails) throws BaseException {
-        if (!customUserDetails.getRole().equals("ROLE_CUSTOMER")) throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_INVALID_ROLE);
+        if (!customUserDetails.getRole().equals("ROLE_CUSTOMER")) throw new BaseException(BaseMessage.ORDERS_PAY_FAIL_INVALID_ROLE);
         return customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_MEMBER)
+                () -> new BaseException(BaseMessage.ORDERS_PAY_FAIL_NOT_FOUND_MEMBER)
         );
     }
 
@@ -61,7 +61,7 @@ public class OrdersService {
     public Payment checkPaymentData(String impUid) throws BaseException, IamportResponseException, IOException {
         Payment payment = iamportClient.paymentByImpUid(impUid).getResponse();
         if (payment == null) {
-            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL);
+            throw new BaseException(BaseMessage.ORDERS_PAY_FAIL);
         }
         return payment;
     }
@@ -84,13 +84,13 @@ public class OrdersService {
 
             // 굿즈 조회(goodsIdx)
             Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
+                    () -> new BaseException(BaseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
             );
 
             // 예약 굿즈 구매 수량 확인 / 구매 항목개수가 1개 이상이면 결제 실패 후 환불
             if (purchaseGoodsAmount != 1) {
                 refund(payment);
-                throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
+                throw new BaseException(BaseMessage.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
             }
 
             // 총 구매 가격
@@ -110,13 +110,13 @@ public class OrdersService {
 
             // 굿즈 조회(goodsIdx)
             Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
+                    () -> new BaseException(BaseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
             );
 
             // 재고 굿즈 구매 수량 확인 / 구매한 항목 수가 굿즈의 남은 수량보다 크면 예외
             if (purchaseGoodsAmount > goods.getAmount()) {
                 refund(payment);
-                throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
+                throw new BaseException(BaseMessage.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
             }
 
             // 총 구매 가격
@@ -132,7 +132,7 @@ public class OrdersService {
         Integer payedPrice = payment.getAmount().intValue();
         if (!payedPrice.equals(totalPurchasePrice)) {
             refund(payment);
-            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE);
+            throw new BaseException(BaseMessage.ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE);
         }
     }
 
@@ -155,7 +155,7 @@ public class OrdersService {
         // 포인트 유효성 검사 (3000포인트 이상부터 사용 가능)
         if (usedPoint != 0 && (customer.getPoint() < 3000 || customer.getPoint() < usedPoint || totalPurchasePrice < usedPoint)) {
             refund(payment);
-            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_POINT_EXCEEDED);
+            throw new BaseException(BaseMessage.ORDERS_PAY_FAIL_POINT_EXCEEDED);
         }
         // 배송비 적용 및 최종 구매 금액 조정 및 갱신
         customer.setPoint(customer.getPoint() - usedPoint);
@@ -167,7 +167,7 @@ public class OrdersService {
     @Transactional
     public Goods adjustAmountWithLock(Long key, Integer purchaseGoodsAmount) throws BaseException {
         Goods goods = goodsRepository.findByGoodsIdx(key).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
+                () -> new BaseException(BaseMessage.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
         );
         // 수량 감소
         goods.setAmount(goods.getAmount() - purchaseGoodsAmount);
@@ -196,7 +196,7 @@ public class OrdersService {
             CancelData cancelData = new CancelData(payment.getImpUid(), true, payment.getAmount());
             iamportClient.cancelPaymentByImpUid(cancelData);
         } catch (IamportResponseException | IOException e) {
-            throw new BaseException(BaseResponseMessage.IAMPORT_ERROR);
+            throw new BaseException(BaseMessage.IAMPORT_ERROR);
         }
     }
 
@@ -205,7 +205,7 @@ public class OrdersService {
         for (String key : goodsMap.keySet()) {
             Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
             Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.ORDERS_CANCEL_FAIL_NOT_FOUND_GOODS)
+                    () -> new BaseException(BaseMessage.ORDERS_CANCEL_FAIL_NOT_FOUND_GOODS)
             );
             goods.setAmount(goods.getAmount() + purchaseGoodsAmount);
             goodsRepository.save(goods);
@@ -255,7 +255,7 @@ public class OrdersService {
             return OrdersDto.VerifyOrdersRes.builder().ordersIdx(orders.getIdx()).build();
         } catch (Exception e) {
             refund(payment);
-            throw new BaseException(BaseResponseMessage.ORDERS_PAY_FAIL);
+            throw new BaseException(BaseMessage.ORDERS_PAY_FAIL);
         }
     }
 
@@ -306,14 +306,14 @@ public class OrdersService {
 
         // 주문 정보 조회
         Orders orders = ordersRepository.findByOrdersIdxAndCustomerIdx(ordersIdx, customUserDetails.getIdx()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_CANCEL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.ORDERS_CANCEL_FAIL_NOT_FOUND)
         );
 
         // 배송 상태 확인 (배송 중인 경우 취소 불가)
-        if(Objects.equals(orders.getStatus(), BaseStatus.STOCK_DELIVERY) || Objects.equals(orders.getStatus(), BaseStatus.RESERVE_DELIVERY)) throw new BaseException(BaseResponseMessage.ORDERS_CANCEL_FAIL_IS_DELIVERY);
+        if(Objects.equals(orders.getStatus(), BaseStatus.STOCK_DELIVERY) || Objects.equals(orders.getStatus(), BaseStatus.RESERVE_DELIVERY)) throw new BaseException(BaseMessage.ORDERS_CANCEL_FAIL_IS_DELIVERY);
 
         // 이미 취소된 주문인지 확인
-        if(Objects.equals(orders.getStatus(), BaseStatus.STOCK_CANCEL) || Objects.equals(orders.getStatus(), BaseStatus.RESERVE_CANCEL)) throw new BaseException(BaseResponseMessage.ORDERS_CANCEL_FAIL_ALREADY_CANCEL);
+        if(Objects.equals(orders.getStatus(), BaseStatus.STOCK_CANCEL) || Objects.equals(orders.getStatus(), BaseStatus.RESERVE_CANCEL)) throw new BaseException(BaseMessage.ORDERS_CANCEL_FAIL_ALREADY_CANCEL);
 
         // 결제 정보 확인
         Payment payment = checkPaymentData(orders.getImpUid());
@@ -331,7 +331,7 @@ public class OrdersService {
         BaseStatus orderStatus = switch (orders.getStatus()) {
             case STOCK_READY, STOCK_COMPLETE -> BaseStatus.STOCK_CANCEL;
             case RESERVE_READY, RESERVE_COMPLETE -> BaseStatus.RESERVE_CANCEL;
-            default -> throw new BaseException(BaseResponseMessage.ORDERS_CANCEL_FAIL_IS_DELIVERY);
+            default -> throw new BaseException(BaseMessage.ORDERS_CANCEL_FAIL_IS_DELIVERY);
         };
         orders.setStatus(orderStatus);
         ordersRepository.save(orders);
@@ -348,23 +348,23 @@ public class OrdersService {
 
             // 기업 회원인 경우(배송 완료 처리)
             Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.STORE_SEARCH_FAIL_NOT_FOUND)
+                    () -> new BaseException(BaseMessage.STORE_SEARCH_FAIL_NOT_FOUND)
             );
 
             // 기업 회원 확인
-            if (!store.getCompanyEmail().equals(customUserDetails.getEmail())) throw new BaseException(BaseResponseMessage.ORDERS_COMPLETE_FAIL_INVALID_MEMBER);
+            if (!store.getCompanyEmail().equals(customUserDetails.getEmail())) throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_INVALID_MEMBER);
 
             // 주문 조회(ordersIdx, storeIdx)
             Orders orders = ordersRepository.findByOrdersIdxAndStoreIdx(ordersIdx, storeIdx).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.ORDERS_COMPLETE_FAIL_NOT_FOUND)
+                    () -> new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_NOT_FOUND)
             );
 
             // 주문 상태 변경 STOCK_DELIVERY, RESERVE_DELIVERY
             BaseStatus orderStatus = switch (orders.getStatus()) {
                 case STOCK_READY, STOCK_COMPLETE -> BaseStatus.STOCK_DELIVERY;
                 case RESERVE_READY, RESERVE_COMPLETE -> BaseStatus.RESERVE_DELIVERY;
-                case RESERVE_DELIVERY, STOCK_DELIVERY -> throw new BaseException(BaseResponseMessage.ORDERS_COMPLETE_FAIL_IS_DELIVERY);
-                default -> throw new BaseException(BaseResponseMessage.ORDERS_COMPLETE_FAIL_IS_CANCEL);
+                case RESERVE_DELIVERY, STOCK_DELIVERY -> throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_IS_DELIVERY);
+                default -> throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_IS_CANCEL);
             };
             orders.setStatus(orderStatus);
             ordersRepository.save(orders);
@@ -373,18 +373,18 @@ public class OrdersService {
 
             // 고객회원일 경우 (구매 확정 처리)
             Orders orders = ordersRepository.findByOrdersIdxAndCustomerIdx(ordersIdx, customUserDetails.getIdx()).orElseThrow(
-                    () -> new BaseException(BaseResponseMessage.ORDERS_COMPLETE_FAIL_NOT_FOUND)
+                    () -> new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_NOT_FOUND)
             );
 
             // 주문 소유 확인
-            if (!orders.getCustomer().getIdx().equals(customUserDetails.getIdx())) throw new BaseException(BaseResponseMessage.ORDERS_COMPLETE_FAIL_INVALID_MEMBER);
+            if (!orders.getCustomer().getIdx().equals(customUserDetails.getIdx())) throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_INVALID_MEMBER);
 
             // 주문 상태 변경(STOCK_COMPLETE, RESERVE_COMPLETE)
             BaseStatus orderStatus = switch (orders.getStatus()) {
                 case STOCK_READY -> BaseStatus.STOCK_COMPLETE;
                 case RESERVE_READY -> BaseStatus.RESERVE_COMPLETE;
-                case RESERVE_DELIVERY, STOCK_DELIVERY -> throw new BaseException(BaseResponseMessage.ORDERS_COMPLETE_FAIL_IS_DELIVERY);
-                default -> throw new BaseException(BaseResponseMessage.ORDERS_COMPLETE_FAIL_IS_CANCEL);
+                case RESERVE_DELIVERY, STOCK_DELIVERY -> throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_IS_DELIVERY);
+                default -> throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_IS_CANCEL);
             };
             orders.setStatus(orderStatus);
             ordersRepository.save(orders);
@@ -396,7 +396,7 @@ public class OrdersService {
 
         // 주문 조회(ordersIdx)
         Orders orders = ordersRepository.findByOrdersIdxAndCustomerIdx(ordersIdx, customUserDetails.getIdx()).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_SEARCH_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.ORDERS_SEARCH_FAIL_NOT_FOUND)
         );
 
         // Orders DTO 반환
@@ -410,7 +410,7 @@ public class OrdersService {
         // 주문 조회(customerIdx)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Orders> ordersPage = ordersRepository.findAllByCustomerIdx(customUserDetails.getIdx(), pageable).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         // Orders DTO 반환
@@ -423,14 +423,14 @@ public class OrdersService {
 
         // 스토어(storeIdx) 조회
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_SEARCH_FAIL_NOT_FOUND_STORE)
+                () -> new BaseException(BaseMessage.ORDERS_SEARCH_FAIL_NOT_FOUND_STORE)
         );
 
         // 스토어 소유 확인
-        if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))) throw new BaseException(BaseResponseMessage.ORDERS_SEARCH_FAIL_INVALID_MEMBER);
+        if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))) throw new BaseException(BaseMessage.ORDERS_SEARCH_FAIL_INVALID_MEMBER);
 
         Orders orders = ordersRepository.findByOrdersIdxAndStoreIdx(ordersIdx, storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_SEARCH_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.ORDERS_SEARCH_FAIL_NOT_FOUND)
         );
 
         return orders.toDto();
@@ -441,14 +441,14 @@ public class OrdersService {
 
         // 스토어(storeIdx) 조회
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND_STORE)
+                () -> new BaseException(BaseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND_STORE)
         );
 
         // 스토어 소유 확인
-        if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))) throw new BaseException(BaseResponseMessage.ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER);
+        if(!(store.getCompanyEmail().equals(customUserDetails.getEmail()))) throw new BaseException(BaseMessage.ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Orders> ordersPage = ordersRepository.findAllByStoreIdx(storeIdx, pageable).orElseThrow(
-                () -> new BaseException(BaseResponseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new BaseException(BaseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         // Orders DTO 반환
