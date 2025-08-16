@@ -25,7 +25,7 @@ public class MailService {
         // 2. 이메일 분류
         // isEmailAuth(0) && isInActive(0) : 이메일 인증 전 회원
         // isEmailAuth(1) && isInActive(0) : 이메일 인증 완료 회원
-        // isEmailAuth(1) && isInActive(1) : 비활성화 회원
+        // isEmailAuth(0) && isInActive(1) : 비활성화 회원
         // if : 기업회원
         //      if : 복구 이메일 전송
         //      else: 신규 회원 이메일 전송 및 이메일 인증 재전송
@@ -33,7 +33,7 @@ public class MailService {
         //      if : 복구 이메일 전송
         //      else: 신규 회원 이메일 전송 및 이메일 인증 재전송
         if(Objects.equals(role, "ROLE_COMPANY")){ // 기업회원
-            if(isEmailAuth && isInActive){
+            if(!isEmailAuth && isInActive){
                 // 복구 이메일 전송
                 message.setSubject("ZIPPOP - 기업회원계정 복구 이메일");
             } else {
@@ -41,7 +41,7 @@ public class MailService {
                 message.setSubject("ZIPPOP - 기업으로 가입하신걸 환영합니다.");
             }
         } else {
-            if(isEmailAuth && isInActive){
+            if(!isEmailAuth && isInActive){
                 message.setSubject("ZIPPOP - 고객회원계정 복구 이메일");
             } else {
                 message.setSubject("ZIPPOP - 고객으로 가입하신걸 환영합니다.");

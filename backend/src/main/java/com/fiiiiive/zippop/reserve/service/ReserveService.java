@@ -204,9 +204,6 @@ public class ReserveService {
             reservePage = reserveRepository.findAllByStoreIdx(storeIdx, BaseStatus.valueOf("STORE_START"), pageable);
         }
 
-        // 예외: Store 조회 결과 없음
-        if (reservePage.isEmpty()) throw new BaseException(BaseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND);
-
         return Reserve.toDtoPage(reservePage);
     }
 

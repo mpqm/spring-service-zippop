@@ -19,8 +19,9 @@
                     </div>
                     <div>
                         <button class="login-btn" type="submit">로그인</button>
-                        <a class="login-btn" href="/signup/customer">회원가입</a>
                         <button class="kakao-login-btn"><img src="../../assets/img/social-login-kakao.png" alt="카카오" />&nbsp;카카오 로그인 </button>
+                        <a class="login-btn" href="/signup/customer">회원가입</a>
+                        <a class="login-btn" href="/active">계정활성화</a>
                     </div>
                 </form>
             </div>
