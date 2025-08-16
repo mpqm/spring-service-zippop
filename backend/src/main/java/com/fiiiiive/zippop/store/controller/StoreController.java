@@ -1,13 +1,12 @@
 package com.fiiiiive.zippop.store.controller;
 
-import com.fiiiiive.zippop.global.common.constants.BaseStatus;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.service.StoreService;
-import com.fiiiiive.zippop.global.utils.S3FileUpload;
+import com.fiiiiive.zippop.global.upload.S3FileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

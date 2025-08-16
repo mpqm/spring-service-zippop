@@ -5,8 +5,10 @@ import com.fiiiiive.zippop.auth.service.AuthService;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponse;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
+import com.fiiiiive.zippop.global.config.FileUploadConfig;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
-import com.fiiiiive.zippop.global.utils.S3FileUpload;
+import com.fiiiiive.zippop.global.upload.FileUpload;
+import com.fiiiiive.zippop.global.upload.S3FileUpload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +28,14 @@ import java.net.URI;
 public class AuthController {
 
     private final AuthService authService;
-    private final S3FileUpload s3FileUpload;
+    private final FileUpload fileUpload;
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<Void>> signup(
         @RequestPart(name = "dto") AuthDto.SignupAuthReq dto,
         @RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
 
-        String url = s3FileUpload.upload(file);
+        String url = fileUpload.upload(file);
         Boolean response = authService.signup(dto, url);
         return ResponseEntity.ok(new BaseResponse<>(response ? BaseResponseMessage.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : BaseResponseMessage.AUTH_SIGNUP_SUCCESS));
     }
@@ -83,7 +85,7 @@ public class AuthController {
         @RequestPart(name = "dto") AuthDto.EditInfoReq dto,
         @RequestPart(name = "file", required = false) MultipartFile file) throws BaseException {
 
-        String url = s3FileUpload.upload(file);
+        String url = fileUpload.upload(file);
         authService.editInfo(customUserDetails, dto, url);
         return ResponseEntity.ok(new BaseResponse<>(BaseResponseMessage.AUTH_EDIT_INFO_SUCCESS));
     }
