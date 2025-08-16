@@ -5,6 +5,7 @@ import com.fiiiiive.zippop.auth.model.entity.Company;
 import com.fiiiiive.zippop.auth.model.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
+import com.fiiiiive.zippop.global.common.constants.BaseStatus;
 import com.fiiiiive.zippop.global.common.exception.BaseException;
 import com.fiiiiive.zippop.global.common.responses.BaseResponseMessage;
 import com.fiiiiive.zippop.global.security.CustomUserDetails;
@@ -35,7 +36,7 @@ public class AuthService {
     public Boolean signup(AuthDto.SignupAuthReq dto, String url) throws BaseException {
 
         // 시스템 역할 확인 (ROLE_CUSTOMER, ROLE_COMPANY)
-        if(Objects.equals(dto.getRole(), "ROLE_CUSTOMER")){
+        if(dto.getRole() == BaseStatus.ROLE_CUSTOMER){
 
             // 기업 회원으로 가입한 이메일로 고객 회원 가입 할 수 없음
             if(companyRepository.findByCompanyEmail(dto.getEmail()).isPresent()) throw new BaseException(BaseResponseMessage.AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY);
@@ -106,7 +107,7 @@ public class AuthService {
         String storeUuid = redisUtil.getEmailVerifyUuid(email);
 
         // Redis에 저장된 값이 없거나 전달 받은 uuid와 다르면 이메일 인증 실패 리다이렉트 URL 반환
-        if (storeUuid == null || !storeUuid.equals(inputUuid))  return "https://d3iaa8b0a37h7p.cloudfront.net/login?error=true";
+        if (storeUuid == null || !storeUuid.equals(inputUuid))  return "http://localhost:8081/login?error=true";
 
         // 시스템 역할 확인 (ROLE_CUSTOMER, ROLE_COMPANY)
         if(Objects.equals(role, "ROLE_CUSTOMER")){
@@ -136,7 +137,7 @@ public class AuthService {
 
         // 인증 성공 후 Redis 에서 해당 이메일 관련 UUID 삭제 후 성공 리다이렉트 URL 반환
         redisUtil.deleteEmailVerifyUuid(email);
-        return "https://d3iaa8b0a37h7p.cloudfront.net/login?success=true";
+        return "http://localhost:8081/login?success=true";
 
     }
 

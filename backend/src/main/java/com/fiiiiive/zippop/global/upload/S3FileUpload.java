@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.utils;
+package com.fiiiiive.zippop.global.upload;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -13,13 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
-@Service
+@Service("s3FileUpload")
 @RequiredArgsConstructor
-public class S3FileUpload  {
-    @Value("${cloud.aws.s3.bucket}")
+public class S3FileUpload implements FileUpload {
+    @Value("${file-upload.s3.bucket}")
     private String bucketName;
     private final AmazonS3 amazonS3;
 
