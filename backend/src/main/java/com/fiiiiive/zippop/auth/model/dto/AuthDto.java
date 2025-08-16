@@ -94,6 +94,8 @@ public class AuthDto {
     // 회원 정보 수정 요청 DTO
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class EditInfoReq {
         private String name;
         private String crn;
@@ -105,6 +107,8 @@ public class AuthDto {
     // PW 수정 요청 DTO
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class EditPasswordReq {
         private String originPassword;
         private String newPassword;
@@ -113,15 +117,31 @@ public class AuthDto {
     // PW 찾기 요청 DTO
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class FindPasswordReq {
-        String userId;
+        private String userId;
     }
 
     // ID 찾기 요청 DTO
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class FindUserIdReq {
-        String email;
+        private String email;
+    }
+
+    // 계정 활성화 요청 DTO
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ActiveReq {
+        @NotBlank(message = "역할(role)은 필수 입력 항목입니다.")
+        @Pattern(regexp = "^(ROLE_CUSTOMER|ROLE_COMPANY)$", message = "역할(role)은 ROLE_CUSTOMER 또는 ROLE_COMPANY이어야 합니다.")
+        private BaseStatus role;
+        private String email;
     }
 
     // 유저 정보 응답 DTO

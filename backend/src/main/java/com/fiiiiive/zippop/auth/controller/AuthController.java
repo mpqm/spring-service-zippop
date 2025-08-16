@@ -58,6 +58,15 @@ public class AuthController {
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_INACTIVE_SUCCESS));
     }
 
+    // 계정 활성화
+    @PostMapping("/active")
+    public ResponseEntity<BaseResponse<Void>> active(
+            @RequestBody AuthDto.ActiveReq dto) throws BaseException {
+
+        authService.active(dto);
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_ACTIVE_SUCCESS));
+    }
+
     // 계정 ID 찾기
     @PostMapping("/find-id")
     public ResponseEntity<BaseResponse<Void>> findId(

@@ -14,8 +14,10 @@
         <a :class="{ 'nav-link': true, active: isActive('/mypage/customer/cart') }"
           href="/mypage/customer/cart">장바구니</a>
         <div class="user-info" @click="toggleDropdown">
-          <img src="../../assets/img/customer.png" alt="Customer Icon" />
-          <span>{{ userInfo.name }}</span>
+          <span class="user-name">
+            {{ userInfo.name }}
+            <img class="role-icon" src="../../assets/img/customer.png" alt="Customer Icon" />
+          </span>
           <img class="profile-img" :src="userInfo.profileImageUrl" />
           <img src="../../assets/img/drop-down.png" />
           <div class="dropdown" v-if="isDropdownVisible">
@@ -27,8 +29,10 @@
       <!-- 기업용 -->
       <div class="right-section" v-if="userStatus && userInfo.role === 'ROLE_COMPANY'">
         <div class="user-info" @click="toggleDropdown">
-          <img class="company-img" src="../../assets/img/company.png" alt="Company Icon" />
-          <span>{{ userInfo.name }}</span>
+          <span class="user-name">
+            {{ userInfo.name }}
+            <img class="role-icon" src="../../assets/img/company.png" alt="Company Icon" />
+          </span>
           <img class="profile-img" :src="userInfo.profileImageUrl" />
           <img src="../../assets/img/drop-down.png" />
           <div class="dropdown" v-if="isDropdownVisible">
@@ -223,5 +227,20 @@ router.afterEach((to) => {
   background-color: #00c7ae;
   color: #fff;
   border-radius: 0.25rem;
+}
+
+.user-name {
+  position: relative;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+}
+
+.role-icon {
+  position: absolute;
+  top: -6px;    /* 이름 위쪽에 조그맣게 표시 */
+  right: -16px; /* 이름 끝에서 살짝 오른쪽 */
+  width: 14px;
+  height: 14px;
 }
 </style>

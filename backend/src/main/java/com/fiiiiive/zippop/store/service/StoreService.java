@@ -86,10 +86,7 @@ public class StoreService {
                 ? storeRepository.findAllByKeywordAndStatus(keyword, BaseStatus.valueOf(status), pageable)
                 : storeRepository.findAllByStatus(BaseStatus.valueOf(status), pageable);
 
-        //  예외 : 조회 결과가 없을때
-        if (storePage.isEmpty()) throw new BaseException(BaseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
-
-        // DTO 반환
+        // DTO 반환 (데이터가 없어도 빈 페이지 반환)
         return Store.toDtoPage(storePage);
 
     }
@@ -105,10 +102,7 @@ public class StoreService {
             ? storeRepository.findAllByKeywordAndCompanyEmail(keyword, customUserDetails.getEmail(), pageable)
             : storeRepository.findAllByCompanyEmail(customUserDetails.getEmail(), pageable);
 
-        // 예외: 조회 결과가 없을때
-        if (storePage.isEmpty()) throw new BaseException(BaseMessage.STORE_SEARCH_ALL_FAIL_NOT_FOUND);
-
-        // DTO 반환
+        // DTO 반환 (데이터가 없어도 빈 페이지 반환)
         return Store.toDtoPage(storePage);
 
     }

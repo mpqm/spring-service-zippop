@@ -113,7 +113,7 @@ export const useAuthStore = defineStore("auth", {
             try {
                 const res = await axios.post(
                     `${backend}/auth/find-id`, req,
-                    { withCredentials: true }
+                    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
                 );
                 return res.data
             } catch (error) {
@@ -126,7 +126,7 @@ export const useAuthStore = defineStore("auth", {
             try {
                 const res = await axios.post(
                     `${backend}/auth/find-password`, req,
-                    { withCredentials: true }
+                    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
                 );
                 return res.data
             } catch (error) {
@@ -134,7 +134,7 @@ export const useAuthStore = defineStore("auth", {
             }
         },
 
-        // 비밀번호 찾기
+        // 계정 비활성화
         async inActive () {
             try {
                 const res = await axios.get(
@@ -152,5 +152,18 @@ export const useAuthStore = defineStore("auth", {
                 return error.response.data
             }
         },
+
+        // 계정 활성화
+        async active(req) {
+            try {
+                const res = await axios.post(
+                    `${backend}/auth/active`, req,
+                    { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
+                );
+                return res.data
+            } catch (error) {
+                return error.response.data
+            }
+        }
     },
 });

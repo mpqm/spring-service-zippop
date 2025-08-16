@@ -4,6 +4,7 @@ import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import com.fiiiiive.zippop.global.service.FileUploadService;
 import com.fiiiiive.zippop.store.model.dto.*;
 import com.fiiiiive.zippop.store.service.StoreService;
 import com.fiiiiive.zippop.global.service.S3FileUploadService;
@@ -26,7 +27,7 @@ import java.util.List;
 public class StoreController {
 
     private final StoreService storeService;
-    private final S3FileUploadService s3FileUploadService;
+    private final FileUploadService fileUploadService;
 
     // 스토어 등록
     @PostMapping("/register")
@@ -35,7 +36,7 @@ public class StoreController {
         @RequestPart(name = "files", required = false) MultipartFile[] files,
         @Valid @RequestPart(name = "dto") StoreDto.CreateStoreReq dto) throws BaseException {
 
-        List<String> urls = s3FileUploadService.multipleUpload(files);
+        List<String> urls = fileUploadService.multipleUpload(files);
         StoreDto.CreateStoreRes response = storeService.registerStore(customUserDetails, dto, urls);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_REGISTER_SUCCESS, response));
     }
@@ -48,7 +49,7 @@ public class StoreController {
         @RequestPart(name = "files", required = false) MultipartFile[] files,
         @Valid @RequestPart(name = "dto") StoreDto.UpdateStoreReq dto) throws BaseException {
 
-        List<String> urls = s3FileUploadService.multipleUpload(files);
+        List<String> urls = fileUploadService.multipleUpload(files);
         StoreDto.UpdateStoreRes response = storeService.updateStore(customUserDetails, storeIdx, dto, urls);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_UPDATE_SUCCESS,response));
     }

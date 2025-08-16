@@ -34,29 +34,33 @@ public enum BaseMessage {
     AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_CUSTOMER(false, 2002, "이미 고객 회원으로 가입된 계정입니다. 고객 회원은 기업 회원으로 회원가입 할 수 없습니다."),
     AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY(false, 2003, "이미 기업 회원으로 가입된 계정입니다. 기업 회원은 고객 회원으로 회원가입할 수 없습니다."),
     AUTH_SIGNUP_FAIL_ALREADY_EXIST(false, 2004, "이미 회원가입한 계정입니다."),
+
     // 이메일 인증
-    AUTH_VERIFY_FAIL(false, 2004, "이메일 인증에 실패했습니다."),
+    AUTH_VERIFY_FAIL(false, 2005, "이메일 인증에 실패했습니다."),
     // 계정 비/활성화
-    AUTH_INACTIVE_SUCCESS(true, 2005, "계정 비활성화에 성공했습니다."),
-    AUTH_INACTIVE_FAIL(false, 2006, "계정 비활성화에 실패했습니다."),
+    AUTH_INACTIVE_SUCCESS(true, 2006, "계정 비활성화에 성공했습니다."),
+    AUTH_INACTIVE_FAIL(false, 2007, "계정 비활성화에 실패했습니다."),
+    AUTH_ACTIVE_SUCCESS(true, 2008, "계정 복구 이메일을 전송했습니다. 이메일을 확인해주세요"),
+    AUTH_ACTIVE_FAIL(false, 2009, "계정 활성화에 실패했습니다."),
+    AUTH_ACTIVE_FAIL_NOT_INACTIVE(false, 2010, "활성화된 계정입니다. 계정정보는 ID/PW 찾기를 이용하세요"),
     // 아이디 찾기
-    AUTH_FIND_ID_SUCCESS(true, 2007, "이메일로 아이디 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
-    AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY(false, 2008, "이메일 인증이 되지않은 사용자는 아이디 찾기를 진행할 수 없습니다."),
+    AUTH_FIND_ID_SUCCESS(true, 2010, "이메일로 아이디 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
+    AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY(false, 2011, "이메일 인증이 되지않은 사용자는 아이디 찾기를 진행할 수 없습니다."),
     // 비밀번호 찾기
-    AUTH_FIND_PASSWORD_SUCCESS(true, 2009, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
-    AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY(false, 2010, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
+    AUTH_FIND_PASSWORD_SUCCESS(true, 2012, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
+    AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY(false, 2013, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
     // 계정 정보 변경
-    AUTH_EDIT_INFO_SUCCESS(true, 2011, "계정 프로필 정보 변경에 성공했습니다."),
-    AUTH_EDIT_INFO_FAIL(false, 2012, "계정 프로필 정보 변경에 실패했습니다."),
-    AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER(false, 2012, "사용자를 찾을 수 없습니다."),
+    AUTH_EDIT_INFO_SUCCESS(true, 2014, "계정 프로필 정보 변경에 성공했습니다."),
+    AUTH_EDIT_INFO_FAIL(false, 2015, "계정 프로필 정보 변경에 실패했습니다."),
+    AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER(false, 2016, "사용자를 찾을 수 없습니다."),
     // 계정 패스워드 수정
-    AUTH_EDIT_PASSWORD_SUCCESS(true, 2013, "계정 비밀번호 변경에 성공했습니다."),
-    AUTH_EDIT_PASSWORD_FAIL(false, 2014, "계정 비밀번호 변경에 실패했습니다."),
-    AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER(false, 2015, "사용자를 찾을 수 없습니다."),
-    AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH(false, 2016, "계정 비밃번호가 틀립니다."),
-    // 프로필 정보 2070
-    AUTH_GET_PROFILE_SUCCESS(true,2016,"프로필 조회에 성공했습니다"),
-    AUTH_GET_PROFILE_FAIL(false,2017,"프로필 조회에 실패했습니다"),
+    AUTH_EDIT_PASSWORD_SUCCESS(true, 2017, "계정 비밀번호 변경에 성공했습니다."),
+    AUTH_EDIT_PASSWORD_FAIL(false, 2018, "계정 비밀번호 변경에 실패했습니다."),
+    AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER(false, 2019, "사용자를 찾을 수 없습니다."),
+    AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH(false, 2020, "계정 비밀번호가 틀립니다."),
+    // 프로필 정보
+    AUTH_GET_PROFILE_SUCCESS(true, 2021,"프로필 조회에 성공했습니다"),
+    AUTH_GET_PROFILE_FAIL(false, 2022,"프로필 조회에 실패했습니다"),
 
     // 장바구니 3000
     // 장바구니 등록

@@ -173,6 +173,48 @@ public class AuthService {
 
     }
 
+    // 계정 활성화
+    @Transactional
+    public void active(AuthDto.ActiveReq dto) throws BaseException {
+
+        // 시스템 역할 확인 (ROLE_CUSTOMER, ROLE_COMPANY)
+        if(dto.getRole() == BaseStatus.ROLE_CUSTOMER){
+
+            // 고객 회원(email) 조회
+            Optional<Customer> customerOpt = customerRepository.findByCustomerEmail(dto.getEmail());
+            Customer customer = null;
+
+            // if: 조회 결과가 있고, IsInactive true면 계정 복구 이메일 인증 재전송
+            if(customerOpt.isPresent()) {
+                customer = customerOpt.get();
+                if (customerOpt.get().getIsInActive()) {
+                    sendVerifyEmail(customer.getEmail(), customer.getRole().name(), false, true);
+                } else {
+                    throw new BaseException(BaseMessage.AUTH_ACTIVE_FAIL_NOT_INACTIVE);
+                }
+            } else {
+                throw new BaseException(BaseMessage.AUTH_ACTIVE_FAIL);
+            }
+        } else {
+            // 기업 회원(email) 조회
+            Optional<Company> companyOpt = companyRepository.findByCompanyEmail(dto.getEmail());
+            Company company;
+
+            // if: 조회 결과가 있고, IsInactive true면 계정 복구 이메일 인증 재전송
+            if(companyOpt.isPresent()){
+                company = companyOpt.get();
+                if(companyOpt.get().getIsInActive()){
+                    sendVerifyEmail(company.getEmail(), company.getRole().name(), false, true);
+                } else {
+                    throw new BaseException(BaseMessage.AUTH_ACTIVE_FAIL_NOT_INACTIVE);
+                }
+            } else {
+                throw new BaseException(BaseMessage.AUTH_ACTIVE_FAIL);
+            }
+        }
+
+    }
+
     // 계정 ID 찾기
     public void findId(AuthDto.FindUserIdReq dto) throws BaseException {
 

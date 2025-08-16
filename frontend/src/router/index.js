@@ -39,6 +39,7 @@ import ReserveOrdersPage from "@/pages/reserve/ReserveOrdersPage.vue";
 import ReserveCartPage from "@/pages/reserve/ReserveCartPage.vue";
 import SettlementManagePage1 from "@/pages/mypage/company/SettlementManagePage1.vue";
 import SettlementManagePage2 from "@/pages/mypage/company/SettlementManagePage2.vue";
+import ActivePage from "@/pages/auth/ActivePage.vue";
 import { useCartStore } from "@/stores/useCartStore";
 import { useReserveStore } from "@/stores/useReserveStore";
 
@@ -50,6 +51,7 @@ const router = createRouter({
     { path: '/find-idpw', component: FindIdPwPage }, // 아이디/비밀번호 찾기
     { path: "/signup/customer", component: CustomerSignupPage }, // 고객 회원가입
     { path: "/signup/company", component: CompanySignupPage }, // 기업 회원가입
+    { path: "/active", component: ActivePage }, // 계정 활성화
 
     // 팝업 스토어
     { path: "/", component: StoreMainPage }, // 팝업 스토어 메인 페이지
