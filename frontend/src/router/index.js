@@ -25,8 +25,8 @@ import GoodsDetailPage2 from "@/pages/goods/GoodsDetail2Page.vue";
 import CustomerOrdersManagePage from "@/pages/mypage/customer/CustomerOrdersManagePage.vue";
 import OrdersPage from "@/pages/orders/OrdersPage.vue";
 import OrdersDetailPage from "@/pages/orders/OrdersDetailPage.vue";
-import CompanyOrdersManagePage1 from "@/pages/mypage/company/CompanyOrdersManagePage1.vue";
-import CompanyOrdersManagePage2 from "@/pages/mypage/company/CompanyOrdersManagePage2.vue";
+import OrdersManagePage1 from "@/pages/mypage/company/OrdersManagePage1.vue";
+import OrdersManagePage2 from "@/pages/mypage/company/OrdersManagePage2.vue";
 import CartManagement2Page from "@/pages/mypage/customer/CartManagement2Page.vue";
 import CartManagement1Page from "@/pages/mypage/customer/CartManagement1Page.vue";
 import ReserveManagePage1 from "@/pages/mypage/company/ReserveManagePage1.vue";
@@ -88,8 +88,8 @@ const router = createRouter({
         { path: 'goods/:storeIdx/register', component: GoodsRegisterPage }, // 굿즈 관리 등록 페이지
         { path: 'goods/:storeIdx/update/:goodsIdx', component: GoodsUpdatePage }, // 굿즈 관리 수정 페이지
 
-        { path: 'orders', component: CompanyOrdersManagePage1, }, // 주문 관리 메인 페이지(스토어 목록)
-        { path: 'orders/:storeIdx', component: CompanyOrdersManagePage2, }, // 주문 관리 상세 페이지
+        { path: 'orders', component: OrdersManagePage1, }, // 주문 관리 메인 페이지(스토어 목록)
+        { path: 'orders/:storeIdx', component: OrdersManagePage2, }, // 주문 관리 상세 페이지
 
         { path: 'reserve', component: ReserveManagePage1, }, // 예약 관리 메인 페이지(스토어 목록)
         { path: 'reserve/:storeIdx', component: ReserveManagePage2, }, // 예약 관리 메인 페이지

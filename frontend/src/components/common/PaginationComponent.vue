@@ -1,13 +1,13 @@
 <template>
-  <div class="pagination">
+  <div v-if="props.totalPages > 0" class="pagination">
     <!-- 그룹 이동 버튼 -->
     <button v-if="!hideBtns && props.totalPages > pageGroupSize && currentGroup > 0" class="pagination-group-btn" @click="prevGroup"> 
-      &lt;&lt; 
+      <Icon icon="ic:outline-first-page" width="16px" height="16px" />
     </button>
 
     <!-- 이전 페이지 버튼 -->
     <button v-if="!hideBtns" class="pagination-move-btn" @click="changePage(currentPage - 1)" :disabled="currentPage === 0"> 
-      &lt; 
+      <Icon icon="ic:round-navigate-before" width="16px" height="16px" />
     </button>
 
     <!-- 페이지 버튼 -->
@@ -19,12 +19,12 @@
 
     <!-- 다음 페이지 버튼 -->
     <button v-if="!hideBtns" class="pagination-move-btn" @click="changePage(currentPage + 1)" :disabled="currentPage === props.totalPages - 1">
-      &gt;
+      <Icon icon="ic:round-navigate-next" width="16px" height="16px" />
     </button>
 
     <!-- 그룹 이동 버튼 -->
     <button v-if="!hideBtns && props.totalPages > pageGroupSize && (currentGroup + 1) * pageGroupSize < props.totalPages" class="pagination-group-btn" @click="nextGroup">
-      &gt;&gt;
+      <Icon icon="ic:outline-last-page" width="16px" height="16px" />
     </button>
   </div>
 </template>
@@ -97,12 +97,20 @@ const groupPages = computed(() => {
 .pagination-btn,
 .pagination-move-btn,
 .pagination-group-btn {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   color: black;
   border: 1px solid #ddd;
   background-color: white;
   cursor: pointer;
   border-radius: 5px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
 }
 
 .pagination-move-btn,

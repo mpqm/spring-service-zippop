@@ -1,15 +1,19 @@
 <template>
   <div>
-    <div class="store-control">
+    <div class="two-section-container">
       <div class="search-container">
         <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-        <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../../assets/img/search-none.png" alt=""></button>
-        <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../../assets/img/reload-none.png" alt=""></button>
+        <button class="default-btn" @click="searchAllByKeyword">
+          <Icon icon="ic:search" width="20px" height="20px" />팝업 검색
+        </button>
+        <button class="default-btn" @click="searchAll(0)">
+          <Icon icon="ic:baseline-refresh" width="20px" height="20px" /> 
+        </button>
       </div>
     </div>
-    <div class="store-manage-page">
-      <div class="store-list" v-if="storeList && storeList.length">
-        <StoreListComponent v-for="store in storeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
+    <div class="management-page">
+      <div v-if="storeList && storeList.length">
+        <StoreTableComponent :stores="storeList" :showControl="showControl" />
       </div>
       <div class="notice" v-else>
         <p>등록된 팝업 스토어가 없습니다.</p>
@@ -20,7 +24,7 @@
 </template>
 
 <script setup>
-import StoreListComponent from "@/components/store/StoreListComponent.vue";
+import StoreTableComponent from "@/components/store/StoreTableComponent.vue";
 import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
@@ -98,73 +102,5 @@ const changePage = async (newPage) => {
 
 </script>
 
-<style scoped>
-.store-manage-page {
-  flex-direction: row;
-  width: 65rem;
-}
-
-.notice {
-  text-align: center;
-}
-
-.store-control {
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.store-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.search-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.search-input {
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  display: flex;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  padding: 0.5rem;
-  width: 30rem;
-  box-sizing: border-box;
-  color: #323232;
-  background-color: #fff;
-}
-
-.search-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.search-btn:hover,
-.store-register-btn:hover {
-  opacity: 0.8;
-}
-
-.search-img {
-  padding: 0 1.25rem;
-}
+<style>
 </style>

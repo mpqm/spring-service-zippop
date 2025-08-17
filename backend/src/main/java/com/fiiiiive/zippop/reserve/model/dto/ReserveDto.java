@@ -17,6 +17,8 @@ public class ReserveDto {
     // 예약 생성 요청 DTO
     @Getter
     @Builder
+    @AllArgsConstructor
+    @RequiredArgsConstructor
     public static class CreateReserveReq {
         @NotNull(message = "스토어 ID는 필수 입력 항목입니다.")
         private Long storeIdx;
