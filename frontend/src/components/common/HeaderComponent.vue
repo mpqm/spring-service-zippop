@@ -10,18 +10,18 @@
       </div>
       <!-- 고객용 -->
       <div class="right-section" v-if="userStatus && userInfo.role === 'ROLE_CUSTOMER'">
-        <a :class="{ 'nav-link': true, active: isActive('/mypage/customer/like') }" href="/mypage/customer/like">좋아요</a>
-        <a :class="{ 'nav-link': true, active: isActive('/mypage/customer/cart') }"
-          href="/mypage/customer/cart">장바구니</a>
         <div class="user-info" @click="toggleDropdown">
           <span class="user-name">
             {{ userInfo.name }}
-            <img class="role-icon" src="../../assets/img/customer.png" alt="Customer Icon" />
+            <Icon icon="iconoir:user-cart" width="30px" height="30px"  style="color: #00c7ae" />
           </span>
           <img class="profile-img" :src="userInfo.profileImageUrl" />
-          <img src="../../assets/img/drop-down.png" />
           <div class="dropdown" v-if="isDropdownVisible">
-            <a class="dropdown-link" href="/mypage/customer/cart">마이페이지</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/customer/cart') }" href="/mypage/customer/cart">장바구니</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/customer/like') }" href="/mypage/customer/like">좋아요</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/customer/review') }" href="/mypage/customer/review">리뷰</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/customer/orders') }" href="/mypage/customer/orders">결재 내역</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/customer/account-edit') }" href="/mypage/customer/account-edit">계정 관리</a>
             <a class="dropdown-link" @click="logout">로그아웃</a>
           </div>
         </div>
@@ -29,14 +29,18 @@
       <!-- 기업용 -->
       <div class="right-section" v-if="userStatus && userInfo.role === 'ROLE_COMPANY'">
         <div class="user-info" @click="toggleDropdown">
-          <span class="user-name">
+          <span class="user-name"> 
             {{ userInfo.name }}
-            <img class="role-icon" src="../../assets/img/company.png" alt="Company Icon" />
+            <Icon icon="iconoir:user-badge-check" width="30px" height="30px"  style="color: #00c7ae" />
           </span>
           <img class="profile-img" :src="userInfo.profileImageUrl" />
-          <img src="../../assets/img/drop-down.png" />
           <div class="dropdown" v-if="isDropdownVisible">
-            <a class="dropdown-link" href="/mypage/company/store">관리페이지</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/company/store') }" href="/mypage/company/store">팝업 관리</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/company/goods') }" href="/mypage/company/goods">굿즈 관리</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/company/reserve') }" href="/mypage/company/reserve">예약 관리</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/company/orders') }" href="/mypage/company/orders">거래 내역</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/company/settlement') }" href="/mypage/company/settlement">정산 내역</a>
+            <a :class="{ 'dropdown-link': true, active: isActive('/mypage/company/account-edit') }" href="/mypage/company/account-edit">계정 관리</a>
             <a class="dropdown-link" @click="logout">로그아웃</a>
           </div>
         </div>
@@ -119,8 +123,8 @@ router.afterEach((to) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 3.625rem;
-  padding: 1rem;
+  height: 2.5rem;
+  padding: 0.5rem;
   width: 65rem;
   margin: 0 auto;
 }
@@ -157,13 +161,13 @@ router.afterEach((to) => {
 }
 
 .active {
-  border-bottom: 1px solid #00c7ae;
+  border-bottom: 3px solid #00c7ae;
   color: #00c7ae;
 }
 
 .logo-img {
-  width: 150px;
-  height: 45px;
+  width: 120px;
+  height: 40px;
 }
 
 .profile-img {
@@ -178,29 +182,31 @@ router.afterEach((to) => {
   align-items: center;
   gap: 5px;
   cursor: pointer;
+  vertical-align: middle;
   position: relative;
 }
 
 .dropdown {
   position: absolute;
-  right: 0;
+  right: 1;
   top: 100%;
   margin-top: 0.5rem;
-  background-color: #fff;
-  border: 1px solid #f2f2f2;
+  background-color: #ffffff;
+  border: 1px solid #00c7ae;
   border-radius: 0.25rem;
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  width: 8rem;
+  width: 9rem;
   align-content: center;
 }
 
 .dropdown-link {
   display: flex;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
   color: #000;
   text-align: left;
   background: none;
@@ -232,15 +238,14 @@ router.afterEach((to) => {
 .user-name {
   position: relative;
   font-weight: 600;
-  display: inline-flex;
-  align-items: center;
+  display: flex;          
+  align-items: center;   
+  gap: 5px;             
 }
 
 .role-icon {
   position: absolute;
-  top: -6px;    /* 이름 위쪽에 조그맣게 표시 */
-  right: -16px; /* 이름 끝에서 살짝 오른쪽 */
-  width: 14px;
-  height: 14px;
+  top: -6px;   
+  right: -16px;
 }
 </style>

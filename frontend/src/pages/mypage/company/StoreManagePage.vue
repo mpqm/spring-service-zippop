@@ -1,18 +1,25 @@
 <template>
   <div>
-    <div class="store-control">
+    <div class="two-section-container">
       <div class="search-container">
         <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-        <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../../assets/img/search-none.png" alt=""></button>
-        <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../../assets/img/reload-none.png" alt=""></button>
+        <button class="default-btn" @click="searchAllByKeyword">
+          <Icon icon="ic:search" width="20px" height="20px" />
+          팝업 검색
+        </button>
+        <button class="default-btn" @click="searchAll(0)">
+          <Icon icon="ic:baseline-refresh" width="20px" height="20px" /> 
+        </button>
       </div>
-      <router-link class="store-register-btn" to="/mypage/company/store/register">팝업스토어 등록</router-link>
+      <router-link class="default-btn" to="/mypage/company/store/register">
+        <Icon icon="iconoir:add-square" width="20px" height="20px"  style="color: #ffffff" />팝업스토어 등록
+      </router-link>
     </div>
-    <div class="store-management-page">
-      <div class="store-list" v-if="storeList && storeList.length">
-        <StoreListComponent v-for="store in storeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
+    <div class="management-page">
+      <div v-if="storeList && storeList.length">
+        <StoreTableComponent :stores="storeList" :showControl="showControl" />
       </div>
-      <div class="notice" v-else>
+      <div class="empty-string" v-else>
         <p>등록된 팝업 스토어가 없습니다.</p>
       </div>
       <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
@@ -21,10 +28,11 @@
 </template>
 
 <script setup>
-import StoreListComponent from "@/components/store/StoreListComponent.vue";
+import StoreTableComponent from "@/components/store/StoreTableComponent.vue";
 import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
+import { Icon } from '@iconify/vue';
 
 // store, router, route, toast
 const storeStore = useStoreStore();
@@ -53,13 +61,14 @@ const searchAll = async (flag) => {
     isKeywordSearch.value = false; // 일반 검색 상태로 전환
   }
   const res = await storeStore.searchAllStoreAsCompany(currentPage.value, pageSize.value);
+  
   if (res.success) {
     totalElements.value = storeStore.totalElements;
     totalPages.value = storeStore.totalPages;
     storeList.value = storeStore.storeList;
     hideBtns.value = false;
   } else {
-    storeList.value = null;
+    storeList.value = [];
     totalElements.value = 0;
     totalPages.value = 0;
     hideBtns.value = true;
@@ -79,9 +88,9 @@ const searchAllByKeyword = async () => {
     storeList.value = storeStore.storeList;
     hideBtns.value = false;
   } else {
-    storeList.value = null;
-    totalElements.value = null;
-    totalPages.value = null;
+    storeList.value = [];
+    totalElements.value = 0;
+    totalPages.value = 0;
     hideBtns.value = true;
   }
 };
@@ -100,88 +109,22 @@ const changePage = async (newPage) => {
 </script>
 
 <style scoped>
-.store-management-page {
-  flex-direction: row;
-  width: 65rem;
+.management-page {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.store-control {
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.notice {
+.empty-string {
   text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 
-.store-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.store-register-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.search-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.search-input {
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  display: flex;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  padding: 0.5rem;
-  width: 30rem;
-  box-sizing: border-box;
-  color: #323232;
-  background-color: #fff;
-}
-
-.search-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.search-btn:hover,
-.store-register-btn:hover {
-  opacity: 0.8;
-}
-
-.search-img {
-  padding: 0 1.25rem;
+.empty-string p {
+  margin: 0;
+  font-size: 16px;
 }
 </style>

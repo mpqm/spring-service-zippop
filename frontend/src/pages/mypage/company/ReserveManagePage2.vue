@@ -1,19 +1,23 @@
 <template>
   <div>
-    <div class="reserve-management-page">
-      <div class="reserve-control">
+    <div class="management-page">
+      <div class="two-section-container">
         <div>
 
         </div>
         <div class="btn-container">
-          <router-link class="register-btn" :to="`/mypage/company/reserve`">&lt;</router-link>
-          <router-link class="back-btn" :to="`/mypage/company/reserve/register/${route.params.storeIdx}`">예약 등록</router-link>
+          <router-link class="default-btn" :to="`/mypage/company/reserve`">
+            <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px"  style="color: #ffffff" />
+          </router-link>
+          <router-link class="default-btn" :to="`/mypage/company/reserve/register/${route.params.storeIdx}`">
+            <Icon icon="iconoir:add-square" width="20px" height="20px"  style="color: #ffffff" />예약 등록
+          </router-link>
         </div>
       </div>
-      <div class="reserve-list" v-if="reserveList && reserveList.length">
+      <div class="list-container" v-if="reserveList && reserveList.length">
         <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl=1 />
       </div>
-      <div class="notice" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
+      <div class="empty-string" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
       <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
@@ -68,107 +72,3 @@ const changePage = async (newPage) => {
 };
 
 </script>
-
-<style scoped>
-.reserve-management-page {
-  flex-direction: row;
-  width: 65rem;
-}
-
-.reserve-control {
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.btn-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.notice {
-  text-align: center;
-}
-
-.reserve-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.reserve-register-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.search-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.reserve-control {
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.back-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.btn-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.register-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.back-btn:hover,
-.register-btn:hover {
-  opacity: 0.8;
-}
-</style>

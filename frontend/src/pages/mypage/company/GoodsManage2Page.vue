@@ -1,18 +1,26 @@
 <template>
   <div>
-    <div class="goods-manage-page">
-      <div class="goods-control">
+    <div class="management-page">
+      <div class="two-section-container">
         <div class="search-container">
           <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-          <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../../assets/img/search-none.png" alt=""></button>
-          <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../../assets/img/reload-none.png" alt=""></button>
+          <button class="default-btn" @click="searchAllByKeyword">
+          <Icon icon="ic:search" width="20px" height="20px" />굿즈 검색
+          </button>
+          <button class="default-btn" @click="searchAll(0)">
+            <Icon icon="ic:baseline-refresh" width="20px" height="20px" /> 
+          </button>
         </div>
-        <div class="btn-container">
-          <router-link class="register-btn" :to="`/mypage/company/goods`">&lt;</router-link>
-          <router-link class="back-btn" :to="`/mypage/company/goods/${route.params.storeIdx}/register`">팝업 굿즈 등록</router-link>
+        <div class="btn-container ">
+          <router-link class="default-btn" :to="`/mypage/company/goods`">
+            <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px"  style="color: #ffffff" />
+          </router-link>
+          <router-link class="default-btn" :to="`/mypage/company/goods/${route.params.storeIdx}/register`">
+            <Icon icon="iconoir:add-square" width="20px" height="20px"  style="color: #ffffff" />팝업 굿즈 등록
+          </router-link>
         </div>
       </div>
-      <div class="goods-list" v-if="goodsList && goodsList.length">
+      <div class="list-container" v-if="goodsList && goodsList.length">
         <GoodsListComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" />
       </div>
       <div class="notice" v-else> <p>등록된 굿즈가 없습니다.</p>
@@ -102,117 +110,3 @@ const changePage = async (newPage) => {
 };
 
 </script>
-
-<style scoped>
-.goods-manage-page {
-  flex-direction: row;
-  width: 65rem;
-}
-
-.notice {
-  text-align: center;
-}
-
-.goods-control {
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.goods-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.back-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.btn-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.register-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.back-btn:hover,
-.register-btn:hover {
-  opacity: 0.8;
-}
-
-.search-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.search-input {
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  display: flex;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  padding: 0.5rem;
-  width: 30rem;
-  box-sizing: border-box;
-  color: #323232;
-  background-color: #fff;
-}
-
-.search-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.search-btn:hover,
-.goods-register-btn:hover {
-  opacity: 0.8;
-}
-
-.search-img {
-  padding: 0 1.25rem;
-}
-</style>

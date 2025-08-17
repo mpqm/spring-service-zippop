@@ -1,15 +1,19 @@
 <template>
   <div>
-    <div class="store-control">
+    <div class="two-section-container">
       <div class="search-container">
         <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-        <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../../assets/img/search-none.png" alt=""></button>
-        <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../../assets/img/reload-none.png" alt=""></button>
+        <button class="default-btn" @click="searchAllByKeyword">
+          <Icon icon="ic:search" width="20px" height="20px" />팝업 검색
+        </button>
+        <button class="default-btn" @click="searchAll(0)">
+          <Icon icon="ic:baseline-refresh" width="20px" height="20px" /> 
+        </button>
       </div>
     </div>
-    <div class="store-management-page">
-      <div class="store-list" v-if="storeList && storeList.length">
-        <StoreListComponent v-for="store in storeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
+    <div class="management-page">
+      <div v-if="storeList && storeList.length">
+        <StoreTableComponent :stores="storeList" :showControl="showControl" />
       </div>
       <div class="notice" v-else>
         <p>등록된 팝업 스토어가 없습니다.</p>
@@ -20,7 +24,7 @@
 </template>
 
 <script setup>
-import StoreListComponent from "@/components/store/StoreListComponent.vue";
+import StoreTableComponent from "@/components/store/StoreTableComponent.vue";
 import PaginationComponent from "@/components/common/PaginationComponent.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";

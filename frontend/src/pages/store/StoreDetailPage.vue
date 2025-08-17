@@ -359,7 +359,6 @@ const searchAllReserve = async () => {
   display: flex;
   column-gap: 10px;
   background-color: #fff;
-  border-radius: 8px;
   border: 1px solid #00c7ae;
   margin: 0;
   width: 65rem;
@@ -369,6 +368,7 @@ const searchAllReserve = async () => {
 .menu-list {
   display: flex;
   width: fit-content;
+  border-radius: 5px;
 }
 
 .menu-link {
@@ -391,8 +391,6 @@ const searchAllReserve = async () => {
 .goods-list-container {
   flex-direction: row;
   width: 65rem;
-  margin: 10px auto;
-  padding: 5px;
 }
 
 .review-list-container {
@@ -402,7 +400,6 @@ const searchAllReserve = async () => {
 }
 
 .goods-control {
-  padding: 5px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -471,7 +468,6 @@ const searchAllReserve = async () => {
 }
 
 .register-form {
-  padding: 5px;
   display: flex;
   flex-direction: column;
   justify-content: center;

@@ -1,12 +1,16 @@
 <template>
   <div v-if="fileUrls.length" class="image-slider">
     <div class="slider-container">
-      <button class="prev" @click="prevImage">&lt;</button>
-      <div class="images"> <img :src="fileUrls[currentIndex]" :alt="'Image ' + (currentIndex + 1)" /> </div>
-      <button class="next" @click="nextImage">&gt;</button>
+      <div class="images"> 
+        <img :src="fileUrls[currentIndex]" :alt="'Image ' + (currentIndex + 1)" /> 
+      </div>
     </div>
     <div class="indicators">
-      <span v-for="(fileUrl, index) in fileUrls" :key="index" :class="{ 'active': index === currentIndex }" class="indicator" @click="goToImage(index)"></span>
+      <button class="prev" @click="prevImage">&lt;</button>
+      <div class="indicator-dots">
+        <span v-for="(fileUrl, index) in fileUrls" :key="index" :class="{ 'active': index === currentIndex }" class="indicator" @click="goToImage(index)"></span>
+      </div>
+      <button class="next" @click="nextImage">&gt;</button>
     </div>
   </div>
 </template>
@@ -43,27 +47,52 @@ const goToImage = (index) => { currentIndex.value = index; };
 
 .slider-container {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   height: 100%;
-  position: relative;
+}
+
+.images {
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 8px;
 }
 
 .images img {
   width: 100%;
-  height: auto;
+  height: 100%; 
   object-fit: cover;
+}
+
+.indicators {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.indicator-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
 }
 
 button {
   background-color: #00c7ae;
   color: white;
-  height: 100%;
   border: none;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button:hover {
@@ -71,28 +100,26 @@ button:hover {
 }
 
 .prev {
-  position: absolute;
-  left: 0;
+  margin-right: 1rem;
 }
 
 .next {
-  position: absolute;
-  right: 0;
-}
-
-.indicators {
-  text-align: center;
-  z-index: 1;
+  margin-left: 1rem;
 }
 
 .indicator {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin: 0 5px;
+  width: 12px;
+  height: 12px;
+  margin: 0 6px;
   background-color: #ccc;
   border-radius: 50%;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.indicator:hover {
+  background-color: #999;
 }
 
 .indicator.active {

@@ -11,8 +11,10 @@ import com.fiiiiive.zippop.store.model.entity.StoreImage;
 import com.fiiiiive.zippop.store.model.entity.StoreLike;
 import com.fiiiiive.zippop.store.model.entity.StoreReview;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +24,8 @@ public class StoreDto {
     // 스토어 생성 요청 DTO
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CreateStoreReq {
         @NotBlank(message = "스토어 이름은 필수 입력 항목입니다.")
         @Size(max = 100, message = "스토어 이름은 최대 100자까지 입력 가능합니다.")

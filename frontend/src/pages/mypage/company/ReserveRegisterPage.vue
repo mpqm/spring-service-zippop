@@ -3,7 +3,7 @@
       <form class="register-form" @submit.prevent="register">
         <div>
           <label>팝업 스토어 예약 인원</label>
-          <input class="register-input" v-model="reservePeople" type="number" placeholder="팝업 스토어 예약 인원을 입력해주세요." />
+          <input class="register-input" v-model="reservePeople" type="number" min="1" placeholder="팝업 스토어 예약 인원을 입력해주세요." />
         </div>
         <div>
           <label>팝업스토어 예약 시작일</label>
@@ -40,22 +40,37 @@ import { ref } from "vue";
   const toast = useToast();
   
   // 변수(reserve)
-  const reservePeople = ref(0);
+  const reservePeople = ref(1);
   const reserveStartDate = ref("");
   const reserveStartTime = ref("");
   const reserveEndTime = ref("");
 
   // 스토어 등록
   const register = async () => {
-    const formattedStartTime = `${reserveStartDate.value}T${reserveStartTime.value}:00`;
-    const formattedEndTime = `${reserveStartDate.value}T${reserveEndTime.value}:00`;
+    // 입력 값 검증
+    if (!reserveStartDate.value || !reserveStartTime.value || !reserveEndTime.value) {
+      toast.error("모든 필드를 입력해주세요.");
+      return;
+    }
 
+    if (Number(reservePeople.value) <= 0) {
+      toast.error("예약 인원은 1명 이상이어야 합니다.");
+      return;
+    }
+
+    // 종료 시간이 시작 시간보다 늦은지 확인
+    if (reserveEndTime.value <= reserveStartTime.value) {
+      toast.error("종료 시간은 시작 시간보다 늦어야 합니다.");
+      return;
+    }
+
+    // 날짜와 시간을 ISO 형식으로 변환 (Spring Boot가 자동 파싱)
     const req = {
         storeIdx: Number(route.params.storeIdx),
-        reservePeople: reservePeople.value,
+        reservePeople: Number(reservePeople.value),
         reserveStartDate: reserveStartDate.value,
-        reserveStartTime: formattedStartTime,
-        reserveEndTime: formattedEndTime
+        reserveStartTime: `${reserveStartDate.value}T${reserveStartTime.value}:00`,
+        reserveEndTime: `${reserveStartDate.value}T${reserveEndTime.value}:00`
     };
     const res = await reserveStore.register(req);
     if (res.success) {

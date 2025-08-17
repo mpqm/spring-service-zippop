@@ -7,10 +7,12 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import axios from 'axios'
 import { useAuthStore } from '@/stores/useAuthStore';
-
+import { Icon } from '@iconify/vue'
 const pinia = createPinia();
 pinia.use(piniaPersistedstate);
 const app = createApp(App);
+// eslint-disable-next-line vue/multi-word-component-names
+app.component('Icon', Icon);
 app.use(pinia);
 app.use(router);
 app.use(Toast,

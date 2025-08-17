@@ -1,7 +1,7 @@
 <template>
   <div>
     <HeaderComponent></HeaderComponent>
-    <div class="company-mypage">
+    <div class="root-page">
       <div>
         <MyPageHeaderComponent :userRole="'ROLE_COMPANY'"></MyPageHeaderComponent>
         <MyPageViewComponent></MyPageViewComponent>
@@ -18,13 +18,3 @@ import MyPageHeaderComponent from "@/components/mypage/MyPageHeaderComponent.vue
 import MyPageViewComponent from "@/components/mypage/MyPageViewComponent.vue";
 
 </script>
-
-<style scoped>
-.company-mypage {
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  width: 65rem;
-  padding: 1rem;
-}
-</style>
