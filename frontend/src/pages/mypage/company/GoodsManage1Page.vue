@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="two-section-container">
-      <div class="search-container">
-        <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+      <div class="input-search-container">
+        <input class="default-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
         <button class="default-btn" @click="searchAllByKeyword">
           <Icon icon="ic:search" width="20px" height="20px" />굿즈 검색
         </button>
@@ -13,19 +13,19 @@
     </div>
     <div class="management-page">
       <div v-if="storeList && storeList.length">
-        <StoreTableComponent :stores="storeList" :showControl="showControl" />
+        <StoreTable :stores="storeList" :showControl="showControl" />
       </div>
       <div class="empty-string" v-else>
         <p>등록된 팝업 스토어가 없습니다.</p>
       </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+      <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
 </template>
 
 <script setup>
-import StoreTableComponent from "@/components/store/StoreTableComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import StoreTable from "@/components/StoreTable.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
 
@@ -40,8 +40,8 @@ const pageSize = ref(8);
 const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
-const showControl = ref(1);
 const isKeywordSearch = ref(false);
+const showControl = ref(1);
 
 // onMounted 
 onMounted(async () => {

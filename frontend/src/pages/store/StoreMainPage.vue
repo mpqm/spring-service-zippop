@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderComponent></HeaderComponent>
+    <AppHeader></AppHeader>
     <div class="main-page">
       <h2 class="hero-text">여러가지 팝업 정보를 단 한 곳에서</h2>
       <div class="search-container">
@@ -9,21 +9,21 @@
         <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
       </div>
       <div class="store-list-grid" v-if="storeList && storeList.length">
-        <StoreCardComponent v-for="store in storeList" :key="store.storeIdx" :store="store" />
+        <StoreCard v-for="store in storeList" :key="store.storeIdx" :store="store" />
       </div>
       <div v-else>
         <p>검색 결과에 해당하는 팝업 스토어 목록이 없습니다.</p>
       </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+      <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
-    <FooterComponent></FooterComponent>
+    <AppFooter></AppFooter>
   </div>
 </template>
 <script setup>
-import HeaderComponent from "@/components/common/HeaderComponent.vue";
-import FooterComponent from "@/components/common/FooterComponent.vue";
-import StoreCardComponent from "@/components/store/StoreCardComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import AppHeader from "@/components/AppHeader.vue";
+import AppFooter from "@/components/AppFooter.vue";
+import StoreCard from "@/components/StoreCard.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
 

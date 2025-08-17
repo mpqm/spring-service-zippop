@@ -1,6 +1,6 @@
 <template>
     <div>
-        <HeaderComponent></HeaderComponent>
+        <AppHeader></AppHeader>
         <div class="detail-page">
             <div class="detail-container">
                 <div class="left-panel">
@@ -24,14 +24,14 @@
                 </div>
             </div>
         </div>
-        <FooterComponent></FooterComponent>
+        <AppFooter></AppFooter>
     </div>
 </template>
 
 <script setup>
-import HeaderComponent from "@/components/common/HeaderComponent.vue";
-import FooterComponent from "@/components/common/FooterComponent.vue";
-import ImageSlider from "@/components/common/ImageSlider.vue";
+import AppHeader from "@/components/AppHeader.vue";
+import AppFooter from "@/components/AppFooter.vue";
+import ImageSlider from "@/components/ImageSlider.vue";
 import { ref, onMounted } from "vue";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { useRoute, useRouter } from "vue-router";

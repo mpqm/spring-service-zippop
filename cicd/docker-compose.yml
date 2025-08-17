@@ -54,16 +54,6 @@ services:
     mem_limit: 2g
     cpus: 2.0
 
-  mysqld_exporter:
-    image: prom/mysqld-exporter:latest
-    container_name: zippop-mariadb-exporter
-    volumes:
-      - ./exporter/my.cnf:/.my.cnf
-    depends_on:
-      - mariadb
-    ports:
-      - "9104:9104"
-
   redis:
     container_name: zippop-redis
     image: redis:7.2-alpine
@@ -74,6 +64,16 @@ services:
       exec redis-server /usr/local/etc/redis/redis.conf"
     volumes:
       - ./redis:/usr/local/etc/redis
+
+  mysqld_exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: zippop-mariadb-exporter
+    volumes:
+      - ./exporter/my.cnf:/.my.cnf
+    depends_on:
+      - mariadb
+    ports:
+      - "9104:9104"
 
   prometheus:
       image: prom/prometheus

@@ -2,21 +2,20 @@
     <div>
         <div class="store-management-page">
             <div class="store-list" v-if="ordersList && ordersList.length">
-                <OrdersListComponent v-for="orders in ordersList" :key="orders.ordersIdx" :orders="orders" :storeIdx="storeIdx"
-                    :showControl="showControl" />
+                <OrdersTable :orders="ordersList" :showControl="showControl" />
             </div>
-            <div class="notice" v-else>
+            <div class="empty-string" v-else>
                 <p>등록된 주문 내역이 없습니다.</p>
             </div>
-            <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns"
+            <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns"
                 @page-changed="changePage" />
         </div>
     </div>
 </template>
 
 <script setup>
-import OrdersListComponent from "@/components/orders/OrdersListComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import OrdersTable from "@/components/OrdersTable.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { onMounted, ref } from "vue";
 import { useOrdersStore } from "@/stores/useOrdersStore";
 import { useRoute } from "vue-router";

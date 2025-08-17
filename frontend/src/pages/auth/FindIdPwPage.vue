@@ -1,6 +1,6 @@
 <template>
     <div>
-        <HeaderComponent></HeaderComponent>
+        <AppHeader></AppHeader>
         <div class="find-idpw-page">
             <div class="find-idpw-container">
                 <h1>ID/PW 찾기</h1>
@@ -20,13 +20,13 @@
                 </form>
             </div>
         </div>
-        <FooterComponent></FooterComponent>
+        <AppFooter></AppFooter>
     </div>
 </template>
 
 <script setup>
-import FooterComponent from "@/components/common/FooterComponent.vue";
-import HeaderComponent from '@/components/common/HeaderComponent.vue';
+import AppFooter from "@/components/AppFooter.vue";
+import AppHeader from '@/components/AppHeader.vue';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { ref } from "vue";
 import { useToast } from "vue-toastification";

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderComponent></HeaderComponent>
+    <AppHeader></AppHeader>
     <div class="detail-page">
       <div class="detail-container">
         <div class="left-panel">
@@ -39,12 +39,12 @@
           </div>
         </div>
         <div class="goods-list" v-if="goodsList && goodsList.length">
-          <GoodsListComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" />
+          <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" />
         </div>
         <div class="notice" v-else>
           <p>등록된 굿즈가 없습니다.</p>
         </div>
-        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+        <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
       <div v-if="activeMenu == 'review'" class="review-list-container">
         <form class="register-form" @submit.prevent="registerReview">
@@ -54,37 +54,37 @@
             <button type="submit" class="register-btn">리뷰 등록</button>
         </form>
         <div class="review-list" v-if="reviewList && reviewList.length">
-          <ReviewListComponent v-for="review in reviewList" :key="review.reviewIdx" :review="review" />
+          <ReviewList v-for="review in reviewList" :key="review.reviewIdx" :review="review" />
         </div>
         <div class="notice" v-else>
           <p>등록된 리뷰가 없습니다.</p>
         </div>
-        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+        <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
       <div v-if="activeMenu == 'reserve'">
         <div class="review-list" v-if="reserveList && reserveList.length">
-          <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl=0 /> 
+          <ReserveList v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl=0 /> 
         </div>
         <div class="notice" v-else>
           <p>등록된 예약이 없습니다.</p>
         </div>
-        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+        <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
     </div>
-    <FooterComponent></FooterComponent>
+    <AppFooter></AppFooter>
   </div>
 </template>
 
 
 <script setup>
-import ImageSlider from "@/components/common/ImageSlider.vue";
-import HeaderComponent from "@/components/common/HeaderComponent.vue";
-import FooterComponent from "@/components/common/FooterComponent.vue";
-import CountDownTimer from "@/components/common/CountDownTimer.vue";
-import GoodsListComponent from "@/components/goods/GoodsListComponent.vue";
-import ReviewListComponent from "@/components/store/ReviewListComponent.vue";
-import ReserveListComponent from "@/components/reserve/ReserveListComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import ImageSlider from "@/components/ImageSlider.vue";
+import AppHeader from "@/components/AppHeader.vue";
+import AppFooter from "@/components/AppFooter.vue";
+import CountDownTimer from "@/components/CountDownTimer.vue";
+import GoodsList from "@/components/GoodsList.vue";
+import ReviewList from "@/components/ReviewList.vue";
+import ReserveList from "@/components/ReserveList.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { ref, onMounted } from "vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { useRoute, useRouter } from "vue-router";

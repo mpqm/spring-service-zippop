@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderComponent></HeaderComponent>
+    <AppHeader></AppHeader>
     <div class="detail-page">
       <div class="detail-container">
         <div class="left-panel">
@@ -30,25 +30,25 @@
           <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
         </div>
         <div class="goods-list-grid" v-if="goodsList && goodsList.length">
-          <GoodsCardComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :storeIdx="store.storeIdx" />
+          <GoodsCard v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :storeIdx="store.storeIdx" />
         </div>
         <div v-else>
           <p>검색 결과에 해당하는 팝업 굿즈 목록이 없습니다.</p>
         </div>
-        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+        <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
     </div>
-    <FooterComponent></FooterComponent>
+    <AppFooter></AppFooter>
   </div>
 </template>
 
 
 <script setup>
-import GoodsCardComponent from "@/components/goods/GoodsCardComponent.vue";
-import ImageSlider from "@/components/common/ImageSlider.vue";
-import HeaderComponent from "@/components/common/HeaderComponent.vue";
-import FooterComponent from "@/components/common/FooterComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import GoodsCard from "@/components/GoodsCard.vue";
+import ImageSlider from "@/components/ImageSlider.vue";
+import AppHeader from "@/components/AppHeader.vue";
+import AppFooter from "@/components/AppFooter.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { ref, onMounted } from "vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { useRoute, useRouter } from "vue-router";

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <HeaderComponent></HeaderComponent>
+        <AppHeader></AppHeader>
         <div class="login-page">
             <div class="login-container">
                 <form class="login-form" @submit.prevent="login">
@@ -26,7 +26,7 @@
                 </form>
             </div>
         </div>
-        <FooterComponent></FooterComponent>
+        <AppFooter></AppFooter>
     </div>
 </template>
 
@@ -34,8 +34,8 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/useAuthStore';
-import HeaderComponent from '@/components/common/HeaderComponent.vue';
-import FooterComponent from "@/components/common/FooterComponent.vue";
+import AppHeader from '@/components/AppHeader.vue';
+import AppFooter from "@/components/AppFooter.vue";
 import { useToast } from "vue-toastification";
 
 // store, router, route, toast

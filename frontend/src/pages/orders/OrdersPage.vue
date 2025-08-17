@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderComponent></HeaderComponent>
+    <AppHeader></AppHeader>
     <div class="payment-page">
       <hr>
       <h3 class="t1">배송지 정보</h3>
@@ -48,14 +48,14 @@
       <button type="button" @click="payment" class="pay-btn">결제하기</button>
       <button type="button" @click="cancelPayment" class="pay-btn">결제취소</button>
     </div>
-    <FooterComponent></FooterComponent>
+    <AppFooter></AppFooter>
   </div>
 
 </template>
 
 <script setup>
-import HeaderComponent from '@/components/common/HeaderComponent.vue';
-import FooterComponent from "@/components/common/FooterComponent.vue";
+import AppHeader from '@/components/AppHeader.vue';
+import AppFooter from "@/components/AppFooter.vue";
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useOrdersStore } from '@/stores/useOrdersStore';
 import { onMounted, ref } from 'vue';

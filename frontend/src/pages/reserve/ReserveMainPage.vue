@@ -1,6 +1,6 @@
 <template>
     <div>
-        <HeaderComponent></HeaderComponent>
+        <AppHeader></AppHeader>
         <div class="main-page">
             <h2 class="hero-text">팝업 스토어 예약 일정을 확인하세요</h2>
             <div class="search-container">
@@ -9,21 +9,21 @@
                 <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
             </div>
             <div class="reserve-list-grid" v-if="reserveList && reserveList.length">
-                <ReserveCardComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" />
+                <ReserveCard v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" />
             </div>
             <div v-else>
                 <p>검색 결과에 해당하는 팝업 스토어 목록이 없습니다.</p>
             </div>
-            <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+            <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
         </div>
-        <FooterComponent></FooterComponent>
+        <AppFooter></AppFooter>
     </div>
 </template>
 <script setup>
-import HeaderComponent from "@/components/common/HeaderComponent.vue";
-import FooterComponent from "@/components/common/FooterComponent.vue";
-import ReserveCardComponent from "@/components/reserve/ReserveCardComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import AppHeader from "@/components/AppHeader.vue";
+import AppFooter from "@/components/AppFooter.vue";
+import ReserveCard from "@/components/ReserveCard.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { useReserveStore } from "@/stores/useReserveStore";
 import { onMounted, ref } from "vue";
 

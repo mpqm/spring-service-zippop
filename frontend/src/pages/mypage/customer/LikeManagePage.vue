@@ -2,19 +2,19 @@
   <div>
     <div class="like-management-page">
       <div class="like-list" v-if="likeList && likeList.length">
-        <LikeListComponent v-for="store in likeList" :key="store.storeIdx" :store="store" />
+        <StoreList v-for="store in likeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
       </div>
       <div class="notice" v-else>
         <p>좋아요한 팝업 스토어가 없습니다.</p>
       </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+      <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
 </template>
 
 <script setup>
-import LikeListComponent from "@/components/store/LikeListComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import StoreList from "@/components/StoreList.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
 
@@ -28,6 +28,7 @@ const pageSize = ref(8);
 const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
+const showControl = ref(6);
 
 // onMounted
 onMounted(async () => {

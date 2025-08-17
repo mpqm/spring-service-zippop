@@ -2,19 +2,19 @@
   <div>
     <div class="review-manage-page">
       <div class="review-list" v-if="reviewList && reviewList.length">
-        <ReviewListComponent v-for="review in reviewList" :key="review.reviewIdx" :review="review" :hideStoreName="true" />
+        <ReviewList v-for="review in reviewList" :key="review.reviewIdx" :review="review" :hideStoreName="true" />
       </div>
       <div class="notice" v-else>
         <p>등록된 리뷰가 없습니다.</p>
       </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+      <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
 </template>
 
 <script setup>
-import ReviewListComponent from "@/components/store/ReviewListComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import ReviewList from "@/components/ReviewList.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
 
