@@ -13,19 +13,19 @@
     </div>
     <div class="management-page">
       <div v-if="storeList && storeList.length">
-        <StoreTableComponent :stores="storeList" :showControl="showControl" />
+        <StoreTable :stores="storeList" :showControl="showControl" />
       </div>
       <div class="notice" v-else>
         <p>등록된 팝업 스토어가 없습니다.</p>
       </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+      <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
 </template>
 
 <script setup>
-import StoreTableComponent from "@/components/store/StoreTableComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import StoreTable from "@/components/StoreTable.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { onMounted, ref } from "vue";
 

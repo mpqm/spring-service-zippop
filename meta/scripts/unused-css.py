@@ -38,7 +38,7 @@ def find_unused_classes(html_file, css_file):
 
 if __name__ == "__main__":
     # 파일 경로를 설정하세요.
-    file_path = "../../frontend/src/components/store/StoreListComponent.vue"  # Vue 템플릿 파일 경로, CSS 파일 경로
+    file_path = "../../frontend/src/components/store/StoreList.vue"  # Vue 템플릿 파일 경로, CSS 파일 경로
     
     unused = find_unused_classes(file_path, file_path)
 

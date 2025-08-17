@@ -2,19 +2,19 @@
   <div>
     <div class="store-manage-page">
       <div class="store-list" v-if="cartList && cartList.length">
-        <StoreListComponent v-for="cart in cartList" :key="cart.storeIdx" :store="cart" :showControl="showControl" />
+        <StoreList v-for="cart in cartList" :key="cart.storeIdx" :store="cart" :showControl="showControl" />
       </div>
       <div class="notice" v-else>
         <p>등록된 팝업 스토어가 없습니다.</p>
       </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+      <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
 </template>
 
 <script setup>
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
-import StoreListComponent from "@/components/store/StoreListComponent.vue";
+import AppPagination from "@/components/AppPagination.vue";
+import StoreList from "@/components/StoreList.vue";
 import { useCartStore } from "@/stores/useCartStore";
 import { onMounted, ref } from "vue";
 

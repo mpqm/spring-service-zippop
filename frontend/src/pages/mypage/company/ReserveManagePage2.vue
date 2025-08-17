@@ -14,18 +14,18 @@
           </router-link>
         </div>
       </div>
-      <div class="list-container" v-if="reserveList && reserveList.length">
-        <ReserveListComponent v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl=1 />
+      <div class="table-container" v-if="reserveList && reserveList.length">
+        <ReserveTable :reserves="reserveList" :showControl="showControl" />
       </div>
       <div class="empty-string" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+      <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
 </template>
 
 <script setup>
-import ReserveListComponent from "@/components/reserve/ReserveListComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import ReserveTable from "@/components/ReserveTable.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { onMounted, ref } from "vue";
 import { useReserveStore } from "@/stores/useReserveStore";
 import { useRoute } from "vue-router";
@@ -41,6 +41,7 @@ const pageSize = ref(8);
 const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
+const showControl = ref(true);
 
 // onMounted
 onMounted(async () => {

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="props.totalPages > 0" class="pagination">
+  <div v-if="props.totalPages > 0" class="pagination-wrapper">
     <!-- 그룹 이동 버튼 -->
     <button v-if="!hideBtns && props.totalPages > pageGroupSize && currentGroup > 0" class="pagination-group-btn" @click="prevGroup"> 
       <Icon icon="ic:outline-first-page" width="16px" height="16px" />
@@ -11,11 +11,17 @@
     </button>
 
     <!-- 페이지 버튼 -->
-    <span v-if="!hideBtns">
-      <button v-for="page in groupPages" :key="page" :class="['pagination-btn', { active: page === currentPage + 1 }]" @click="changePage(page - 1)">
-        {{ page }}
-      </button>
-    </span>
+  <!-- 페이지 버튼 -->
+  <div v-if="!hideBtns" class="pagination-page-container">
+    <button 
+      v-for="page in groupPages" 
+      :key="page" 
+      :class="['pagination-page-btn', { active: page === currentPage + 1 }]" 
+      @click="changePage(page - 1)"
+    >
+      {{ page }}
+    </button>
+  </div>
 
     <!-- 다음 페이지 버튼 -->
     <button v-if="!hideBtns" class="pagination-move-btn" @click="changePage(currentPage + 1)" :disabled="currentPage === props.totalPages - 1">
@@ -85,57 +91,3 @@ const groupPages = computed(() => {
 });
 
 </script>
-
-<style scoped>
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 2rem;
-}
-
-.pagination-btn,
-.pagination-move-btn,
-.pagination-group-btn {
-  padding: 0.5rem;
-  color: black;
-  border: 1px solid #ddd;
-  background-color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
-}
-
-.pagination-move-btn,
-.pagination-group-btn {
-  color: #fff;
-  font-weight: 900;
-  background-color: #00c7ae;
-  border: none;
-}
-
-.pagination-move-btn:hover,
-.pagination-group-btn:hover {
-  opacity: 0.8;
-}
-
-.pagination-btn.active {
-  background-color: #00c7ae;
-  color: #fff;
-}
-
-.pagination-btn:disabled,
-.pagination-move-btn:disabled,
-.pagination-group-btn:disabled {
-  background-color: #f5f5f5;
-  color: #b5b5b5;
-  cursor: not-allowed;
-}
-</style>

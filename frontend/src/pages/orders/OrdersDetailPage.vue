@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HeaderComponent></HeaderComponent>
+    <AppHeader></AppHeader>
     <div class="payment-page">
       <hr>
       <h3 class="t1">배송지 정보</h3>
@@ -48,13 +48,13 @@
       </div>
       <button type="button" @click="goBack" class="back-btn">뒤로가기</button>
     </div>
-    <FooterComponent></FooterComponent>
+    <AppFooter></AppFooter>
   </div>
 </template>
 
 <script setup>
-import HeaderComponent from '@/components/common/HeaderComponent.vue';
-import FooterComponent from "@/components/common/FooterComponent.vue";
+import AppHeader from '@/components/AppHeader.vue';
+import AppFooter from "@/components/AppFooter.vue";
 import { useOrdersStore } from '@/stores/useOrdersStore';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';

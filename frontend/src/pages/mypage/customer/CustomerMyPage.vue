@@ -1,22 +1,30 @@
 <template>
   <div>
-    <HeaderComponent></HeaderComponent>
+    <AppHeader></AppHeader>
     <div class="customer-mypage">
       <div class="mypage-container">
-        <MyPageHeaderComponent :userRole="'ROLE_CUSTOMER'"></MyPageHeaderComponent>
-        <MyPageViewComponent></MyPageViewComponent>
+        <div class="sub-menu-header">
+          <div class="sub-menu-list">
+            <router-link class="sub-menu-link" to="/mypage/customer/cart">장바구니</router-link>
+            <router-link class="sub-menu-link" to="/mypage/customer/like">좋아요</router-link>
+            <router-link class="sub-menu-link" to="/mypage/customer/review">리뷰</router-link>
+            <router-link class="sub-menu-link" to="/mypage/customer/orders">결제 내역</router-link>
+            <!-- <router-link class="sub-menu-link" to="/chats">문의 채팅</router-link> -->
+            <router-link class="sub-menu-link" to="/mypage/customer/account-edit">계정 관리</router-link>
+          </div>
+        </div>
+        <div class="component-display">
+          <router-view></router-view>
+        </div>
       </div>
     </div>
-    <FooterComponent></FooterComponent>
+    <AppFooter></AppFooter>
   </div>
 </template>
 
 <script setup>
-import FooterComponent from "@/components/common/FooterComponent.vue";
-import HeaderComponent from "@/components/common/HeaderComponent.vue";
-import MyPageHeaderComponent from "@/components/mypage/MyPageHeaderComponent.vue";
-import MyPageViewComponent from "@/components/mypage/MyPageViewComponent.vue";
-
+import AppFooter from "@/components/AppFooter.vue";
+import AppHeader from "@/components/AppHeader.vue";
 </script>
 
 <style scoped>

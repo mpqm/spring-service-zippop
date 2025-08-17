@@ -5,17 +5,17 @@
         <p>총 판매 수익: {{ totalRevenueSum }}원</p>
       </div>
         <div class="settlement-list" v-if="settlementList && settlementList.length">
-          <SettlementComponent v-for="settlement in settlementList" :key="settlement.settlementIdx" :settlement="settlement" :showControl="false" />
+          <SettlementList v-for="settlement in settlementList" :key="settlement.settlementIdx" :settlement="settlement" :showControl="false" />
         </div>
         <div class="notice" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
-        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+        <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
     </div>
   </template>
   
   <script setup>
-import SettlementComponent from "@/components/settlement/SettlementComponent.vue";
-  import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import SettlementList from "@/components/SettlementList.vue";
+  import AppPagination from "@/components/AppPagination.vue";
   import { computed, onMounted, ref } from "vue";
   import { useSettlementStore } from "@/stores/useSettlementStore";
   import { useRoute } from "vue-router";

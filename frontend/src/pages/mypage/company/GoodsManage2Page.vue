@@ -2,8 +2,8 @@
   <div>
     <div class="management-page">
       <div class="two-section-container">
-        <div class="search-container">
-          <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+        <div class="input-search-container">
+          <input class="default-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
           <button class="default-btn" @click="searchAllByKeyword">
           <Icon icon="ic:search" width="20px" height="20px" />굿즈 검색
           </button>
@@ -20,19 +20,19 @@
           </router-link>
         </div>
       </div>
-      <div class="list-container" v-if="goodsList && goodsList.length">
-        <GoodsListComponent v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" />
+      <div class="table-container" v-if="goodsList && goodsList.length">
+        <GoodsTable :goods="goodsList" :showControl="showControl" />
       </div>
-      <div class="notice" v-else> <p>등록된 굿즈가 없습니다.</p>
+      <div class="empty-string" v-else> <p>등록된 굿즈가 없습니다.</p>
       </div>
-      <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
+      <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
 </template>
 
 <script setup>
-import GoodsListComponent from "@/components/goods/GoodsListComponent.vue";
-import PaginationComponent from "@/components/common/PaginationComponent.vue";
+import GoodsTable from "@/components/GoodsTable.vue";
+import AppPagination from "@/components/AppPagination.vue";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -43,7 +43,7 @@ const route = useRoute();
 
 // 변수(goods)
 const searchQuery = ref("");
-const showControl = ref(1);
+const showControl = ref(true);
 const goodsList = ref([]);
 const currentPage = ref(0);
 const pageSize = ref(8);
