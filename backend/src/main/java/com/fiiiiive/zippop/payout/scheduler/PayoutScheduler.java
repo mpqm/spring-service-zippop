@@ -1,10 +1,10 @@
-package com.fiiiiive.zippop.settlement.scheduler;
+package com.fiiiiive.zippop.payout.scheduler;
 
 import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.orders.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
-import com.fiiiiive.zippop.settlement.entity.Settlement;
-import com.fiiiiive.zippop.settlement.repository.SettlementRepository;
+import com.fiiiiive.zippop.payout.entity.Payout;
+import com.fiiiiive.zippop.payout.repository.PayoutRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,13 +20,14 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SettlementScheduler {
+public class PayoutScheduler {
+
     private final OrdersRepository ordersRepository;
-    private final SettlementRepository settlementRepository;
+    private final PayoutRepository payoutRepository;
 
     @Scheduled(cron = "0 0 6 * * ?")
 //    @Scheduled(fixedRate = 1000)
-    public void createSettlement() {
+    public void createPayout() {
 
         log.info("스케줄러 실행 시작 : 팝업 스토어 별 판매 금액 정산");
 
@@ -42,14 +43,14 @@ public class SettlementScheduler {
             Long storeIdx = entry.getKey();
             Integer totalRevenue = entry.getValue();
 
-            Settlement settlement = Settlement.builder()
+            Payout payout = Payout.builder()
                     .storeIdx(storeIdx)
                     .totalRevenue(totalRevenue)
-                    .settlementDate(LocalDate.now().minusDays(1))
+                    .payoutDate(LocalDate.now().minusDays(1))
                     .status(BaseStatus.COMPLETE)
                     .build();
 
-            settlementRepository.save(settlement);
+            payoutRepository.save(payout);
             log.info("정산 생성 완료 - 스토어 ID: {}, 정산 금액: {}", storeIdx, totalRevenue);
         }
 

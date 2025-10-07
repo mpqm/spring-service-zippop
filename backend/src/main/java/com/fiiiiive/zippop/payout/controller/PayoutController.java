@@ -1,12 +1,12 @@
-package com.fiiiiive.zippop.settlement.controller;
+package com.fiiiiive.zippop.payout.controller;
 
 
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.settlement.dto.SettlementDto;
-import com.fiiiiive.zippop.settlement.service.SettlementService;
+import com.fiiiiive.zippop.payout.dto.SettlementDto;
+import com.fiiiiive.zippop.payout.service.SettlementService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/settlement")
-public class SettlementController {
+public class PayoutController {
 
     private final SettlementService settlementService;
 
