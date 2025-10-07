@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.cart.controller;
 
-import com.fiiiiive.zippop.cart.model.dto.CartDto;
+import com.fiiiiive.zippop.cart.dto.CartDto;
 import com.fiiiiive.zippop.cart.service.CartService;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;

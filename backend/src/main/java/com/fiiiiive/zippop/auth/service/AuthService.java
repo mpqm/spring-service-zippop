@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.auth.service;
 
-import com.fiiiiive.zippop.auth.model.dto.AuthDto;
-import com.fiiiiive.zippop.auth.model.entity.Company;
-import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.auth.dto.AuthDto;
+import com.fiiiiive.zippop.auth.entity.Company;
+import com.fiiiiive.zippop.auth.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.BaseMessage;

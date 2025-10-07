@@ -5,7 +5,7 @@ import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.settlement.model.dto.SettlementDto;
+import com.fiiiiive.zippop.settlement.dto.SettlementDto;
 import com.fiiiiive.zippop.settlement.service.SettlementService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

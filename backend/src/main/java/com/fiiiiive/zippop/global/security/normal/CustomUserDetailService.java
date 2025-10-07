@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.global.security.normal;
 
-import com.fiiiiive.zippop.auth.model.entity.Company;
-import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.auth.entity.Company;
+import com.fiiiiive.zippop.auth.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;

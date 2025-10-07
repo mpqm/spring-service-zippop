@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.global.security.oauth2;
 
-import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.auth.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.BaseStatus;
 import lombok.RequiredArgsConstructor;

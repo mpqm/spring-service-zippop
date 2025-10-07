@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.auth.controller;
 
-import com.fiiiiive.zippop.auth.model.dto.AuthDto;
+import com.fiiiiive.zippop.auth.dto.AuthDto;
 import com.fiiiiive.zippop.auth.service.AuthService;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;

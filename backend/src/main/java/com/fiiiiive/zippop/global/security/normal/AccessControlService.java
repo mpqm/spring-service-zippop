@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.global.security.normal;
 
 
 import com.fiiiiive.zippop.global.service.RedisService;
-import com.fiiiiive.zippop.reserve.model.entity.Reserve;
+import com.fiiiiive.zippop.reserve.entity.Reserve;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authorization.AuthorizationDecision;

@@ -1,16 +1,16 @@
 package com.fiiiiive.zippop.cart.service;
 
-import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.auth.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
-import com.fiiiiive.zippop.cart.model.dto.CartDto;
-import com.fiiiiive.zippop.cart.model.entity.Cart;
-import com.fiiiiive.zippop.cart.model.entity.CartItem;
+import com.fiiiiive.zippop.cart.dto.CartDto;
+import com.fiiiiive.zippop.cart.entity.Cart;
+import com.fiiiiive.zippop.cart.entity.CartItem;
 import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.goods.model.entity.Goods;
+import com.fiiiiive.zippop.goods.entity.Goods;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

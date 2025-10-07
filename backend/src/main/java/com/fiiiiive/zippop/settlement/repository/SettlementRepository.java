@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.settlement.repository;
 
-import com.fiiiiive.zippop.settlement.model.entity.Settlement;
+import com.fiiiiive.zippop.settlement.entity.Settlement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
