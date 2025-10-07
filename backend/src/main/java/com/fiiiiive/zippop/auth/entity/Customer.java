@@ -5,6 +5,7 @@ import com.fiiiiive.zippop.cart.entity.Cart;
 import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.orders.entity.Orders;
+import com.fiiiiive.zippop.store.entity.StoreLike;
 import com.fiiiiive.zippop.store.entity.StoreReview;
 import jakarta.persistence.*;
 import lombok.*;
@@ -79,6 +80,9 @@ public class Customer extends BaseEntity {
 
     @OneToMany(mappedBy = "customer")
     private List<Orders> ordersList;
+
+    @OneToMany(mappedBy = "customer")
+    private List<StoreLike> storeLikeList;
 
     // Update
     public Customer update(AuthDto.EditInfoReq dto, String profileImageUrl) {

@@ -5,6 +5,7 @@ import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.goods.entity.Goods;
 import com.fiiiiive.zippop.auth.entity.Company;
+import com.fiiiiive.zippop.payout.entity.Payout;
 import com.fiiiiive.zippop.reserve.entity.Reserve;
 import com.fiiiiive.zippop.store.dto.StoreDto;
 import jakarta.persistence.*;
@@ -87,6 +88,9 @@ public class Store extends BaseEntity {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StoreLike> storeLikeList;
+
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payout> payoutList;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)

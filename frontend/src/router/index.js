@@ -37,8 +37,8 @@ import ReserveQueuePage from "@/pages/reserve/ReserveQueuePage.vue";
 import ReserveGoodsPage from "@/pages/reserve/ReserveGoodsPage.vue";
 import ReserveOrdersPage from "@/pages/reserve/ReserveOrdersPage.vue";
 import ReserveCartPage from "@/pages/reserve/ReserveCartPage.vue";
-import SettlementManagePage1 from "@/pages/mypage/company/SettlementManagePage1.vue";
-import SettlementManagePage2 from "@/pages/mypage/company/SettlementManagePage2.vue";
+import SettlementManagePage1 from "@/pages/mypage/company/PayoutManagePage1.vue";
+import SettlementManagePage2 from "@/pages/mypage/company/PayoutManagePage2.vue";
 import ActivePage from "@/pages/auth/ActivePage.vue";
 import { useCartStore } from "@/stores/useCartStore";
 import { useReserveStore } from "@/stores/useReserveStore";
@@ -94,9 +94,9 @@ const router = createRouter({
         { path: 'reserve', component: ReserveManagePage1, }, // 예약 관리 메인 페이지(스토어 목록)
         { path: 'reserve/:storeIdx', component: ReserveManagePage2, }, // 예약 관리 메인 페이지
         { path: 'reserve/register/:storeIdx', component: ReserveRegisterPage, }, // 예약 등록 페이지
-        { path: 'settlement', component: SettlementManagePage1, }, // 정산 관리 메인 페이지
-        { path: 'settlement/:storeIdx', component: SettlementManagePage2, }, // 정산 관리 상세 페이지
-        // { path: 'settlement/:storeIdx', component: SettlementDetailPage, }, // 정산 관리 상세 페이지
+        { path: 'payout', component: SettlementManagePage1, }, // 정산 관리 메인 페이지
+        { path: 'payout/:storeIdx', component: SettlementManagePage2, }, // 정산 관리 상세 페이지
+        // { path: 'payout/:storeIdx', component: SettlementDetailPage, }, // 정산 관리 상세 페이지
         { path: 'account-edit', component: EditProfilePage }, // 고객 정보 수정 페이지
       ]
     },

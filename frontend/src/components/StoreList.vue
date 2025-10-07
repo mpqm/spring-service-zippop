@@ -60,9 +60,9 @@
         예약 보기
       </router-link>
     </div>
-    <!-- SettlementManagementPage1 용 -->
+    <!-- PayoutManagementPage1 용 -->
     <div v-if="showControl === 5" class="list-btn-container">
-      <router-link class="list-btn" :to="store ? `/mypage/company/settlement/${store.storeIdx}` : '#'">
+      <router-link class="list-btn" :to="store ? `/mypage/company/payout/${store.storeIdx}` : '#'">
         <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
         정산 내역 보기
       </router-link>

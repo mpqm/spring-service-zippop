@@ -87,7 +87,7 @@
           </div>
 
           <div v-if="props.showControl === 5" class="table-btn-container">
-            <router-link class="table-btn" :to="item.storeIdx ? `/mypage/company/settlement/${item.storeIdx}` : '#'">
+            <router-link class="table-btn" :to="item.storeIdx ? `/mypage/company/payout/${item.storeIdx}` : '#'">
               <Icon icon="iconoir:eye" width="16px" height="16px" />
             </router-link>
           </div>

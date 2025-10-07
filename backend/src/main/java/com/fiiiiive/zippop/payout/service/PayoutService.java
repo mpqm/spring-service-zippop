@@ -21,29 +21,29 @@ import java.util.Objects;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SettlementService {
+public class PayoutService {
     private final StoreRepository storeRepository;
     private final PayoutRepository payoutRepository;
 
     // 기업 정산 금액 조회
-    public Page<PayoutDto.SearchPayoutRes> searchSettlement(CustomUserDetails customUserDetails, Long storeIdx, int page, int size) throws BaseException {
+    public Page<PayoutDto.SearchPayoutRes> searchPayout(CustomUserDetails customUserDetails, Long storeIdx, int page, int size) throws BaseException {
 
         // 스토어 조회(storeIdx)
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.SETTLEMENT_SEARCH_FAIL_NOT_FOUND_STORE)
+                () -> new BaseException(BaseMessage.PAYOUT_SEARCH_FAIL_NOT_FOUND_STORE)
         );
 
         // 스토어 소유 조회
-        if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseMessage.SETTLEMENT_SEARCH_FAIL_INVALID_MEMBER);
+        if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseMessage.PAYOUT_SEARCH_FAIL_INVALID_MEMBER);
 
         // 스토어 페이지 조회(storeIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Payout> settlementPage = payoutRepository.findAllByStoreIdx(storeIdx, pageable).orElseThrow(
-                () -> new BaseException(BaseMessage.SETTLEMENT_SEARCH_FAIL_NOT_FOUND)
+        Page<Payout> payoutPage = payoutRepository.findAllByStoreIdx(storeIdx, pageable).orElseThrow(
+                () -> new BaseException(BaseMessage.PAYOUT_SEARCH_FAIL_NOT_FOUND)
         );
 
         // DTO 반환
-        return Payout.toDtoPage(settlementPage);
+        return Payout.toDtoPage(payoutPage);
 
     }
 

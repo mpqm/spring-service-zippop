@@ -4,7 +4,7 @@ import axios from "axios";
 import { backend } from "@/config";
 
 // 전역 저장소 생성
-export const useSettlementStore = defineStore("settlement", {
+export const useSettlementStore = defineStore("payout", {
   state: () => ({
     settlementList: [],
     totalElements: null,
@@ -17,7 +17,7 @@ export const useSettlementStore = defineStore("settlement", {
     async searchAllSettlement(storeIdx, page, size) {
       try {
         const res = await axios.get(
-          `${backend}/settlement/search?storeIdx=${storeIdx}&page=${page}&size=${size}`,
+          `${backend}/payout/search?storeIdx=${storeIdx}&page=${page}&size=${size}`,
           { withCredentials: true },
         );
         this.settlementList = res.data.result.content;
