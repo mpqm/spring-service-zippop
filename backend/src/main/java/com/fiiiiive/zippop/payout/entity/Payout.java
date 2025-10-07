@@ -1,8 +1,8 @@
-package com.fiiiiive.zippop.settlement.entity;
+package com.fiiiiive.zippop.payout.entity;
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseStatus;
-import com.fiiiiive.zippop.settlement.dto.SettlementDto;
+import com.fiiiiive.zippop.payout.dto.SettlementDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.settlement.dto;
+package com.fiiiiive.zippop.payout.dto;
 
 import lombok.Builder;
 import lombok.Getter;

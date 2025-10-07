@@ -1,11 +1,11 @@
-package com.fiiiiive.zippop.settlement.service;
+package com.fiiiiive.zippop.payout.service;
 
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.settlement.dto.SettlementDto;
-import com.fiiiiive.zippop.settlement.entity.Settlement;
-import com.fiiiiive.zippop.settlement.repository.SettlementRepository;
+import com.fiiiiive.zippop.payout.dto.PayoutDto;
+import com.fiiiiive.zippop.payout.entity.Payout;
+import com.fiiiiive.zippop.payout.repository.PayoutRepository;
 import com.fiiiiive.zippop.store.entity.Store;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +23,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class SettlementService {
     private final StoreRepository storeRepository;
-    private final SettlementRepository settlementRepository;
+    private final PayoutRepository payoutRepository;
 
     // 기업 정산 금액 조회
-    public Page<SettlementDto.SearchSettlementRes> searchSettlement(CustomUserDetails customUserDetails, Long storeIdx, int page, int size) throws BaseException {
+    public Page<PayoutDto.SearchPayoutRes> searchSettlement(CustomUserDetails customUserDetails, Long storeIdx, int page, int size) throws BaseException {
 
         // 스토어 조회(storeIdx)
         Store store = storeRepository.findByStoreIdx(storeIdx).orElseThrow(
@@ -38,12 +38,12 @@ public class SettlementService {
 
         // 스토어 페이지 조회(storeIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Settlement> settlementPage = settlementRepository.findAllByStoreIdx(storeIdx, pageable).orElseThrow(
+        Page<Payout> settlementPage = payoutRepository.findAllByStoreIdx(storeIdx, pageable).orElseThrow(
                 () -> new BaseException(BaseMessage.SETTLEMENT_SEARCH_FAIL_NOT_FOUND)
         );
 
         // DTO 반환
-        return Settlement.toDtoPage(settlementPage);
+        return Payout.toDtoPage(settlementPage);
 
     }
 
