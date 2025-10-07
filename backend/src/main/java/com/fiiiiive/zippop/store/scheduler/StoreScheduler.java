@@ -1,9 +1,9 @@
 package com.fiiiiive.zippop.store.scheduler;
 
 import com.fiiiiive.zippop.global.base.BaseStatus;
-import com.fiiiiive.zippop.goods.model.entity.Goods;
+import com.fiiiiive.zippop.goods.entity.Goods;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
-import com.fiiiiive.zippop.store.model.entity.Store;
+import com.fiiiiive.zippop.store.entity.Store;
 import com.fiiiiive.zippop.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

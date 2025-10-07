@@ -1,19 +1,19 @@
 package com.fiiiiive.zippop.store.service;
 
-import com.fiiiiive.zippop.auth.model.entity.Customer;
+import com.fiiiiive.zippop.auth.entity.Customer;
 import com.fiiiiive.zippop.auth.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.auth.repository.CompanyRepository;
-import com.fiiiiive.zippop.auth.model.entity.Company;
+import com.fiiiiive.zippop.auth.entity.Company;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.orders.model.entity.Orders;
+import com.fiiiiive.zippop.orders.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
-import com.fiiiiive.zippop.store.model.dto.StoreDto;
-import com.fiiiiive.zippop.store.model.entity.Store;
-import com.fiiiiive.zippop.store.model.entity.StoreLike;
-import com.fiiiiive.zippop.store.model.entity.StoreReview;
+import com.fiiiiive.zippop.store.dto.StoreDto;
+import com.fiiiiive.zippop.store.entity.Store;
+import com.fiiiiive.zippop.store.entity.StoreLike;
+import com.fiiiiive.zippop.store.entity.StoreReview;
 import com.fiiiiive.zippop.store.repository.StoreImageRepository;
 import com.fiiiiive.zippop.store.repository.StoreLikeRepository;
 import com.fiiiiive.zippop.store.repository.StoreRepository;

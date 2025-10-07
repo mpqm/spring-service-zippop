@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.store.repository;
 
-import com.fiiiiive.zippop.store.model.entity.StoreLike;
+import com.fiiiiive.zippop.store.entity.StoreLike;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

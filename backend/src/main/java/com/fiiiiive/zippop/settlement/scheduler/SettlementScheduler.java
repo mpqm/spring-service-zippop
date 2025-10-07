@@ -1,9 +1,9 @@
 package com.fiiiiive.zippop.settlement.scheduler;
 
 import com.fiiiiive.zippop.global.base.BaseStatus;
-import com.fiiiiive.zippop.orders.model.entity.Orders;
+import com.fiiiiive.zippop.orders.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
-import com.fiiiiive.zippop.settlement.model.entity.Settlement;
+import com.fiiiiive.zippop.settlement.entity.Settlement;
 import com.fiiiiive.zippop.settlement.repository.SettlementRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

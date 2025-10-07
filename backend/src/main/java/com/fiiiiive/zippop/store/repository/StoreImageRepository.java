@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.store.repository;
 
-import com.fiiiiive.zippop.store.model.entity.StoreImage;
+import com.fiiiiive.zippop.store.entity.StoreImage;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

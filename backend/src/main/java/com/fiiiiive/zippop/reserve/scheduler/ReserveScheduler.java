@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.reserve.scheduler;
 
 import com.fiiiiive.zippop.global.service.RedisService;
-import com.fiiiiive.zippop.reserve.model.entity.Reserve;
+import com.fiiiiive.zippop.reserve.entity.Reserve;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

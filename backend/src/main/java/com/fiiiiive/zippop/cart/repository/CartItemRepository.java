@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.cart.repository;
 
-import com.fiiiiive.zippop.cart.model.entity.CartItem;
+import com.fiiiiive.zippop.cart.entity.CartItem;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

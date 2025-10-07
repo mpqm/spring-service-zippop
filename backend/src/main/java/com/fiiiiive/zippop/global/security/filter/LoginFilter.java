@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiiiiive.zippop.auth.model.dto.AuthDto;
+import com.fiiiiive.zippop.auth.dto.AuthDto;
 import com.fiiiiive.zippop.global.service.JwtService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.FilterChain;
