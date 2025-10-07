@@ -5,6 +5,8 @@ import com.fiiiiive.zippop.orders.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.payout.entity.Payout;
 import com.fiiiiive.zippop.payout.repository.PayoutRepository;
+import com.fiiiiive.zippop.store.entity.Store;
+import com.fiiiiive.zippop.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +26,7 @@ public class PayoutScheduler {
 
     private final OrdersRepository ordersRepository;
     private final PayoutRepository payoutRepository;
+    private final StoreRepository storeRepository;
 
     @Scheduled(cron = "0 0 6 * * ?")
 //    @Scheduled(fixedRate = 1000)
@@ -38,13 +41,20 @@ public class PayoutScheduler {
         Map<Long, Integer> storeRevenueMap = new HashMap<>();
         for (Orders order : ordersList) storeRevenueMap.merge(order.getStoreIdx(), order.getTotalPrice(), Integer::sum);
 
-        // Settlement 저장
+        // Payout 저장
         for (Map.Entry<Long, Integer> entry : storeRevenueMap.entrySet()) {
             Long storeIdx = entry.getKey();
             Integer totalRevenue = entry.getValue();
 
+            // Store 조회
+            Store store = storeRepository.findByStoreIdx(storeIdx).orElse(null);
+            if (store == null) {
+                log.warn("정산 생성 실패 - 스토어를 찾을 수 없음: {}", storeIdx);
+                continue;
+            }
+
             Payout payout = Payout.builder()
-                    .storeIdx(storeIdx)
+                    .store(store)
                     .totalRevenue(totalRevenue)
                     .payoutDate(LocalDate.now().minusDays(1))
                     .status(BaseStatus.COMPLETE)

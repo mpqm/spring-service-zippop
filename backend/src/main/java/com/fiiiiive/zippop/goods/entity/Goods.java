@@ -4,6 +4,7 @@ import com.fiiiiive.zippop.cart.entity.CartItem;
 import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseStatus;
 import com.fiiiiive.zippop.goods.dto.GoodsDto;
+import com.fiiiiive.zippop.orders.entity.OrdersDetail;
 import com.fiiiiive.zippop.store.entity.Store;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -88,6 +89,9 @@ public class Goods extends BaseEntity {
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GoodsImage> goodsImageList;
+
+    @OneToMany(mappedBy = "goods")
+    private List<OrdersDetail> ordersDetailList;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)

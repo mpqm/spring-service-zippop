@@ -2,7 +2,8 @@ package com.fiiiiive.zippop.payout.entity;
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseStatus;
-import com.fiiiiive.zippop.payout.dto.SettlementDto;
+import com.fiiiiive.zippop.payout.dto.PayoutDto;
+import com.fiiiiive.zippop.store.entity.Store;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -16,14 +17,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Settlement extends BaseEntity {
+public class Payout extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-
-    // 정산 대상 스토어 ID (필수)
-    @Column(nullable = false)
-    private Long storeIdx;
 
     // 총 매출 (필수, 0 이상)
     @Column(nullable = false)
@@ -32,7 +29,7 @@ public class Settlement extends BaseEntity {
 
     // 정산일 (필수)
     @Column(nullable = false)
-    private LocalDate settlementDate;
+    private LocalDate payoutDate;
 
     // 정산 상태 (필수, 최대 50자)
     @Setter
@@ -40,15 +37,20 @@ public class Settlement extends BaseEntity {
     @Column(nullable = false)
     private BaseStatus status;
 
-    public SettlementDto.SearchSettlementRes toDto() {
-        return SettlementDto.SearchSettlementRes.builder()
-                .settlementDate(this.getSettlementDate())
+    // ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_idx", nullable = false)
+    private Store store;
+
+    public PayoutDto.SearchPayoutRes toDto() {
+        return PayoutDto.SearchPayoutRes.builder()
+                .payoutDate(this.getPayoutDate())
                 .totalRevenue(this.getTotalRevenue())
                 .build();
     }
 
-    public static Page<SettlementDto.SearchSettlementRes> toDtoPage(Page<Settlement> settlementPage) {
-        return settlementPage.map(Settlement::toDto);
+    public static Page<PayoutDto.SearchPayoutRes> toDtoPage(Page<Payout> payoutPage) {
+        return payoutPage.map(Payout::toDto);
     }
 }
 

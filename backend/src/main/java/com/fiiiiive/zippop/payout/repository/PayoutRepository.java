@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SettlementRepository extends JpaRepository<Payout, Long> {
+public interface PayoutRepository extends JpaRepository<Payout, Long> {
 
-    @Query("SELECT s FROM Settlement s WHERE s.storeIdx = :storeIdx")
+    @Query("SELECT p FROM Payout p WHERE p.store.idx = :storeIdx")
     Optional<Page<Payout>> findAllByStoreIdx(Long storeIdx, Pageable pageable);
 
 }

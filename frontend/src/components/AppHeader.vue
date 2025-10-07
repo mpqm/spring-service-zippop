@@ -39,7 +39,7 @@
             <a :class="{ 'header-dropdown-link': true, active: isActive('/mypage/company/goods') }" href="/mypage/company/goods">굿즈 관리</a>
             <a :class="{ 'header-dropdown-link': true, active: isActive('/mypage/company/reserve') }" href="/mypage/company/reserve">예약 관리</a>
             <a :class="{ 'header-dropdown-link': true, active: isActive('/mypage/company/orders') }" href="/mypage/company/orders">거래 내역</a>
-            <a :class="{ 'header-dropdown-link': true, active: isActive('/mypage/company/settlement') }" href="/mypage/company/settlement">정산 내역</a>
+            <a :class="{ 'header-dropdown-link': true, active: isActive('/mypage/company/payout') }" href="/mypage/company/payout">정산 내역</a>
             <a :class="{ 'header-dropdown-link': true, active: isActive('/mypage/company/account-edit') }" href="/mypage/company/account-edit">계정 관리</a>
             <a class="header-dropdown-link" @click="logout">로그아웃</a>
           </div>

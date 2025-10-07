@@ -1,11 +1,11 @@
 <template>
     <div>
-      <div class="settlement-management-page">
+      <div class="payout-management-page">
         <div class="total-sum">
         <p>총 판매 수익: {{ totalRevenueSum }}원</p>
       </div>
-        <div class="settlement-list" v-if="settlementList && settlementList.length">
-          <SettlementList v-for="settlement in settlementList" :key="settlement.settlementIdx" :settlement="settlement" :showControl="false" />
+        <div class="payout-list" v-if="settlementList && settlementList.length">
+          <SettlementList v-for="payout in settlementList" :key="payout.settlementIdx" :payout="payout" :showControl="false" />
         </div>
         <div class="notice" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
@@ -20,11 +20,11 @@ import SettlementList from "@/components/SettlementList.vue";
   import { useSettlementStore } from "@/stores/useSettlementStore";
   import { useRoute } from "vue-router";
   
-  // settlement, router, route, toast
+  // payout, router, route, toast
   const settlementStore = useSettlementStore();
   const route = useRoute();
   
-  // 변수(settlement)
+  // 변수(payout)
   const settlementList = ref([]);
   const currentPage = ref(0);
   const pageSize = ref(8);
@@ -70,12 +70,12 @@ import SettlementList from "@/components/SettlementList.vue";
   </script>
   
   <style scoped>
-  .settlement-management-page {
+  .payout-management-page {
     flex-direction: row;
     width: 65rem;
   }
   
-  .settlement-control {
+  .payout-control {
     padding: 5px;
     display: flex;
     justify-content: space-between;
@@ -92,7 +92,7 @@ import SettlementList from "@/components/SettlementList.vue";
     text-align: center;
   }
   
-  .settlement-list {
+  .payout-list {
     width: auto;
     padding: 5px;
     display: flex;
@@ -100,7 +100,7 @@ import SettlementList from "@/components/SettlementList.vue";
     gap: 10px;
   }
   
-  .settlement-register-btn {
+  .payout-register-btn {
     display: block;
     text-align: center;
     width: auto;
@@ -122,7 +122,7 @@ import SettlementList from "@/components/SettlementList.vue";
     justify-content: center;
   }
   
-  .settlement-control {
+  .payout-control {
     padding: 5px;
     display: flex;
     justify-content: space-between;
