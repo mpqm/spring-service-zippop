@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="ctn-table">
     <EasyDataTable
       :headers="headers"
       :items="props.orders"
@@ -35,10 +35,10 @@
 
       <!-- 사용 포인트 -->
       <template #item-usedPoint="item">
-        <div class="table-cell-container">
+        <button class="btn-tagdefault">
           <Icon icon="iconoir:coins" width="16px" height="16px" style="color: #00c7ae" />
           <span>{{ item.usedPoint }}</span>
-        </div>
+        </button>
       </template>
 
       <!-- 배송비 -->
@@ -58,25 +58,25 @@
 
       <!-- 액션 버튼들 -->
       <template #item-actions="item">
-        <div v-if="props.showControl === true" class="table-btn-container">
-          <button class="table-btn orders-cancel-btn" :disabled="isCancelDisabled(item)" @click="cancelOrders(item.ordersIdx)">
+        <div v-if="props.showControl === true" class="ctn-tablebuttons">
+          <button class="btn-tagdefault" :disabled="isCancelDisabled(item)" @click="cancelOrders(item.ordersIdx)">
             <Icon icon="iconoir:cancel" width="16px" height="16px" />
           </button>
-          <button class="table-btn" @click="completeOrders(item.ordersIdx)">
+          <button class="btn-tagdefault" @click="completeOrders(item.ordersIdx)">
             <Icon icon="iconoir:check" width="16px" height="16px" />
             주문확정
           </button>
-          <router-link class="table-btn" :to="item.ordersIdx ? `/orders/${item.ordersIdx}` : '#'">
+          <router-link class="btn-tagdefault" :to="item.ordersIdx ? `/orders/${item.ordersIdx}` : '#'">
             <Icon icon="iconoir:eye" width="16px" height="16px" />
           </router-link>
         </div>
 
-        <div v-if="props.showControl === false" class="table-btn-container">
-          <button class="table-btn" @click="completeOrders(item.ordersIdx)">
+        <div v-if="props.showControl === false" class="ctn-tablebuttons">
+          <button class="btn-tagdefault" @click="completeOrders(item.ordersIdx)">
             <Icon icon="iconoir:check" width="16px" height="16px" />
             배송확정
           </button>
-          <router-link v-if="item.ordersIdx && route.params.storeIdx" class="table-btn" :to="`/orders/${item.ordersIdx}?storeIdx=${route.params.storeIdx}`">
+          <router-link v-if="item.ordersIdx && route.params.storeIdx" class="btn-tagdefault" :to="`/orders/${item.ordersIdx}?storeIdx=${route.params.storeIdx}`">
             <Icon icon="iconoir:eye" width="16px" height="16px" />
           </router-link>
         </div>
@@ -155,10 +155,10 @@ const formatOrderStatus = (statusString) => {
 
 // 상태별 클래스 반환 함수
 const getStatusClass = (statusString) => {
-  if (statusString === "STOCK_READY" || statusString === "RESERVE_READY") return "status-ready"
-  else if (statusString === "STOCK_CANCEL" || statusString === "RESERVE_CANCEL") return "status-cancel"
-  else if (statusString === "STOCK_COMPLETE" || statusString === "RESERVE_COMPLETE") return "status-complete"
-  else if (statusString === "STOCK_DELIVERY" || statusString === "RESERVE_DELIVERY") return "status-delivery"
+  if (statusString === "STOCK_READY" || statusString === "RESERVE_READY") return "btn-waiting"
+  else if (statusString === "STOCK_CANCEL" || statusString === "RESERVE_CANCEL") return "btn-cancel"
+  else if (statusString === "STOCK_COMPLETE" || statusString === "RESERVE_COMPLETE") return "btn-complete"
+  else if (statusString === "STOCK_DELIVERY" || statusString === "RESERVE_DELIVERY") return "btn-active"
   return ""
 }
 
@@ -207,46 +207,3 @@ const completeOrders = async (ordersIdx) => {
   }
 }
 </script>
-
-<style scoped>
-.status-ready {
-  color: #f39c12;
-}
-
-.status-cancel {
-  color: #e74c3c;
-}
-
-.status-complete {
-  color: #3498db;
-}
-
-.status-delivery {
-  color: #27ae60;
-}
-
-.orders-cancel-btn {
-  background-color: #e74c3c !important;
-  border-color: #e74c3c !important;
-}
-
-.orders-cancel-btn:hover {
-  background-color: #c0392b !important;
-}
-
-.orders-complete-btn {
-  background-color: #27ae60 !important;
-  border-color: #27ae60 !important;
-}
-
-.orders-complete-btn:hover {
-  background-color: #229954 !important;
-}
-
-.table-btn:disabled {
-  background-color: #95a5a6 !important;
-  border-color: #95a5a6 !important;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-</style>

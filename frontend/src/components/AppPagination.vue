@@ -1,22 +1,22 @@
 <template>
-  <div v-if="props.totalPages > 0" class="pagination-wrapper">
+  <div v-if="props.totalPages > 0" class="wrp-pagination">
     <!-- 그룹 이동 버튼 -->
-    <button v-if="!hideBtns && props.totalPages > pageGroupSize && currentGroup > 0" class="pagination-group-btn" @click="prevGroup"> 
+    <button v-if="!hideBtns && props.totalPages > pageGroupSize && currentGroup > 0" class="btn-paginationgroup" @click="prevGroup"> 
       <Icon icon="ic:outline-first-page" width="16px" height="16px" />
     </button>
 
     <!-- 이전 페이지 버튼 -->
-    <button v-if="!hideBtns" class="pagination-move-btn" @click="changePage(currentPage - 1)" :disabled="currentPage === 0"> 
+    <button v-if="!hideBtns" class="btn-paginationmove" @click="changePage(currentPage - 1)" :disabled="currentPage === 0"> 
       <Icon icon="ic:round-navigate-before" width="16px" height="16px" />
     </button>
 
     <!-- 페이지 버튼 -->
   <!-- 페이지 버튼 -->
-  <div v-if="!hideBtns" class="pagination-page-container">
+  <div v-if="!hideBtns" class="ctn-paginationpages">
     <button 
       v-for="page in groupPages" 
       :key="page" 
-      :class="['pagination-page-btn', { active: page === currentPage + 1 }]" 
+      :class="['btn-paginationpage', { active: page === currentPage + 1 }]" 
       @click="changePage(page - 1)"
     >
       {{ page }}
@@ -24,12 +24,12 @@
   </div>
 
     <!-- 다음 페이지 버튼 -->
-    <button v-if="!hideBtns" class="pagination-move-btn" @click="changePage(currentPage + 1)" :disabled="currentPage === props.totalPages - 1">
+    <button v-if="!hideBtns" class="btn-paginationmove" @click="changePage(currentPage + 1)" :disabled="currentPage === props.totalPages - 1">
       <Icon icon="ic:round-navigate-next" width="16px" height="16px" />
     </button>
 
     <!-- 그룹 이동 버튼 -->
-    <button v-if="!hideBtns && props.totalPages > pageGroupSize && (currentGroup + 1) * pageGroupSize < props.totalPages" class="pagination-group-btn" @click="nextGroup">
+    <button v-if="!hideBtns && props.totalPages > pageGroupSize && (currentGroup + 1) * pageGroupSize < props.totalPages" class="btn-paginationgroup" @click="nextGroup">
       <Icon icon="ic:outline-last-page" width="16px" height="16px" />
     </button>
   </div>
@@ -91,3 +91,91 @@ const groupPages = computed(() => {
 });
 
 </script>
+
+<style scoped>
+.wrp-pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 2rem;
+}
+
+.ctn-paginationpages {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.btn-pagination, .btn-paginationpage, .btn-paginationmove, .btn-paginationgroup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    padding: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: 
+        background-color 0.25s ease,
+        box-shadow 0.25s ease,
+        color 0.25s ease,
+        transform 0.15s ease;
+}
+
+.btn-paginationpage:hover {
+    background-color: #f4fffd;
+    border-color: #00c7ae;
+    box-shadow: 0 2px 5px rgba(0, 199, 174, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-paginationpage.active {
+    background-color: #00c7ae;
+    color: #fff;
+    border-color: #00c7ae;
+    box-shadow: 0 3px 6px rgba(0, 199, 174, 0.3);
+}
+
+.btn-paginationmove {
+    background-color: #00c7ae;
+    color: #fff;
+    border: none;
+    font-weight: 700;
+}
+
+.btn-paginationmove:hover {
+    background-color: #00b39d;
+    box-shadow: 0 3px 6px rgba(0, 199, 174, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-paginationgroup {
+    background-color: #00c7ae;
+    color: #fff;
+    border: none;
+    font-weight: 700;
+}
+
+.btn-paginationgroup:hover {
+    background-color: #00b39d;
+    box-shadow: 0 3px 6px rgba(0, 199, 174, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-pagination:disabled, .btn-paginationpage:disabled, .btn-paginationmove:disabled, .btn-paginationgroup:disabled {
+    background-color: #f0fffc;
+    color: #00c7ae;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+</style>

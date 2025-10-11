@@ -1,39 +1,40 @@
 <template>
-    <div class="list-container">
-        <img class="list-img" v-if="orders.searchordersImageResList && orders.searchordersImageResList.length" :src="orders.searchordersImageResList[0].ordersImageUrl" alt="orders image" />
-        <div class="list-info-container2">
-            <p class="t3">주문 번호 : {{ orders.impUid }}</p>
-            <p class="t3">주문자 : {{ orders.name }}</p>
-            <p class="t3">전화 번호 : {{ orders.phoneNumber }}</p>
-            <p class="t3">{{ formatedDate }}</p>
+    <div class="ctn-list1">
+        <img class="img-list" v-if="orders.searchordersImageResList && orders.searchordersImageResList.length" :src="orders.searchordersImageResList[0].ordersImageUrl" alt="orders image" />
+        <div class="ctn-listinfo2">
+            <p class="txt-def2">주문번호 : {{ orders.impUid }}</p>
+            <p class="txt-def2">고객이름 : {{ orders.name }}</p>
+            <p class="txt-def2">전화번호 : {{ orders.phoneNumber }}</p>
+            <p class="txt-def2">주문날짜 : {{ formatedDate }}</p>
+
         </div>
-        <div class="list-info-container2">
-            <p class="t2">사용포인트 : {{ orders.usedPoint }} points</p>
-            <p class="t2">배송비 : {{ orders.deliveryCost }} 원</p>
-            <p class="t2">총 가격 : {{ orders.totalPrice }} 원</p>
-            <p class="t3">배송 주소 : {{ orders.address }}</p>
-            <p class="t4" :class="getStatusClass(orders.orderStatus)">상태 : {{ formatedOrderStatus }}</p>
+        <div class="ctn-listinfo2">
+            <p class="txt-def2">사용포인트 : {{ orders.usedPoint }} points</p>
+            <p class="txt-def2">배송비용 : {{ orders.deliveryCost }} 원</p>
+            <p class="txt-def2">총 가격 : {{ orders.totalPrice }} 원</p>
+            <p class="txt-def2">배송주소 : {{ orders.address }}</p>
         </div>
-        <div v-if="showControl == true" class="btn-container">
-            <button class="default-btn" :disabled="isCancelDisabled" @click="cancelOrders">
+        <div v-if="showControl == true" class="ctn-listbuttons">
+            <p :class="getStatusClass(orders.orderStatus)">{{ formatedOrderStatus }}</p>
+            <button class="btn-tagaction" :disabled="isCancelDisabled" @click="cancelOrders">
                 <Icon icon="iconoir:trash" width="20px" height="20px" style="color: #ffffff" />
                 주문 취소
             </button>
-            <button class="default-btn" @click="completeOrders">
+            <button class="btn-tagaction" @click="completeOrders">
                 <Icon icon="iconoir:check" width="20px" height="20px" style="color: #ffffff" />
                 주문 확정
             </button>
-            <router-link class="default-btn" :to="orders ? `/orders/${orders.ordersIdx}` : '#'">
+            <button class="btn-tagaction" @click="goOrders">
                 <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
                 정보 보기
-            </router-link>
+            </button>
         </div>
-        <div v-if="showControl == false" class="btn-container">
-            <button class="default-btn" @click="completeOrders">
+        <div v-if="showControl == false" class="ctn-buttons">
+            <button class="btn-tagaction" @click="completeOrders">
                 <Icon icon="iconoir:check" width="20px" height="20px" style="color: #ffffff" />
                 배송 확정
             </button>
-            <router-link v-if="orders && route.params.storeIdx" class="default-btn" :to="`/orders/${orders.ordersIdx}?storeIdx=${route.params.storeIdx}`">
+            <router-link v-if="orders && route.params.storeIdx" class="btn-tagaction" :to="`/orders/${orders.ordersIdx}?storeIdx=${route.params.storeIdx}`">
                 <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
                 정보 보기
             </router-link>
@@ -102,6 +103,11 @@ const completeOrders = async () => {
     }
 }
 
+// 주문 정보 보기
+const goOrders = () => {
+    router.push(`/orders/${props.orders.ordersIdx}`);
+}
+
 // 날짜 포맷 함수
 const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
@@ -127,10 +133,10 @@ const isCancelDisabled = computed(() => {
 
 // 상태별 클래스 반환 함수
 const getStatusClass = (statusString) => {
-  if (statusString === "STOCK_READY" || statusString === "RESERVE_READY") return "status-waiting";
-  else if (statusString === "STOCK_CANCEL" || statusString === "RESERVE_CANCEL") return "status-cancel";
-  else if (statusString === "STOCK_COMPLETE" || statusString === "RESERVE_COMPLETE") return "status-completed";
-  else if (statusString === "STOCK_DELIVERY" || statusString === "RESERVE_DELIVERY") return "status-active";
+  if (statusString === "STOCK_READY" || statusString === "RESERVE_READY") return "btn-wating";
+  else if (statusString === "STOCK_CANCEL" || statusString === "RESERVE_CANCEL") return "btn-cancel";
+  else if (statusString === "STOCK_COMPLETE" || statusString === "RESERVE_COMPLETE") return "btn-complete";
+  else if (statusString === "STOCK_DELIVERY" || statusString === "RESERVE_DELIVERY") return "btn-active";
   return "";
 };
 

@@ -1,23 +1,21 @@
 <template>
   <div>
-    <div class="management-page">
-      <div class="two-section-container">
-        <div>
-
-        </div>
-        <div class="btn-container">
-          <router-link class="default-btn" :to="`/mypage/company/reserve`">
-            <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px"  style="color: #ffffff" />
-          </router-link>
-          <router-link class="default-btn" :to="`/mypage/company/reserve/register/${route.params.storeIdx}`">
+    <div class="lyt-child">
+      <div class="ctn-split">
+        <div></div>
+        <div class="ctn-buttons">
+          <button class="btn-normal" @click="router.back()">
+            <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />
+          </button>
+          <router-link class="btn-default" :to="`/mypage/company/reserve/register/${route.params.storeIdx}`">
             <Icon icon="iconoir:add-square" width="20px" height="20px"  style="color: #ffffff" />예약 등록
           </router-link>
         </div>
       </div>
-      <div class="table-container" v-if="reserveList && reserveList.length">
+      <div class="ctn-table" v-if="reserveList && reserveList.length">
         <ReserveTable :reserves="reserveList" :showControl="showControl" />
       </div>
-      <div class="empty-string" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
+      <div class="txt-null" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
@@ -26,12 +24,14 @@
 <script setup>
 import ReserveTable from "@/components/ReserveTable.vue";
 import AppPagination from "@/components/AppPagination.vue";
+import { useRouter } from "vue-router";
 import { onMounted, ref } from "vue";
 import { useReserveStore } from "@/stores/useReserveStore";
 import { useRoute } from "vue-router";
 
 // reserve, router, route, toast
-const reserveStore = useReserveStore();
+const reserveStore = useReserveStore(); 
+const router = useRouter();
 const route = useRoute();
 
 // 변수(reserve)

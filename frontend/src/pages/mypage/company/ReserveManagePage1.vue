@@ -1,21 +1,21 @@
 <template>
   <div>
-    <div class="two-section-container">
-      <div class="input-search-container">
-        <input class="default-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-        <button class="default-btn" @click="searchAllByKeyword">
+    <div class="ctn-split">
+      <div class="ctn-inputsearch">
+        <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+        <button class="btn-default" @click="searchAllByKeyword">
           <Icon icon="ic:search" width="20px" height="20px" />팝업 검색
           </button>
-        <button class="default-btn" @click="searchAll(0)">
+        <button class="btn-normal" @click="searchAll(0)">
           <Icon icon="ic:baseline-refresh" width="20px" height="20px" /> 
         </button>
       </div>
     </div>
-    <div class="management-page">
+    <div class="lyt-child">
       <div v-if="storeList && storeList.length">
         <StoreTable :stores="storeList" :showControl="showControl" />
       </div>
-      <div class="empty-string" v-else>
+      <div class="txt-null" v-else>
         <p>등록된 팝업 스토어가 없습니다.</p>
       </div>
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />

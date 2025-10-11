@@ -1,27 +1,25 @@
 <template>
-  <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
-    <div class="modal-container" @click.stop>
-      <div class="modal-content">
-        <div class="modal-header">
-          <span class="t1">{{ goods.goodsName }}</span>
-          <button @click="closeModal" class="default-btn">
+  <div v-if="isModalOpen" class="lyt-modal" @click="closeModal">
+    <div class="wrp-modal" @click.stop>
+      <div class="ctn-modal">
+        <div class="ctn-split">
+          <span class="txt-def1">{{ goods.goodsName }}</span>
+          <button @click="closeModal" class="btn-default">
             <Icon icon="iconoir:delete-circle" width="20px" height="20px" style="color: #ffffff" />
           </button>
         </div>
-        <div class="modal-body">
-          <div class="modal-body-left">
+        <div class="ctn-split">
+          <div class="ctn-l50">
             <ImageSlider :fileUrls="fileUrls"></ImageSlider>
           </div>
-          <div class="modal-body-right">
-            <div class="modal-info-container">
-              <span class="t1">{{ goods.storeName }}</span>
-              <span class="t1">{{ goods.goodsName }}</span>
+          <div class="ctn-r50">
+            <p class="txt-def1">{{ goods.goodsName }}</p>
+            <p class="txt-desc"> {{ goods.goodsContent }}</p>
+            <div class="ctn-tagbutton">
+              <button class="btn-tagdefault">{{ goods.storeName }}</button>
+              <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsPrice }}원</button>
+              <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsAmount }}개</button>
             </div>
-            <div class="modal-info-container">
-                <Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsPrice }}원
-                <Icon icon="iconoir:box-iso" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsAmount }}개
-            </div>
-            <span class="t1"> {{ goods.goodsContent }}</span>
           </div>
         </div>
       </div>

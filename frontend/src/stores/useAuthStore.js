@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { backend } from "@/config";
+import { useStoreStore } from "@/stores/useStoreStore";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -59,6 +60,9 @@ export const useAuthStore = defineStore("auth", {
                 this.userInfo.role = null;
                 this.userInfo.profileImageUrl = null;
                 this.isLoggedIn = false;
+                const storeStore = useStoreStore();
+                storeStore.likeList = [];
+
                 return res.data;
             } catch (error) {
                 return error.response.data

@@ -1,49 +1,52 @@
 <template>
-  <div class="update-page">
-    <form class="update-form" @submit.prevent="update()">
-      <div>
-        <label>팝업 스토어 이름</label>
-        <input class="update-input" v-model="storeName" type="text" placeholder="팝업 스토어 이름을 입력해주세요." />
-      </div>
-      <div>
-        <label>팝업 스토어 설명</label>
-        <textarea class="update-input" v-model="storeContent" placeholder="팝업 스토어에 대한 설명을 입력해주세요."></textarea>
-      </div>
-      <div>
-        <label>팝업 스토어 카테고리</label>
-        <input class="update-input" v-model="category" type="text" placeholder="팝업 스토어 카테고리를 입력해주세요." />
-      </div>
-      <div>
-        <label>팝업 스토어 온라인 총 인원</label>
-        <input class="update-input" v-model="totalPeople" type="number" placeholder="팝업 스토어 카테고리를 입력해주세요." />
-      </div>
-      <div>
-        <label>팝업스토어 시작일/종료일</label>
-        <div class="date-picker">
-          <input class="update-input" v-model="storeStartDate" type="date" placeholder="시작일" />
-          <input class="update-input" v-model="storeEndDate" type="date" placeholder="종료일" />
+  <div class="lyt-child">
+    <form class="ctn-rootform" @submit.prevent="update()">
+      <div class="ctn-split">
+        <h1 class="txt-def0">팝업 스토어 수정</h1>
+        <div class="ctn-buttons">
+          <button type="submit" class="btn-default">수정</button>
+          <button type="button" @click="router.back()" class="btn-normal">취소</button>
         </div>
       </div>
-      <div>
-        <label>주소/상세주소</label>
-        <div class="address">
-          <input class="update-input" v-model="address" type="text" placeholder="주소" @click="openAddressSearch" />
-          <input class="update-input" v-model="addressDetail" type="text" placeholder="상세 주소" />
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label">팝업 스토어 이름</label>
+        <input class="ipt-default" v-model="storeName" type="text" placeholder="팝업 스토어 이름을 입력해주세요." />
+      </div>
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label">팝업 스토어 설명</label>
+        <textarea class="ipt-default" v-model="storeContent" placeholder="팝업 스토어에 대한 설명을 입력해주세요."></textarea>
+      </div>
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label">팝업 스토어 카테고리</label>
+        <input class="ipt-default" v-model="category" type="text" placeholder="팝업 스토어 카테고리를 입력해주세요." />
+      </div>
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label">팝업 스토어 온라인 총 인원</label>
+        <input class="ipt-default" v-model="totalPeople" type="number" placeholder="팝업 스토어 카테고리를 입력해주세요." />
+      </div>
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label">팝업스토어 시작일/종료일</label>
+        <div class="ctn-split">
+          <input class="ipt-default" v-model="storeStartDate" type="date" placeholder="시작일" />
+          <input class="ipt-default" v-model="storeEndDate" type="date" placeholder="종료일" />
+        </div>
+      </div>
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label">주소/상세주소</label>
+        <div class="ctn-split">
+          <input class="ipt-default" v-model="address" type="text" placeholder="주소" @click="openAddressSearch" />
+          <input class="ipt-default" v-model="addressDetail" type="text" placeholder="상세 주소" />
         </div>
       </div>
 
       <label for="file">
-        <div class="file-upload-btn">팝업 스토어 이미지 파일 업로드</div>
+        <div class="btn-default">팝업 스토어 이미지 파일 업로드</div>
       </label>
       <input @change="handleFileUpload" type="file" name="file" id="file" multiple />
-      <div class="file-preview" v-if="fileUrls.length">
-        <div v-for="(fileUrl, index) in fileUrls" :key="index" class="file-preview-item">
+      <div class="wrp-filepreview" v-if="fileUrls.length">
+        <div v-for="(fileUrl, index) in fileUrls" :key="index" class="ctn-filepreview">
           <img :src="fileUrl" alt="file preview" />
         </div>
-      </div>
-      <div class="btn-container">
-        <button type="submit" class="update-btn">수정</button>
-        <router-link to="/mypage/company/store" class="update-btn">취소</router-link>
       </div>
     </form>
   </div>
@@ -109,7 +112,7 @@ const mapper = async () => {
 // 주소 API 로드
 const loadMapjsApi = async () => {
   const script = document.createElement("script");
-  script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+  script.src = "https://txt-def1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
   document.head.appendChild(script);
 }
 
@@ -144,11 +147,12 @@ const update = async () => {
   };
   const formData = new FormData();
   formData.append("dto", new Blob([JSON.stringify(req)], { type: "application/json" }));
-  if (files.value.length === 0) {
-    toast.error("이미지를 선택해주세요");
-    return
+  
+  // 새로운 이미지를 선택한 경우에만 추가
+  if (files.value.length > 0) {
+    Array.from(files.value).forEach((file) => { formData.append("files", file);});
   }
-  Array.from(files.value).forEach((file) => { formData.append("files", file);});
+  
   const res = await storeStore.updateStore(route.params.storeIdx, formData);
   if (res.success) {
     toast.success(res.message);
@@ -160,104 +164,3 @@ const update = async () => {
 
 </script>
 
-<style scoped>
-.update-page {
-  padding: 5px;
-  border-radius: 8px;
-}
-
-.update-form {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  row-gap: 1rem;
-}
-
-.update-input {
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  display: block;
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  width: 100%;
-  box-sizing: border-box;
-  color: #323232;
-  background-color: #fff;
-  resize: none;
-}
-
-#file {
-  display: none;
-}
-
-.file-preview {
-  display: flex;
-  align-self: center;
-  width: fit-content;
-  height: fit-content;
-}
-
-.file-upload-btn {
-  background-color: #00c7ae;
-  color: white;
-  padding: 0.75rem;
-  text-align: center;
-  cursor: pointer;
-  border-radius: 5px;
-  margin-top: 1rem;
-}
-
-.btn-container {
-  display: flex;
-  gap: 10px;
-}
-
-.update-btn {
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  width: 100%;
-  user-select: none;
-  margin-top: 0.75rem;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.6875rem 0.75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  border-radius: 0.25rem;
-  text-decoration: none;
-}
-
-.file-preview {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-  gap: 10px;
-}
-
-.address {
-  position: relative;
-  display: flex;
-  column-gap: 10px;
-  flex-direction: row;
-}
-
-.file-preview-item img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-}
-
-.date-picker {
-  display: flex;
-  gap: 10px;
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="ctn-table">
     <EasyDataTable
       :headers="headers"
       :items="props.reserves"
@@ -15,10 +15,10 @@
     >
       <!-- 예약 인원수 -->
       <template #item-reservePeople="item">
-        <div class="table-cell-container">
+        <button class="btn-tagdefault">
           <Icon icon="iconoir:user" width="16px" height="16px" style="color: #00c7ae" />
           <span>{{ item.reservePeople }}명</span>
-        </div>
+        </button>
       </template>
 
       <!-- 예약 시작 날짜 -->
@@ -38,21 +38,21 @@
 
       <!-- 예약 상태 -->
       <template #item-status="item">
-        <span :class="getStatusClass(item)">
+        <button class="btn-tagdefault" :class="getStatusClass(item)">
           {{ getStatusText(item) }}
-        </span>
+        </button>
       </template>
 
       <!-- 액션 버튼들 -->
       <template #item-actions="item">
-        <div v-if="props.showControl === true" class="table-btn-container">
-          <button class="table-btn" @click="deleteReserve(item)">
+        <div v-if="props.showControl === true" class="ctn-tablebuttons">
+          <button class="btn-tagaction" @click="deleteReserve(item)">
             <Icon icon="iconoir:trash" width="16px" height="16px" />
           </button>
         </div>
 
-        <div v-if="props.showControl === false" class="table-btn-container">
-          <router-link class="table-btn" :to="`/reserve/${item.storeIdx}/${item.reserveIdx}`">
+        <div v-if="props.showControl === false" class="ctn-tablebuttons">
+          <router-link class="btn-tagaction" :to="`/reserve/${item.storeIdx}/${item.reserveIdx}`">
             <Icon icon="iconoir:calendar-plus" width="16px" height="16px" />
           </router-link>
         </div>
@@ -146,11 +146,11 @@ const getStatusClass = (reserve) => {
   const endTime = new Date(reserve.reserveEndTime)
 
   if (now < startTime) {
-    return 'table-cell-status-waiting'
+    return 'btn-wating'
   } else if (now >= startTime && now <= endTime) {
-    return 'table-cell-status-active'
+    return 'btn-active'
   } else {
-    return 'table-cell-status-completed'
+    return 'btn-complete'
   }
 }
 

@@ -1,57 +1,60 @@
 <template>
-    <div>
-        <hr>
-        <div class="edit-profile-container">
-            <h3 class="t1">회원정보 수정</h3>
-            <form @submit.prevent="editInfo" class="edit-profile-form">
-                <div class="form-group">
-                    <label for="name">이름</label>
-                    <input type="text" id="name" v-model="userInfo.name" required />
+
+    <div class="lyt-child">
+        <div class="ctn-rootform">
+            <form @submit.prevent="editInfo" class="ctn-chidform">
+                <div class="ctn-split">
+                    <h1 class="txt-def0">회원정보 수정</h1>
+                    <button class="btn-default" type="submit">수정하기</button>
                 </div>
-                <div class="form-group">
-                    <label for="phone">전화번호</label>
-                    <input type="tel" id="phone" v-model="userInfo.phoneNumber" required />
+                <div class="ctn-inputdefault">
+                    <label class="ipt-default-label">이름</label>
+                    <input class="ipt-default" type="text" id="name" v-model="userInfo.name" required />
                 </div>
-                <div class="form-group" v-if="showCrn">
-                    <label for="phone">사업자 등록번호</label>
-                    <input type="tel" id="phone" v-model="userInfo.crn" required />
+                <div class="ctn-inputdefault">
+                    <label class="ipt-default-label">전화번호</label>
+                    <input class="ipt-default" type="tel" id="phone" v-model="userInfo.phoneNumber" required />
                 </div>
-                <div>
-                    <label>주소/상세주소</label>
-                    <div class="address">
-                        <input class="edit-input" v-model="address" type="text" placeholder="주소" @click="openAddressSearch">
-                        <input class="edit-input" v-model="addressDetail" type="text" placeholder="상세 주소">
+                <div class="ctn-inputdefault" v-if="showCrn">
+                    <label class="ipt-default-label">사업자 등록번호</label>
+                    <input class="ipt-default" type="tel" id="phone" v-model="userInfo.crn" required />
+                </div>
+                <div class="ctn-inputdefault">
+                    <label class="ipt-default-label">주소/상세주소</label>
+                    <div class="ctn-split">
+                        <input class="ipt-default" v-model="address" type="text" placeholder="주소" @click="openAddressSearch">
+                        <input class="ipt-default" v-model="addressDetail" type="text" placeholder="상세 주소">
                     </div>
                 </div>
-                <label for="file">
-                    <div class="file-upload-btn">프로필 파일 업로드</div>
-                </label>
+                
+                <!-- 프로필 파일 업로드 -->
                 <input @change="handleFileUpload" type="file" name="file" id="file">
-                <div class="file-preview" v-if="fileUrl"><img :src="fileUrl" /></div>
-                <button type="submit" class="submit-btn">수정하기</button>
+                <div class="ctn-filepreview" v-if="fileUrl"><img :src="fileUrl" /></div>
+                <label for="file"><div class="btn-default">프로필 파일 업로드</div></label>
+
             </form>
-        </div>
-        <hr>
-        <div class="edit-password-container">
-            <h3 class="t1">비밀번호 변경</h3>
-            <form @submit.prevent="editPassword" class="edit-profile-form">
-                <div class="form-group">
-                    <label for="name">기존 비밀번호</label>
-                    <input type="password" v-model="originPassword" required />
+            <form @submit.prevent="editPassword" class="ctn-chidform">
+                <div class="ctn-split">
+                    <h1 class="txt-def0">비밀번호 변경</h1>
+                    <button class="btn-default" type="submit">비밀번호 변경</button>
                 </div>
-                <div class="form-group">
-                    <label for="phone">새 비밀번호</label>
-                    <input type="password" v-model="newPassword" required />
+                <div class="ctn-inputdefault">
+                    <label class="ipt-default-label">기존 비밀번호</label>
+                    <input class="ipt-default" type="password" v-model="originPassword" required />
                 </div>
-                <button type="submit" class="submit-btn">비밀번호 변경하기</button>
+                <div class="ctn-inputdefault">
+                    <label class="ipt-default-label">새 비밀번호</label>
+                    <input class="ipt-default" type="password" v-model="newPassword" required />
+                </div>
             </form>
+
+            <div class="ctn-chidform">
+                <div class="ctn-split">
+                    <h1 class="txt-def0">계정 비활성화</h1>
+                    <button class="btn-default" @click="inActive">계정 비활성화</button>
+                </div>
+            </div>  
         </div>
-        <hr>
-        <div class="inActive-container">
-            <h3 class="t1">계정 비활성화</h3>
-            <button class="inActive-btn" @click="inActive">계정 비활성화</button>
-        </div>
-        <hr>
     </div>
 </template>
 
@@ -97,7 +100,7 @@ const getInfo = async () => {
 // 주소 API 로드
 const loadMapjsApi = async () => {
     const script = document.createElement("script");
-    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.src = "https://txt-def1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     document.head.appendChild(script);
 }
 
@@ -166,7 +169,7 @@ const editPassword = async () => {
     }
 }
 
-// 계정 비활성화화
+// 계정 비활성화
 const inActive = async () => {
     const res = await authStore.inActive()
     if (res.success) {
@@ -178,144 +181,3 @@ const inActive = async () => {
 }
 
 </script>
-
-<style scoped>
-.edit-profile-container,
-.inActive-container,
-.edit-password-container {
-    width: auto;
-    padding: 10px;
-}
-
-hr {
-    border: 1px solid #00c7aa;
-    background-color: #00c7aa;
-    margin: 0 5px;
-}
-
-.t1 {
-    text-align: left;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-.edit-profile-form {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #333;
-}
-
-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-}
-
-input:focus {
-    border-color: #00c7aa;
-}
-
-.submit-btn {
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    width: 100%;
-    user-select: none;
-    margin-top: 0.75rem;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.6875rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: 0.25rem;
-    box-sizing: border-box;
-}
-
-.submit-btn:hover,
-.inActive-btn:hover,
-.file-upload-btn:hover {
-    opacity: 0.8;
-}
-
-#file {
-    display: none;
-}
-
-.file-preview {
-    display: flex;
-    align-self: center;
-    width: fit-content;
-    height: fit-content;
-}
-
-.file-upload-btn {
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    width: 100%;
-    user-select: none;
-    margin-top: 0.75rem;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.6875rem 0.75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: 0.25rem;
-    box-sizing: border-box;
-}
-
-.address {
-    position: relative;
-    display: flex;
-    column-gap: 10px;
-    flex-direction: row;
-}
-
-.edit-input {
-    border: 1px solid #e1e1e1;
-    border-radius: 4px;
-    display: block;
-    padding: 1rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    width: 100%;
-    box-sizing: border-box;
-    color: #323232;
-    background-color: #fff;
-    box-sizing: border-box;
-}
-
-.inActive-btn {
-    padding: 10px 15px;
-    background-color: red;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-</style>

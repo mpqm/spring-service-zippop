@@ -1,34 +1,32 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import LoginPage from "@/pages/auth/LoginPage.vue";
-import CustomerSignupPage from "@/pages/auth/CustomerSignupPage.vue";
-import CompanySignupPage from "@/pages/auth/CompanySignupPage.vue";
+import SignupPage from "@/pages/auth/SignupPage.vue";
 import StoreMainPage from "@/pages/store/StoreMainPage.vue";
 import StoreRegisterPage from "@/pages/mypage/company/StoreRegisterPage.vue";
 import CompanyMyPage from "@/pages/mypage/company/CompanyMyPage.vue";
 import StoreManagePage from "@/pages/mypage/company/StoreManagePage.vue";
 import StoreUpdatePage from "@/pages/mypage/company/StoreUpdatePage.vue";
 import StoreDetailPage from "@/pages/store/StoreDetailPage.vue";
-import GoodsManage1Page from "@/pages/mypage/company/GoodsManage1Page.vue";
-import GoodsManage2Page from "@/pages/mypage/company/GoodsManage2Page.vue";
+import GoodsManagePage1 from "@/pages/mypage/company/GoodsManagePage1.vue";
+import GoodsManagePage2 from "@/pages/mypage/company/GoodsManagePage2.vue";
 import GoodsRegisterPage from "@/pages/mypage/company/GoodsRegisterPage.vue";
 import GoodsUpdatePage from "@/pages/mypage/company/GoodsUpdatePage.vue";
 import GoodsMainPage from "@/pages/goods/GoodsMainPage.vue";
-import GoodsDetailPage from "@/pages/goods/GoodsDetailPage.vue";
+import GoodsDetailPage1 from "@/pages/goods/GoodsDetailPage1.vue";
+import GoodsDetailPage2 from "@/pages/goods/GoodsDetailPage2.vue";
 import ErrorPage from "@/pages/error/ErrorPage.vue";
 import EditProfilePage from "@/pages/mypage/common/EditProfilePage.vue";
-import FindIdPwPage from "@/pages/auth/FindIdPwPage.vue";
 import CustomerMyPage from "@/pages/mypage/customer/CustomerMyPage.vue";
 import ReviewSearchPage from "@/pages/mypage/customer/ReviewSearchPage.vue";
 import LikeManagePage from "@/pages/mypage/customer/LikeManagePage.vue";
-import GoodsDetailPage2 from "@/pages/goods/GoodsDetail2Page.vue";
-import CustomerOrdersManagePage from "@/pages/mypage/customer/CustomerOrdersManagePage.vue";
+import OrdersManagePage from "@/pages/mypage/customer/OrdersManagePage.vue";
 import OrdersPage from "@/pages/orders/OrdersPage.vue";
 import OrdersDetailPage from "@/pages/orders/OrdersDetailPage.vue";
 import OrdersManagePage1 from "@/pages/mypage/company/OrdersManagePage1.vue";
 import OrdersManagePage2 from "@/pages/mypage/company/OrdersManagePage2.vue";
-import CartManagement2Page from "@/pages/mypage/customer/CartManagement2Page.vue";
-import CartManagement1Page from "@/pages/mypage/customer/CartManagement1Page.vue";
+import CartManagePage2 from "@/pages/mypage/customer/CartManagePage2.vue";
+import CartManagePage1 from "@/pages/mypage/customer/CartManagePage1.vue";
 import ReserveManagePage1 from "@/pages/mypage/company/ReserveManagePage1.vue";
 import ReserveManagePage2 from "@/pages/mypage/company/ReserveManagePage2.vue";
 import ReserveRegisterPage from "@/pages/mypage/company/ReserveRegisterPage.vue";
@@ -36,22 +34,19 @@ import ReserveMainPage from "@/pages/reserve/ReserveMainPage.vue";
 import ReserveQueuePage from "@/pages/reserve/ReserveQueuePage.vue";
 import ReserveGoodsPage from "@/pages/reserve/ReserveGoodsPage.vue";
 import ReserveOrdersPage from "@/pages/reserve/ReserveOrdersPage.vue";
-import ReserveCartPage from "@/pages/reserve/ReserveCartPage.vue";
-import SettlementManagePage1 from "@/pages/mypage/company/PayoutManagePage1.vue";
-import SettlementManagePage2 from "@/pages/mypage/company/PayoutManagePage2.vue";
-import ActivePage from "@/pages/auth/ActivePage.vue";
+import PayoutManagePage1 from "@/pages/mypage/company/PayoutManagePage1.vue";
+import PayoutManagePage2 from "@/pages/mypage/company/PayoutManagePage2.vue";
 import { useCartStore } from "@/stores/useCartStore";
 import { useReserveStore } from "@/stores/useReserveStore";
+import SupportPage from "@/pages/auth/SupportPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     // 인증
     { path: "/login", component: LoginPage }, // 로그인 
-    { path: '/find-idpw', component: FindIdPwPage }, // 아이디/비밀번호 찾기
-    { path: "/signup/customer", component: CustomerSignupPage }, // 고객 회원가입
-    { path: "/signup/company", component: CompanySignupPage }, // 기업 회원가입
-    { path: "/active", component: ActivePage }, // 계정 활성화
+    { path: "/signup", component: SignupPage }, // 회원가입
+    { path: "/support", component: SupportPage }, // 계정 활성화
 
     // 팝업 스토어
     { path: "/", component: StoreMainPage }, // 팝업 스토어 메인 페이지
@@ -59,7 +54,7 @@ const router = createRouter({
 
     // 굿즈 마켓
     { path: "/goods", component: GoodsMainPage }, // 굿즈 마켓 메인 페이지(스토어 목록)
-    { path: '/goods/:storeIdx', component: GoodsDetailPage }, // 굿즈 마켓 상세 페이지
+    { path: '/goods/:storeIdx', component: GoodsDetailPage1 }, // 굿즈 마켓 상세 페이지
     { path: '/goods/:storeIdx/:goodsIdx', component: GoodsDetailPage2 }, // 굿즈 마켓 상세 페이지2(상점 인덱스 입력)
 
     // 주문 및 결제
@@ -69,8 +64,7 @@ const router = createRouter({
     // 팝업 예약
     { path: "/reserve", component: ReserveMainPage }, // 팝업 예약 메인 페이지
     { path: "/reserve/:storeIdx/:reserveIdx", component: ReserveQueuePage }, // 팝업 스토어 대기열 페이지
-    { path: "/reserve/:storeIdx/:reserveIdx/goods", component: ReserveGoodsPage }, // 팝업 스토어 예약 페이지(굿즈 목록)
-    { path: "/reserve/:storeIdx/:reserveIdx/cart", component: ReserveCartPage }, // 팝업 스토어 예약 페이지(장바구니)
+    { path: "/reserve/:storeIdx/:reserveIdx/goods", component: ReserveGoodsPage }, // 팝업 스토어 예약 페이지(굿즈)
     { path: "/reserve/:storeIdx/:reserveIdx/orders", component: ReserveOrdersPage }, // 팝업 스토어 예약 페이지(결제)
 
     // 마이페이지 기업
@@ -83,8 +77,8 @@ const router = createRouter({
         { path: 'store/update/:storeIdx', component: StoreUpdatePage }, // 스토어 관리 수정 페이지
         { path: 'store/:storeIdx', component: StoreDetailPage }, // 스토어 관리 상세 페이지
 
-        { path: 'goods', component: GoodsManage1Page }, // 굿즈 관리 메인 페이지(스토어 목록)
-        { path: 'goods/:storeIdx', component: GoodsManage2Page }, // 굿즈 관리 상세 페이지
+        { path: 'goods', component: GoodsManagePage1 }, // 굿즈 관리 메인 페이지(스토어 목록)
+        { path: 'goods/:storeIdx', component: GoodsManagePage2 }, // 굿즈 관리 상세 페이지
         { path: 'goods/:storeIdx/register', component: GoodsRegisterPage }, // 굿즈 관리 등록 페이지
         { path: 'goods/:storeIdx/update/:goodsIdx', component: GoodsUpdatePage }, // 굿즈 관리 수정 페이지
 
@@ -94,8 +88,8 @@ const router = createRouter({
         { path: 'reserve', component: ReserveManagePage1, }, // 예약 관리 메인 페이지(스토어 목록)
         { path: 'reserve/:storeIdx', component: ReserveManagePage2, }, // 예약 관리 메인 페이지
         { path: 'reserve/register/:storeIdx', component: ReserveRegisterPage, }, // 예약 등록 페이지
-        { path: 'payout', component: SettlementManagePage1, }, // 정산 관리 메인 페이지
-        { path: 'payout/:storeIdx', component: SettlementManagePage2, }, // 정산 관리 상세 페이지
+        { path: 'payout', component: PayoutManagePage1, }, // 정산 관리 메인 페이지
+        { path: 'payout/:storeIdx', component: PayoutManagePage2, }, // 정산 관리 상세 페이지
         // { path: 'payout/:storeIdx', component: SettlementDetailPage, }, // 정산 관리 상세 페이지
         { path: 'account-edit', component: EditProfilePage }, // 고객 정보 수정 페이지
       ]
@@ -109,9 +103,9 @@ const router = createRouter({
         { path: 'review', component: ReviewSearchPage }, // 리뷰 검색 메인 페이지
         { path: 'account-edit', component: EditProfilePage }, // 고객 정보 수정 페이지
         { path: 'like', component: LikeManagePage }, // 좋아요 관리 메인 페이지
-        { path: 'cart', component: CartManagement1Page, }, // 장바구니 관리 메인 페이지
-        { path: 'cart/:storeIdx', component: CartManagement2Page, }, // 장바구니 관리 메인 페이지
-        { path: 'orders', component: CustomerOrdersManagePage, }, // 주문 관리 메인 페이지
+        { path: 'cart', component: CartManagePage1, }, // 장바구니 관리 메인 페이지
+        { path: 'cart/:storeIdx', component: CartManagePage2, }, // 장바구니 관리 메인 페이지
+        { path: 'orders', component: OrdersManagePage, }, // 주문 관리 메인 페이지
       ]
     },
     
@@ -130,6 +124,7 @@ router.beforeEach(async (to, from, next) => {
   const access = reserveStore.access;
 
   const isGoodsPage = (path) => path && path.includes('/reserve/') && path.includes('/goods');
+  const isOrdersPage = (path) => path && path.includes('/reserve/') && path.includes('/orders');
   const isQueuePage = (path) => path && path.includes('/reserve/') && path.split('/').length === 4;
 
   if(access){
@@ -141,9 +136,21 @@ router.beforeEach(async (to, from, next) => {
       return;
     }
 
-    // `/goods`, `/cart`, `/orders`에서 벗어나려 할 때 알림창 표시
-    const isReserveRoute = (path) => path && path.startsWith('/reserve/') && (path.includes('/goods') || path.includes('/cart') || path.includes('/orders'));
-    if (isReserveRoute(from.path) && !isReserveRoute(to.path)) {
+    // goods <-> orders 같은 예약 내에서 양방향 이동 허용
+    const fromIsReserve = isGoodsPage(from.path) || isOrdersPage(from.path);
+    const toIsReserve = isGoodsPage(to.path) || isOrdersPage(to.path);
+    
+    if (fromIsReserve && toIsReserve) {
+      // 같은 예약 내에서의 이동이면 그냥 허용
+      if (String(from.params.storeIdx) === String(to.params.storeIdx) &&
+          String(from.params.reserveIdx) === String(to.params.reserveIdx)) {
+        next();
+        return;
+      }
+    }
+
+    // `/goods`, `/orders`에서 완전히 벗어나려 할 때만 알림창 표시
+    if (fromIsReserve && !toIsReserve) {
       const confirmLeave = confirm("페이지를 떠나시겠습니까? 예약이 취소됩니다.");
       if (confirmLeave) {
         cartStore.deleteCart(storeIdx);
@@ -152,9 +159,10 @@ router.beforeEach(async (to, from, next) => {
       } else {
         next(false); // 이동 차단
       }
-    } else {
-      next(); // 다른 경우 이동 허용
+      return;
     }
+
+    next(); // 다른 모든 경우 이동 허용
   } else {
     next()
   }

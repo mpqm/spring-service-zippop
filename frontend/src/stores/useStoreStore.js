@@ -8,12 +8,13 @@ export const useStoreStore = defineStore("store", {
   state: () => ({
     storeList: [],
     store: {},
-    likeList: {},
+    likeList: [],
     reviewList: [],
     totalElements: null,
     totalPages: null,
   }),
   persist: { storage: sessionStorage, },
+
   actions: {
 
     // 스토어 등록
@@ -130,31 +131,45 @@ export const useStoreStore = defineStore("store", {
       }
     },
 
-    // 스토어 좋아요 등록
+    // 스토어 좋아요 등록/취소
     async registerLike(storeIdx) {
       try {
         const res = await axios.get(
           `${backend}/store/like/register?storeIdx=${storeIdx}`, 
           {withCredentials: true,}
         );
+        
+        // 좋아요 상태 토글 (배열에서 추가/제거)
+        const index = this.likeList.findIndex(store => store.storeIdx === storeIdx);
+        if (index > -1) {
+          // 이미 좋아요한 경우 -> 취소
+          this.likeList.splice(index, 1);
+        } else {
+          // 좋아요하지 않은 경우 -> 추가
+          // 현재 스토어 정보를 찾아서 likeList에 추가
+          const currentStore = this.storeList.find(store => store.storeIdx === storeIdx) || this.store;
+          if (currentStore && currentStore.storeIdx === storeIdx) {
+            this.likeList.push(currentStore);
+          }
+        }
         return res.data;
       } catch (error) {
         return error.response.data;
       }
     },
     
-    // 스토어 좋아요 목록 조회
-    async searchAllLike(page, size) {
+    // 스토어 좋아요 목록 조회 (전체 목록)
+    async searchAllLike() {
       try {
         const res = await axios.get(
-          `${backend}/store/like/search-all?page=${page}&size=${size}`,
+          `${backend}/store/like/search-all?page=0&size=1000`, // 큰 사이즈로 전체 목록 가져오기
           {withCredentials: true,}
         );
-        this.likeList = res.data.result.content;
-        this.totalElements = res.data.result.totalElements;
-        this.totalPages = res.data.result.totalPages;
+
+        this.likeList = res.data.result.content || [];
         return res.data;
       } catch (error) {
+        this.likeList = [];
         return error.response.data;
       }
     },

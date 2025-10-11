@@ -1,14 +1,14 @@
 <template>
     <div>
         <AppHeader></AppHeader>
-        <div class="main-page">
-            <h2 class="hero-text">팝업 스토어 예약 일정을 확인하세요</h2>
-            <div class="search-container">
-                <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-                <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
-                <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
+        <div class="lyt-root">
+            <h2 class="txt-maintitle">팝업 스토어 예약 일정을 확인하세요</h2>
+            <div class="ctn-inputsearch">
+                <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+                <button class="btn-default" @click="searchAllByKeyword"><Icon icon="ic:search" width="20px" height="20px" /></button>
+                <button class="btn-normal" @click="searchAll(0)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
             </div>
-            <div class="reserve-list-grid" v-if="reserveList && reserveList.length">
+            <div class="lyt-cardgrid" v-if="reserveList && reserveList.length">
                 <ReserveCard v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" />
             </div>
             <div v-else>
@@ -98,75 +98,3 @@ const changePage = async (newPage) => {
 };
 
 </script>
-
-<style scoped>
-.main-page {
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    width: 65rem;
-    padding: 1rem;
-}
-
-.hero-text {
-    display: flex;
-    justify-content: center;
-    padding: 0.5rem 0;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #323232;
-}
-
-.search-container {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    padding-bottom: 16px;
-}
-
-.search-input {
-    border: 1px solid #e1e1e1;
-    border-radius: 4px;
-    display: block;
-    padding: 1rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    width: 50%;
-    box-sizing: border-box;
-    color: #323232;
-    background-color: #fff;
-}
-
-.search-btn {
-    display: block;
-    text-align: center;
-    width: auto;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-decoration: #000;
-}
-
-.search-btn:hover {
-    opacity: 0.8;
-}
-
-.search-img {
-    padding: 0 1.25rem;
-}
-
-.reserve-list-grid {
-    margin-top: 16px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    grid-auto-rows: 2fr;
-}
-</style>

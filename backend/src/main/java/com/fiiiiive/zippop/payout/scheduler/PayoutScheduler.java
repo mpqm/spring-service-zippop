@@ -28,15 +28,17 @@ public class PayoutScheduler {
     private final PayoutRepository payoutRepository;
     private final StoreRepository storeRepository;
 
-    @Scheduled(cron = "0 0 6 * * ?")
-//    @Scheduled(fixedRate = 1000)
+//    @Scheduled(cron = "0 0 6 * * ?")
+    @Scheduled(fixedRate = 1000000)
     public void createPayout() {
 
         log.info("스케줄러 실행 시작 : 팝업 스토어 별 판매 금액 정산");
 
         // 어제 날짜 기준으로 조회
-        List<Orders> ordersList = ordersRepository.findByStatusAndUpdatedAt(BaseStatus.valueOf("STOCK_DELIVERY"),BaseStatus.valueOf("RESERVE_DELIVERY"), LocalDate.now().minusDays(1));
+//        List<Orders> ordersList = ordersRepository.findByStatusAndUpdatedAt(BaseStatus.valueOf("STOCK_DELIVERY"),BaseStatus.valueOf("RESERVE_DELIVERY"), LocalDate.now().minusDays(1));
 
+        // 오늘 날짜 기준으로 조회(테스트용)
+        List<Orders> ordersList = ordersRepository.findByStatusAndUpdatedAt(BaseStatus.valueOf("STOCK_DELIVERY"),BaseStatus.valueOf("RESERVE_DELIVERY"), LocalDate.now());
         // 스토어별 매출 계산
         Map<Long, Integer> storeRevenueMap = new HashMap<>();
         for (Orders order : ordersList) storeRevenueMap.merge(order.getStoreIdx(), order.getTotalPrice(), Integer::sum);
@@ -56,7 +58,7 @@ public class PayoutScheduler {
             Payout payout = Payout.builder()
                     .store(store)
                     .totalRevenue(totalRevenue)
-                    .payoutDate(LocalDate.now().minusDays(1))
+                    .payoutDate(LocalDate.now())
                     .status(BaseStatus.COMPLETE)
                     .build();
 

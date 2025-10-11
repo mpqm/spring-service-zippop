@@ -42,13 +42,13 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "JOIN FETCH o.customer oc " +
             "WHERE o.storeIdx = :storeIdx AND oc.idx = :customerIdx " +
             "AND (o.status = :status1 OR o.status = :status2)")
-    Optional<Orders> findByStoreIdxAndCustomerIdxAndStatus(@Param("storeIdx") Long storeIdx, @Param("customerIdx") Long customerIdx, @Param("status1") BaseStatus status1, @Param("status1") BaseStatus status2);
+    Optional<Orders> findByStoreIdxAndCustomerIdxAndStatus(@Param("storeIdx") Long storeIdx, @Param("customerIdx") Long customerIdx, @Param("status1") BaseStatus status1, @Param("status2") BaseStatus status2);
 
     // 주문 상태 및 결제 완료 날짜로 조회
     @Query("SELECT o FROM Orders o " +
             "WHERE (o.status = :status1 OR o.status = :status2) " +
             " AND FUNCTION('DATE', o.updatedAt) = :updatedAt")
-    List<Orders> findByStatusAndUpdatedAt(@Param("status1") BaseStatus status1, @Param("status1") BaseStatus status2, @Param("updatedAt") LocalDate updatedAt);
+    List<Orders> findByStatusAndUpdatedAt(@Param("status1") BaseStatus status1, @Param("status2") BaseStatus status2, @Param("updatedAt") LocalDate updatedAt);
 
 
 }

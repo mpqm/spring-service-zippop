@@ -1,25 +1,25 @@
 <template>
   <div>
-    <div class="two-section-container">
-      <div class="input-search-container">
-        <input class="default-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-        <button class="default-btn" @click="searchAllByKeyword">
+    <div class="ctn-split">
+      <div class="ctn-inputsearch">
+        <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+        <button class="btn-default" @click="searchAllByKeyword">
           <Icon icon="ic:search" width="20px" height="20px" />
           팝업 검색
         </button>
-        <button class="default-btn" @click="searchAll(0)">
+        <button class="btn-normal" @click="searchAll(0)">
           <Icon icon="ic:baseline-refresh" width="20px" height="20px" /> 
         </button>
       </div>
-      <router-link class="default-btn" to="/mypage/company/store/register">
+      <router-link class="btn-default" to="/mypage/company/store/register">
         <Icon icon="iconoir:add-square" width="20px" height="20px"  style="color: #ffffff" />팝업스토어 등록
       </router-link>
     </div>
-    <div class="management-page">
+    <div class="lyt-child">
       <div v-if="storeList && storeList.length">
         <StoreTable :stores="storeList" :showControl="showControl" />
       </div>
-      <div class="empty-string" v-else>
+      <div class="txt-null" v-else>
         <p>등록된 팝업 스토어가 없습니다.</p>
       </div>
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
@@ -107,24 +107,3 @@ const changePage = async (newPage) => {
 };
 
 </script>
-
-<style scoped>
-.management-page {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.empty-string {
-  text-align: center;
-  padding: 60px 20px;
-  color: #6c757d;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.empty-string p {
-  margin: 0;
-  font-size: 16px;
-}
-</style>

@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="review-manage-page">
-      <div class="review-list" v-if="reviewList && reviewList.length">
+    <div class="lyt-child">
+      <div class="wrp-list" v-if="reviewList && reviewList.length">
         <ReviewList v-for="review in reviewList" :key="review.reviewIdx" :review="review" :hideStoreName="true" />
       </div>
-      <div class="notice" v-else>
+      <div class="txt-null" v-else>
         <p>등록된 리뷰가 없습니다.</p>
       </div>
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
@@ -59,23 +59,3 @@ const changePage = async (newPage) => {
 };
 
 </script>
-
-<style scoped>
-.review-manage-page {
-  flex-direction: row;
-  width: 65rem;
-}
-
-.notice {
-  text-align: center;
-}
-
-.review-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-</style>

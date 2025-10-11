@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="like-management-page">
-      <div class="like-list" v-if="likeList && likeList.length">
+    <div class="lyt-child">
+      <div class="wrp-list" v-if="likeList && likeList.length">
         <StoreList v-for="store in likeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
       </div>
-      <div class="notice" v-else>
+      <div class="txt-null" v-else>
         <p>좋아요한 팝업 스토어가 없습니다.</p>
       </div>
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
@@ -60,22 +60,3 @@ const searchAll = async () => {
 };
 
 </script>
-
-<style scoped>
-.like-management-page {
-  flex-direction: row;
-  width: 65rem;
-}
-
-.notice {
-  text-align: center;
-}
-
-.like-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-</style>

@@ -1,31 +1,41 @@
 <template>
     <div>
-      <div class="payout-management-page">
-        <div class="total-sum">
-        <p>총 판매 수익: {{ totalRevenueSum }}원</p>
-      </div>
-        <div class="payout-list" v-if="settlementList && settlementList.length">
-          <SettlementList v-for="payout in settlementList" :key="payout.settlementIdx" :payout="payout" :showControl="false" />
+      <div class="lyt-child">
+        <div class="ctn-split">
+          <button class="btn-tagdefault">총 판매 수익: {{ totalRevenueSum }}원</button>
+          <div class="ctn-buttons">
+            <button class="btn-normal" @click="router.back()">
+              <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />
+            </button>
+          </div>
         </div>
-        <div class="notice" v-else> <p>등록된 팝업 예약이 없습니다.</p> </div>
+ 
+        <div v-if="payout && payout.length">
+          <PayoutTable :payout="payout" />
+        </div>
+        <div class="txt-null" v-else>
+          <p>정산 내역이 없습니다.</p>
+        </div>
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
     </div>
   </template>
   
   <script setup>
-import SettlementList from "@/components/SettlementList.vue";
+  import PayoutTable from "@/components/PayoutTable.vue";
   import AppPagination from "@/components/AppPagination.vue";
   import { computed, onMounted, ref } from "vue";
-  import { useSettlementStore } from "@/stores/useSettlementStore";
+  import { useRouter } from "vue-router";
+  import { usePayoutStore } from "@/stores/usePayoutStore";
   import { useRoute } from "vue-router";
   
   // payout, router, route, toast
-  const settlementStore = useSettlementStore();
+  const payoutStore = usePayoutStore();
+  const router = useRouter();
   const route = useRoute();
   
   // 변수(payout)
-  const settlementList = ref([]);
+  const payout = ref([]);
   const currentPage = ref(0);
   const pageSize = ref(8);
   const totalElements = ref(0);
@@ -38,21 +48,21 @@ import SettlementList from "@/components/SettlementList.vue";
   });
   
   const totalRevenueSum = computed(() => {
-  return settlementList.value.reduce((sum, item) => {
+  return payout.value.reduce((sum, item) => {
     return sum + (item.totalRevenue || 0); // totalRevenue가 없을 경우 0으로 처리
   }, 0);
 });
 
   // 예약 목록 조회
   const searchAll = async () => {
-    const res = await settlementStore.searchAllSettlement(route.params.storeIdx, currentPage.value, pageSize.value);
+    const res = await payoutStore.searchAllPayout(route.params.storeIdx, currentPage.value, pageSize.value);
     if (res.success) {
-      totalElements.value = settlementStore.totalElements;
-      totalPages.value = settlementStore.totalPages;
-      settlementList.value = settlementStore.settlementList;
+      totalElements.value = payoutStore.totalElements;
+      totalPages.value = payoutStore.totalPages;
+      payout.value = payoutStore.payout;
       hideBtns.value = false;
     } else {
-      settlementList.value = null;
+      payout.value = null;
       totalElements.value = 0;
       totalPages.value = 0;
       hideBtns.value = true;
@@ -68,107 +78,3 @@ import SettlementList from "@/components/SettlementList.vue";
   };
   
   </script>
-  
-  <style scoped>
-  .payout-management-page {
-    flex-direction: row;
-    width: 65rem;
-  }
-  
-  .payout-control {
-    padding: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .btn-container {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-  
-  .notice {
-    text-align: center;
-  }
-  
-  .payout-list {
-    width: auto;
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .payout-register-btn {
-    display: block;
-    text-align: center;
-    width: auto;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-decoration: #000;
-  }
-  
-  .search-container {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-  
-  .payout-control {
-    padding: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .back-btn {
-    display: block;
-    text-align: center;
-    width: auto;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-decoration: #000;
-  }
-  
-  .btn-container {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-  
-  .register-btn {
-    display: block;
-    text-align: center;
-    width: auto;
-    font-weight: 400;
-    transition: opacity 0.2s ease-in-out;
-    color: #fff;
-    cursor: pointer;
-    background-color: #00c7ae;
-    border-color: #00c7ae;
-    border: 0.0625rem solid transparent;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    text-decoration: #000;
-  }
-  
-  .back-btn:hover,
-  .register-btn:hover {
-    opacity: 0.8;
-  }
-  </style>

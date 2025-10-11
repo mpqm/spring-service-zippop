@@ -44,7 +44,7 @@ public class Goods extends BaseEntity {
     @Setter
     @Column(nullable = false)
     @Positive(message = "수량은 양수여야 합니다.")
-    @Max(value = 10000, message = "수량은 최대 10000개 이하여야 합니다.")
+    @Min(value = 1, message = "수량은 최소 1개 이상이어야 합니다.")
     private Integer amount;
 
     // 가격 (필수 입력)
