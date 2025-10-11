@@ -1,5 +1,5 @@
 <template>
-    <div class="lyt-rootplus">
+    <div class="lyt-rootreserve">
         <div class="ctn-split">
             <button class="btn-tagdefault">{{ store.storeName }}</button>
             <div class="ctn-buttons">
@@ -112,6 +112,8 @@ const accessConfirm = async () => {
 }
 
 const cancel = async () => {
+    // 예약 취소 전에 장바구니 삭제
+    await cartStore.deleteCart(route.params.storeIdx);
     const res = await reserveStore.cancel(route.params.reserveIdx);
     reserveStore.access = false; // access를 false로 설정하여 router guard 우회
     if (res.success) {

@@ -74,6 +74,7 @@ const storeStartDate = ref("");
 const storeEndDate = ref("");
 const fileUrls = ref([]);
 const files = ref([]);
+const isScriptLoaded = ref(false);
 
 // onMounted 처리
 onMounted(async () => {
@@ -82,18 +83,50 @@ onMounted(async () => {
 
 // 주소 API 로드
 const loadMapjsApi = async () => {
-  const script = document.createElement("script");
-  script.src = "https://txt-def1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-  document.head.appendChild(script);
+  return new Promise((resolve, reject) => {
+    if (window.daum && window.daum.Postcode) {
+      isScriptLoaded.value = true;
+      resolve();
+      return;
+    }
+    
+    const script = document.createElement("script");
+    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.onload = () => {
+      isScriptLoaded.value = true;
+      resolve();
+    };
+    script.onerror = () => {
+      reject(new Error("스크립트 로딩 실패"));
+    };
+    document.head.appendChild(script);
+  });
 }
 
 // 주소 검색 처리
-const openAddressSearch = () => {
-  // eslint-disable-next-line no-undef
-  new daum.Postcode({
-    oncomplete: function (data) { address.value = data.address; },
-  }).open();
+const openAddressSearch = async () => {
+  try {
+    if (!isScriptLoaded.value) {
+      toast.info("주소 검색 서비스를 준비 중입니다...");
+      await loadMapjsApi();
+    }
+    
+    if (!window.daum || !window.daum.Postcode) {
+      throw new Error("Daum 우편번호 서비스를 사용할 수 없습니다.");
+    }
+    
+    // eslint-disable-next-line no-undef
+    new daum.Postcode({
+        oncomplete: function (data) {
+            address.value = data.address;
+        }
+    }).open();
+  } catch (error) {
+    console.error("주소 검색 오류:", error);
+    toast.error("주소 검색 서비스를 불러올 수 없습니다.");
+  }
 };
+
 
 // 파일 업로드
 const handleFileUpload = (event) => {

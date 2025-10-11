@@ -1,8 +1,10 @@
 <template>
-  <div class="container">
-    <div class="status-box">
-      <p><span>{{ statusMessage }}</span></p>
-      <button class="cancel-button" @click="cancel">예약 취소</button>
+  <div class="lyt-centermid">
+    <div class="wrp-centermid">
+      <h1 class="txt-maintitle"> 팝업 예약을 위한 대기열 입니다.</h1>
+      <button class="btn-tagstatus">{{ statusMessage }}</button>
+      <br>
+      <button class="btn-big" @click="cancel">예약 취소</button>
     </div>
   </div>
 </template>
@@ -15,9 +17,11 @@ import { Stomp } from "@stomp/stompjs";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRoute, useRouter } from "vue-router";
 import { useReserveStore } from "@/stores/useReserveStore";
+import { useCartStore } from "@/stores/useCartStore";
 import { useToast } from "vue-toastification";
 
 const reserveStore = useReserveStore();
+const cartStore = useCartStore();
 const route = useRoute();
 const toast = useToast();
 const router = useRouter();
@@ -62,6 +66,8 @@ const enroll = async () => {
 }
 
 const cancel = async () => {
+  // 예약 취소 전에 장바구니 삭제
+  await cartStore.deleteCart(route.params.storeIdx);
   const res = await reserveStore.cancel(route.params.reserveIdx);
   if (res.success) {
     router.go(-1)
@@ -134,65 +140,3 @@ const disconnectWebSocket = () => {
 
 
 </script>
-
-<style scoped>
-/* 컨테이너를 화면 중앙에 배치 */
-.container {
-  display: flex;
-  justify-content: center;
-  /* 가로 중앙 정렬 */
-  align-items: center;
-  /* 세로 중앙 정렬 */
-  height: 100vh;
-  /* 화면 전체 높이 */
-  background-color: #f7f7f7;
-  /* 배경색 */
-}
-
-/* 상태 박스 디자인 */
-.status-box {
-  background-color: #ffffff;
-  border-radius: 12px;
-
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px 40px;
-  text-align: center;
-  font-family: 'Arial', sans-serif;
-  color: #333;
-}
-
-/* 텍스트 스타일 */
-.status-box p {
-  margin: 10px 0;
-  font-size: 1.2rem;
-}
-
-.status-box p span {
-  font-weight: bold;
-  color: #00c7ae;
-}
-
-/* 버튼 스타일 */
-.cancel-button {
-  background-color: #ff4d4f;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 20px;
-  transition: background-color 0.3s ease;
-}
-
-.cancel-button:hover {
-  background-color: #d43f3a;
-  /* 버튼 호버 색상 */
-}
-
-.cancel-button:active {
-  background-color: #c12e2a;
-  /* 버튼 활성화 색상 */
-}
-</style>

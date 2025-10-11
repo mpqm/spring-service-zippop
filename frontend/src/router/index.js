@@ -21,7 +21,6 @@ import CustomerMyPage from "@/pages/mypage/customer/CustomerMyPage.vue";
 import ReviewSearchPage from "@/pages/mypage/customer/ReviewSearchPage.vue";
 import LikeManagePage from "@/pages/mypage/customer/LikeManagePage.vue";
 import OrdersManagePage from "@/pages/mypage/customer/OrdersManagePage.vue";
-import OrdersPage from "@/pages/orders/OrdersPage.vue";
 import OrdersDetailPage from "@/pages/orders/OrdersDetailPage.vue";
 import OrdersManagePage1 from "@/pages/mypage/company/OrdersManagePage1.vue";
 import OrdersManagePage2 from "@/pages/mypage/company/OrdersManagePage2.vue";
@@ -33,12 +32,12 @@ import ReserveRegisterPage from "@/pages/mypage/company/ReserveRegisterPage.vue"
 import ReserveMainPage from "@/pages/reserve/ReserveMainPage.vue";
 import ReserveQueuePage from "@/pages/reserve/ReserveQueuePage.vue";
 import ReserveGoodsPage from "@/pages/reserve/ReserveGoodsPage.vue";
-import ReserveOrdersPage from "@/pages/reserve/ReserveOrdersPage.vue";
 import PayoutManagePage1 from "@/pages/mypage/company/PayoutManagePage1.vue";
 import PayoutManagePage2 from "@/pages/mypage/company/PayoutManagePage2.vue";
+import SupportPage from "@/pages/auth/SupportPage.vue";
+import OrdersReservePage from "@/pages/orders/OrdersReservePage.vue";
 import { useCartStore } from "@/stores/useCartStore";
 import { useReserveStore } from "@/stores/useReserveStore";
-import SupportPage from "@/pages/auth/SupportPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -58,14 +57,13 @@ const router = createRouter({
     { path: '/goods/:storeIdx/:goodsIdx', component: GoodsDetailPage2 }, // 굿즈 마켓 상세 페이지2(상점 인덱스 입력)
 
     // 주문 및 결제
-    { path: "/orders", component: OrdersPage }, // 주문 및 결제 메인 페이지
     { path: "/orders/:ordersIdx", component: OrdersDetailPage }, // 주문 내역 상세 페이지
 
     // 팝업 예약
     { path: "/reserve", component: ReserveMainPage }, // 팝업 예약 메인 페이지
     { path: "/reserve/:storeIdx/:reserveIdx", component: ReserveQueuePage }, // 팝업 스토어 대기열 페이지
     { path: "/reserve/:storeIdx/:reserveIdx/goods", component: ReserveGoodsPage }, // 팝업 스토어 예약 페이지(굿즈)
-    { path: "/reserve/:storeIdx/:reserveIdx/orders", component: ReserveOrdersPage }, // 팝업 스토어 예약 페이지(결제)
+    { path: "/reserve/:storeIdx/:reserveIdx/orders", component: OrdersReservePage }, // 팝업 스토어 예약 페이지(결제)
 
     // 마이페이지 기업
     {

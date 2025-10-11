@@ -6,16 +6,15 @@ body {
     padding: 0;
 }
 
-hr {
-    border: 1px solid #00c7aa;
-    background-color: #00c7aa;
-    margin: 0;
-}
-
 .img-mainlogo { 
     align-self: center;
     width: 300px;
     height: 100px;
+}
+
+.img-iconior {
+    width: 20px;
+    height: 20px;
 }
 
 /* 텍스트 */
@@ -43,7 +42,7 @@ hr {
     font-size: 0.8rem;
     font-weight: 500;
     color: #666;
-    margin-top: 4px;
+    margin: 0;
     line-height: 1.2;
 }
 
@@ -101,7 +100,7 @@ hr {
 }
 
 /* 예약 페이지 */
-.lyt-rootplus {
+.lyt-rootreserve {
     margin: 0 auto;
     display: flex;
     gap: 16px;
@@ -110,13 +109,22 @@ hr {
     padding: 1rem;
 }
 
+/* 결제 페이지 */
+.lyt-rootpay {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    width: 35rem;
+    padding: 1rem;
+}
+
 /* 박스 컨테이너 */
-.lyt-centerbox {
+.lyt-centertop {
     padding: 3rem 0;
     background-color: #fff;
 }
 
-.wrp-centerbox {
+.wrp-centertop {
     position: relative;
     display: flex;
     gap: 20px;
@@ -131,6 +139,28 @@ hr {
     border: 1px solid #f2f2f2;
     border-radius: 4px;
     box-shadow: 0 4px 8px rgba(31, 6, 6, 0.1);
+}
+
+/* 화면 정중앙*/
+.lyt-centermid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+}
+
+.wrp-centermid {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px 40px;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 /* 컨테이너 */
@@ -178,6 +208,14 @@ hr {
     flex: 4;
     display: flex;
     flex-direction: column;
+}
+
+.ctn-defaultinfo{
+    display: flex;
+    flex-direction: column;
+    border-bottom: 2px solid #00c7ae;
+    padding-bottom: 15px;
+    margin: 15px 0;
 }
 
 /* FOOTER */
@@ -640,6 +678,24 @@ hr {
     gap: 4px;
     margin: 0;
     max-height: 30px;
+}
+
+.btn-tagstatus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #00c7ae;
+    background-color: #f0fffc;
+    border: 1px solid #00c7ae;
+    border-radius: 9999px; /* pill 모양 */
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+    white-space: nowrap;
+    gap: 4px;
+    margin: 0;
 }
 
 .btn-tagaction {

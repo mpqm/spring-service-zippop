@@ -1,8 +1,8 @@
 <template>
     <div>
         <AppHeader></AppHeader>
-        <div class="lyt-centerbox">
-            <div class="wrp-centerbox">
+        <div class="lyt-centertop">
+            <div class="wrp-centertop">
                 <img class="img-mainlogo" src="../../assets/img/zippopbanner.png">
                 
                 <!-- 회원 유형 선택 탭 -->
