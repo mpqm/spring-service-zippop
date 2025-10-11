@@ -1,8 +1,8 @@
 <template>
     <div>
         <AppHeader></AppHeader>
-        <div class="lyt-centerbox">
-            <div class="wrp-centerbox">
+        <div class="lyt-centertop">
+            <div class="wrp-centertop">
                 <form class="ctn-rootform" @submit.prevent="login">
                     <img class="img-mainlogo" src="../../assets/img/zippopbanner.png">
                     

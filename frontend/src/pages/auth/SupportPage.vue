@@ -1,8 +1,8 @@
 <template>
     <div>
         <AppHeader></AppHeader>
-        <div class="lyt-centerbox">
-            <div class="wrp-centerbox">
+        <div class="lyt-centertop">
+            <div class="wrp-centertop">
 
                 <form class="ctn-chidform" @submit.prevent="findId">
                     <h1 class="txt-def0">아이디 찾기</h1>

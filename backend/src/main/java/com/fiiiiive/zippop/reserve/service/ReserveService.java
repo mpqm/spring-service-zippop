@@ -180,14 +180,24 @@ public class ReserveService {
             redisService.remove(reserve.getWorkingUUID(), customUserDetails.getEmail());
             deleteWToken(res);
             String firstWaitingUser = redisService.firstWaitingUserToWorking(reserve.getWorkingUUID(), reserve.getWaitingUUID(), reserve.getTotalPeople());
-            if(firstWaitingUser != null ) log.info("대기자에서 예약자로 이동: {}", firstWaitingUser);
-            else log.info("대기자가 없습니다.");
+            if(firstWaitingUser != null ) {
+                // 대기자에서 예약자로 이동한 사용자에게 WebSocket 알림 전송
+                String workingTotal = redisService.getAllValues(reserve.getWorkingUUID());
+                String waitingTotal = redisService.getAllValues(reserve.getWaitingUUID());
+                Long newWorkingOrder = redisService.getOrder(reserve.getWorkingUUID(), firstWaitingUser);
+                String statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 순번: " + (newWorkingOrder + 1);
+                
+                messagingTemplate.convertAndSendToUser(
+                        firstWaitingUser,
+                        "/reserve/status",
+                        ReserveDto.StatusReserveRes.toData(workingTotal, waitingTotal, statusMessage, 1)
+                );
+            }
         } else {
             Long waitingOrder = redisService.getOrder(reserve.getWaitingUUID(), customUserDetails.getEmail());
             if (waitingOrder != null) {
                 // 대기 큐에서 현재 사용자 제거
                 redisService.remove(reserve.getWaitingUUID(), customUserDetails.getEmail());
-                log.info("대기 예약이 취소되었습니다.");
             }
         }
         return "예약을 취소했습니다.";
@@ -242,10 +252,10 @@ public class ReserveService {
         if (currentWorkingOrder == null) {
 
             Long currentWaitingOrder = redisService.getOrder(reserve.getWaitingUUID(), principal.getName());
-            statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 예약 대기자 순번: " + (currentWaitingOrder + 1);
+            statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 순번: " + (currentWaitingOrder + 1);
             access = 0; // 대기 큐에 있으면 access는 0
         } else {
-            statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 예약 접속자 순번: " + (currentWorkingOrder + 1);
+            statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 순번: " + (currentWorkingOrder + 1);
             access = 1; // 예약 접속 큐에 있으면 access는 1
         }
 
