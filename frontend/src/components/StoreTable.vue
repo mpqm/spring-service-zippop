@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="ctn-table">
 
     <EasyDataTable
       :headers="headers"
@@ -28,17 +28,17 @@
       </template>
 
       <template #item-likeCount="item">
-        <div class="table-cell-container">
+        <button class="btn-tagdefault">
           <Icon icon="iconoir:thumbs-up" width="16px" height="16px" style="color: #00c7ae" />
           <span>{{ item.likeCount }}</span>
-        </div>
+        </button>
       </template>
 
       <template #item-totalPeople="item">
-        <div class="table-cell-container">
+        <button class="btn-tagdefault">
           <Icon icon="iconoir:user" width="16px" height="16px" style="color: #00c7ae" />
           <span>{{ item.totalPeople }}</span>
-        </div>
+        </button>
       </template>
 
       <!-- 스토어 상태 -->
@@ -49,45 +49,45 @@
       </template>
 
       <template #item-actions="item">
-          <div v-if="props.showControl === 0" class="table-btn-container">
-            <router-link class="table-btn" :to="item.storeIdx ? `/store/${item.storeIdx}` : '#'" >
+          <div v-if="props.showControl === 0" class="ctn-tablebuttons">
+            <router-link class="btn-tagaction" :to="item.storeIdx ? `/store/${item.storeIdx}` : '#'" >
               <Icon icon="iconoir:eye" width="16px" height="16px" />
             </router-link>
-            <router-link  class="table-btn" :to="item.storeIdx ? `/mypage/company/store/update/${item.storeIdx}` : '#'" >
+            <router-link  class="btn-tagaction" :to="item.storeIdx ? `/mypage/company/store/update/${item.storeIdx}` : '#'" >
               <Icon icon="iconoir:edit-pencil" width="16px" height="16px" />
             </router-link>
-            <button class="table-btn" @click="deleteStore(item.storeIdx)">
+            <button class="btn-tagaction" @click="deleteStore(item.storeIdx)">
               <Icon icon="iconoir:trash" width="16px" height="16px" />
             </button>
           </div>
 
           <!-- 다른 페이지용 액션들 -->
-          <div v-if="props.showControl === 1" class="table-btn-container">
-            <router-link class="table-btn" :to="item.storeIdx ? `/mypage/company/goods/${item.storeIdx}` : '#'">
+          <div v-if="props.showControl === 1" class="ctn-tablebuttons">
+            <router-link class="btn-tagaction" :to="item.storeIdx ? `/mypage/company/goods/${item.storeIdx}` : '#'">
             <Icon icon="iconoir:eye" width="16px" height="16px" />
             </router-link>
           </div>
 
-          <div v-if="props.showControl === 2" class="table-btn-container">
-            <router-link class="table-btn" :to="item.storeIdx ? `/mypage/company/orders/${item.storeIdx}` : '#'">
+          <div v-if="props.showControl === 2" class="ctn-tablebuttons">
+            <router-link class="btn-tagaction" :to="item.storeIdx ? `/mypage/company/orders/${item.storeIdx}` : '#'">
               <Icon icon="iconoir:eye" width="16px" height="16px" />
             </router-link>
           </div>
 
-          <div v-if="props.showControl === 3" class="table-btn-container">
-            <router-link class="table-btn" :to="item.storeIdx ? `/mypage/customer/cart/${item.storeIdx}` : '#'">
+          <div v-if="props.showControl === 3" class="ctn-tablebuttons">
+            <router-link class="btn-tagaction" :to="item.storeIdx ? `/mypage/customer/cart/${item.storeIdx}` : '#'">
               <Icon icon="iconoir:eye" width="16px" height="16px" />
             </router-link>
           </div>
 
-          <div v-if="props.showControl === 4" class="table-btn-container">
-            <router-link class="table-btn" :to="item.storeIdx ? `/mypage/company/reserve/${item.storeIdx}` : '#'">
+          <div v-if="props.showControl === 4" class="ctn-tablebuttons">
+            <router-link class="btn-tagaction" :to="item.storeIdx ? `/mypage/company/reserve/${item.storeIdx}` : '#'">
               <Icon icon="iconoir:eye" width="16px" height="16px" />
             </router-link>
           </div>
 
-          <div v-if="props.showControl === 5" class="table-btn-container">
-            <router-link class="table-btn" :to="item.storeIdx ? `/mypage/company/payout/${item.storeIdx}` : '#'">
+          <div v-if="props.showControl === 5" class="ctn-tablebuttons">
+            <router-link class="btn-tagaction" :to="item.storeIdx ? `/mypage/company/payout/${item.storeIdx}` : '#'">
               <Icon icon="iconoir:eye" width="16px" height="16px" />
             </router-link>
           </div>
@@ -159,8 +159,8 @@ const formatStoreStatus = (status) => {
 
 // 스토어 상태별 클래스
 const getStatusClass = (status) => {
-  if (status === 'STORE_START') return 'status-completed'
-  if (status === 'STORE_END') return 'status-cancel'
+  if (status === 'STORE_START') return 'btn-complete'
+  if (status === 'STORE_END') return 'btn-cancel'
   return ''
 }
 

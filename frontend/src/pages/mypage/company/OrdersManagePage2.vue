@@ -1,10 +1,10 @@
 <template>
     <div>
-        <div class="store-management-page">
-            <div class="store-list" v-if="ordersList && ordersList.length">
+        <div class="lyt-child">
+            <div class="ctn-table" v-if="ordersList && ordersList.length">
                 <OrdersTable :orders="ordersList" :showControl="showControl" />
             </div>
-            <div class="empty-string" v-else>
+            <div class="txt-null" v-else>
                 <p>등록된 주문 내역이 없습니다.</p>
             </div>
             <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns"
@@ -64,23 +64,3 @@ const changePage = (newPage) => {
 
 </script>
 
-<style scoped>
-.store-management-page {
-    flex-direction: row;
-    width: 65rem;
-}
-
-.notice {
-    text-align: center;
-}
-
-.store-list {
-    width: auto;
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-
-</style>

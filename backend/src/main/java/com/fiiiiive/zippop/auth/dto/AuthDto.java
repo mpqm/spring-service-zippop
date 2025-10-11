@@ -3,10 +3,7 @@ package com.fiiiiive.zippop.auth.dto;
 import com.fiiiiive.zippop.auth.entity.Company;
 import com.fiiiiive.zippop.auth.entity.Customer;
 import com.fiiiiive.zippop.global.base.BaseStatus;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 public class AuthDto {
@@ -15,8 +12,7 @@ public class AuthDto {
     @Getter
     @Builder
     public static class SignupAuthReq {
-        @NotBlank(message = "역할(role)은 필수 입력 항목입니다.")
-        @Pattern(regexp = "^(ROLE_CUSTOMER|ROLE_COMPANY)$", message = "역할(role)은 ROLE_CUSTOMER 또는 ROLE_COMPANY이어야 합니다.")
+        @NotNull(message = "역할(role)은 필수 입력 항목입니다.")
         private BaseStatus role;
 
         @NotBlank(message = "아이디는 필수 입력 항목입니다.")
@@ -28,7 +24,7 @@ public class AuthDto {
         private String email;
 
         @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-        @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
+        @Size(min = 4, message = "비밀번호는 최소 8자 이상이어야 합니다.")
         private String password;
 
         @NotBlank(message = "이름은 필수 입력 항목입니다.")
@@ -38,7 +34,7 @@ public class AuthDto {
         private String crn; // 기업 회원일 경우 사용
 
         @NotBlank(message = "전화번호는 필수 입력 항목입니다.")
-        @Pattern(regexp = "^(01[0-9])-\\d{3,4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다. 예: 010-1234-5678")
+        @Pattern(regexp = "^01[0-9]\\d{3,4}\\d{4}$", message = "전화번호 형식이 올바르지 않습니다. 예: 01012345678")
         private String phoneNumber;
 
         @NotBlank(message = "주소는 필수 입력 항목입니다.")
@@ -138,9 +134,11 @@ public class AuthDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ActiveReq {
-        @NotBlank(message = "역할(role)은 필수 입력 항목입니다.")
-        @Pattern(regexp = "^(ROLE_CUSTOMER|ROLE_COMPANY)$", message = "역할(role)은 ROLE_CUSTOMER 또는 ROLE_COMPANY이어야 합니다.")
+        @NotNull(message = "역할(role)은 필수 입력 항목입니다.")
         private BaseStatus role;
+        
+        @NotBlank(message = "이메일은 필수 입력 항목입니다.")
+        @Email(message = "올바른 이메일 형식이어야 합니다.")
         private String email;
     }
 

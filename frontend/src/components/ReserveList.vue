@@ -1,6 +1,6 @@
 <template>
-  <div class="list-container">
-    <div class="list-info-container">
+  <div class="ctn-list1">
+    <div class="ctn-listinfo1">
       <Icon icon="iconoir:user" width="20px" height="20px" style="color: #00c7ae" />
       <span>{{ reserve.reservePeople }}명</span>
       <Icon icon="iconoir:calendar-plus" width="20px" height="20px" style="color: #00c7ae" />
@@ -9,8 +9,8 @@
       <span>{{ formatTime(reserve.reserveStartTime) }} ~ {{ formatTime(reserve.reserveEndTime) }}</span>
       <CountDownTimer :targetTime="reserve.reserveStartTime" :flag="false"></CountDownTimer>
     </div>
-    <div v-if="showControl === 0" class="list-btn-container">
-      <button class="default-btn" @click="goReserve">
+    <div v-if="showControl === 0" class="ctn-listbuttons">
+      <button class="btn-default" @click="goReserve">
         <Icon icon="iconoir:bell" width="24" height="24" />
         예약 참여
       </button>

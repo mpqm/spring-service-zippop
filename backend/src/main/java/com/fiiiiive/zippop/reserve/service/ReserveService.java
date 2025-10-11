@@ -71,6 +71,9 @@ public class ReserveService {
                 () -> new BaseException(BaseMessage.RESERVE_REGISTER_FAIL_NOT_FOUND_STORE)
         );
 
+        // 스토어 상태 확인(종료 상태면 예약 생성 불가)
+        if(store.getStatus() == BaseStatus.STORE_END) throw new BaseException(BaseMessage.RESERVE_REGISTER_FAIL_STORE_ENDED);
+
         // 스토어 소유 확인
         if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseMessage.RESERVE_REGISTER_FAIL_INVALID_MEMBER);
 

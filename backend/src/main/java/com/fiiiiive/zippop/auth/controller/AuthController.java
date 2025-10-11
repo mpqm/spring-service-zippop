@@ -8,6 +8,7 @@ import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.service.FileUploadService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class AuthController {
     // 회원가입
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<Void>> signup(
-        @RequestPart(name = "dto") AuthDto.SignupAuthReq dto,
+        @Valid @RequestPart(name = "dto") AuthDto.SignupAuthReq dto,
         @RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
 
         String url = fileUpload.upload(file);
@@ -61,7 +62,7 @@ public class AuthController {
     // 계정 활성화
     @PostMapping("/active")
     public ResponseEntity<BaseResponse<Void>> active(
-            @RequestBody AuthDto.ActiveReq dto) throws BaseException {
+            @Valid @RequestBody AuthDto.ActiveReq dto) throws BaseException {
 
         authService.active(dto);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_ACTIVE_SUCCESS));

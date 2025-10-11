@@ -1,20 +1,17 @@
 <template>
-  <div class="card-container">
-    <p class="t1">{{ goods.goodsName }}</p>
-    <p class="t2">{{ goods.storeName }}</p>
-    <p class="t2">
-      <Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsPrice }}원
-      <Icon icon="iconoir:box-iso" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsAmount }}개
-    </p>
-    <img class="card-img" v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length" :src="goods.searchGoodsImageResList[0].goodsImageUrl" alt="goods image" />
-    <div class="btn-container">
-      <button v-if="showControl" class="default-btn" @click="goGoodsDetail">
-        <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
-      </button>
-      <button class="default-btn" @click="registerCart">
-        <Icon icon="iconoir:cart" width="20px" height="20px" style="color: #ffffff" />
-      </button>
+  <div class="ctn-card">
+    <p class="txt-def1">{{ goods.goodsName }}</p>
+
+    <div class="ctn-tagbutton">
+      <!-- <button class="btn-tagdefault">{{ goods.storeName }}</button> -->
+      <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsPrice }}원</button>
+      <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsAmount }}개</button>
+      <button class="btn-tagaction" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px"/>상세보기</button>
+      <button class="btn-tagaction" @click="registerCart"><Icon icon="iconoir:cart" width="20px" height="20px"/>장바구니</button>
     </div>
+
+    <img class="img-card" v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length" :src="goods.searchGoodsImageResList[0].goodsImageUrl" alt="goods image" />
+
   </div>
 </template>
 
@@ -56,7 +53,7 @@ const registerCart = async () => {
     if (res.success) {
       toast.success(res.message);
     } else {
-      toast.error(res.message);
+      toast.error("기업 회원은 장바구니 기능을 사용할 수 없습니다.");
     }
   }
 }

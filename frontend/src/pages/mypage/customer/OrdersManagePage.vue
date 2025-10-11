@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="store-management-page">
-            <div class="store-list" v-if="ordersList && ordersList.length">
+        <div class="lyt-child">
+            <div class="wrp-list" v-if="ordersList && ordersList.length">
                 <OrdersList v-for="orders in ordersList" :key="orders.ordersIdx" :orders="orders" :showControl="showControl" />
             </div>
             <div class="notice" v-else>
@@ -60,27 +60,3 @@ const changePage = async (newPage) => {
 };
 
 </script>
-
-<style scoped>
-.store-management-page {
-    flex-direction: row;
-    width: 65rem;
-}
-
-.notice {
-    text-align: center;
-}
-
-.store-list {
-    width: auto;
-    padding: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.store-register-btn:hover {
-    opacity: 0.8;
-}
-
-</style>

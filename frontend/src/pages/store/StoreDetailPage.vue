@@ -1,59 +1,65 @@
 <template>
   <div>
     <AppHeader></AppHeader>
-    <div class="detail-page">
-      <div class="detail-container">
-        <div class="left-panel">
+    <div class="lyt-root">
+      <div class="wrp-split">
+        <div class="ctn-l50">
           <ImageSlider class="image-slider" :fileUrls="fileUrls" />
         </div>
-        <div class="right-panel">
-          <div class="title">
-            <h2>{{ store.storeName }}</h2>
-            <p>{{ store.category }}</p>
+        <div class="ctn-r50">
+          <p class="txt-def1">{{ store.storeName }}</p>
+          <p class="txt-desc"> {{ store.storeContent }}</p>
+          <div class="ctn-tagbutton">
+
+            <button class="btn-tagdefault">{{ store.category }}</button>
+            <button class="btn-tagdefault"> {{ store.storeAddress }}</button>
+            
+            <button class="btn-tagdefault">{{ store.storeStartDate }}<span class="divider">~</span>{{ store.storeEndDate }}</button>
+            <button class="btn-tagdefault" :class="{ active: isLiked }" @click="toggleLike"><Icon icon="iconoir:thumbs-up" width="20px" height="20px" />&nbsp;{{ currentLikeCount }} </button>
+            <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px"/>&nbsp;{{ store.totalPeople }}</button>
+            <CountDownTimer :targetTime="store.storeEndDate" :flag="true"></CountDownTimer>
           </div>
-          <p> {{ store.storeAddress }}</p>
-          <p> {{ store.storeStartDate }} ~ {{ store.storeEndDate }}</p>
-          <p> {{ store.storeContent }}</p>
-          <p class="t2">
-            <img class="like-img" src="../../assets/img/like-fill.png" alt="" />&nbsp;{{ store.likeCount }}
-            <img class="people-img" src="../../assets/img/people.png" alt="" />&nbsp;{{ store.totalPeople }}
-          </p>
-          <CountDownTimer :targetTime="store.storeEndDate" :flag="true"></CountDownTimer>
-          <hr>
           <!-- <button class="normal-btn" @click="goReserve"><img src="../../assets/img/reserve-none.png" alt="">&nbsp;<p>예약 참여</p></button> -->
         </div>
       </div>
-      <div class="detail-header">
-        <div class="menu-list">
-          <button class="menu-link" :class="{ active: activeMenu === 'goods' }" @click="setActiveMenu('goods')">굿즈 보기</button>
-          <button class="menu-link" :class="{ active: activeMenu === 'review' }" @click="setActiveMenu('review')"> 리뷰 보기</button>
-          <button class="menu-link" :class="{ active: activeMenu === 'reserve' }" @click="setActiveMenu('reserve')"> 예약 확인</button>
+      <div class="wrp-subheader">
+        <div class="ctn-subheader">
+          <a class="lnk-subheader" :class="{ active: activeMenu === 'goods' }" @click="setActiveMenu('goods')">굿즈 보기</a>
+          <a class="lnk-subheader" :class="{ active: activeMenu === 'review' }" @click="setActiveMenu('review')"> 리뷰 보기</a>
+          <a class="lnk-subheader" :class="{ active: activeMenu === 'reserve' }" @click="setActiveMenu('reserve')"> 예약 확인</a>
         </div>
       </div>
-      <div v-if="activeMenu == 'goods'" class="goods-list-container">
-        <div class="goods-control">
-          <div class="search-container">
-            <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllGoodsByKeyword" />
-            <button class="search-btn" @click="searchAllGoodsByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
-            <button class="search-btn" @click="searchAllGoods(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
-          </div>
+      <div class="lyt-child" v-if="activeMenu == 'goods'">
+        <div class="ctn-inputsearch">
+          <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllGoodsByKeyword" />
+          <button class="btn-default" @click="searchAllGoodsByKeyword"><Icon icon="ic:search" width="20px" height="20px" /></button>
+          <button class="btn-normal" @click="searchAllGoods(0)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
         </div>
-        <div class="goods-list" v-if="goodsList && goodsList.length">
-          <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" />
+        <br/>
+        <div class="wrp-list" v-if="goodsList && goodsList.length">
+          <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="showControl" :storeIdx="store.storeIdx"/>
         </div>
         <div class="notice" v-else>
           <p>등록된 굿즈가 없습니다.</p>
         </div>
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
-      <div v-if="activeMenu == 'review'" class="review-list-container">
-        <form class="register-form" @submit.prevent="registerReview">
-            <input class="register-input" v-model="reviewTitle" type="text" placeholder="후기의 제목을 남겨주세요" />
-            <input class="register-input" v-model="reviewContent" type="text" placeholder="후기의 내용을 남겨주세요" />
-            <input class="register-input" v-model="reviewRating" type="number" min="1" max="5" step="0.1" id="rating" placeholder="평점을 남겨주세요" />
-            <button type="submit" class="register-btn">리뷰 등록</button>
+      <div v-if="activeMenu == 'review'" class="lyt-child">
+
+        <form class="ctn-rootform" @submit.prevent="registerReview">
+          <div class="ctn-split">
+            <h1 class="txt-def0">후기 등록</h1>
+            <button type="submit" class="btn-default">등록</button>
+          </div>
+            <label class="ipt-default-label">제목</label>
+            <input class="ipt-default" v-model="reviewTitle" type="text" placeholder="후기의 제목을 남겨주세요" />
+            <label class="ipt-default-label">내용</label>
+            <input class="ipt-default" v-model="reviewContent" type="text" placeholder="후기의 내용을 남겨주세요" />
+            <label class="ipt-default-label">평점</label>
+            <input class="ipt-default" v-model="reviewRating" type="number" min="1" max="5" step="0.1" id="rating" placeholder="평점을 남겨주세요" />
         </form>
-        <div class="review-list" v-if="reviewList && reviewList.length">
+        <br>
+        <div class="wrp-list" v-if="reviewList && reviewList.length">
           <ReviewList v-for="review in reviewList" :key="review.reviewIdx" :review="review" />
         </div>
         <div class="notice" v-else>
@@ -61,15 +67,16 @@
         </div>
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
-      <div v-if="activeMenu == 'reserve'">
-        <div class="review-list" v-if="reserveList && reserveList.length">
+
+      <div v-if="activeMenu == 'reserve'" class="lyt-child">
+        <div class="wrp-list" v-if="reserveList && reserveList.length">
           <ReserveList v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl=0 /> 
         </div>
         <div class="notice" v-else>
           <p>등록된 예약이 없습니다.</p>
+          </div>
+          <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
         </div>
-        <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
-      </div>
     </div>
     <AppFooter></AppFooter>
   </div>
@@ -85,17 +92,19 @@ import GoodsList from "@/components/GoodsList.vue";
 import ReviewList from "@/components/ReviewList.vue";
 import ReserveList from "@/components/ReserveList.vue";
 import AppPagination from "@/components/AppPagination.vue";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useStoreStore } from "@/stores/useStoreStore";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useGoodsStore } from "@/stores/useGoodsStore";
 import { useReserveStore } from "@/stores/useReserveStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 // store, router, route, toast
 const goodsStore = useGoodsStore();
 const storeStore = useStoreStore();
 const reserveStore = useReserveStore();
+const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -104,6 +113,10 @@ const toast = useToast();
 const fileUrls = ref([]);
 const store = ref({});
 const activeMenu = ref('');
+
+// 좋아요 상태 관리
+const isLiked = ref(false);
+const currentLikeCount = ref(0);
 
 // 변수(goods)
 const searchQuery = ref("");
@@ -149,6 +162,10 @@ const mapper = async () => {
     fileUrls.value = storeStore.store.searchStoreImageResList.map(image => image.storeImageUrl);
   }
   goodsList.value = storeStore.store.searchGoodsResList;
+  
+  // 좋아요 상태 초기화
+  isLiked.value = storeStore.likeList.some(s => s.storeIdx === storeStore.store.storeIdx);
+  currentLikeCount.value = storeStore.store.likeCount || 0;
 }
 
 // 메뉴 선택 함수
@@ -262,260 +279,49 @@ const searchAllReserve = async () => {
   }
 }
 
+// storeStore의 좋아요 배열이 변경되면 상태 업데이트
+watch(() => storeStore.likeList, () => {
+  if (store.value.storeIdx) {
+    isLiked.value = storeStore.likeList.some(s => s.storeIdx === store.value.storeIdx);
+  }
+}, { deep: true });
+
+// store가 변경되면 좋아요 상태 업데이트
+watch(() => store.value, (newStore) => {
+  if (newStore && newStore.storeIdx) {
+    isLiked.value = storeStore.likeList.some(s => s.storeIdx === newStore.storeIdx);
+    currentLikeCount.value = newStore.likeCount || 0;
+  }
+}, { immediate: true, deep: true });
+
+// 좋아요 토글 (유튜브 스타일)
+const toggleLike = async () => {
+  if (!authStore.isLoggedIn) {
+    router.push("/");
+    toast.error("로그인이 필요합니다.");
+    return;
+  }
+
+  // 기업 회원인 경우 좋아요 불가
+  if (authStore.userInfo.role === "ROLE_COMPANY") {
+    toast.error("고객 회원만 좋아요를 누를 수 있습니다.");
+    return;
+  }
+
+  // 낙관적 업데이트 (Optimistic Update)
+  const wasLiked = isLiked.value;
+  isLiked.value = !isLiked.value;
+  currentLikeCount.value += isLiked.value ? 1 : -1;
+
+  // API 호출
+  const res = await storeStore.registerLike(store.value.storeIdx);
+  
+  if (!res.success) {
+    // 실패 시 롤백
+    isLiked.value = wasLiked;
+    currentLikeCount.value += wasLiked ? 1 : -1;
+    toast.error(res.message);
+  }
+}
+
 </script>
-
-<style scoped>
-.detail-page {
-  display: flex;
-  padding: 1rem;
-  width: 65rem;
-  flex-direction: column;
-  margin: 10px auto;
-  width: 65rem;
-  gap: 10px;
-}
-
-.detail-container {
-  display: flex;
-  column-gap: 10px;
-  background-color: #fff;
-  border-radius: 8px;
-  border: 1px solid #00c7ae;
-  margin: 0;
-  width: 65rem;
-}
-
-.image-slider {
-  width: 100%;
-  height: 98%;
-  padding: 5px;
-  ;
-}
-
-.notice {
-  text-align: center;
-}
-
-.left-panel,
-.right-panel {
-  width: 50%;
-}
-
-.right-panel {
-  width: 50%;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.file-preview-item img {
-  width: 100%;
-  max-height: 300px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.like-img {
-  object-fit: cover;
-  width: auto;
-  height: 24px;
-  margin-right: 5px;
-  vertical-align: middle;
-}
-
-.people-img {
-  object-fit: cover;
-  width: auto;
-  height: 30px;
-  vertical-align: middle;
-}
-
-.normal-btn {
-  display: flex;
-  text-align: center;
-  width: 100%;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-  align-items: center;
-  justify-content: center;
-}
-
-.detail-header {
-  display: flex;
-  column-gap: 10px;
-  background-color: #fff;
-  border: 1px solid #00c7ae;
-  margin: 0;
-  width: 65rem;
-  flex-direction: column;
-}
-
-.menu-list {
-  display: flex;
-  width: fit-content;
-  border-radius: 5px;
-}
-
-.menu-link {
-  border: 0;
-  background-color: transparent;
-  position: relative;
-  padding: 1rem;
-  text-decoration: none;
-  color: #000;
-  font-weight: bold;
-  border-right: 1px solid #00c7ae;
-}
-
-.menu-link.active {
-  color: #fff;
-  font-weight: bold;
-  background-color: #00c7ae;
-}
-
-.goods-list-container {
-  flex-direction: row;
-  width: 65rem;
-}
-
-.review-list-container {
-  flex-direction: row;
-  width: 65rem;
-  margin: 10px auto;
-}
-
-.goods-control {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.goods-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.review-list {
-  width: auto;
-  padding: 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-
-.search-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.search-input {
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  display: flex;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  padding: 0.5rem;
-  width: 30rem;
-  box-sizing: border-box;
-  color: #323232;
-  background-color: #fff;
-}
-
-.search-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.search-btn:hover,
-.goods-register-btn:hover {
-  opacity: 0.8;
-}
-
-.search-img {
-  padding: 0 1.25rem;
-}
-
-.register-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  row-gap: 1rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.register-input {
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  display: block;
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  width: 100%;
-  box-sizing: border-box;
-  color: #323232;
-  background-color: #fff;
-}
-
-.form-btn {
-  display: flex;
-  justify-content: flex-end; /* 버튼을 오른쪽 끝으로 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
-  margin-top: 1.5rem; /* 상단 여백 */
-}
-
-.register-btn {
-  padding: 0.8rem 1.5rem;
-  font-size: 1.2rem;
-  background-color: #00c7ae;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  height: 100%; /* 버튼의 높이를 다른 입력 필드와 동일하게 설정 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.register-btn:hover {
-  background-color: #009f92;
-}
-
-</style>

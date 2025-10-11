@@ -3,7 +3,7 @@
     <AppHeader></AppHeader>
     <div class="payment-page">
       <hr>
-      <h3 class="t1">배송지 정보</h3>
+      <h3 class="txt-def1">배송지 정보</h3>
       <div class="userinfo-container">
         <div class="userinfo-item"><span>구매자 이름</span> {{ orders.name }}</div>
         <div class="userinfo-item"><span>구매자 이메일</span> {{ orders.email }}</div>
@@ -11,7 +11,7 @@
         <div class="userinfo-item"><span>배송지 주소</span> {{ orders.address }}</div>
       </div>
       <hr>
-      <h3 class="t1">상품 구매 정보</h3>
+      <h3 class="txt-def1">상품 구매 정보</h3>
       <table class="cart-table">
         <tbody>
           <th>상품이미지</th>
@@ -35,7 +35,7 @@
         </tbody>
       </table>
       <hr>
-      <h3 class="t1">주문 정보</h3>
+      <h3 class="txt-def1">주문 정보</h3>
       <div class="predict-price-container">
         <div class="predict-price-item"><span>총 상품 가격</span> {{ orders.totalPrice - orders.deliveryCost + orders.usedPoint }}원</div>
         <div class="predict-price-item"><span>사용 포인트</span> {{ orders.usedPoint }}원</div>
@@ -129,7 +129,7 @@ hr {
   margin: 0 5px;
 }
 
-.t1 {
+.txt-def1 {
   text-align: left;
   margin-bottom: 20px;
   color: #333;

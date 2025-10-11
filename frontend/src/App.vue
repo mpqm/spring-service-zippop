@@ -6,6 +6,4 @@
 
 </script>
 
-<style src="./assets/styles/layout.css"></style>
-<style src="./assets/styles/component.css"></style>
-<style src="./assets/styles/reset.css"></style>
+<style src="./assets/styles/style.css"></style>

@@ -1,82 +1,32 @@
 <template>
-  <div class="list-container">
-    <img class="list-img" v-if="store.searchStoreImageResList && store.searchStoreImageResList.length" :src="store.searchStoreImageResList[0].storeImageUrl" alt="store image" />
-    <div class="list-info-container">
-      <div class="list-info1">
-        <p>{{ store.storeName }}</p>
-        <p>{{ store.category }}</p>
-      </div>
-      <div class="list-info1">
-        <p>{{ store.storeStartDate }} ~ {{ store.storeEndDate }}</p>
-        <div class="list-info2">
-          <Icon icon="iconoir:thumbs-up" width="20px" height="20px" style="color: #00c7ae" />
-          <span> &nbsp;{{ store.likeCount }} </span>
-          &nbsp;
-          <Icon icon="iconoir:user" width="20px" height="20px" style="color: #00c7ae" />
-          <span>&nbsp;{{ store.totalPeople }} </span>
-        </div>
-      </div>
+  <div class="ctn-list1">
+    
+    <img class="img-list" v-if="store.searchStoreImageResList && store.searchStoreImageResList.length" :src="store.searchStoreImageResList[0].storeImageUrl" alt="store image" />
+    
+    <div class="ctn-listinfo1">
+      <h4 class="txt-def1">{{ store.storeName }}</h4>
+      <button class="btn-tagdefault">{{ store.category }}</button>
+      <button class="btn-tagdefault">{{ store.storeStartDate }}<span class="divider">~</span>{{ store.storeEndDate }}</button>
+      <button class="btn-tagdefault"><Icon icon="iconoir:thumbs-up" width="20px" height="20px" style="color: #00c7ae" /> {{ store.likeCount }}</button>
+      <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px" style="color: #00c7ae" /> {{ store.totalPeople }}</button>
     </div>
 
-    <!-- StoreManagePage용 -->
-    <div v-if="showControl === 0" class="list-btn-container">
-      <router-link class="list-btn" :to="store ? `/store/${store.storeIdx}` : '#'">
-       <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
-       팝업 보기
-      </router-link>
-      <router-link class="list-btn" :to="store ? `/mypage/company/store/update/${store.storeIdx}` : '#'">
-        <Icon icon="iconoir:edit-pencil" width="20px" height="20px" style="color: #ffffff" />
-        팝업 수정
-      </router-link>
-      <button class="list-btn" @click="deleteStore">
-        <Icon icon="iconoir:trash" width="20px" height="20px" style="color: #ffffff" />
-        팝업 삭제
-      </button>
-    </div>
-    <!-- GoodsManage1Page용 -->
-    <div v-if="showControl === 1" class="list-btn-container">
-      <router-link class="list-btn" :to="store ? `/mypage/company/goods/${store.storeIdx}` : '#'">
-        <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
-        굿즈 보기
-      </router-link>
-    </div>
-    <!-- CompanyOrdersManage1Page1 -->
-    <div v-if="showControl === 2" class="list-btn-container">
-      <router-link class="list-btn" :to="store ? `/mypage/company/orders/${store.storeIdx}` : '#'">
-        <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
-        거래 내역 보기</router-link>
-    </div>
     <!-- CartManagement1Page용 -->
-    <div v-if="showControl === 3" class="list-btn-container">
-      <router-link class="list-btn" :to="store ? `/mypage/customer/cart/${store.storeIdx}` : '#'">
+    <div v-if="showControl === 3" class="ctn-listbuttons">
+      <button class="btn-tagaction" @click="goCart">
         <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
         카트 보기
-      </router-link>
-    </div>
-     <!-- ReserveManagementPage 용 -->
-    <div v-if="showControl === 4" class="list-btn-container">
-      <router-link class="list-btn" :to="store ? `/mypage/company/reserve/${store.storeIdx}` : '#'">
-        <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
-        예약 보기
-      </router-link>
-    </div>
-    <!-- PayoutManagementPage1 용 -->
-    <div v-if="showControl === 5" class="list-btn-container">
-      <router-link class="list-btn" :to="store ? `/mypage/company/payout/${store.storeIdx}` : '#'">
-        <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
-        정산 내역 보기
-      </router-link>
-    </div>
-    <!-- LikeManagePage용 -->
-    <div v-if="showControl === 6" class="list-btn-container">
-      <router-link class="list-btn" :to="store ? `/store/${store.storeIdx}` : '#'">
-        <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
-        보기
-      </router-link>
-      <button class="list-btn" @click="registerLike">
-        <Icon icon="iconoir:thumbs-up" width="20px" height="20px" style="color: #ffffff" />
-        좋아요 취소
       </button>
+      <button class="btn-tagaction" @click="deleteCart">
+        <Icon icon="iconoir:trash" width="20px" height="20px" style="color: #ffffff" />
+        비우기
+      </button>
+    </div>
+
+    <!-- LikeManagePage용 -->
+    <div v-if="showControl === 6" class="ctn-listbuttons">
+      <button class="btn-tagaction" @click="goStore"><Icon icon="iconoir:eye" width="20px" height="20px"/>팝업 보기</button>
+      <button class="btn-tagaction" @click="registerLike"><Icon icon="iconoir:thumbs-up" width="20px" height="20px"/>좋아요 취소</button>
     </div>
   </div>
 </template>
@@ -84,6 +34,7 @@
 <script setup>
 import { defineProps } from "vue";
 import { useStoreStore } from "@/stores/useStoreStore";
+import { useCartStore } from "@/stores/useCartStore";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 
@@ -97,17 +48,39 @@ const props = defineProps({
 const toast = useToast();
 const router = useRouter();
 const storeStore = useStoreStore();
+const cartStore = useCartStore();
 
-// 스토어 삭제
-const deleteStore = async () => {
-  const res = await storeStore.deleteStore(props.store.storeIdx);
+// 카트 보기
+const goCart = () => {
+  router.push(`/mypage/customer/cart/${props.store.storeIdx}`);
+}
+
+// 스토어 보기
+const goStore = () => {
+  router.push(`/store/${props.store.storeIdx}`);
+}
+
+// 좋아요 등록/취소
+const registerLike = async () => {
+  const res = await storeStore.registerLike(props.store.storeIdx);
   if (res.success) {
     toast.success(res.message)
-    router.go(0)
   } else {
     toast.error(res.message);
   }
 }
+
+  // 카트 삭제(=전체 카트 아이템 삭제) 삭제
+const deleteCart = async () => {
+  const res = await cartStore.deleteCart(props.store.storeIdx)
+  if (res.success) {
+    router.go(0);
+  } else {
+    toast.error(res.message);
+  }
+  
+};
+
 </script>
 
 

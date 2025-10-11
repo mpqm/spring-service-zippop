@@ -182,7 +182,7 @@ public enum BaseMessage {
     RESERVE_REGISTER_FAIL_TIME_CLOSED(false, 7003, "해당 시간대는 예약이 마감되었습니다."),
     RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED(false, 7003, "팝업 스토어의 총 예약 인원수를 초과합니다."),
     RESERVE_REGISTER_FAIL_NOT_FOUND_STORE(false, 7004, "해당 팝업 스토어를 찾을 수 없습니다."),
-
+    RESERVE_REGISTER_FAIL_STORE_ENDED(false, 7005, "종료된 팝업 스토어는 예약을 생성할 수 없습니다."),
     // 팝업 예약 접속
     RESERVE_ENROLL_SUCCESS(true, 7005, "예약에 성공했습니다."),
     RESERVE_ENROLL_FAIL_NOT_FOUND(false, 7006, "생성된 예약을 찾을 수 없습니다."),

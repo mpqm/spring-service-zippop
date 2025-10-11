@@ -1,9 +1,8 @@
 <template>
     <div>
         <div class="payment-page">
-
             <hr>
-            <h3 class="t1">배송지 정보</h3>
+            <h3 class="txt-def1">배송지 정보</h3>
             <div class="userinfo-container">
                 <div class="userinfo-item"><span>구매자 이름</span> {{ userInfo.name }}</div>
                 <div class="userinfo-item"><span>구매자 이메일</span> {{ userInfo.email }}</div>
@@ -11,7 +10,7 @@
                 <div class="userinfo-item"><span>배송지 주소</span> {{ userInfo.address }}</div>
             </div>
             <hr>
-            <h3 class="t1">상품 구매 정보</h3>
+            <h3 class="txt-def1">상품 구매 정보</h3>
             <table class="cart-table">
                 <tbody>
                     <th>상품이미지</th>
@@ -31,16 +30,20 @@
                 </tbody>
             </table>
             <hr>
-            <h3 class="t1">주문 정보</h3>
+            <h3 class="txt-def1">주문 정보</h3>
             <div class="predict-price-container">
                 <div class="predict-price-item"><span>총 상품 가격</span> {{ paymentData.totalPrice }}원</div>
                 <h3 class="predict-total-price"><span>총 주문 금액</span> {{ paymentData.finalOrderPrice }}원</h3>
             </div>
-            <div class="reward-area">
+            <div class="ctn-noticereward">
                 <span>결제 요청 후 배송 확정 처리가 되면 환불이 불가능합니다.</span><br>
             </div>
+            <div class="ctn-noticereward">
+                    <Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />&nbsp;
+                    <span>포인트적립: 결제 금액의 10% 적립</span><br>
+                </div>
             <button type="button" @click="payment" class="pay-btn">결제하기</button>
-            <button type="button" @click="cancelPayment" class="pay-btn">뒤로가기</button>
+            <button type="button" @click="router.back()" class="pay-btn">뒤로가기</button>
         </div>
     </div>
 </template>
@@ -110,6 +113,7 @@ const payment = () => {
                 if (res.success) {
                     await cartStore.deleteCart(route.params.storeIdx);
                     await reserveStore.cancel(route.params.reserveIdx);
+                    reserveStore.access = false; // access를 false로 설정하여 router guard 우회
                     toast.success("결제를 처리했습니다.");
                     router.push("/")
                 } else {
@@ -122,10 +126,7 @@ const payment = () => {
     );
 };
 
-// 결제 취소
-const cancelPayment = async () => {
-    router.push(`/reserve/${route.params.storeIdx}/${route.params.reserveIdx}/cart`);
-}
+
 
 </script>
 
@@ -145,7 +146,7 @@ hr {
     margin: 0 5px;
 }
 
-.t1 {
+.txt-def1 {
     text-align: left;
     margin-bottom: 20px;
     color: #333;

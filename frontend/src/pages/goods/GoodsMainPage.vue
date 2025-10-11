@@ -1,14 +1,17 @@
 <template>
   <div>
     <AppHeader></AppHeader>
-    <div class="main-page">
-      <h2 class="hero-text">팝업 스토어 예약이 끝나고 남은 재고 굿즈를 구매해보세요!</h2>
-      <div class="search-container">
-        <input class="search-input" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
-        <button class="search-btn" @click="searchAllByKeyword"><img class="search-img" src="../../assets/img/search-none.png" alt=""></button>
-        <button class="search-btn" @click="searchAll(0)"><img class="search-img" src="../../assets/img/reload-none.png" alt=""></button>
+    <div class="lyt-root">
+      <h2 class="txt-maintitle">팝업 스토어 예약이 끝나고 남은 재고 굿즈를 구매해보세요!</h2>
+      <div class="ctn-inputsearch">
+        <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="searchAllByKeyword" />
+        
+        <button class="btn-default" @click="searchAllByKeyword"><Icon icon="ic:search" width="20px" height="20px" /></button>
+
+        <button class="btn-normal" @click="searchAll(0)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
+      
       </div>
-      <div class="store-list-grid" v-if="storeList && storeList.length">
+      <div class="lyt-cardgrid" v-if="storeList && storeList.length">
         <StoreCard v-for="store in storeList" :key="store.storeIdx" :store="store" :redirecToGoodsDetail="true" />
       </div>
       <div v-else>
@@ -25,10 +28,12 @@ import AppFooter from "@/components/AppFooter.vue";
 import StoreCard from "@/components/StoreCard.vue";
 import AppPagination from "@/components/AppPagination.vue";
 import { useStoreStore } from "@/stores/useStoreStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { onMounted, ref } from "vue";
 
 // store, router, route, toast
 const storeStore = useStoreStore();
+const authStore = useAuthStore();
 
 // 변수(store)
 const searchQuery = ref("");
@@ -42,6 +47,10 @@ const isKeywordSearch = ref(false);
 
 // onMounted 
 onMounted(async () => {
+  // 로그인한 고객 회원이면 좋아요 목록 로드
+  if (authStore.isLoggedIn && authStore.userInfo.role === "ROLE_CUSTOMER") {
+    await storeStore.searchAllLike();
+  }
   await searchAll();
 });
 
@@ -72,6 +81,7 @@ const searchAllByKeyword = async () => {
     currentPage.value = 0; // 키워드 검색 상태로 진입 시 페이지를 초기화
     isKeywordSearch.value = true; // 키워드 검색 상태 활성화
   }
+  
   const res = await storeStore.searchAllStoreByKeyword("STORE_END", searchQuery.value, currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = storeStore.totalElements;
@@ -90,6 +100,7 @@ const searchAllByKeyword = async () => {
 const changePage = async (newPage) => {
   if (newPage < 0 || newPage >= totalPages.value) return; // 유효한 페이지 번호인지 확인
   currentPage.value = newPage;
+  
   if (isKeywordSearch.value) { // 키워드 검색 상태일 경우
     await searchAllByKeyword();
   } else { // 일반 검색 상태일 경우
@@ -98,76 +109,3 @@ const changePage = async (newPage) => {
 };
 
 </script>
-
-<style scoped>
-.main-page {
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  width: 65rem;
-  padding: 1rem;
-}
-
-.hero-text {
-  display: flex;
-  justify-content: center;
-  padding: 0.5rem 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #323232;
-}
-
-.search-container {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  padding-bottom: 16px;
-}
-
-.search-input {
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  display: block;
-  padding: 1rem;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  width: 50%;
-  box-sizing: border-box;
-  color: #323232;
-  background-color: #fff;
-}
-
-.search-btn {
-  display: block;
-  text-align: center;
-  width: auto;
-  font-weight: 400;
-  transition: opacity 0.2s ease-in-out;
-  color: #fff;
-  cursor: pointer;
-  background-color: #00c7ae;
-  border-color: #00c7ae;
-  border: 0.0625rem solid transparent;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  text-decoration: #000;
-}
-
-.search-btn:hover {
-  opacity: 0.8;
-}
-
-.search-img {
-  padding: 0 1.25rem;
-}
-
-.store-list-grid {
-  margin-top: 16px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  grid-auto-rows: 2fr;
-}
-
-</style>

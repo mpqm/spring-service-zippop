@@ -1,5 +1,5 @@
 <template>
-  <div class="table-container">
+  <div class="ctn-table">
     <EasyDataTable
       :headers="headers"
       :items="props.goods"
@@ -25,39 +25,43 @@
 
       <!-- 굿즈 가격 -->
       <template #item-goodsPrice="item">
-        <div class="table-cell-container">
+        <button class="btn-tagdefault">
           <Icon icon="iconoir:coin" width="16px" height="16px" style="color: #00c7ae" />
           <span>{{ item.goodsPrice }}원</span>
-        </div>
+        </button>
       </template>
 
       <!-- 굿즈 수량 -->
       <template #item-goodsAmount="item">
-        <div class="table-cell-container">
+        <button class="btn-tagdefault">
           <Icon icon="iconoir:box-iso" width="16px" height="16px" style="color: #00c7ae" />
           <span>{{ item.goodsAmount }}개</span>
-        </div>
+        </button>
       </template>
 
       <!-- 굿즈 타입 -->
       <template #item-goodsStatus1="item">
-        <span>{{ formatGoodsStatus1(item.goodsStatus) }}</span>
+        <span :class="getStatusClass1(item.goodsStatus)">
+          {{ formatGoodsStatus1(item.goodsStatus) }}
+        </span>
       </template>
       <!-- 굿즈 상태 -->
       <template #item-goodsStatus2="item">
-        <span>{{ formatGoodsStatus2(item.goodsAmount) }}</span>
+        <span :class="getStatusClass2(item.goodsAmount)">
+          {{ formatGoodsStatus2(item.goodsAmount) }}
+        </span>
       </template>
 
       <!-- 액션 버튼들 -->
       <template #item-actions="item">
-        <div class="table-btn-container">
-          <router-link class="table-btn" :to="item.goodsIdx ? `/goods/${route.params.storeIdx}/${item.goodsIdx}` : '#'">
+        <div class="ctn-tablebuttons">
+          <router-link class="btn-tagaction" :to="item.goodsIdx ? `/goods/${route.params.storeIdx}/${item.goodsIdx}` : '#'">
             <Icon icon="iconoir:eye" width="16px" height="16px" />
           </router-link>
-          <router-link class="table-btn" :to="item.goodsIdx ? `/mypage/company/goods/${route.params.storeIdx}/update/${item.goodsIdx}` : '#'">
+          <router-link class="btn-tagaction" :to="item.goodsIdx ? `/mypage/company/goods/${route.params.storeIdx}/update/${item.goodsIdx}` : '#'">
             <Icon icon="iconoir:edit-pencil" width="16px" height="16px" />
           </router-link>
-          <button class="table-btn" @click="deleteGoods(item.goodsIdx)">
+          <button class="btn-tagaction" @click="deleteGoods(item.goodsIdx)">
             <Icon icon="iconoir:trash" width="16px" height="16px" />
           </button>
         </div>
@@ -106,11 +110,28 @@ const formatGoodsStatus1 = (type) => {
 // 굿즈 상태 텍스트
 const formatGoodsStatus2 = (goodsAmount) => {
   if (goodsAmount <= 0) {
-    return '품절'
+    return '품절'+' '+goodsAmount
   } else if (goodsAmount <= 5) {
-    return '재고 부족'
+    return '재고 부족'+' '+goodsAmount
   } else {
-    return '판매 중'
+    return '판매 중'+' '+goodsAmount
+  }
+}
+
+// 스토어 상태별 클래스
+const getStatusClass1 = (status) => {
+  if (status === 'GOODS_RESERVED') return 'btn-active'
+  if (status === 'GOODS_STOCK') return 'btn-complete'
+  return ''
+}
+
+const getStatusClass2 = (goodsAmount) => {
+  if (goodsAmount <= 0) {
+    return 'btn-cancel'
+  } else if (goodsAmount <= 5) {
+    return 'btn-wating'
+  } else {
+    return 'btn-complete'
   }
 }
 
