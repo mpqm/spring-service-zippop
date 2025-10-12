@@ -1,11 +1,11 @@
-package com.fiiiiive.zippop.orders.dto;
+package com.fiiiiive.zippop.domain.orders.dto;
 
-import com.fiiiiive.zippop.auth.entity.Customer;
+import com.fiiiiive.zippop.domain.auth.entity.Customer;
 import com.fiiiiive.zippop.global.base.BaseStatus;
-import com.fiiiiive.zippop.goods.dto.GoodsDto;
-import com.fiiiiive.zippop.goods.entity.Goods;
-import com.fiiiiive.zippop.orders.entity.Orders;
-import com.fiiiiive.zippop.orders.entity.OrdersDetail;
+import com.fiiiiive.zippop.domain.goods.dto.GoodsDto;
+import com.fiiiiive.zippop.domain.goods.entity.Goods;
+import com.fiiiiive.zippop.domain.orders.entity.Orders;
+import com.fiiiiive.zippop.domain.orders.entity.OrdersDetail;
 import lombok.Builder;
 import lombok.Getter;
 

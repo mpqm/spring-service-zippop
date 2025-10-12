@@ -1,12 +1,12 @@
-package com.fiiiiive.zippop.orders.controller;
+package com.fiiiiive.zippop.domain.orders.controller;
 
 
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.orders.dto.OrdersDto;
-import com.fiiiiive.zippop.orders.service.OrdersService;
+import com.fiiiiive.zippop.domain.orders.dto.OrdersDto;
+import com.fiiiiive.zippop.domain.orders.service.OrdersService;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
