@@ -1,9 +1,9 @@
-package com.fiiiiive.zippop.orders.entity;
+package com.fiiiiive.zippop.domain.orders.entity;
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.auth.entity.Customer;
+import com.fiiiiive.zippop.domain.auth.entity.Customer;
 import com.fiiiiive.zippop.global.base.BaseStatus;
-import com.fiiiiive.zippop.orders.dto.OrdersDto;
+import com.fiiiiive.zippop.domain.orders.dto.OrdersDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
