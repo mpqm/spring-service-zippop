@@ -6,6 +6,18 @@
 
                 <form class="ctn-chidform" @submit.prevent="findId">
                     <h1 class="txt-def0">아이디 찾기</h1>
+
+                    <div class="ctn-checkbox">
+                        <label class="lbl-checkbox">
+                            <input type="radio" value="ROLE_COMPANY" v-model="role" />
+                            기업회원
+                        </label>
+                        <label class="lbl-checkbox">
+                            <input type="radio" value="ROLE_CUSTOMER" v-model="role" />
+                            고객회원
+                        </label>
+                    </div>
+
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">이메일</label>
                         <input class="ipt-default" v-model="userEmail" type="email" placeholder="이메일을 입력해 주세요." />
@@ -15,6 +27,18 @@
                 
                 <form class="ctn-chidform" @submit.prevent="findPw">
                     <h1 class="txt-def0">비밀번호 찾기</h1>
+
+                    <div class="ctn-checkbox">
+                        <label class="lbl-checkbox">
+                            <input type="radio" value="ROLE_COMPANY" v-model="role" />
+                            기업회원
+                        </label>
+                        <label class="lbl-checkbox">
+                            <input type="radio" value="ROLE_CUSTOMER" v-model="role" />
+                            고객회원
+                        </label>
+                    </div>
+
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">아이디</label>
                         <input class="ipt-default" v-model="userId" type="userId" placeholder="아이디를 입력해 주세요." />
@@ -75,7 +99,12 @@ const userId = ref("");
 
 // 아이디 찾기 
 const findId = async () => {
+    if (!role.value) {
+        toast.error("회원 유형을 선택해주세요.");
+        return;
+    }
     const req = {
+        role: role.value,
         email: userEmail.value
     }
     const res = await authStore.findId(req)
@@ -88,7 +117,12 @@ const findId = async () => {
 
 // 비밀번호 찾기 
 const findPw = async () => {
+    if (!role.value) {
+        toast.error("회원 유형을 선택해주세요.");
+        return;
+    }
     const req = {
+        role: role.value,
         userId: userId.value
     }
     const res = await authStore.findPw(req)

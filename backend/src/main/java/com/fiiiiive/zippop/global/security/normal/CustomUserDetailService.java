@@ -1,10 +1,11 @@
 package com.fiiiiive.zippop.global.security.normal;
 
-import com.fiiiiive.zippop.auth.entity.Company;
-import com.fiiiiive.zippop.auth.entity.Customer;
-import com.fiiiiive.zippop.auth.repository.CompanyRepository;
-import com.fiiiiive.zippop.auth.repository.CustomerRepository;
+import com.fiiiiive.zippop.domain.auth.entity.Company;
+import com.fiiiiive.zippop.domain.auth.entity.Customer;
+import com.fiiiiive.zippop.domain.auth.repository.CompanyRepository;
+import com.fiiiiive.zippop.domain.auth.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

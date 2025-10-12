@@ -1,0 +1,133 @@
+package com.fiiiiive.zippop.domain.cart.service;
+
+import com.fiiiiive.zippop.domain.auth.entity.Customer;
+import com.fiiiiive.zippop.domain.auth.repository.CustomerRepository;
+import com.fiiiiive.zippop.domain.cart.dto.CartDto;
+import com.fiiiiive.zippop.domain.cart.entity.Cart;
+import com.fiiiiive.zippop.domain.cart.entity.CartItem;
+import com.fiiiiive.zippop.domain.cart.repository.CartItemRepository;
+import com.fiiiiive.zippop.domain.cart.repository.CartRepository;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import com.fiiiiive.zippop.domain.goods.entity.Goods;
+import com.fiiiiive.zippop.domain.goods.repository.GoodsRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CartService {
+
+    private final CartRepository cartRepository;
+    private final GoodsRepository goodsRepository;
+    private final CustomerRepository customerRepository;
+    private final CartItemRepository cartItemRepository;
+
+    // 장바구니 등록
+    @Transactional
+    public void registerCart(CustomUserDetails customUserDetails, CartDto.CreateCartReq dto) throws BaseException {
+
+        // 고객 회원(customerIdx) 조회
+        Customer customer = customerRepository.findByCustomerIdx(customUserDetails.getIdx()).orElseThrow(
+                () -> new BaseException(BaseMessage.CART_REGISTER_FAIL_MEMBER_NOT_FOUND)
+        );
+
+        // 굿즈(goodsIdx, storeIdx) 조회
+        Goods goods = goodsRepository.findByGoodsIdxAndStoreIdx(dto.getGoodsIdx(), dto.getStoreIdx()).orElseThrow(
+                () -> new BaseException(BaseMessage.CART_REGISTER_FAIL_GOODS_NOT_FOUND)
+        );
+
+        // 장바구니 조회 후 없으면 장바구니 생성
+        Cart cart = cartRepository.findByCustomerIdxAndStoreIdx(customUserDetails.getIdx(), dto.getStoreIdx()).orElseGet(
+                () -> cartRepository.save(dto.toEntity(customer, goods.getStore()))
+        );
+
+        // 장바구니 아이템이 있으면 예외 없으면 생성
+        if (cartItemRepository.findByGoodsIdxAndCartIdx(goods.getIdx(), cart.getIdx()).isPresent()) {
+            throw new BaseException(BaseMessage.CART_REGISTER_FAIL_ITEM_EXIST);
+        }
+        cartItemRepository.save(CartDto.CreateCartItemReq.toEntity(cart, goods));
+
+    }
+
+    // 장바구니 목록 조회
+    @Transactional(readOnly = true)
+    public Page<CartDto.SearchCartRes> searchAllCart(CustomUserDetails customUserDetails, Integer page, Integer size) throws BaseException {
+
+        // 장바구니 조회(customerIdx, pageable)
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Cart> cartPage = cartRepository.findAllByCustomerIdx(customUserDetails.getIdx(), pageable).orElseThrow(
+                () -> new BaseException(BaseMessage.CART_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+
+        return Cart.toDtoPage(cartPage);
+
+    }
+
+    // 장바구니 아이템 목록 조회
+    @Transactional(readOnly = true)
+    public List<CartDto.SearchCartItemRes> searchAllCartItem(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
+
+        // 장바구니 조회(customerIdx, storeIdx)
+        Cart cart = cartRepository.findByCustomerIdxAndStoreIdx(customUserDetails.getIdx(), storeIdx).orElseThrow(
+                () -> new BaseException(BaseMessage.CART_ITEM_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+
+        return CartItem.toDtoList(cart.getCartItemList());
+
+    }
+
+    // 장바구니 아이템 수량 조절
+    @Transactional
+    public void countCartItem(CustomUserDetails customUserDetails, Long cartItemIdx, Boolean operation) throws BaseException {
+
+        // 장바구니 아이템 조회(cartItemIdx, customerIdx)
+        CartItem cartItem = cartItemRepository.findByCartItemIdxAndCustomerIdx(cartItemIdx, customUserDetails.getIdx()).orElseThrow(
+                () -> new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
+        );
+
+        // if: operation = false -> 장바구니 아이템 증가
+        // else: operation = true -> 장바구니 아이템 감소 (단, count가 1 이하면 에러)
+        if (!operation){
+            cartItemRepository.incrementCount(cartItemIdx);
+        } else {
+            if (cartItem.getCount() <= 1) {
+                throw new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_IS_ZERO);
+            }
+            cartItemRepository.decrementCount(cartItemIdx);
+        }
+
+    }
+
+    // 장바구니 아이템 삭제
+    @Transactional
+    public void deleteCartItem(CustomUserDetails customUserDetails, Long cartItemIdx) {
+
+        // 장바구니 아이템 삭제(cartItemIdx, customerIdx)
+        cartItemRepository.deleteByCartItemIdxAndCustomerIdx(cartItemIdx, customUserDetails.getIdx());
+
+    }
+
+    // 장바구니 아이템 전체 삭제
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteAllCartItem(CustomUserDetails customUserDetails, Long storeIdx) throws BaseException {
+
+        // 장바구니 삭제(customerIdx, storeIdx)
+        Cart cart = cartRepository.findByCustomerIdxAndStoreIdx(customUserDetails.getIdx(), storeIdx).orElseThrow(
+                () -> new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_NOT_FOUND)
+        );
+        cartRepository.delete(cart);
+
+    }
+
+}
+
+

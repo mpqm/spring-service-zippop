@@ -15,6 +15,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -83,8 +84,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<BaseResponse<String>> handleAuthenticationException(AuthenticationException e) {
-        if (e instanceof BadCredentialsException) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(BaseMessage.BAD_CREDENTIAL, e.getMessage()));
+         if (e instanceof BadCredentialsException) {
+             if(Objects.equals(e.getMessage(), BaseMessage.AUTH_LOGIN_FAIL_ID_NULL.getMessage())){
+                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(BaseMessage.AUTH_LOGIN_FAIL_ID_NULL, e.getMessage()));
+             } else if (Objects.equals(e.getMessage(), BaseMessage.AUTH_LOGIN_FAIL_PASSWORD_NULL.getMessage())) {
+                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(BaseMessage.AUTH_LOGIN_FAIL_PASSWORD_NULL, e.getMessage()));
+             } else {
+                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(BaseMessage.BAD_CREDENTIAL, e.getMessage()));
+             }
         } else if (e instanceof InternalAuthenticationServiceException | e instanceof InsufficientAuthenticationException) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(BaseMessage.ACCESS_DENIED, e.getMessage()));
         } else if (e instanceof DisabledException) {

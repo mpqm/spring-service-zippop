@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiiiiive.zippop.global.security.filter.*;
 import com.fiiiiive.zippop.global.security.normal.AccessControlService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetailService;
@@ -30,6 +31,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtService jwtService;
+    private final ObjectMapper mapper;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CustomOAuth2Service customOAuth2Service;
@@ -124,7 +126,7 @@ public class SecurityConfig {
         );
         http.exceptionHandling(e ->e.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler));
         http.addFilterBefore(new JwtFilter(jwtService, redisTemplate, customUserDetailService), LoginFilter.class);
-        LoginFilter loginFilter = new LoginFilter(jwtService, authenticationManager(authenticationConfiguration), redisTemplate);
+        LoginFilter loginFilter = new LoginFilter(jwtService, mapper, authenticationManager(authenticationConfiguration), redisTemplate);
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
         loginFilter.setAuthenticationFailureHandler(customLoginFailureHandler);
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);

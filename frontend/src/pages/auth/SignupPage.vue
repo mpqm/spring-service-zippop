@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/useAuthStore';
 import AppHeader from '@/components/AppHeader.vue';
@@ -110,33 +110,37 @@ const crn = ref("");
 const file = ref(null);
 const fileUrl = ref(null);
 
-// onMounted
-onMounted(async () => {
-    await loadMapjsApi();
-});
-
-// 주소 API 로드
-const loadMapjsApi = async () => {
-    const script = document.createElement("script");
-    script.src = "https://txt-def1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-    document.head.appendChild(script);
-}
-
-// 주소 검색 
-const openAddressSearch = () => {
-    // eslint-disable-next-line no-undef
-    new daum.Postcode({
-        oncomplete: function (data) {
-            address.value = data.address;
-        }
-    }).open();
-};
-
 // 파일 업로드 
 const handleFileUpload = (event) => {
     file.value = event.target.files[0];
     if (file.value) { 
         fileUrl.value = URL.createObjectURL(file.value); 
+    }
+};
+
+// 주소 검색 처리
+const openAddressSearch = async () => {
+    try {
+        // Daum 우편번호 스크립트가 없다면 로드
+        if (!window.daum || !window.daum.Postcode) {
+
+        await new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+            script.onload = () => resolve();
+            script.onerror = () => reject(toast.error("스크립트 로딩 실패"));
+            document.head.appendChild(script);
+        });
+        }
+
+        // Daum 객체 확인
+        if (!window.daum || !window.daum.Postcode) toast.error("Daum 우편번호 서비스를 사용할 수 없습니다.");
+
+        // eslint-disable-next-line no-undef
+        new daum.Postcode({oncomplete: (data) => address.value = data.address}).open();
+
+    } catch (error) {
+        toast.error("주소 검색 서비스를 불러올 수 없습니다.");
     }
 };
 
