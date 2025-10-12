@@ -53,7 +53,7 @@ const registerCart = async () => {
     if (res.success) {
       toast.success(res.message);
     } else {
-      toast.error("기업 회원은 장바구니 기능을 사용할 수 없습니다.");
+      toast.error(res.message);
     }
   }
 }

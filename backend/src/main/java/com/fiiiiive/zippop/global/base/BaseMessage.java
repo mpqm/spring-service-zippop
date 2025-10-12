@@ -28,13 +28,20 @@ public enum BaseMessage {
     CACHE_FAIL_NOT_FOUND(false, 999, "예약을 하지 않은 사용자입니다."),
 
     // 회원 2000
+    // 로그인
+    AUTH_LOGIN_SUCCESS(true, 1000, "로그인에 성공했습니다."),
+    AUTH_LOGIN_FAIL_ID_NULL(false, 1001, "아이디를 입력해주세요."),
+    AUTH_LOGIN_FAIL_PASSWORD_NULL(false, 1002, "비밀번호를 입력해주세요."),
+    AUTH_LOGOUT_SUCCESS(true, 1006, "로그아웃에 성공했습니다."),
+    AUTH_LOGOUT_FAIL(false, 1007, "로그아웃에 실패했습니다."),
+
     // 회원 가입
     AUTH_SIGNUP_SUCCESS(true, 2000, "이메일 인증을 완료해주세요 유효시간은 3분입니다."),
     AUTH_SIGNUP_SUCCESS_IS_INACTIVE(true, 2001, "비활성화된 계정입니다. 이메일 인증을 완료해 복구하세요, 유효시간은 3분입니다."),
     AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_CUSTOMER(false, 2002, "이미 고객 회원으로 가입된 계정입니다. 고객 회원은 기업 회원으로 회원가입 할 수 없습니다."),
     AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY(false, 2003, "이미 기업 회원으로 가입된 계정입니다. 기업 회원은 고객 회원으로 회원가입할 수 없습니다."),
     AUTH_SIGNUP_FAIL_ALREADY_EXIST(false, 2004, "이미 회원가입한 계정입니다."),
-
+    AUTH_SIGNUP_FAIL_ALREADY_EXIST_ID(false, 2023, "이미 존재하는 아이디입니다."),
     // 이메일 인증
     AUTH_VERIFY_FAIL(false, 2005, "이메일 인증에 실패했습니다."),
     // 계정 비/활성화
@@ -46,18 +53,20 @@ public enum BaseMessage {
     // 아이디 찾기
     AUTH_FIND_ID_SUCCESS(true, 2010, "이메일로 아이디 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
     AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY(false, 2011, "이메일 인증이 되지않은 사용자는 아이디 찾기를 진행할 수 없습니다."),
+    AUTH_FIND_ID_FAIL_NOT_EXIST(false, 2012, "해당 이름과 전화번호로 가입된 아이디가 존재하지 않습니다."),
     // 비밀번호 찾기
-    AUTH_FIND_PASSWORD_SUCCESS(true, 2012, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
-    AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY(false, 2013, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
+    AUTH_FIND_PASSWORD_SUCCESS(true, 2013, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
+    AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY(false, 2014, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
+    AUTH_FIND_PASSWORD_FAIL_NOT_EXIST(false, 2015, "해당 아이디와 이메일로 가입된 계정이 존재하지 않습니다."),
     // 계정 정보 변경
-    AUTH_EDIT_INFO_SUCCESS(true, 2014, "계정 프로필 정보 변경에 성공했습니다."),
-    AUTH_EDIT_INFO_FAIL(false, 2015, "계정 프로필 정보 변경에 실패했습니다."),
-    AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER(false, 2016, "사용자를 찾을 수 없습니다."),
+    AUTH_EDIT_INFO_SUCCESS(true, 2016, "계정 프로필 정보 변경에 성공했습니다."),
+    AUTH_EDIT_INFO_FAIL(false, 2017, "계정 프로필 정보 변경에 실패했습니다."),
+    AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER(false, 2018, "사용자를 찾을 수 없습니다."),
     // 계정 패스워드 수정
-    AUTH_EDIT_PASSWORD_SUCCESS(true, 2017, "계정 비밀번호 변경에 성공했습니다."),
-    AUTH_EDIT_PASSWORD_FAIL(false, 2018, "계정 비밀번호 변경에 실패했습니다."),
-    AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER(false, 2019, "사용자를 찾을 수 없습니다."),
-    AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH(false, 2020, "계정 비밀번호가 틀립니다."),
+    AUTH_EDIT_PASSWORD_SUCCESS(true, 2019, "계정 비밀번호 변경에 성공했습니다."),
+    AUTH_EDIT_PASSWORD_FAIL(false, 2020, "계정 비밀번호 변경에 실패했습니다."),
+    AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER(false, 2021, "사용자를 찾을 수 없습니다."),
+    AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH(false, 2022, "계정 비밀번호가 틀립니다."),
     // 프로필 정보
     AUTH_GET_PROFILE_SUCCESS(true, 2021,"프로필 조회에 성공했습니다"),
     AUTH_GET_PROFILE_FAIL(false, 2022,"프로필 조회에 실패했습니다"),
@@ -78,7 +87,7 @@ public enum BaseMessage {
     // 장바구니 아이템 수량 조절
     CART_ITEM_COUNT_SUCCESS(true, 3009, "장바구니 아이템 수량 조절에 성공했습니다."),
     CART_ITEM_COUNT_FAIL_NOT_FOUND(false, 3010, "장바구니 아이템을 찾을 수 없습니다."),
-    CART_ITEM_COUNT_FAIL_IS_ZERO(false, 3011, "장바구니 아이템의 수량이 0입니다."),
+    CART_ITEM_COUNT_FAIL_IS_ZERO(false, 3011, "장바구니 아이템의 수량은 한개 이상입니다."),
     // 장바구니 삭제
     CART_ITEM_DELETE_SUCCESS(true, 3012, "장바구니 아이템 삭제에 성공했습니다."),
     // 장바구니 전체삭제
@@ -146,6 +155,7 @@ public enum BaseMessage {
     ORDERS_PAY_FAIL_NOT_FOUND_MEMBER(false, 6003, "결제 정보에 해당하는 유저가 없습니다."),
     ORDERS_PAY_FAIL_NOT_FOUND_GOODS(false, 6004, "결제 정보에 해당하는 팝업 굿즈가 없습니다."),
     ORDERS_PAY_FAIL_LIMIT_EXCEEDED(false, 6005, "사전 예매 굿즈는 품목 당 하나만 구매 가능합니다."),
+    ORDERS_PAY_FAIL_LIMIT_AMOUNT(false, 6006, "재고 수량보다 많은 수량을 결제할 수 없습니다."),
     ORDERS_PAY_FAIL_POINT_EXCEEDED(false, 6006, "3000포인트 이상부터 사용할 수 있습니다."),
     ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE(false, 6007, "결제 금액이 잘못되었습니다."),
     // 굿즈 환불

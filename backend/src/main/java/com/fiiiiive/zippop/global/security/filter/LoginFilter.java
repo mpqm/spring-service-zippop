@@ -1,7 +1,10 @@
 package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiiiiive.zippop.auth.dto.AuthDto;
+import com.fiiiiive.zippop.domain.auth.dto.AuthDto;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.service.JwtService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.FilterChain;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -28,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtService jwtService;
+    private final ObjectMapper mapper;
     private final AuthenticationManager authenticationManager;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -35,10 +40,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         AuthDto.LoginReq dto;
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            dto = objectMapper.readValue(messageBody, AuthDto.LoginReq.class);
+            dto = mapper.readValue(messageBody, AuthDto.LoginReq.class);
+            
+            // 아이디와 비밀번호 입력 검증
+            if (dto.getUserId() == null || dto.getUserId().trim().isEmpty()) {
+                throw new BadCredentialsException(BaseMessage.AUTH_LOGIN_FAIL_ID_NULL.getMessage());
+            }
+            if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
+                throw new BadCredentialsException(BaseMessage.AUTH_LOGIN_FAIL_PASSWORD_NULL.getMessage());
+            }
+            
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(dto.getUserId(), dto.getPassword(), null);
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
@@ -74,19 +87,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         rToken.setHttpOnly(true);
         rToken.setSecure(true);
         rToken.setPath("/");
-        aToken.setAttribute("SameSite", "None");
+        rToken.setAttribute("SameSite", "None");
         response.addCookie(rToken);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(
-                "{"
-                        + "\"success\": true,"
-                        + "\"code\": 2030,"
-                        + "\"message\": \"로그인에 성공했습니다.\","
-                        + "\"result\": null"
-                + "}"
-        );
+        BaseResponse<Void> baseResponse = new BaseResponse<>(BaseMessage.AUTH_LOGIN_SUCCESS);
+        mapper.writeValue(response.getWriter(), baseResponse);
         response.getWriter().flush();
     }
 

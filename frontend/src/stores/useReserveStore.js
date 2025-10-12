@@ -67,10 +67,10 @@ export const useReserveStore = defineStore("reserve", {
             }
         },
         // 예약 취소
-        async cancel(reserveIdx) {
+        async cancel(reserveIdx, storeIdx) {
             try {
                 const res = await axios.get(
-                    `${backend}/reserve/cancel?reserveIdx=${reserveIdx}`,
+                    `${backend}/reserve/cancel?reserveIdx=${reserveIdx}&storeIdx=${storeIdx}`,
                     { withCredentials: true }
                 );
                 return res.data
