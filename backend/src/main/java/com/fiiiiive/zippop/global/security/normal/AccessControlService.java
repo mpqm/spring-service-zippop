@@ -4,7 +4,10 @@ package com.fiiiiive.zippop.global.security.normal;
 import com.fiiiiive.zippop.global.service.RedisService;
 import com.fiiiiive.zippop.domain.reserve.entity.Reserve;
 import com.fiiiiive.zippop.domain.reserve.repository.ReserveRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccessControlService {
@@ -23,12 +27,30 @@ public class AccessControlService {
 
     public AuthorizationDecision hasReserveAccess(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
 
-        String reserveIdx = object.getRequest().getParameter("reserveIdx");
+        HttpServletRequest request = object.getRequest();
+        String reserveIdx = request.getParameter("reserveIdx");
 
         // 인증되지 않은 사용자는 false 반환
         Authentication auth = authentication.get();
         if (auth == null || !auth.isAuthenticated() || auth.getName().equals("anonymousUser")) {
             return new AuthorizationDecision(false);
+        }
+
+        // WTOKEN 블랙리스트 확인
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("WTOKEN".equals(cookie.getName())) {
+                    String wToken = cookie.getValue();
+                    if (wToken != null && !wToken.isEmpty()) {
+                        if (redisService.isReserveTokenBlacklisted(wToken)) {
+                            log.warn("블랙리스트된 예약 토큰 사용 시도 - 사용자: {}", auth.getName());
+                            return new AuthorizationDecision(false);
+                        }
+                    }
+                    break;
+                }
+            }
         }
 
         // reserveIdx가 없으면 false 반환

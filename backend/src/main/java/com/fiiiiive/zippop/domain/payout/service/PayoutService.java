@@ -36,7 +36,9 @@ public class PayoutService {
         );
 
         // 스토어 소유 조회
-        if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) throw new BaseException(BaseMessage.PAYOUT_SEARCH_FAIL_INVALID_MEMBER);
+        if(!Objects.equals(store.getCompanyEmail(), customUserDetails.getEmail())) {
+            throw new BaseException(BaseMessage.PAYOUT_SEARCH_FAIL_INVALID_MEMBER);
+        }
 
         // 스토어 페이지 조회(storeIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));

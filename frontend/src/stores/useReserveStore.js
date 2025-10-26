@@ -48,24 +48,6 @@ export const useReserveStore = defineStore("reserve", {
                 return error.response.data
             }
         },
-        // 예약 대기열 접근 제어
-        async accessConfirm(reserveIdx, storeIdx){
-            try {
-                const res = await axios.get(
-                    `${backend}/reserve/access?reserveIdx=${reserveIdx}&storeIdx=${storeIdx}`,
-                    { withCredentials: true }
-                );
-                if(res.data.success){
-                    this.access = true;
-                } else {
-                    this.access = false;
-                }
-                return res.data
-            } catch (error) {
-                this.access = false;
-                return error.response.data
-            }
-        },
         // 예약 취소
         async cancel(reserveIdx, storeIdx) {
             try {

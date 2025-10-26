@@ -1,8 +1,8 @@
-package com.fiiiiive.zippop.reserve.dto;
+package com.fiiiiive.zippop.domain.reserve.dto;
 
-import com.fiiiiive.zippop.reserve.entity.Reserve;
-import com.fiiiiive.zippop.store.dto.StoreDto;
-import com.fiiiiive.zippop.store.entity.Store;
+import com.fiiiiive.zippop.domain.reserve.entity.Reserve;
+import com.fiiiiive.zippop.domain.store.dto.StoreDto;
+import com.fiiiiive.zippop.domain.store.entity.Store;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -71,6 +71,7 @@ public class ReserveDto {
         private String workingTotal;
         private String statusMessage;
         private Integer access;
+        private String wtoken; // 토큰 추가
 
         public static StatusReserveRes toData(String workingTotal, String waitingTotal, String statusMessage, Integer access) {
             return StatusReserveRes.builder()
@@ -78,6 +79,16 @@ public class ReserveDto {
                     .waitingTotal(waitingTotal)
                     .statusMessage(statusMessage)
                     .access(access)
+                    .build();
+        }
+
+        public static StatusReserveRes toDataWithToken(String workingTotal, String waitingTotal, String statusMessage, Integer access, String wtoken) {
+            return StatusReserveRes.builder()
+                    .workingTotal(workingTotal)
+                    .waitingTotal(waitingTotal)
+                    .statusMessage(statusMessage)
+                    .access(access)
+                    .wtoken(wtoken)
                     .build();
         }
     }
