@@ -1,7 +1,7 @@
-package com.fiiiiive.zippop.reserve.repository;
+package com.fiiiiive.zippop.domain.reserve.repository;
 
 import com.fiiiiive.zippop.global.base.BaseStatus;
-import com.fiiiiive.zippop.reserve.entity.Reserve;
+import com.fiiiiive.zippop.domain.reserve.entity.Reserve;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

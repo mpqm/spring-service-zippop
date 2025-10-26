@@ -1,13 +1,14 @@
-package com.fiiiiive.zippop.reserve.controller;
+package com.fiiiiive.zippop.domain.reserve.controller;
 
 
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.reserve.dto.ReserveDto;
-import com.fiiiiive.zippop.reserve.service.ReserveService;
+import com.fiiiiive.zippop.domain.reserve.dto.ReserveDto;
+import com.fiiiiive.zippop.domain.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -65,10 +66,12 @@ public class ReserveController {
     @GetMapping("/cancel")
     public ResponseEntity<BaseResponse<String>> cancelReserve(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        HttpServletRequest req,
         HttpServletResponse res,
-        @RequestParam Long reserveIdx) throws BaseException {
+        @RequestParam Long reserveIdx,
+        @RequestParam Long storeIdx) throws BaseException {
 
-        String response = reserveService.cancelReserve(res, customUserDetails, reserveIdx);
+        String response = reserveService.cancelReserve(req, res, customUserDetails, reserveIdx, storeIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 

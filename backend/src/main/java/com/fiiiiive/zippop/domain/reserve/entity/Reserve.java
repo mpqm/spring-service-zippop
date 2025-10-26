@@ -1,9 +1,9 @@
-package com.fiiiiive.zippop.reserve.entity;
+package com.fiiiiive.zippop.domain.reserve.entity;
 
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.reserve.dto.ReserveDto;
-import com.fiiiiive.zippop.store.entity.Store;
+import com.fiiiiive.zippop.domain.reserve.dto.ReserveDto;
+import com.fiiiiive.zippop.domain.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.domain.Page;

@@ -26,9 +26,7 @@ public class CustomAuthenticationInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         // CONNECT 메시지에 대해서만 인증 처리
-        if (accessor.getCommand() != StompCommand.CONNECT) {
-            return message;
-        }
+        if (accessor.getCommand() != StompCommand.CONNECT) return message;
 
         // WebSocket 세션에서 authToken 가져오기
         Map<String, Object> sessionAttributes = (Map<String, Object>) message.getHeaders().get("simpSessionAttributes");

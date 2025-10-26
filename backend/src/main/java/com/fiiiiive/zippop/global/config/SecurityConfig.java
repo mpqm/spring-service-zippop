@@ -121,7 +121,7 @@ public class SecurityConfig {
         });
         http.logout((auth) -> auth
                 .logoutUrl("/api/v1/auth/logout")
-                .deleteCookies("JSESSIONID", "ATOKEN", "RTOKEN")
+                .deleteCookies("JSESSIONID", "ATOKEN", "RTOKEN", "WTOKEN")
                 .logoutSuccessHandler(customLogoutSuccessHandler)
         );
         http.exceptionHandling(e ->e.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler));
