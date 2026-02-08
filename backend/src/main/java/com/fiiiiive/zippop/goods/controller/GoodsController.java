@@ -37,9 +37,8 @@ public class GoodsController {
             @Valid @RequestPart("req") GoodsDto.CreateGoodsReq req
     ) throws BaseException {
         List<String> urls = fileUploadService.multipleUpload(files);
-        GoodsDto.CreateGoodsRes response = goodsService.createGoods(customUserDetails, urls, req);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new BaseResponse<>(BaseMessage.GOODS_REGISTER_SUCCESS, response));
+        GoodsDto.CreateGoodsRes res = goodsService.createGoods(customUserDetails, urls, req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.GOODS_REGISTER_SUCCESS, res));
     }
 
     // 굿즈 수정

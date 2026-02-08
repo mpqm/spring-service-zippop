@@ -25,15 +25,11 @@ public class CompanyService implements AccountService {
     private final EmailAuthSender emailAuthSender;
     private final CompanyPolicy companyPolicy;
 
-    /**
-     * 기업 회원 가입
-     * DDD: Application Service - 여러 도메인 객체와 정책을 조율
-     */
     @Override
     @Transactional
     public Boolean createAccount(AccountDto.CreateAccountReq req, String url) throws BaseException {
 
-        // DDD: Policy를 통한 도메인 규칙 검증
+        // 유저 중복 확인
         companyPolicy.validateDuplicateUserId(req.getUserId());
         
         // Value Object 변환 및 검증

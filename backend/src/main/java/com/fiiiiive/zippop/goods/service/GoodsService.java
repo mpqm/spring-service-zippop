@@ -77,7 +77,7 @@ public class GoodsService {
         // 굿즈 페이지(popupIdx, keyword, pageable) 조회
         // if: 굿즈 검색 조회
         // else: 굿즈 목록 조회
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Goods> goodsPage;
         if(keyword != null) {
             goodsPage = goodsRepository.findAllByPopupIdxAndKeyword(popupIdx, keyword, pageable);
@@ -85,9 +85,6 @@ public class GoodsService {
         else {
             goodsPage = goodsRepository.findAllByPopupIdx(popupIdx, pageable);
         }
-
-        //  예외 : 조회 결과가 없을때
-        if (goodsPage.isEmpty()) throw new BaseException(BaseMessage.GOODS_SEARCH_ALL_FAIL_STORE_NOT_NOT_FOUND);
 
         return Goods.toDtoPage(goodsPage);
 

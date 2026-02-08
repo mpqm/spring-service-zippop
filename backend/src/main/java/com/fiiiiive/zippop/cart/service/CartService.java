@@ -64,10 +64,8 @@ public class CartService {
     public Page<CartDto.GetCartRes> getCarts(CustomUserDetails user, Integer page, Integer size) throws BaseException {
 
         // 장바구니 조회(customerIdx, pageable)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Cart> cartPage = cartRepository.findAllByCustomerIdx(user.getIdx(), pageable).orElseThrow(
-                () -> new BaseException(BaseMessage.CART_SEARCH_ALL_FAIL_NOT_FOUND)
-        );
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Page<Cart> cartPage = cartRepository.findAllByCustomerIdx(user.getIdx(), pageable);
 
         return Cart.toDtoPage(cartPage);
 

@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.domain.payout.dto;
+package com.fiiiiive.zippop.payout.model;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +10,7 @@ public class PayoutDto {
     @Getter
     @Builder
     public static class SearchPayoutRes {
-        Integer totalRevenue;
+        Integer revenue;
         LocalDate payoutDate;
     }
 }

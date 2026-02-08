@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -65,9 +66,9 @@ public class CartDto {
         private String category;
         private Integer likeCount;
         private Integer totalPeople;
-        private String popupStartDate;
-        private String popupEndDate;
         private String popupStatus;
+        private LocalDate popupStartDate;
+        private LocalDate popupEndDate;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         private List<PopupDto.SearchPopupImageRes> searchPopupImageResList;

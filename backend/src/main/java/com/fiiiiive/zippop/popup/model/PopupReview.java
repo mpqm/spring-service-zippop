@@ -1,8 +1,8 @@
-package com.fiiiiive.zippop.domain.store.entity;
+package com.fiiiiive.zippop.popup.model;
 
-import com.fiiiiive.zippop.domain.auth.entity.Customer;
+import com.fiiiiive.zippop.account.model.Customer;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.domain.store.dto.StoreDto;
+import com.fiiiiive.zippop.orders.model.Orders;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class StoreReview extends BaseEntity {
+public class PopupReview extends BaseEntity {
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,14 +47,38 @@ public class StoreReview extends BaseEntity {
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_idx")
-    private Store store;
+    @JoinColumn(name = "popup_idx")
+    private Popup popup;
+
+    // create
+    public static PopupReview create(
+            Long customerIdx,
+            String customerEmail,
+            String customerName,
+            Popup popup,
+            String title,
+            String content,
+            Integer rating
+    ) {
+        Customer customerRef = Customer.builder()
+                .idx(customerIdx)
+                .build();
+        return PopupReview.builder()
+                .customer(customerRef)
+                .popup(popup)
+                .customerEmail(customerEmail)
+                .customerName(customerName)
+                .title(title)
+                .content(content)
+                .rating(rating)
+                .build();
+    }
 
     // ToDto
-    public StoreDto.SearchStoreReviewRes toDto() {
-        return StoreDto.SearchStoreReviewRes.builder()
+    public PopupDto.SearchPopupReviewRes toDto() {
+        return PopupDto.SearchPopupReviewRes.builder()
                 .reviewIdx(this.getIdx())
-                .storeName(this.getStore().getName())
+                .popupName(this.getPopup().getName())
                 .customerName(this.getCustomerName())
                 .customerEmail(this.getCustomerEmail())
                 .reviewTitle(this.getTitle())
@@ -65,8 +89,7 @@ public class StoreReview extends BaseEntity {
                 .build();
     }
 
-    public static Page<StoreDto.SearchStoreReviewRes> toDtoPage(Page<StoreReview> storeReviewPage) {
-        return storeReviewPage.map(StoreReview::toDto);
+    public static Page<PopupDto.SearchPopupReviewRes> toDtoPage(Page<PopupReview> popupReviewPage) {
+        return popupReviewPage.map(PopupReview::toDto);
     }
 }
-

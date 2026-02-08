@@ -26,17 +26,13 @@ import java.util.UUID;
 public class CustomerService implements AccountService {
 
     private final MailService mailService;
-    private final RedisService redisService;
     private final PasswordEncoder passwordEncoder;
     private final CustomerRepository customerRepository;
     private final CustomerPolicy customerPolicy;
     private final EmailAuthSender emailAuthSender;
 
 
-    /**
-     * 고객 회원 가입
-     * DDD: Application Service - 여러 도메인 객체와 정책을 조율
-     */
+    // 고객 회원 가입
     @Override
     @Transactional
     public Boolean createAccount(AccountDto.CreateAccountReq req, String url) throws BaseException {
@@ -51,10 +47,8 @@ public class CustomerService implements AccountService {
         // 고객 회원(email) 조회
         Customer customer = customerRepository.findByCustomerEmail(req.getEmail()).orElse(null);
         if (customer != null) {
-            // DDD: 엔티티의 자기 검증
             customer.validateSignup();
         } else {
-            // DDD: Factory Method를 통한 안전한 객체 생성
             customer = Customer.create(
                     req.getEmail(),
                     req.getUserId(),
@@ -64,7 +58,6 @@ public class CustomerService implements AccountService {
                     req.getAddress(),
                     url
             );
-            // DDD: 생성된 엔티티의 불변성 검증
             customer.validateRole();
             customerRepository.save(customer);
         }

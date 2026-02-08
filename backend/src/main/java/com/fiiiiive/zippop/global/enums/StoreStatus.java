@@ -6,6 +6,7 @@ public enum StoreStatus {
     STORE_RESERVE("STORE_RESERVE"),
     STORE_STOCK("STORE_STOCK");
 
+
     private final String name;
 
     StoreStatus(String message) {

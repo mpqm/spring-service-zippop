@@ -1,9 +1,8 @@
-package com.fiiiiive.zippop.domain.payout.entity;
+package com.fiiiiive.zippop.payout.model;
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.base.BaseStatus;
-import com.fiiiiive.zippop.domain.payout.dto.PayoutDto;
-import com.fiiiiive.zippop.domain.store.entity.Store;
+import com.fiiiiive.zippop.global.enums.PayoutStatus;
+import com.fiiiiive.zippop.popup.model.Popup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
@@ -25,7 +24,7 @@ public class Payout extends BaseEntity {
     // 총 매출 (필수, 0 이상)
     @Column(nullable = false)
     @PositiveOrZero(message = "총 매출은 0 이상이어야 합니다.")
-    private Integer totalRevenue;
+    private Integer revenue;
 
     // 정산일 (필수)
     @Column(nullable = false)
@@ -35,17 +34,27 @@ public class Payout extends BaseEntity {
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BaseStatus status;
+    private String status;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_idx", nullable = false)
-    private Store store;
+    @JoinColumn(name = "popup_idx", nullable = false)
+    private Popup popup;
+
+    // create
+    public static Payout create(Popup popup, Integer revenue, LocalDate date) {
+        return Payout.builder()
+                .popup(popup)
+                .revenue(revenue)
+                .payoutDate(date)
+                .status(PayoutStatus.PAYOUT_COMPLETE.name())
+                .build();
+    }
 
     public PayoutDto.SearchPayoutRes toDto() {
         return PayoutDto.SearchPayoutRes.builder()
                 .payoutDate(this.getPayoutDate())
-                .totalRevenue(this.getTotalRevenue())
+                .revenue(this.getRevenue())
                 .build();
     }
 

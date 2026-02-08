@@ -33,6 +33,6 @@ public interface CartRepository extends JpaRepository<Cart,Long> {
             "FROM Cart c " +
             "JOIN FETCH c.customer cc " +
             "WHERE cc.idx = :customerIdx")
-    Optional<Page<Cart>> findAllByCustomerIdx(@Param("customerIdx") Long customerIdx, Pageable pageable);
+    Page<Cart> findAllByCustomerIdx(@Param("customerIdx") Long customerIdx, Pageable pageable);
 
 }

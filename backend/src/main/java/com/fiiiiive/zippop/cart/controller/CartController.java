@@ -34,8 +34,7 @@ public class CartController {
             @Valid @RequestBody CartDto.CreateCartReq req
     ) throws BaseException {
         cartService.createCart(user, req);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new BaseResponse<>(BaseMessage.CART_REGISTER_SUCCESS));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.CART_REGISTER_SUCCESS));
     }
 
     // 현재 사용자의 장바구니 목록 조회
@@ -72,7 +71,8 @@ public class CartController {
     // 장바구니 아이템 수량 변경
     @PatchMapping("/{cartIdx}/items/{cartItemIdx}/quantity")
     public ResponseEntity<BaseResponse<Void>> updateCartItemQuantity(
-            @AuthenticationPrincipal CustomUserDetails user, @PathVariable Long cartItemIdx,
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long cartItemIdx,
             @RequestBody CartDto.UpdateCartItemQuantityReq req
     ) throws BaseException {
         cartService.updateCartItemQuantity(user, cartItemIdx, req);

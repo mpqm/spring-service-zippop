@@ -48,4 +48,5 @@ public class GoodsImage extends BaseEntity {
         image.goods = goods;
         return image;
     }
+
 }
