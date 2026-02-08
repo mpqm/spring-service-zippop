@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     
-    @Value("${upload.local.path}")
+    @Value("${singleUpload.local.path}")
     private String uploadPath;
     
     @Override

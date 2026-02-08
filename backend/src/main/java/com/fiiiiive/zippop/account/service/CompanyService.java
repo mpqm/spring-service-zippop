@@ -7,6 +7,7 @@ import com.fiiiiive.zippop.account.policy.CompanyPolicy;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.enums.RoleType;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.mail.MailService;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,19 @@ public class CompanyService implements AccountService {
     private final EmailAuthSender emailAuthSender;
     private final CompanyPolicy companyPolicy;
 
+    /**
+     * 기업 회원 가입
+     * DDD: Application Service - 여러 도메인 객체와 정책을 조율
+     */
     @Override
     @Transactional
     public Boolean createAccount(AccountDto.CreateAccountReq req, String url) throws BaseException {
 
-        // 아이디 중복 확인
+        // DDD: Policy를 통한 도메인 규칙 검증
         companyPolicy.validateDuplicateUserId(req.getUserId());
+        
+        // Value Object 변환 및 검증
+        companyPolicy.validateRoleType(RoleType.fromString(req.getRole()));
 
         // 기업 회원(email) 조회
         Company company = companyRepository.findByCompanyEmail(req.getEmail()).orElse(null);
@@ -46,6 +54,7 @@ public class CompanyService implements AccountService {
                     req.getAddress(),
                     url
             );
+            company.validateRole();
             companyRepository.save(company);
         }
 
@@ -65,7 +74,7 @@ public class CompanyService implements AccountService {
                 () -> new BaseException(BaseMessage.AUTH_GET_PROFILE_FAIL)
         );
 
-        return company.toGetInfoRes();
+        return company.toDto();
 
     }
 
@@ -95,7 +104,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void inActiveAccount(CustomUserDetails user) throws BaseException {
+    public void deactivateAccount(CustomUserDetails user) throws BaseException {
 
         // 기업 조회(email)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
@@ -110,7 +119,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void activeAccount(AccountDto.UpdateAccountStatusReq req) throws BaseException {
+    public void requestActivation(AccountDto.UpdateAccountStatusReq req) throws BaseException {
 
         // 기업 회원(email) 조회
         Company company = companyRepository.findByCompanyEmail(req.getEmail()).orElseThrow(
@@ -139,7 +148,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public void findAccountId(AccountDto.FindAccountIdReq dto) throws BaseException {
+    public void recoverUsername(AccountDto.FindAccountIdReq dto) throws BaseException {
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByCompanyEmail(dto.getEmail()).orElseThrow(
@@ -158,7 +167,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void findAccountPw(AccountDto.FindAccountPwReq dto) throws BaseException {
+    public void recoverPassword(AccountDto.FindAccountPwReq dto) throws BaseException {
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByUserId(dto.getUserId()).orElseThrow(
@@ -178,7 +187,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void resetAccountPw(CustomUserDetails user, AccountDto.ResetAccountPwReq req) throws BaseException {
+    public void changePassword(CustomUserDetails user, AccountDto.ResetAccountPwReq req) throws BaseException {
 
         // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(

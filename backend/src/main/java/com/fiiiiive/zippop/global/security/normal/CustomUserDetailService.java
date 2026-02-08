@@ -1,11 +1,10 @@
 package com.fiiiiive.zippop.global.security.normal;
 
-import com.fiiiiive.zippop.domain.auth.entity.Company;
-import com.fiiiiive.zippop.domain.auth.entity.Customer;
-import com.fiiiiive.zippop.domain.auth.repository.CompanyRepository;
-import com.fiiiiive.zippop.domain.auth.repository.CustomerRepository;
+import com.fiiiiive.zippop.account.model.Company;
+import com.fiiiiive.zippop.account.model.Customer;
+import com.fiiiiive.zippop.account.repository.CompanyRepository;
+import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,7 +30,7 @@ public class CustomUserDetailService implements UserDetailsService {
                     .name(customer.getName())
                     .email(customer.getEmail())
                     .password(customer.getPassword())
-                    .role(customer.getRole().name())
+                    .role(customer.getRole().getName())
                     .isEmailAuth(customer.getIsEmailAuth())
                     .build();
         }
@@ -44,7 +43,7 @@ public class CustomUserDetailService implements UserDetailsService {
                     .name(company.getName())
                     .email(company.getEmail())
                     .password(company.getPassword())
-                    .role(company.getRole().name())
+                    .role(company.getRole().getName())
                     .isEmailAuth(company.getIsEmailAuth())
                     .build();
         } else {

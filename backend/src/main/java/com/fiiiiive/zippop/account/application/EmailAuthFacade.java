@@ -45,7 +45,7 @@ public class EmailAuthFacade {
 
     // 이메일 검증 및 계정 활성화
     @Transactional
-    public String emailAuth(String email, String role, String uuid) throws BaseException {
+    public String verifyEmail(String email, String role, String uuid) throws BaseException {
 
         // 이메일에 해당하는 UUID 값 조회
         String storedUuid = redisService.getEmailVerifyUuid(email);

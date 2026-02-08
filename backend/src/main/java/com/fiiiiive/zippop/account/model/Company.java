@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.management.relation.Role;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -55,7 +56,7 @@ public class Company implements Account{
     // 역할 (필수, 최대 20자, ROLE_COMPANY)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private RoleType role;
 
     // 프로필 이미지 URL (선택, 최대 255자)
     @Column(length = 255)
@@ -100,6 +101,7 @@ public class Company implements Account{
         }
     }
 
+    // Company 생성 팩토리 메서드
     public static Company create(
             String email,
             String userId,
@@ -119,18 +121,18 @@ public class Company implements Account{
                 .phoneNumber(phoneNumber)
                 .address(address)
                 .profileImageUrl(profileImageUrl)
-                .role(RoleType.ROLE_COMPANY.name())
+                .role(RoleType.ROLE_COMPANY) // Value Object로 직접 할당
                 .isEmailAuth(false)
                 .isInActive(true)
                 .build();
     }
 
-    // ToDto
-    public AccountDto.GetAccountRes toGetInfoRes(){
+    // DTO 변환 메서드
+    public AccountDto.GetAccountRes toDto(){
         return AccountDto.GetAccountRes.builder()
                 .name(this.getName())
                 .crn(this.getCrn())
-                .role(this.getRole())
+                .role(this.getRole().getName()) // Enum → String 변환
                 .profileImageUrl(this.getProfileImageUrl())
                 .email(this.getEmail())
                 .phoneNumber(this.getPhoneNumber())
@@ -209,5 +211,13 @@ public class Company implements Account{
         }
         this.password = encoder.encode(newPassword);
     }
+
+    // 역할 검증
+    public void validateRole() {
+        if (!(this.role == RoleType.ROLE_COMPANY)) {
+            throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_INVALID_ROLE);
+        }
+    }
+
 }
 

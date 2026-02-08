@@ -1,5 +1,7 @@
 package com.fiiiiive.zippop.cart.model;
 
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.goods.model.Goods;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -65,6 +67,17 @@ public class CartItem {
         return cartItemList.stream()
                 .map(CartItem::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public void increase() {
+        this.quantity++;
+    }
+
+    public void decrease() throws BaseException {
+        if (this.quantity <= 1) {
+            throw new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_IS_ZERO);
+        }
+        this.quantity--;
     }
 
 }

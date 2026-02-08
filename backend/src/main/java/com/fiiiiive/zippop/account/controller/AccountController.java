@@ -42,7 +42,7 @@ public class AccountController {
                 .body(new BaseResponse<>(res ? BaseMessage.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : BaseMessage.AUTH_SIGNUP_SUCCESS));
     }
 
-    // 회원 정보 조회 (RESTful: /me는 현재 인증된 사용자를 나타내는 관례)
+    // 회원 정보 조회
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<AccountDto.GetAccountRes>> getAccount(
             @AuthenticationPrincipal CustomUserDetails user
@@ -62,62 +62,62 @@ public class AccountController {
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_EDIT_INFO_SUCCESS));
     }
 
-    // 계정 비활성화 (RESTful: 리소스 중심 설계, 활성화 상태를 리소스로 취급)
+    // 계정 비활성화
     @DeleteMapping("/me/activation")
     public ResponseEntity<BaseResponse<Void>> deactivateAccount(
             @AuthenticationPrincipal CustomUserDetails user
     ) throws BaseException {
-        accountFacade.inActiveAccount(user);
+        accountFacade.deactivateAccount(user);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_INACTIVE_SUCCESS));
     }
 
-    // 계정 활성화 요청 (이메일로 활성화 링크 전송)
+    // 계정 활성화 요청
     @PostMapping("/activation")
     public ResponseEntity<BaseResponse<Void>> requestActivation(
             @Valid @RequestBody AccountDto.UpdateAccountStatusReq req
     ) throws BaseException {
-        accountFacade.activeAccount(req);
+        accountFacade.requestActivation(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_ACTIVE_SUCCESS));
     }
 
-    // 이메일 검증 (RESTful: 검증 리소스)
+    // 이메일 검증
     @GetMapping("/verification")
     public ResponseEntity<Void> verifyEmail(
             @RequestParam String email,
             @RequestParam String role,
             @RequestParam String uuid
     ) throws BaseException {
-        String redirectUrl = emailAuthFacade.emailAuth(email, role, uuid);
+        String redirectUrl = emailAuthFacade.verifyEmail(email, role, uuid);
         return ResponseEntity.status(HttpStatus.FOUND)
                 .location(URI.create(redirectUrl))
                 .build();
     }
 
-    // 아이디 찾기 (RESTful: 복구 리소스의 하위 리소스로 설계)
+    // 아이디 찾기
     @PostMapping("/recovery/username")
     public ResponseEntity<BaseResponse<Void>> recoverUsername(
             @Valid @RequestBody AccountDto.FindAccountIdReq req
     ) throws BaseException {
-        accountFacade.findAccountId(req);
+        accountFacade.recoverUsername(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_ID_SUCCESS));
     }
 
-    // 비밀번호 찾기 (임시 비밀번호 발급)
+    // 비밀번호 찾기
     @PostMapping("/recovery/password")
     public ResponseEntity<BaseResponse<Void>> recoverPassword(
             @Valid @RequestBody AccountDto.FindAccountPwReq req
     ) throws BaseException {
-        accountFacade.findAccountPw(req);
+        accountFacade.recoverPassword(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_PW_SUCCESS));
     }
 
-    // 비밀번호 변경 (RESTful: 비밀번호를 리소스로 취급)
+    // 비밀번호 변경
     @PatchMapping("/me/password")
     public ResponseEntity<BaseResponse<Void>> changePassword(
             @AuthenticationPrincipal CustomUserDetails user,
             @Valid @RequestBody AccountDto.ResetAccountPwReq req
     ) throws BaseException {
-        accountFacade.resetAccountPw(user, req);
+        accountFacade.changePassword(user, req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_RESET_PW_SUCCESS));
     }
 

@@ -1,5 +1,5 @@
 package com.fiiiiive.zippop.global.security.filter;
-import com.fiiiiive.zippop.global.service.JwtService;
+import com.fiiiiive.zippop.global.crypto.JwtService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetailService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;

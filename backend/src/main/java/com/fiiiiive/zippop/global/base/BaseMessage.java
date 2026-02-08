@@ -34,7 +34,6 @@ public enum BaseMessage {
     AUTH_LOGIN_FAIL_PASSWORD_NULL(false, 1002, "비밀번호를 입력해주세요."),
     AUTH_LOGOUT_SUCCESS(true, 1006, "로그아웃에 성공했습니다."),
     AUTH_LOGOUT_FAIL(false, 1007, "로그아웃에 실패했습니다."),
-
     // 회원 가입
     AUTH_SIGNUP_SUCCESS(true, 2000, "이메일 인증을 완료해주세요 유효시간은 3분입니다."),
     AUTH_SIGNUP_SUCCESS_IS_INACTIVE(true, 2001, "비활성화된 계정입니다. 이메일 인증을 완료해 복구하세요, 유효시간은 3분입니다."),
@@ -42,6 +41,8 @@ public enum BaseMessage {
     AUTH_SIGNUP_FAIL_ALREADY_REGISTER_AS_COMPANY(false, 2003, "이미 기업 회원으로 가입된 계정입니다. 기업 회원은 고객 회원으로 회원가입할 수 없습니다."),
     AUTH_SIGNUP_FAIL_ALREADY_EXIST(false, 2004, "이미 회원가입한 계정입니다."),
     AUTH_SIGNUP_FAIL_ALREADY_EXIST_ID(false, 2023, "이미 존재하는 아이디입니다."),
+    AUTH_SIGNUP_FAIL_INVALID_ROLE_TYPE(false, 2025, "유효하지 않은 사용자 타입입니다."),
+    AUTH_SIGNUP_FAIL_INVALID_ROLE(false, 2026, "해당 계정 타입에 맞지 않는 역할입니다."),
     // 이메일 인증
     AUTH_VERIFY_FAIL(false, 2005, "이메일 인증에 실패했습니다."),
     // 계정 비/활성화
@@ -55,18 +56,18 @@ public enum BaseMessage {
     AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY(false, 2011, "이메일 인증이 되지않은 사용자는 아이디 찾기를 진행할 수 없습니다."),
     AUTH_FIND_ID_FAIL_NOT_EXIST(false, 2012, "해당 이름과 전화번호로 가입된 아이디가 존재하지 않습니다."),
     // 비밀번호 찾기
-    AUTH_FIND_PASSWORD_SUCCESS(true, 2013, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
-    AUTH_FIND_PASSWORD_FAIL_NOT_EMAIL_VERIFY(false, 2014, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
-    AUTH_FIND_PASSWORD_FAIL_NOT_EXIST(false, 2015, "해당 아이디와 이메일로 가입된 계정이 존재하지 않습니다."),
+    AUTH_FIND_PW_SUCCESS(true, 2013, "이메일로 비밀번호 찾기 결과를 전송했습니다. 이메일을 확인해주세요"),
+    AUTH_FIND_PW_FAIL_NOT_EMAIL_VERIFY(false, 2014, "이메일 인증이 되지않은 사용자는 비밀번호 찾기를 진행할 수 없습니다."),
+    AUTH_FIND_PW_FAIL_NOT_EXIST(false, 2015, "해당 아이디와 이메일로 가입된 계정이 존재하지 않습니다."),
     // 계정 정보 변경
     AUTH_EDIT_INFO_SUCCESS(true, 2016, "계정 프로필 정보 변경에 성공했습니다."),
     AUTH_EDIT_INFO_FAIL(false, 2017, "계정 프로필 정보 변경에 실패했습니다."),
     AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER(false, 2018, "사용자를 찾을 수 없습니다."),
     // 계정 패스워드 수정
-    AUTH_EDIT_PASSWORD_SUCCESS(true, 2019, "계정 비밀번호 변경에 성공했습니다."),
-    AUTH_EDIT_PASSWORD_FAIL(false, 2020, "계정 비밀번호 변경에 실패했습니다."),
-    AUTH_EDIT_PASSWORD_FAIL_NOT_FOUND_MEMBER(false, 2021, "사용자를 찾을 수 없습니다."),
-    AUTH_EDIT_PASSWORD_FAIL_PASSWORD_NOT_MATCH(false, 2022, "계정 비밀번호가 틀립니다."),
+    AUTH_RESET_PW_SUCCESS(true, 2019, "계정 비밀번호 변경에 성공했습니다."),
+    AUTH_RESET_PW_FAIL(false, 2020, "계정 비밀번호 변경에 실패했습니다."),
+    AUTH_RESET_PW_FAIL_NOT_FOUND_MEMBER(false, 2021, "사용자를 찾을 수 없습니다."),
+    AUTH_RESET_PW_FAIL_PASSWORD_NOT_MATCH(false, 2022, "계정 비밀번호가 틀립니다."),
     // 프로필 정보
     AUTH_GET_PROFILE_SUCCESS(true, 2021,"프로필 조회에 성공했습니다"),
     AUTH_GET_PROFILE_FAIL(false, 2022,"프로필 조회에 실패했습니다"),
@@ -93,7 +94,7 @@ public enum BaseMessage {
     // 장바구니 전체삭제
     CART_ITEM_DELETE_ALL_SUCCESS(true, 3013, "장바구니 전체 삭제에 성공했습니다."),
     CART_DELETE_ALL_FAIL_NOT_FOUND(false, 3014, "장바구니를 찾을 수 없습니다."),
-
+    CART_DELETE_ALL_FAIL_UNAUTHORIZED(false, 3015, "해당 장바구니의 소유자가 아닙니다."),
     // 팝업 스토어 4000
     // 팝업 스토어 등록
     STORE_REGISTER_SUCCESS(true, 4000, "팝업 스토어 등록에 성공했습니다."),
@@ -146,7 +147,7 @@ public enum BaseMessage {
     GOODS_DELETE_SUCCESS(true, 5010, "팝업 굿즈 삭제에 성공했습니다."),
     GOODS_DELETE_FAIL_NOT_FOUND(false, 5011, "팝업 스토어를 찾을 수 없어 삭제에 실패했습니다."),
     GOODS_DELETE_FAIL_INVALID_MEMBER(false, 5012, "해당 팝업 스토어를 등록한 기업 회원이 아닙니다."),
-
+    GOODS_REGISTER_FAIL_INVALID_STATUS(false, 5013, "유효하지 않은 상태값 입니다."),
     // 굿즈 주문 6000
     // 굿즈 구매
     ORDERS_PAY_SUCCESS(true, 6000,"결제에 성공했습니다."),
@@ -165,10 +166,10 @@ public enum BaseMessage {
     ORDERS_CANCEL_FAIL_NOT_FOUND(false, 6011, "해당 결재내역을 찾을 수 없습니다."),
     ORDERS_CANCEL_FAIL_ALREADY_CANCEL(false, 6012, "이미 환불 처리가 진행된 내역입니다."),
     ORDERS_CANCEL_FAIL_NOT_FOUND_GOODS(false, 6013, "결제 정보에 해당하는 팝업 굿즈가 없습니다."),
-    ORDERS_CANCEL_FAIL_IS_DELIVERY(false, 6014, "배송 중인 건에 대해선 환불 을 지원하지 않습니다."),
+    ORDERS_CANCEL_FAIL_IS_DELIVERY(false, 6014, "배송 중인 건에 대해선 환불을 지원하지 않습니다."),
     // 굿즈 구매 확정
+    ORDERS_UPDATE_SUCCESS(true,6015, "결제 상태 변경에 성공했습니다."),
     ORDERS_COMPLETE_SUCCESS(true, 6015, "배송 및 결제 확정 처리에 성공했습니다."),
-    ORDERS_COMPLETE_FAIL_NOT_FOUND_STORE(false, 6016, "팝업 스토어를 찾을 수 없습니다."),
     ORDERS_COMPLETE_FAIL_INVALID_MEMBER(false, 6017, "해당 거래내역에 접근 권한이 없습니다."),
     ORDERS_COMPLETE_FAIL_IS_DELIVERY(false, 6018, "이미 주문 확정 처리 되고 배달 중입니다."),
     ORDERS_COMPLETE_FAIL_NOT_FOUND(false, 6019, "거래 내역을 찾을 수 없습니다."),

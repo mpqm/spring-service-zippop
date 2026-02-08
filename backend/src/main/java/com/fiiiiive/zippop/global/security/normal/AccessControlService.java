@@ -1,9 +1,9 @@
 package com.fiiiiive.zippop.global.security.normal;
 
 
-import com.fiiiiive.zippop.global.service.RedisService;
-import com.fiiiiive.zippop.domain.reserve.entity.Reserve;
-import com.fiiiiive.zippop.domain.reserve.repository.ReserveRepository;
+import com.fiiiiive.zippop.global.redis.RedisService;
+import com.fiiiiive.zippop.reserve.model.Reserve;
+import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

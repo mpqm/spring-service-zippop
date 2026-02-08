@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.global.security.filter;
 
-import com.fiiiiive.zippop.global.service.JwtService;
+import com.fiiiiive.zippop.global.crypto.JwtService;
 import com.fiiiiive.zippop.global.security.oauth2.CustomOauth2UserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

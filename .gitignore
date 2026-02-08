@@ -5,8 +5,6 @@ backend/src/main/resources/application-prod.yml
 backend/!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-
-### STS ###
 backend/.apt_generated
 backend/.classpath
 backend/.factorypath
@@ -17,8 +15,6 @@ backend/.sts4-cache
 backend/bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-
-### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
@@ -26,18 +22,12 @@ backend/bin/
 backend/out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-
-### NetBeans ###
 backend/nbproject/private/
 backend/nbbuild/
 backend/dist/
 backend/nbdist/
 backend/.nb-gradle/
-
-### VS Code ###
 backend/.vscode/
-
-# Logs
 frontend/logs
 frontend/*.log
 frontend/npm-debug.log*
@@ -45,18 +35,14 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/pnpm-debug.log*
 frontend/lerna-debug.log*
-
 frontend/node_modules
 frontend/.DS_Store
 frontend/dist
 frontend/dist-ssr
 frontend/coverage
 frontend/*.local
-
 frontend/cypress/videos/
 frontend/cypress/screenshots/
-
-# Editor directories and files
 frontend/.vscode/*
 frontend/!.vscode/extensions.json
 frontend/.idea
@@ -65,9 +51,7 @@ frontend/*.ntvs*
 frontend/*.njsproj
 frontend/*.sln
 frontend/*.sw?
-
 frontend/*.tsbuildinfo
-
 frontend/vite.config.js
 cicd/mariadb/data/**
 cicd/redis/**
@@ -76,3 +60,4 @@ frontend/.env
 cicd/grafana/state/**
 upload
 log
+backend\src\main\resources\.env

@@ -16,7 +16,6 @@ public class EmailAuthSender {
 
     private final MailService mailService;
     private final RedisService redisService;
-    private final PasswordEncoder passwordEncoder;
 
     // 이메일 인증 비동기 전송 + 인증 유효 기간 설정 메서드
     @Transactional

@@ -2,6 +2,7 @@ package com.fiiiiive.zippop.global.security.normal;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fiiiiive.zippop.global.enums.RoleType;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,14 +44,9 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return role;
-            }
-        });
-        return collection;
+        Collection<GrantedAuthority> authorities  = new ArrayList<>();
+        authorities.add((GrantedAuthority) () -> role);
+        return authorities;
     }
 
     @Override
@@ -80,7 +76,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isEmailAuth;
+        return Boolean.TRUE.equals(isEmailAuth);
     }
 
 }

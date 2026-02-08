@@ -4,7 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.fiiiiive.zippop.global.service.FileUploadService;
+import com.fiiiiive.zippop.global.file.FileUploadService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,16 +14,16 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class FileUploadConfig {
     
-    @Value("${upload.type}")
+    @Value("${singleUpload.type}")
     private String uploadType;
 
-    @Value("${upload.s3.credentials.access-key}")
+    @Value("${singleUpload.s3.credentials.access-key}")
     private String accessKey;
 
-    @Value("${upload.s3.credentials.secret-key}")
+    @Value("${singleUpload.s3.credentials.secret-key}")
     private String secretKey;
 
-    @Value("${upload.s3.region.static}")
+    @Value("${singleUpload.s3.region.static}")
     private String region;
 
     @Bean
@@ -32,7 +32,7 @@ public class FileUploadConfig {
             @Qualifier("localFileUploadService") FileUploadService localFileUploadService,
             @Qualifier("s3FileUploadService") FileUploadService s3FileUploadService) {
         
-        // application.yml에서 file.upload.type 설정에 따라 서비스 선택
+        // application.yml에서 file.singleUpload.type 설정에 따라 서비스 선택
         // local: 로컬 파일 시스템 사용
         // s3: AWS S3 사용 (기본값은 local)
         if ("s3".equalsIgnoreCase(uploadType)) {

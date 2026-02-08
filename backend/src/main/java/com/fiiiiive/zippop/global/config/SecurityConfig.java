@@ -5,7 +5,7 @@ import com.fiiiiive.zippop.global.security.filter.*;
 import com.fiiiiive.zippop.global.security.normal.AccessControlService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetailService;
 import com.fiiiiive.zippop.global.security.oauth2.CustomOAuth2Service;
-import com.fiiiiive.zippop.global.service.JwtService;
+import com.fiiiiive.zippop.global.crypto.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -61,8 +62,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf((auth) -> auth.disable());
-        http.httpBasic((auth) -> auth.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.httpBasic(AbstractHttpConfigurer::disable);
         http.sessionManagement((auth) -> auth.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests((auth) ->
                         auth
@@ -76,7 +77,7 @@ public class SecurityConfig {
 
                             .requestMatchers("/api/v1/auth/**").permitAll()
                             // 장바구니
-                            .requestMatchers("/api/v1/cart/**").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/cartEntity/**").hasAuthority("ROLE_CUSTOMER")
                             // 굿즈
                             .requestMatchers("/api/v1/goods/register").hasAuthority("ROLE_COMPANY")
                             .requestMatchers("/api/v1/goods/update").hasAuthority("ROLE_COMPANY")
@@ -120,14 +121,14 @@ public class SecurityConfig {
             config.userInfoEndpoint((endpoint) -> endpoint.userService(customOAuth2Service));
         });
         http.logout((auth) -> auth
-                .logoutUrl("/api/v1/auth/logout")
+                .logoutUrl("/api/v1/account/logout")
                 .deleteCookies("JSESSIONID", "ATOKEN", "RTOKEN", "WTOKEN")
                 .logoutSuccessHandler(customLogoutSuccessHandler)
         );
         http.exceptionHandling(e ->e.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler));
         http.addFilterBefore(new JwtFilter(jwtService, redisTemplate, customUserDetailService), LoginFilter.class);
         LoginFilter loginFilter = new LoginFilter(jwtService, mapper, authenticationManager(authenticationConfiguration), redisTemplate);
-        loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
+        loginFilter.setFilterProcessesUrl("/api/v1/account/login");
         loginFilter.setAuthenticationFailureHandler(customLoginFailureHandler);
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

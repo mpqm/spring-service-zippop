@@ -5,6 +5,7 @@ import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.cart.model.Cart;
 import com.fiiiiive.zippop.cart.model.CartDto;
 import com.fiiiiive.zippop.cart.model.CartItem;
+import com.fiiiiive.zippop.cart.policy.CartPolicy;
 import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
 import com.fiiiiive.zippop.goods.model.Goods;
@@ -31,6 +32,7 @@ public class CartService {
     private final GoodsRepository goodsRepository;
     private final CustomerRepository customerRepository;
     private final CartItemRepository cartItemRepository;
+    private final CartPolicy cartPolicy;
 
     // 장바구니 등록
     @Transactional
@@ -51,10 +53,8 @@ public class CartService {
                 () -> cartRepository.save(req.toEntity(customer, goods.getPopup()))
         );
 
-        // 장바구니 아이템이 있으면 예외 없으면 생성
-        if (cartItemRepository.findByGoodsIdxAndCartIdx(goods.getIdx(), cart.getIdx()).isPresent()) {
-            throw new BaseException(BaseMessage.CART_REGISTER_FAIL_ITEM_EXIST);
-        }
+        cart.validateNoDuplicateGoods(goods);
+
         cartItemRepository.save(CartDto.CreateCartItemReq.toEntity(cart, goods));
 
     }
@@ -82,10 +82,8 @@ public class CartService {
                 () -> new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_NOT_FOUND)
         );
 
-        // 장바구니 소유자 확인
-        if (!Objects.equals(cart.getCustomer().getIdx(), user.getIdx())){
-            throw new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
-        }
+        // 장바구니 소유권확인
+        cartPolicy.validateCartOwner(cart, user);
 
         cartRepository.delete(cart);
 
@@ -100,10 +98,8 @@ public class CartService {
                 () -> new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_NOT_FOUND)
         );
 
-        // 장바구니 소유자 확인
-        if (!Objects.equals(cart.getCustomer().getIdx(), user.getIdx())){
-            throw new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
-        }
+        // 장바구니 소유권확인
+        cartPolicy.validateCartOwner(cart, user);
 
         return CartItem.toDtoList(cart.getCartItemList());
 
@@ -118,15 +114,11 @@ public class CartService {
                 () -> new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
         );
 
-        // if: operation = false -> 장바구니 아이템 증가
-        // else: operation = true -> 장바구니 아이템 감소 (단, count가 1 이하면 에러)
+        // Dirty Checking (operation = false -> +, operation = true -> --
         if (!req.getOperation()){
-            cartItemRepository.incrementCount(cartItemIdx);
+            cartItem.increase();
         } else {
-            if (cartItem.getQuantity() <= 1) {
-                throw new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_IS_ZERO);
-            }
-            cartItemRepository.decrementCount(cartItemIdx);
+            cartItem.decrease();
         }
 
     }
@@ -135,8 +127,16 @@ public class CartService {
     @Transactional
     public void deleteCartItem(CustomUserDetails user, Long cartItemIdx) {
 
+        // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
+        CartItem cartItem = cartItemRepository.findByCartItemIdxAndCustomerIdx(cartItemIdx, user.getIdx()).orElseThrow(
+                () -> new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
+        );
+
+        // 장바구니 소유권확인
+        cartPolicy.validateCartItemOwner(cartItem, user);
+
         // 장바구니 아이템 삭제(cartItemIdx, customerIdx)
-        cartItemRepository.deleteByCartItemIdxAndCustomerIdx(cartItemIdx, user.getIdx());
+        cartItemRepository.delete(cartItem);
 
     }
 

@@ -1,11 +1,10 @@
 package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiiiiive.zippop.domain.auth.dto.AuthDto;
-import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.account.model.AccountDto;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
-import com.fiiiiive.zippop.global.service.JwtService;
+import com.fiiiiive.zippop.global.crypto.JwtService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,11 +37,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        AuthDto.LoginReq dto;
+        AccountDto.LoginReq dto;
         try {
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            dto = mapper.readValue(messageBody, AuthDto.LoginReq.class);
+            dto = mapper.readValue(messageBody, AccountDto.LoginReq.class);
             
             // 아이디와 비밀번호 입력 검증
             if (dto.getUserId() == null || dto.getUserId().trim().isEmpty()) {

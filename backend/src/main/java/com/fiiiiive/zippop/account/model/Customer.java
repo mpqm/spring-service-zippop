@@ -51,10 +51,10 @@ public class Customer implements Account {
     @Column(nullable = false, length = 200)
     private String address;
 
-    // 역할 (필수, 최대 20자, ROLE_CUSTOMER로 고정)
+    // 역할 (필수, ROLE_CUSTOMER로 고정)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private RoleType role;
 
     // 프로필 이미지 URL (선택, 최대 255자)
     @Column(length = 255)
@@ -105,6 +105,7 @@ public class Customer implements Account {
         }
     }
 
+    // Customer 생성 팩토리 메서드
     public static Customer create(
             String email,
             String userId,
@@ -119,22 +120,22 @@ public class Customer implements Account {
                 .userId(userId)
                 .password(encodedPassword)
                 .name(name)
-                .point(3000)
+                .point(3000) // 신규 고객 기본 포인트
                 .phoneNumber(phoneNumber)
                 .address(address)
                 .profileImageUrl(profileImageUrl)
-                .role(RoleType.ROLE_COMPANY.name())
+                .role(RoleType.ROLE_CUSTOMER) // Value Object로 직접 할당
                 .isEmailAuth(false)
                 .isInActive(true)
                 .build();
     }
 
-    // toDto
-    public AccountDto.GetAccountRes toGetInfoRes(){
+    // DTO 변환 메서드
+    public AccountDto.GetAccountRes toDto(){
         return AccountDto.GetAccountRes.builder()
                 .name(this.getName())
                 .point(this.getPoint())
-                .role(this.getRole())
+                .role(this.getRole().getName())
                 .profileImageUrl(this.getProfileImageUrl())
                 .email(this.getEmail())
                 .phoneNumber(this.getPhoneNumber())
@@ -214,8 +215,16 @@ public class Customer implements Account {
         this.password = encoder.encode(newPassword);
     }
 
+    // 포인트 검증
     public void updatePoint(Integer point) {
         this.point = point;
+    }
+
+    // 역할 검증
+    public void validateRole() {
+        if (!(this.role == RoleType.ROLE_CUSTOMER)) {
+            throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_INVALID_ROLE);
+        }
     }
 
 }

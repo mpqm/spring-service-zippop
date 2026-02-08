@@ -20,28 +20,6 @@ public interface CartItemRepository extends JpaRepository<CartItem,Long> {
             "WHERE ci.idx = :cartItemIdx AND cicc.idx = :customerIdx")
     Optional<CartItem> findByCartItemIdxAndCustomerIdx(@Param("cartItemIdx") Long cartItemIdx, @Param("customerIdx") Long customerIdx);
 
-    // 카트 인덱스, 굿즈 인덱스로 조회
-    @Query("SELECT ci " +
-            "FROM CartItem ci " +
-            "JOIN FETCH ci.cart cic " +
-            "JOIN FETCH ci.product cig " +
-            "WHERE cic.idx = :cartIdx AND cig.idx = :goodsIdx")
-    Optional<CartItem> findByGoodsIdxAndCartIdx(@Param("goodsIdx") Long goodsIdx, @Param("cartIdx") Long cartIdx);
-
-    // 카트 아이템 인덱스로 수량 증가
-    @Modifying
-    @Query("UPDATE CartItem ci " +
-            "SET ci.count = ci.count + 1 " +
-            "WHERE ci.idx = :cartItemIdx")
-    void incrementCount(@Param("cartItemIdx") Long cartItemIdx);
-
-    // 카트 아이템 인덱스로 수량 감소
-    @Modifying
-    @Query("UPDATE CartItem ci " +
-            "SET ci.count = ci.count - 1 " +
-            "WHERE ci.idx = :cartItemIdx AND ci.count > 0")
-    void decrementCount(@Param("cartItemIdx") Long cartItemIdx);
-
     // 카트 아이템, 고객 인덱스로 삭제
     @Modifying
     @Query("DELETE FROM CartItem ci " +
