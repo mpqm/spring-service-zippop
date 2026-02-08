@@ -1,13 +1,14 @@
-package com.fiiiiive.zippop.domain.cart.entity;
+package com.fiiiiive.zippop.cart.model;
 
-import com.fiiiiive.zippop.domain.cart.dto.CartDto;
-import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.domain.goods.entity.Goods;
+import com.fiiiiive.zippop.goods.model.Goods;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class CartItem extends BaseEntity {
+public class CartItem {
 
     // Column
     @Id
@@ -26,12 +27,20 @@ public class CartItem extends BaseEntity {
     // 상품 수량 (필수, 최소 1)
     @Column(nullable = false)
     @Min(value = 1, message = "상품 수량은 최소 1개 이상이어야 합니다.")
-    private Integer count;
+    private Integer quantity;
 
     // 총 가격 (필수, 0 이상)
     @Column(nullable = false)
     @PositiveOrZero(message = "총 가격은 0 이상이어야 합니다.")
     private Integer price;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,20 +48,20 @@ public class CartItem extends BaseEntity {
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "goods_idx")
+    @JoinColumn(name = "product_idx")
     private Goods goods;
 
     // toDto
-    public CartDto.SearchCartItemRes toDto() {
-        return CartDto.SearchCartItemRes.builder()
+    public CartDto.GetCartItemRes toDto() {
+        return CartDto.GetCartItemRes.builder()
                 .cartItemIdx(this.getIdx())
-                .count(this.getCount())
+                .count(this.getQuantity())
                 .price(this.getPrice())
                 .searchGoodsRes(this.getGoods().toDto())
                 .build();
     }
 
-    public static List<CartDto.SearchCartItemRes> toDtoList(List<CartItem> cartItemList) {
+    public static List<CartDto.GetCartItemRes> toDtoList(List<CartItem> cartItemList) {
         return cartItemList.stream()
                 .map(CartItem::toDto)
                 .collect(Collectors.toList());
