@@ -1,6 +1,6 @@
-package com.fiiiiive.zippop.domain.auth.repository;
+package com.fiiiiive.zippop.account.repository;
 
-import com.fiiiiive.zippop.domain.auth.entity.Customer;
+import com.fiiiiive.zippop.account.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,17 +10,20 @@ import java.util.Optional;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     // 고객 회원 인덱스로 조회
-    @Query("SELECT c FROM Customer c " +
+    @Query("SELECT c " +
+            "FROM Customer c " +
             "WHERE c.idx = :customerIdx")
     Optional<Customer> findByCustomerIdx(@Param("customerIdx") Long customerIdx);
 
     // 고객 회원 아이디로 조회
-    @Query("SELECT c FROM Customer c " +
+    @Query("SELECT c " +
+            "FROM Customer c " +
             "WHERE c.userId = :userId")
     Optional<Customer> findByUserId(@Param("userId") String userId);
 
     // 고객 회원 이메일로 조회
-    @Query("SELECT c FROM Customer c " +
+    @Query("SELECT c " +
+            "FROM Customer c " +
             "WHERE c.email = :customerEmail")
     Optional<Customer> findByCustomerEmail(@Param("customerEmail") String customerEmail);
 
