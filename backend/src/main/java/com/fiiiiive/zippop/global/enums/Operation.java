@@ -3,13 +3,14 @@ package com.fiiiiive.zippop.global.enums;
 import lombok.Getter;
 
 @Getter
-public enum PayoutStatus {
-    PAYOUT_COMPLETE("PAYOUT_COMPLETE");
+public enum Operation {
+
+    INCREMENT("increment"),
+    DECREMENT("decrement");
 
     private final String name;
 
-    PayoutStatus(String message) {
+    Operation(String message) {
         this.name = message;
     }
-
 }

@@ -48,6 +48,19 @@ public class Cart {
     @JoinColumn(name = "popup_idx")
     private Popup popup;
 
+    public static Cart create(
+            Long customerIdx,
+            Popup popup
+    ) {
+        Customer customerRef = Customer.builder()
+                .idx(customerIdx)
+                .build();
+        return Cart.builder()
+                .customer(customerRef)
+                .popup(popup)
+                .build();
+    }
+
     // toDTO
     public CartDto.GetCartRes toDto() {
         return CartDto.GetCartRes.builder()
@@ -64,7 +77,7 @@ public class Cart {
                 .popupStatus(this.getPopup().getStatus().name())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
-                .searchPopupImageResList(PopupImage.toDtoList(this.getPopup().getPopupImageList()))
+                .getPopupImageResList(PopupImage.toDtoList(this.getPopup().getPopupImageList()))
                 .build();
     }
 

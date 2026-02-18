@@ -7,7 +7,6 @@ import com.fiiiiive.zippop.account.policy.CompanyPolicy;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.enums.RoleType;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.mail.MailService;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +30,6 @@ public class CompanyService implements AccountService {
 
         // 유저 중복 확인
         companyPolicy.validateDuplicateUserId(req.getUserId());
-        
-        // Value Object 변환 및 검증
-        companyPolicy.validateRoleType(RoleType.fromString(req.getRole()));
 
         // 기업 회원(email) 조회
         Company company = companyRepository.findByCompanyEmail(req.getEmail()).orElse(null);
@@ -50,10 +46,10 @@ public class CompanyService implements AccountService {
                     req.getAddress(),
                     url
             );
-            company.validateRole();
             companyRepository.save(company);
         }
 
+        // 인증 이메일 전송
         emailAuthSender.sendEmailAuth(company);
 
         // 복구 회원과 신규 회원 응답 구분을 위해 isInActive 반환
@@ -94,7 +90,6 @@ public class CompanyService implements AccountService {
                 req.getPhoneNumber(),
                 url
         );
-        companyRepository.save(company);
 
     }
 
@@ -109,13 +104,12 @@ public class CompanyService implements AccountService {
 
         // 기업 회원 이메일 인증, 비활성화 회원(isEmailAuth - 0, isInActive - 1) 여부 수정 후 저장
         company.deactivate();
-        companyRepository.save(company);
 
     }
 
     @Override
     @Transactional
-    public void requestActivation(AccountDto.UpdateAccountStatusReq req) throws BaseException {
+    public void requestActivation(AccountDto.RequestActivationReq req) throws BaseException {
 
         // 기업 회원(email) 조회
         Company company = companyRepository.findByCompanyEmail(req.getEmail()).orElseThrow(
@@ -138,13 +132,12 @@ public class CompanyService implements AccountService {
 
         // 기업 회원 이메일 인증, 비활성화 회원(isEmailAuth - 1, isInActive - 0) 여부 수정 후 저장
         company.activate();
-        companyRepository.save(company);
 
     }
 
     @Override
     @Transactional(readOnly = true)
-    public void recoverUsername(AccountDto.FindAccountIdReq dto) throws BaseException {
+    public void recoverId(AccountDto.RecoverIdReq dto) throws BaseException {
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByCompanyEmail(dto.getEmail()).orElseThrow(
@@ -163,7 +156,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void recoverPassword(AccountDto.FindAccountPwReq dto) throws BaseException {
+    public void recoverPassword(AccountDto.RecoverPasswordReq dto) throws BaseException {
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByUserId(dto.getUserId()).orElseThrow(
@@ -171,7 +164,6 @@ public class CompanyService implements AccountService {
         );
 
         String rawPassword = company.issueTempPassword(passwordEncoder);
-        companyRepository.save(company);
 
         mailService.sendFindUserPassword(
                 company.getEmail(),
@@ -183,7 +175,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void changePassword(CustomUserDetails user, AccountDto.ResetAccountPwReq req) throws BaseException {
+    public void changePassword(CustomUserDetails user, AccountDto.ChangePasswordReq req) throws BaseException {
 
         // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
@@ -195,8 +187,6 @@ public class CompanyService implements AccountService {
                 req.getNewPassword(),
                 passwordEncoder
         );
-        
-        companyRepository.save(company);
 
     }
 

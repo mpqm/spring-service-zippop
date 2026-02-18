@@ -1,9 +1,8 @@
-package com.fiiiiive.zippop.domain.reserve.entity;
+package com.fiiiiive.zippop.reserve.model;
 
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.domain.reserve.dto.ReserveDto;
-import com.fiiiiive.zippop.domain.store.entity.Store;
+import com.fiiiiive.zippop.popup.model.Popup;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -49,18 +48,39 @@ public class Reserve extends BaseEntity {
 
     // ManyToOne
     @ManyToOne
-    @JoinColumn(name ="store_idx")
-    private Store store;
+    @JoinColumn(name ="popup_idx")
+    private Popup popup;
+
+    // create
+    public static Reserve create(
+            Popup popup,
+            String workingUUID,
+            String waitingUUID,
+            Integer totalPeople,
+            LocalDate startDate,
+            LocalDateTime startTime,
+            LocalDateTime endTime
+    ) {
+        return Reserve.builder()
+                .popup(popup)
+                .workingUUID(workingUUID)
+                .waitingUUID(waitingUUID)
+                .totalPeople(totalPeople)
+                .startDate(startDate)
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
+    }
 
     public ReserveDto.SearchReserveRes toDto(){
         return ReserveDto.SearchReserveRes.builder()
-                .storeIdx(this.getStore().getIdx())
+                .popupIdx(this.getPopup().getIdx())
                 .reserveIdx(this.getIdx())
                 .reservePeople(this.getTotalPeople())
                 .reserveStartDate(this.getStartDate())
                 .reserveStartTime(this.getStartTime())
                 .reserveEndTime(this.getEndTime())
-                .searchStoreRes(store.toDto())
+                .getPopupRes(popup.toDto())
                 .build();
     }
 

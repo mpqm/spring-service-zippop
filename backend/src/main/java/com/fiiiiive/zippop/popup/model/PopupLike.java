@@ -27,8 +27,8 @@ public class PopupLike extends BaseEntity {
     private Customer customer;
 
     // ToDTO
-    public PopupDto.SearchPopupLikeRes toDto() {
-        return PopupDto.SearchPopupLikeRes.builder()
+    public PopupDto.GetPopupRes toDto() {
+        return PopupDto.GetPopupRes.builder()
                 .popupIdx(this.getPopup().getIdx())
                 .companyEmail(this.getPopup().getCompanyEmail())
                 .popupName(this.getPopup().getName())
@@ -41,11 +41,11 @@ public class PopupLike extends BaseEntity {
                 .popupEndDate(this.getPopup().getEndDate())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
-                .searchPopupImageResList(PopupImage.toDtoList(this.getPopup().getPopupImageList()))
+                .getPopupImageResList(PopupImage.toDtoList(this.getPopup().getPopupImageList()))
                 .build();
     }
 
-    public static Page<PopupDto.SearchPopupLikeRes> toDtoPage(Page<PopupLike> popupLikePage) {
+    public static Page<PopupDto.GetPopupRes> toDtoPage(Page<PopupLike> popupLikePage) {
         return popupLikePage.map(PopupLike::toDto);
     }
 

@@ -51,14 +51,14 @@ public class Payout extends BaseEntity {
                 .build();
     }
 
-    public PayoutDto.SearchPayoutRes toDto() {
-        return PayoutDto.SearchPayoutRes.builder()
+    public PayoutDto.GetPopupPayoutsRes toDto() {
+        return PayoutDto.GetPopupPayoutsRes.builder()
                 .payoutDate(this.getPayoutDate())
                 .revenue(this.getRevenue())
                 .build();
     }
 
-    public static Page<PayoutDto.SearchPayoutRes> toDtoPage(Page<Payout> payoutPage) {
+    public static Page<PayoutDto.GetPopupPayoutsRes> toDtoPage(Page<Payout> payoutPage) {
         return payoutPage.map(Payout::toDto);
     }
 }

@@ -20,18 +20,18 @@ public interface AccountService {
     void deactivateAccount(CustomUserDetails user) throws BaseException;
 
     // 계정 활성화 요청
-    void requestActivation(AccountDto.UpdateAccountStatusReq req) throws BaseException;
+    void requestActivation(AccountDto.RequestActivationReq req) throws BaseException;
 
     // 이메일 검증 후 계정 활성화
     void activateAccount(String email) throws BaseException;
 
     // 아이디 찾기
-    void recoverUsername(AccountDto.FindAccountIdReq dto) throws BaseException;
+    void recoverId(AccountDto.RecoverIdReq dto) throws BaseException;
 
     // 비밀번호 찾기 (임시 비밀번호 발급)
-    void recoverPassword(AccountDto.FindAccountPwReq dto) throws BaseException;
+    void recoverPassword(AccountDto.RecoverPasswordReq dto) throws BaseException;
 
     // 비밀번호 변경
-    void changePassword(CustomUserDetails user, AccountDto.ResetAccountPwReq req) throws BaseException;
+    void changePassword(CustomUserDetails user, AccountDto.ChangePasswordReq req) throws BaseException;
 
 }

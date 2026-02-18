@@ -21,11 +21,4 @@ public class CompanyPolicy {
         }
     }
 
-    // ROLE_COMPANY 역할 검증
-    public void validateRoleType(RoleType roleType) throws BaseException {
-        if (roleType != RoleType.ROLE_COMPANY) {
-            throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_INVALID_ROLE);
-        }
-    }
-
 }

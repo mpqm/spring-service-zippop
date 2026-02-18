@@ -1,8 +1,6 @@
 package com.fiiiiive.zippop.popup.model;
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.goods.model.Goods;
-import com.fiiiiive.zippop.goods.model.GoodsImage;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,8 +26,8 @@ public class PopupImage extends BaseEntity {
     private Popup popup;
 
     // ToDto
-    public PopupDto.SearchPopupImageRes toDto() {
-        return PopupDto.SearchPopupImageRes.builder()
+    public PopupDto.GetPopupImageRes toDto() {
+        return PopupDto.GetPopupImageRes.builder()
                 .popupImageIdx(this.getIdx())
                 .popupImageUrl(this.getUrl())
                 .createdAt(this.getCreatedAt())
@@ -37,7 +35,7 @@ public class PopupImage extends BaseEntity {
                 .build();
     }
 
-    public static List<PopupDto.SearchPopupImageRes> toDtoList(List<PopupImage> popupImageList) {
+    public static List<PopupDto.GetPopupImageRes> toDtoList(List<PopupImage> popupImageList) {
         return popupImageList.stream()
                 .map(PopupImage::toDto)
                 .collect(Collectors.toList());

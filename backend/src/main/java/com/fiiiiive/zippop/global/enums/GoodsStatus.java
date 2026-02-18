@@ -21,15 +21,4 @@ public enum GoodsStatus {
         this.name = message;
     }
 
-
-    // String으로부터 GoodsStatus 변환
-    public static GoodsStatus fromString(String role) {
-        for (GoodsStatus goodsStatus : GoodsStatus.values()) {
-            if (goodsStatus.getName().equalsIgnoreCase(role)) {
-                return goodsStatus;
-            }
-        }
-        throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_INVALID_ROLE_TYPE);
-    }
-
 }

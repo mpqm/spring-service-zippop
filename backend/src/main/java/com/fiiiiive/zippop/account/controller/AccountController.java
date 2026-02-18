@@ -6,7 +6,7 @@ import com.fiiiiive.zippop.account.model.AccountDto;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
-import com.fiiiiive.zippop.global.file.FileUploadService;
+import com.fiiiiive.zippop.global.upload.FileUploadService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ public class AccountController {
     private final EmailAuthFacade emailAuthFacade;
 
     // 회원가입
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<BaseResponse<Void>> createAccount(
             @Valid @RequestPart(name = "req") AccountDto.CreateAccountReq req,
             @RequestPart(name = "file", required = false) MultipartFile file
@@ -74,7 +74,7 @@ public class AccountController {
     // 계정 활성화 요청
     @PostMapping("/activation")
     public ResponseEntity<BaseResponse<Void>> requestActivation(
-            @Valid @RequestBody AccountDto.UpdateAccountStatusReq req
+            @Valid @RequestBody AccountDto.RequestActivationReq req
     ) throws BaseException {
         accountFacade.requestActivation(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_ACTIVE_SUCCESS));
@@ -94,18 +94,18 @@ public class AccountController {
     }
 
     // 아이디 찾기
-    @PostMapping("/recovery/username")
-    public ResponseEntity<BaseResponse<Void>> recoverUsername(
-            @Valid @RequestBody AccountDto.FindAccountIdReq req
+    @PostMapping("/recovery/id")
+    public ResponseEntity<BaseResponse<Void>> recoverId(
+            @Valid @RequestBody AccountDto.RecoverIdReq req
     ) throws BaseException {
-        accountFacade.recoverUsername(req);
+        accountFacade.recoverId(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_ID_SUCCESS));
     }
 
     // 비밀번호 찾기
     @PostMapping("/recovery/password")
     public ResponseEntity<BaseResponse<Void>> recoverPassword(
-            @Valid @RequestBody AccountDto.FindAccountPwReq req
+            @Valid @RequestBody AccountDto.RecoverPasswordReq req
     ) throws BaseException {
         accountFacade.recoverPassword(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_PW_SUCCESS));
@@ -115,7 +115,7 @@ public class AccountController {
     @PatchMapping("/me/password")
     public ResponseEntity<BaseResponse<Void>> changePassword(
             @AuthenticationPrincipal CustomUserDetails user,
-            @Valid @RequestBody AccountDto.ResetAccountPwReq req
+            @Valid @RequestBody AccountDto.ChangePasswordReq req
     ) throws BaseException {
         accountFacade.changePassword(user, req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_RESET_PW_SUCCESS));

@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.config;
+package com.fiiiiive.zippop.global.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

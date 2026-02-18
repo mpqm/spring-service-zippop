@@ -2,8 +2,6 @@ package com.fiiiiive.zippop.goods.model;
 
 import com.fiiiiive.zippop.cart.model.CartItem;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.enums.GoodsStatus;
 import com.fiiiiive.zippop.orders.model.OrdersDetail;
 import com.fiiiiive.zippop.popup.model.Popup;
@@ -88,8 +86,8 @@ public class Goods extends BaseEntity {
     }
 
     // ToDto
-    public GoodsDto.SearchGoodsRes toDto() {
-        return GoodsDto.SearchGoodsRes.builder()
+    public GoodsDto.GetGoodsRes toDto() {
+        return GoodsDto.GetGoodsRes.builder()
                 .popupName(this.getPopup().getName())
                 .goodsIdx(this.getIdx())
                 .goodsName(this.getName())
@@ -99,11 +97,11 @@ public class Goods extends BaseEntity {
                 .goodsStatus(this.getStatus().name())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
-                .searchGoodsImageResList(GoodsImage.toDtoList(this.getGoodsImageList()))
+                .getGoodsImageResList(GoodsImage.toDtoList(this.getGoodsImageList()))
                 .build();
     }
 
-    public static Page<GoodsDto.SearchGoodsRes> toDtoPage(Page<Goods> goodsPage) {
+    public static Page<GoodsDto.GetGoodsRes> toDtoPage(Page<Goods> goodsPage) {
         return goodsPage.map(Goods::toDto);
     }
 

@@ -215,7 +215,7 @@ public class Customer implements Account {
         this.password = encoder.encode(newPassword);
     }
 
-    // 포인트 검증
+    // 포인트 수정
     public void updatePoint(Integer point) {
         this.point = point;
     }

@@ -34,7 +34,7 @@ public class EmailAuthFacade {
         accountServiceMap.put(RoleType.ROLE_COMPANY.name(), companyService);
     }
 
-
+    // 역할별 서비스 분기
     private AccountService getAccountService(String role) throws BaseException {
         AccountService service = accountServiceMap.get(role);
         if (service == null) {

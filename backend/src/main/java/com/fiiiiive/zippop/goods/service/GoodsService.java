@@ -29,7 +29,7 @@ public class GoodsService {
 
     // 굿즈 등록
     @Transactional
-    public GoodsDto.CreateGoodsRes createGoods(CustomUserDetails user, List<String> urls, GoodsDto.CreateGoodsReq req) throws BaseException {
+    public void createGoods(CustomUserDetails user, List<String> urls, GoodsDto.CreateGoodsReq req) throws BaseException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findByPopupIdx(req.getPopupIdx()).orElseThrow(
@@ -53,13 +53,11 @@ public class GoodsService {
 
         goodsRepository.save(goods);
 
-        return GoodsDto.CreateGoodsRes.builder().goodsIdx(goods.getIdx()).build();
-
     }
 
     // 굿즈 조회
     @Transactional(readOnly = true)
-    public GoodsDto.SearchGoodsRes getGoods(Long goodIdx) throws BaseException {
+    public GoodsDto.GetGoodsRes getGoods(Long goodIdx) throws BaseException {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodIdx).orElseThrow(
@@ -72,7 +70,7 @@ public class GoodsService {
 
     // 굿즈 목록 조회
     @Transactional(readOnly = true)
-    public Page<GoodsDto.SearchGoodsRes> getGoodsList(Long popupIdx, String keyword, int page, int size) throws BaseException {
+    public Page<GoodsDto.GetGoodsRes> getGoodsList(Long popupIdx, String keyword, int page, int size) throws BaseException {
 
         // 굿즈 페이지(popupIdx, keyword, pageable) 조회
         // if: 굿즈 검색 조회
@@ -92,7 +90,7 @@ public class GoodsService {
 
     // 굿즈 수정
     @Transactional
-    public GoodsDto.UpdateGoodsRes updateGoods(CustomUserDetails user, Long goodsIdx, List<String> urls, GoodsDto.UpdateGoodsReq req) throws BaseException {
+    public void updateGoods(CustomUserDetails user, Long goodsIdx, List<String> urls, GoodsDto.UpdateGoodsReq req) throws BaseException {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
@@ -109,8 +107,6 @@ public class GoodsService {
         if (urls != null) {
             goods.replaceImages(urls);
         }
-
-        return GoodsDto.UpdateGoodsRes.builder().goodsIdx(goods.getIdx()).build();
 
     }
 

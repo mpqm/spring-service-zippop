@@ -84,24 +84,7 @@ public class Company implements Account{
     @OneToMany(mappedBy = "company")
     private List<Popup> popupList;
 
-    public void update(
-            String name,
-            String address,
-            String crn,
-            String phoneNumber,
-            String profileImageUrl
-    ) {
-        this.name = name;
-        this.address = address;
-        this.crn = crn;
-        this.phoneNumber = phoneNumber;
-
-        if (profileImageUrl != null) {
-            this.profileImageUrl = profileImageUrl;
-        }
-    }
-
-    // Company 생성 팩토리 메서드
+    // Create
     public static Company create(
             String email,
             String userId,
@@ -127,7 +110,25 @@ public class Company implements Account{
                 .build();
     }
 
-    // DTO 변환 메서드
+    // Update
+    public void update(
+            String name,
+            String address,
+            String crn,
+            String phoneNumber,
+            String profileImageUrl
+    ) {
+        this.name = name;
+        this.address = address;
+        this.crn = crn;
+        this.phoneNumber = phoneNumber;
+
+        if (profileImageUrl != null) {
+            this.profileImageUrl = profileImageUrl;
+        }
+    }
+
+    // Dto
     public AccountDto.GetAccountRes toDto(){
         return AccountDto.GetAccountRes.builder()
                 .name(this.getName())
@@ -142,7 +143,7 @@ public class Company implements Account{
 
     // 회원가입 검증
     public void validateSignup() {
-        if (!(isInActive && !isEmailAuth)) {
+        if (!(this.isInActive && !this.isEmailAuth)) {
             throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_ALREADY_EXIST);
         }
     }
@@ -154,12 +155,10 @@ public class Company implements Account{
         }
     }
 
-    // if: 이메일 인증한 회원
-    // else if: 비활성화 회원
-    // else: 이메일 인증을 하지 않은 회원(예외)
+    // 유저 아이디 발송 조건 검증
     public void validateUserIdSendable() {
-        if (isEmailAuth && !isInActive) return;
-        if (!isEmailAuth && isInActive) return;
+        if (this.isEmailAuth && !this.isInActive) return; // 이메일 인증한 회원
+        if (!isEmailAuth && isInActive) return; // 비활성화 회원
         throw new BaseException(BaseMessage.AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY);
     }
 
@@ -201,11 +200,7 @@ public class Company implements Account{
     }
 
     // 패스워드 초기화
-    public void resetPassword(
-            String originPassword,
-            String newPassword,
-            PasswordEncoder encoder
-    ) {
+    public void resetPassword(String originPassword, String newPassword, PasswordEncoder encoder) {
         if (!encoder.matches(originPassword, this.password)) {
             throw new BaseException(BaseMessage.AUTH_RESET_PW_FAIL_PASSWORD_NOT_MATCH);
         }

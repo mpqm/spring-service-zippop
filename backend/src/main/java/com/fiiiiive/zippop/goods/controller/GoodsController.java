@@ -5,7 +5,7 @@ import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.global.file.FileUploadService;
+import com.fiiiiive.zippop.global.upload.FileUploadService;
 import com.fiiiiive.zippop.goods.model.GoodsDto;
 import com.fiiiiive.zippop.goods.service.GoodsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,48 +30,48 @@ public class GoodsController {
     private final FileUploadService fileUploadService;
 
     // 굿즈 등록
-    @PostMapping
-    public ResponseEntity<BaseResponse<GoodsDto.CreateGoodsRes>> createGoods(
+    @PostMapping("/")
+    public ResponseEntity<BaseResponse<Void>> createGoods(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestPart("files") MultipartFile[] files,
             @Valid @RequestPart("req") GoodsDto.CreateGoodsReq req
     ) throws BaseException {
         List<String> urls = fileUploadService.multipleUpload(files);
-        GoodsDto.CreateGoodsRes res = goodsService.createGoods(customUserDetails, urls, req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.GOODS_REGISTER_SUCCESS, res));
+        goodsService.createGoods(customUserDetails, urls, req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.GOODS_REGISTER_SUCCESS));
     }
 
     // 굿즈 수정
     @PatchMapping("/{goodsIdx}")
-    public ResponseEntity<BaseResponse<GoodsDto.UpdateGoodsRes>> updateGoods(
+    public ResponseEntity<BaseResponse<Void>> updateGoods(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long goodsIdx,
             @RequestPart(name = "files") MultipartFile[] files,
             @Valid @RequestPart(name = "req") GoodsDto.UpdateGoodsReq req
     ) throws BaseException {
         List<String> urls = fileUploadService.multipleUpload(files);
-        GoodsDto.UpdateGoodsRes res = goodsService.updateGoods(customUserDetails, goodsIdx, urls, req);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_UPDATE_SUCCESS, res));
+        goodsService.updateGoods(customUserDetails, goodsIdx, urls, req);
+        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_UPDATE_SUCCESS));
     }
 
     // 굿즈 상세 조회
     @GetMapping("/{goodsIdx}")
-    public ResponseEntity<BaseResponse<GoodsDto.SearchGoodsRes>> getGoods(
+    public ResponseEntity<BaseResponse<GoodsDto.GetGoodsRes>> getGoods(
             @PathVariable Long goodsIdx
     ) throws BaseException {
-        GoodsDto.SearchGoodsRes res = goodsService.getGoods(goodsIdx);
+        GoodsDto.GetGoodsRes res = goodsService.getGoods(goodsIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_SEARCH_SUCCESS, res));
     }
 
     // 굿즈 목록 조회
-    @GetMapping
-    public ResponseEntity<BaseResponse<Page<GoodsDto.SearchGoodsRes>>> getGoodsList(
+    @GetMapping("/")
+    public ResponseEntity<BaseResponse<Page<GoodsDto.GetGoodsRes>>> getGoodsList(
             @RequestParam(required = false) Long popupIdx,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) throws BaseException {
-        Page<GoodsDto.SearchGoodsRes> res = goodsService.getGoodsList(popupIdx, keyword, page, size);
+        Page<GoodsDto.GetGoodsRes> res = goodsService.getGoodsList(popupIdx, keyword, page, size);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_SEARCH_ALL_SUCCESS, res));
     }
 

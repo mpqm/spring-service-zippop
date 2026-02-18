@@ -1,5 +1,8 @@
 package com.fiiiiive.zippop.global.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum StoreStatus {
     STORE_START("STORE_START"),
     STORE_END("STORE_END"),

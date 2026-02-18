@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.config;
+package com.fiiiiive.zippop.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiiiiive.zippop.global.security.filter.*;
@@ -85,6 +85,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/goods/search").permitAll()
                             .requestMatchers("/api/v1/goods/search-all").permitAll()
                             // 주문
+                            .requestMatchers("/api/v1/orders").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/orders/verify/stock").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/orders/verify/reserve").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers("/api/v1/orders/cancel").hasAuthority("ROLE_CUSTOMER")

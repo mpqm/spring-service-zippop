@@ -28,6 +28,7 @@ public class CartController {
     private final CartService cartService;
 
     // 장바구니 생성
+    @GetMapping("/")
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> createCart(
             @AuthenticationPrincipal CustomUserDetails user,
@@ -38,7 +39,7 @@ public class CartController {
     }
 
     // 현재 사용자의 장바구니 목록 조회
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<BaseResponse<Page<CartDto.GetCartRes>>> getCarts(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") Integer page,
@@ -72,20 +73,22 @@ public class CartController {
     @PatchMapping("/{cartIdx}/items/{cartItemIdx}/quantity")
     public ResponseEntity<BaseResponse<Void>> updateCartItemQuantity(
             @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long cartIdx,
             @PathVariable Long cartItemIdx,
-            @RequestBody CartDto.UpdateCartItemQuantityReq req
+            @RequestParam String operation
     ) throws BaseException {
-        cartService.updateCartItemQuantity(user, cartItemIdx, req);
+        cartService.updateCartItemQuantity(user, cartIdx, cartItemIdx, operation);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_COUNT_SUCCESS));
     }
 
     // 장바구니 아이템 삭제
-    @DeleteMapping("/items/{cartItemIdx}")
+    @DeleteMapping("/{cartIdx}/items/{cartItemIdx}")
     public ResponseEntity<BaseResponse<Void>> deleteCartItem(
             @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long cartIdx,
             @PathVariable Long cartItemIdx
     ) throws BaseException {
-        cartService.deleteCartItem(user, cartItemIdx);
+        cartService.deleteCartItem(user, cartIdx, cartItemIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_DELETE_SUCCESS));
     }
 

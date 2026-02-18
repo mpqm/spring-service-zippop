@@ -3,21 +3,13 @@ package com.fiiiiive.zippop.payout.service;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.enums.OrdersStatus;
-import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.model.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
-import com.fiiiiive.zippop.payout.model.PayoutDto;
 import com.fiiiiive.zippop.payout.model.Payout;
 import com.fiiiiive.zippop.payout.repository.PayoutRepository;
 import com.fiiiiive.zippop.popup.model.Popup;
-import com.fiiiiive.zippop.popup.policy.PopupPolicy;
-import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +22,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PayoutService {
-    private final PopupRepository popupRepository;
     private final PayoutRepository payoutRepository;
     private final OrdersRepository ordersRepository;
-    private final PopupPolicy popupPolicy;
 
 
 
@@ -56,9 +46,10 @@ public class PayoutService {
             return;
         }
 
+        // Orders.popup(ManyToOne) 기준 팝업별 매출 합계 — 이미 fetch된 popup 사용
         Map<Long, Integer> popupRevenueMap = ordersList.stream()
                 .collect(Collectors.groupingBy(
-                        Orders::getPopupIdx,
+                        o -> o.getPopup().getIdx(),
                         Collectors.summingInt(Orders::getTotalPrice)
                 ));
 
@@ -66,20 +57,20 @@ public class PayoutService {
             Long popupIdx = entry.getKey();
             Integer revenue = entry.getValue();
 
-            Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow();
+            Popup popup = ordersList.stream()
+                    .filter(o -> o.getPopup().getIdx().equals(popupIdx))
+                    .findFirst()
+                    .map(Orders::getPopup)
+                    .orElseThrow(() -> new BaseException(BaseMessage.STORE_SEARCH_FAIL_NOT_FOUND));
 
-            boolean exists = payoutRepository.existsByPopupIdxAndPayoutDate(popupIdx, targetDate);
-            if (exists) {
+            if (payoutRepository.existsByPopupIdxAndPayoutDate(popupIdx, targetDate)) {
                 log.info("이미 정산 존재 - popupIdx: {}", popupIdx);
                 continue;
             }
 
             Payout payout = Payout.create(popup, revenue, targetDate);
             payoutRepository.save(payout);
-
             log.info("정산 생성 완료 - popupIdx: {}, 금액: {}", popupIdx, revenue);
-
-            payoutRepository.save(payout);
         }
     }
 

@@ -2,7 +2,6 @@ package com.fiiiiive.zippop.popup.model;
 
 import com.fiiiiive.zippop.account.model.Customer;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.orders.model.Orders;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -75,8 +74,8 @@ public class PopupReview extends BaseEntity {
     }
 
     // ToDto
-    public PopupDto.SearchPopupReviewRes toDto() {
-        return PopupDto.SearchPopupReviewRes.builder()
+    public PopupDto.GetPopupReviewRes toDto() {
+        return PopupDto.GetPopupReviewRes.builder()
                 .reviewIdx(this.getIdx())
                 .popupName(this.getPopup().getName())
                 .customerName(this.getCustomerName())
@@ -89,7 +88,7 @@ public class PopupReview extends BaseEntity {
                 .build();
     }
 
-    public static Page<PopupDto.SearchPopupReviewRes> toDtoPage(Page<PopupReview> popupReviewPage) {
+    public static Page<PopupDto.GetPopupReviewRes> toDtoPage(Page<PopupReview> popupReviewPage) {
         return popupReviewPage.map(PopupReview::toDto);
     }
 }

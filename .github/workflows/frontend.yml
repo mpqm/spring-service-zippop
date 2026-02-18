@@ -48,7 +48,7 @@ jobs:
           npm install 
 
       - name: Set environment variables
-        run: echo "VUE_APP_API_URL=${{ secrets.VUE_APP_API_URL }}" >> ./frontend/.env
+        run: echo "VUE_APP_API_URL=${{ secrets.VUE_APP_API_URL }}" >> ./frontend/..env
 
       # 4. npm build
       - name: Build with npm

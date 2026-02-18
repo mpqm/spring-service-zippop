@@ -1,17 +1,13 @@
 package com.fiiiiive.zippop.popup.service;
 
 import com.fiiiiive.zippop.account.model.Company;
-import com.fiiiiive.zippop.account.model.Customer;
-import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.global.enums.OrdersStatus;
+import com.fiiiiive.zippop.global.enums.StoreStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.orders.model.Orders;
-import com.fiiiiive.zippop.orders.model.OrdersDetail;
 import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
-import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.payout.model.Payout;
 import com.fiiiiive.zippop.payout.model.PayoutDto;
 import com.fiiiiive.zippop.payout.repository.PayoutRepository;
@@ -23,6 +19,9 @@ import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.popup.repository.PopupLikeRepository;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.fiiiiive.zippop.popup.repository.PopupReviewRepository;
+import com.fiiiiive.zippop.reserve.model.Reserve;
+import com.fiiiiive.zippop.reserve.model.ReserveDto;
+import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.*;
 
@@ -47,11 +47,12 @@ public class PopupService {
     private final PayoutRepository payoutRepository;
     private final OrdersDetailRepository ordersDetailRepository;
     private final PopupReviewRepository popupReviewRepository;
+    private final ReserveRepository reserveRepository;
     private final PopupPolicy popupPolicy;
 
     // 팝업 등록
     @Transactional
-    public PopupDto.CreatePopupRes createPopup(CustomUserDetails user, PopupDto.CreatePopupReq req, List<String> urls) throws BaseException {
+    public void createPopup(CustomUserDetails user, PopupDto.CreatePopupReq req, List<String> urls) throws BaseException {
 
         // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
@@ -75,12 +76,10 @@ public class PopupService {
         // Popup Image 생성
         popup.addImages(urls);
 
-        return PopupDto.CreatePopupRes.builder().popupIdx(popup.getIdx()).build();
-
     }
 
     // 팝업 조회
-    public PopupDto.SearchPopupRes getPopup(Long popupIdx) throws BaseException {
+    public PopupDto.GetPopupRes getPopup(Long popupIdx) throws BaseException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
@@ -92,7 +91,7 @@ public class PopupService {
     }
 
     // 팝업 목록 조회
-    public Page<PopupDto.SearchPopupRes> getPopups(String status, String keyword, int page, int size) throws BaseException {
+    public Page<PopupDto.GetPopupRes> getPopups(String status, String keyword, int page, int size) throws BaseException {
 
         // 팝업 페이지 조회(keyword, status, pageable) 조회
         // true : 검색어가 있는 경우, 상태에 따라 활성화된 또는 종료된 팝업을 검색어로 페이징 조회
@@ -108,7 +107,7 @@ public class PopupService {
     }
 
     // 팝업 목록 조회(기업용)
-    public Page<PopupDto.SearchPopupRes> getMyPopups(CustomUserDetails user, String keyword, int page, int size) throws BaseException {
+    public Page<PopupDto.GetPopupRes> getMyPopups(CustomUserDetails user, String keyword, int page, int size) throws BaseException {
 
         // 팝업 페이지 조회(keyword, email, pageable) 조회
         // true : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
@@ -124,7 +123,7 @@ public class PopupService {
 
     // 팝업 수정
     @Transactional
-    public PopupDto.UpdatePopupRes updatePopup(CustomUserDetails user, Long popupIdx, PopupDto.UpdatePopupReq req, List<String> urls) throws BaseException {
+    public void updatePopup(CustomUserDetails user, Long popupIdx, PopupDto.UpdatePopupReq req, List<String> urls) throws BaseException {
 
         // 팝업 조회(popupIdx, email)
         Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail()).orElseThrow(
@@ -138,9 +137,6 @@ public class PopupService {
         if (urls != null) {
             popup.replaceImages(urls);
         }
-
-        // DTO 반환
-        return PopupDto.UpdatePopupRes.builder().popupIdx(popup.getIdx()).build();
 
     }
 
@@ -172,7 +168,6 @@ public class PopupService {
         // else : 좋아요를 처음 누르면 좋아요 저장 / 팝업 좋아요 개수 증가(직접 쿼리 활용)
         Optional<PopupLike> popupLike = popupLikeRepository.findByCustomerIdxAndPopupIdx(user.getIdx(), popupIdx);
         if (popupLike.isPresent()) {
-            popupRepository.incrementLikeCount(popupIdx);
             popup.decreaseLike();
         } else {
             popupLikeRepository.save(PopupLike.create(popup, user.getIdx()));
@@ -182,7 +177,7 @@ public class PopupService {
     }
 
     // 팝업 좋아요 목록 조회(고객용)
-    public Page<PopupDto.SearchPopupLikeRes> getMyLikedPopups(CustomUserDetails user, int page, int size) throws BaseException {
+    public Page<PopupDto.GetPopupRes> getMyLikedPopups(CustomUserDetails user, int page, int size) throws BaseException {
 
         // 팝업 페이지 조회(customerIdx)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
@@ -194,7 +189,7 @@ public class PopupService {
 
     // 팝업 리뷰 등록
     @Transactional
-    public PopupDto.CreatePopupReviewRes createPopupReview(CustomUserDetails user, Long popupIdx, PopupDto.CreatePopupReviewReq req) throws BaseException {
+    public void createPopupReview(CustomUserDetails user, Long popupIdx, PopupDto.CreatePopupReviewReq req) throws BaseException {
 
         // 결제 조회(popupIdx, customerIdx, 결제 완료 상태) / 결제한 사람만 리뷰 작성 가능
         ordersDetailRepository.existsReviewableOrder(user.getIdx(), popupIdx, List.of(OrdersStatus.STOCK_COMPLETE, OrdersStatus.RESERVE_COMPLETE)).orElseThrow(() ->
@@ -224,12 +219,10 @@ public class PopupService {
 
         popupReviewRepository.save(popupReview);
 
-        return PopupDto.CreatePopupReviewRes.builder().reviewIdx(popupReview.getIdx()).build();
-
     }
 
     // 팝업 리뷰 목록 조회
-    public Page<PopupDto.SearchPopupReviewRes> getPopupReviews(Long popupIdx, int page, int size) throws BaseException {
+    public Page<PopupDto.GetPopupReviewRes> getPopupReviews(Long popupIdx, int page, int size) throws BaseException {
 
         // 리뷰 조회(popupIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
@@ -239,7 +232,7 @@ public class PopupService {
     }
 
     // 팝업 리뷰 목록 조회(고객용)
-    public Page<PopupDto.SearchPopupReviewRes> getMyReviews(CustomUserDetails user, int page, int size) throws BaseException {
+    public Page<PopupDto.GetPopupReviewRes> getMyReviews(CustomUserDetails user, int page, int size) throws BaseException {
 
         // 리뷰 목록 조회(customerIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
@@ -249,8 +242,16 @@ public class PopupService {
 
     }
 
+    public void updatePopupStatus(){
+        List<Popup> popupList = popupRepository.findAllByEndDate(LocalDate.now());
+
+        for (Popup popup : popupList) {
+            popup.endPopup();
+        }
+    }
+
     // 기업 정산 금액 조회
-    public Page<PayoutDto.SearchPayoutRes> getPopupPayouts(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
+    public Page<PayoutDto.GetPopupPayoutsRes> getPopupPayouts(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findByPopupIdx(popupIdx)
@@ -264,6 +265,32 @@ public class PopupService {
 
         return Payout.toDtoPage(payoutPage);
 
+    }
+
+    // 예약 목록 조회(기업용)
+    public Page<ReserveDto.SearchReserveRes> getMyPopupReservations (CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
+
+        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(popupIdx, user.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
+                () -> new BaseException(BaseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+
+        return Reserve.toDtoPage(reservePage);
+    }
+
+    // 예약 목록 조회
+    public Page<ReserveDto.SearchReserveRes> getPopupReservation (Long popupIdx, String keyword, int page, int size) throws BaseException {
+
+        // 예약 조회(status, popupIdx, keyword)
+        Page<Reserve> reservePage;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        if(popupIdx == null){
+            if(keyword == null) reservePage = reserveRepository.findAllByStatus(StoreStatus.STORE_START.name(), pageable);
+            else reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, StoreStatus.STORE_START.name(), pageable);
+        } else {
+            reservePage = reserveRepository.findAllByPopupIdx(popupIdx, StoreStatus.STORE_START.name(), pageable);
+        }
+
+        return Reserve.toDtoPage(reservePage);
     }
 
 }

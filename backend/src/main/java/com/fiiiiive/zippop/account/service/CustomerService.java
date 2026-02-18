@@ -2,23 +2,17 @@ package com.fiiiiive.zippop.account.service;
 
 import com.fiiiiive.zippop.account.application.EmailAuthSender;
 import com.fiiiiive.zippop.account.model.AccountDto;
-import com.fiiiiive.zippop.account.model.Company;
 import com.fiiiiive.zippop.account.model.Customer;
 import com.fiiiiive.zippop.account.policy.CustomerPolicy;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.enums.RoleType;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.mail.MailService;
-import com.fiiiiive.zippop.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
 
 
 @Service
@@ -37,12 +31,8 @@ public class CustomerService implements AccountService {
     @Transactional
     public Boolean createAccount(AccountDto.CreateAccountReq req, String url) throws BaseException {
 
-        // DDD: Policy를 통한 도메인 규칙 검증
+        // 유저 중복 확인
         customerPolicy.validateDuplicateUserId(req.getUserId());
-        
-        // DDD: Value Object 변환 및 검증
-        RoleType roleType = RoleType.fromString(req.getRole());
-        customerPolicy.validateRoleType(roleType);
 
         // 고객 회원(email) 조회
         Customer customer = customerRepository.findByCustomerEmail(req.getEmail()).orElse(null);
@@ -58,11 +48,10 @@ public class CustomerService implements AccountService {
                     req.getAddress(),
                     url
             );
-            customer.validateRole();
             customerRepository.save(customer);
         }
 
-        // DDD: Application Service - 외부 서비스와의 통합
+        // 인증 이메일 전송
         emailAuthSender.sendEmailAuth(customer);
 
         // 복구 회원과 신규 회원 응답 구분을 위해 isInActive 반환
@@ -102,7 +91,6 @@ public class CustomerService implements AccountService {
                 req.getPhoneNumber(),
                 url
         );
-        customerRepository.save(customer);
 
     }
 
@@ -117,13 +105,12 @@ public class CustomerService implements AccountService {
 
         // 고객 회원 이메일 인증, 비활성화 회원(isEmailAuth - 0, isInActive - 1) 여부 수정 후 저장
         customer.deactivate();
-        customerRepository.save(customer);
 
     }
 
     @Override
     @Transactional
-    public void requestActivation(AccountDto.UpdateAccountStatusReq req) throws BaseException {
+    public void requestActivation(AccountDto.RequestActivationReq req) throws BaseException {
 
         // 고객 회원(email) 조회
         Customer customer = customerRepository.findByCustomerEmail(req.getEmail()).orElseThrow(
@@ -148,13 +135,12 @@ public class CustomerService implements AccountService {
 
         // 고객 회원 이메일 인증, 비활성화 회원(isEmailAuth - 1, isInActive - 0) 여부 수정 후 저장
         customer.activate();
-        customerRepository.save(customer);
 
     }
 
     @Override
     @Transactional(readOnly = true)
-    public void recoverUsername(AccountDto.FindAccountIdReq dto) throws BaseException {
+    public void recoverId(AccountDto.RecoverIdReq dto) throws BaseException {
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByCustomerEmail(dto.getEmail()).orElseThrow(
@@ -173,7 +159,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void recoverPassword(AccountDto.FindAccountPwReq dto) throws BaseException {
+    public void recoverPassword(AccountDto.RecoverPasswordReq dto) throws BaseException {
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByUserId(dto.getUserId()).orElseThrow(
@@ -181,7 +167,6 @@ public class CustomerService implements AccountService {
         );
 
         String rawPassword = customer.issueTempPassword(passwordEncoder);
-        customerRepository.save(customer);
 
         mailService.sendFindUserPassword(
                 customer.getEmail(),
@@ -193,7 +178,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void changePassword(CustomUserDetails user, AccountDto.ResetAccountPwReq req) throws BaseException {
+    public void changePassword(CustomUserDetails user, AccountDto.ChangePasswordReq req) throws BaseException {
 
         // 고객 회원 조회 (customerIdx)
         Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(
@@ -205,8 +190,6 @@ public class CustomerService implements AccountService {
                 req.getNewPassword(),
                 passwordEncoder
         );
-
-        customerRepository.save(customer);
 
     }
 

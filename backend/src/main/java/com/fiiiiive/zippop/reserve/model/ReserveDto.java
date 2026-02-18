@@ -1,8 +1,6 @@
-package com.fiiiiive.zippop.domain.reserve.dto;
+package com.fiiiiive.zippop.reserve.model;
 
-import com.fiiiiive.zippop.domain.reserve.entity.Reserve;
-import com.fiiiiive.zippop.domain.store.dto.StoreDto;
-import com.fiiiiive.zippop.domain.store.entity.Store;
+import com.fiiiiive.zippop.popup.model.PopupDto;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -18,8 +16,8 @@ public class ReserveDto {
     @AllArgsConstructor
     @RequiredArgsConstructor
     public static class CreateReserveReq {
-        @NotNull(message = "스토어 ID는 필수 입력 항목입니다.")
-        private Long storeIdx;
+        @NotNull(message = "팝업 ID는 필수 입력 항목입니다.")
+        private Long popupIdx;
 
         @NotNull(message = "예약 인원 수는 필수 입력 항목입니다.")
         private Integer reservePeople;
@@ -35,18 +33,6 @@ public class ReserveDto {
         @NotNull(message = "예약 종료 시간은 필수 입력 항목입니다.")
         @Future(message = "예약 종료 시간은 미래여야 합니다.")
         private LocalDateTime reserveEndTime;
-
-        public Reserve toEntity(Store store, String workingUUID, String waitingUUID ) {
-            return Reserve.builder()
-                    .store(store)
-                    .workingUUID(workingUUID)
-                    .waitingUUID(waitingUUID)
-                    .totalPeople(this.getReservePeople())
-                    .startDate(this.getReserveStartDate())
-                    .startTime(this.getReserveStartTime())
-                    .endTime(this.getReserveEndTime())
-                    .build();
-        }
     }
 
     // 예약 생성 응답 DTO
@@ -97,13 +83,13 @@ public class ReserveDto {
     @Getter
     @Builder
     public static class SearchReserveRes {
-        private Long storeIdx;
+        private Long popupIdx;
         private Long reserveIdx;
         private Integer reservePeople;
         private LocalDate reserveStartDate;
         private LocalDateTime reserveStartTime;
         private LocalDateTime reserveEndTime;
-        private StoreDto.SearchStoreRes searchStoreRes;
+        private PopupDto.GetPopupRes getPopupRes;
     }
 
     // 예약 등록 응답 DTO

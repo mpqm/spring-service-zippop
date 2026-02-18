@@ -2,10 +2,11 @@ package com.fiiiiive.zippop.popup.model;
 
 import com.fiiiiive.zippop.account.model.Company;
 import com.fiiiiive.zippop.cart.model.Cart;
+import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.enums.StoreStatus;
 import com.fiiiiive.zippop.goods.model.Goods;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.goods.model.GoodsImage;
 import com.fiiiiive.zippop.payout.model.Payout;
 import com.fiiiiive.zippop.reserve.model.Reserve;
 import jakarta.persistence.*;
@@ -151,8 +152,8 @@ public class Popup extends BaseEntity {
     }
 
     // ToDto
-    public PopupDto.SearchPopupRes toDto() {
-        return PopupDto.SearchPopupRes.builder()
+    public PopupDto.GetPopupRes toDto() {
+        return PopupDto.GetPopupRes.builder()
                 .popupIdx(this.getIdx())
                 .companyEmail(this.getCompanyEmail())
                 .popupName(this.getName())
@@ -164,11 +165,11 @@ public class Popup extends BaseEntity {
                 .popupStatus(this.getStatus().name())
                 .popupStartDate(this.getStartDate())
                 .popupEndDate(this.getEndDate())
-                .searchPopupImageResList(PopupImage.toDtoList(this.getPopupImageList()))
+                .getPopupImageResList(PopupImage.toDtoList(this.getPopupImageList()))
                 .build();
     }
 
-    public static Page<PopupDto.SearchPopupRes> toDtoPage(Page<Popup> popupPage) {
+    public static Page<PopupDto.GetPopupRes> toDtoPage(Page<Popup> popupPage) {
         return popupPage.map(Popup::toDto);
     }
 
@@ -207,5 +208,10 @@ public class Popup extends BaseEntity {
         this.likeCount--;
     }
 
-
+    public void validateTotalPeople() {
+        // 팝업 최대 예약자 수를 넘었는지 확인
+        if(this.totalPeople <= 0) {
+            throw new BaseException(BaseMessage.RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED);
+        }
+    }
 }

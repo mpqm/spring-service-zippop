@@ -9,7 +9,7 @@ public class PayoutDto {
 
     @Getter
     @Builder
-    public static class SearchPayoutRes {
+    public static class GetPopupPayoutsRes {
         Integer revenue;
         LocalDate payoutDate;
     }

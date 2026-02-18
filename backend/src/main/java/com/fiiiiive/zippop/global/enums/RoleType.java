@@ -19,14 +19,4 @@ public enum RoleType {
                 this.description = description;
         }
 
-        // String으로부터 RoleType 변환
-        public static RoleType fromString(String role) {
-                for (RoleType roleType : RoleType.values()) {
-                        if (roleType.getName().equalsIgnoreCase(role)) {
-                                return roleType;
-                        }
-                }
-                throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_INVALID_ROLE_TYPE);
-        }
-
 }

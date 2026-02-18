@@ -14,17 +14,18 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class CartPolicy {
 
+    // 장바구니 소유자 확인
     public void validateCartOwner(Cart cart, CustomUserDetails user) {
-        // 장바구니 소유자 확인
         if (!Objects.equals(cart.getCustomer().getIdx(), user.getIdx())){
             throw new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
         }
     }
 
+    // 장바구니아이템 소유자 확인
     public void validateCartItemOwner(CartItem cartItem, CustomUserDetails user) {
-        // 장바구니 소유자 확인
         if (!Objects.equals(cartItem.getCart().getCustomer().getIdx(), user.getIdx())){
             throw new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
         }
     }
+
 }

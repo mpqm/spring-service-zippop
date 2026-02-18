@@ -27,8 +27,8 @@ public class GoodsImage extends BaseEntity {
     private Goods goods;
 
     // ToDto
-    public GoodsDto.SearchGoodsImageRes toDto() {
-        return GoodsDto.SearchGoodsImageRes.builder()
+    public GoodsDto.GetGoodsImageRes toDto() {
+        return GoodsDto.GetGoodsImageRes.builder()
                 .goodsImageIdx(this.getIdx())
                 .goodsImageUrl(this.getUrl())
                 .createdAt(this.getCreatedAt())
@@ -36,7 +36,7 @@ public class GoodsImage extends BaseEntity {
                 .build();
     }
 
-    public static List<GoodsDto.SearchGoodsImageRes> toDtoList(List<GoodsImage> goodsImageList) {
+    public static List<GoodsDto.GetGoodsImageRes> toDtoList(List<GoodsImage> goodsImageList) {
         return goodsImageList.stream()
                 .map(GoodsImage::toDto)
                 .collect(Collectors.toList());

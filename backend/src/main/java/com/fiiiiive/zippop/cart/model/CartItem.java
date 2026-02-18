@@ -53,13 +53,26 @@ public class CartItem {
     @JoinColumn(name = "product_idx")
     private Goods goods;
 
+    // Create
+    public static CartItem create(
+            Cart cart,
+            Goods goods
+    ) {
+        return CartItem.builder()
+                .cart(cart)
+                .goods(goods)
+                .quantity(1)
+                .price(goods.getPrice())
+                .build();
+    }
+
     // toDto
     public CartDto.GetCartItemRes toDto() {
         return CartDto.GetCartItemRes.builder()
                 .cartItemIdx(this.getIdx())
                 .count(this.getQuantity())
                 .price(this.getPrice())
-                .searchGoodsRes(this.getGoods().toDto())
+                .getGoodsRes(this.getGoods().toDto())
                 .build();
     }
 

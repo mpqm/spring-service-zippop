@@ -23,18 +23,6 @@ public interface PopupRepository extends JpaRepository<Popup, Long> {
             "WHERE p.idx = :popupIdx AND p.companyEmail = :companyEmail")
     Optional<Popup> findByPopupIdxAndCompanyEmail(@Param("popupIdx") Long popupIdx, @Param("companyEmail") String companyEmail);
 
-    // 팝업 인덱스로 좋아요 증가
-    @Modifying
-    @Query("UPDATE Popup p SET p.likeCount = p.likeCount + 1 " +
-            "WHERE p.idx = :popupIdx")
-    void incrementLikeCount(@Param("popupIdx") Long popupIdx);
-
-    // 팝업 인덱스로 좋아요 감소
-    @Modifying
-    @Query("UPDATE Popup p SET p.likeCount = p.likeCount - 1 " +
-            "WHERE p.idx = :popupIdx AND p.likeCount > 0")
-    void decrementLikeCount(@Param("popupIdx") Long popupIdx);
-
     // 기업 이메일로 목록 조회
     @Query("SELECT p FROM Popup p " +
             "WHERE p.companyEmail = :companyEmail")

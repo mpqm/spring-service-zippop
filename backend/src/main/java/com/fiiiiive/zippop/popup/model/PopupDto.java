@@ -1,11 +1,6 @@
 package com.fiiiiive.zippop.popup.model;
 
-import com.fiiiiive.zippop.account.model.Company;
-import com.fiiiiive.zippop.account.model.Customer;
-import com.fiiiiive.zippop.global.enums.StoreStatus;
-import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.GoodsDto;
-import com.fiiiiive.zippop.orders.model.Orders;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,28 +45,6 @@ public class PopupDto {
         @NotBlank(message = "팝업 종료 날짜는 필수 입력 항목입니다.")
         private LocalDate popupEndDate;
 
-
-    }
-
-    // 팝업 이미지 생성 요청 DTO
-    @Getter
-    @Builder
-    public static class CreatePopupImageReq {
-        // 상태 의존성 없음 유틸리티 함수 처럼 사용
-        public static PopupImage toEntity(Popup popup, String url) {
-            return PopupImage.builder()
-                    .url(url)
-                    .popup(popup)
-                    .build();
-        }
-    }
-
-
-    // 팝업 생성 응답 DTO
-    @Getter
-    @Builder
-    public static class CreatePopupRes {
-        private Long popupIdx;
     }
 
     // 팝업 리뷰 생성 요청 DTO
@@ -94,17 +67,10 @@ public class PopupDto {
 
     }
 
-    // 팝업 리뷰 생성 응답 DTO
-    @Getter
-    @Builder
-    public static class CreatePopupReviewRes {
-        private Long reviewIdx;
-    }
-
     // 팝업 이미지 조회 응답 DTO
     @Getter
     @Builder
-    public static class SearchPopupImageRes {
+    public static class GetPopupImageRes {
         private Long popupImageIdx;
         private String popupImageUrl;
         private LocalDateTime createdAt;
@@ -114,7 +80,7 @@ public class PopupDto {
     // 팝업 조회 응답 DTO
     @Getter
     @Builder
-    public static class SearchPopupRes {
+    public static class GetPopupRes {
         private Long popupIdx;
         private String companyEmail;
         private String popupName;
@@ -128,43 +94,16 @@ public class PopupDto {
         private String popupStatus;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        private List<SearchPopupReviewRes> searchPopupReviewResList;
-        private List<GoodsDto.SearchGoodsRes> searchGoodsResList;
-        private List<PopupDto.SearchPopupImageRes> searchPopupImageResList;
+        private List<GetPopupReviewRes> getPopupReviewResList;
+        private List<GoodsDto.GetGoodsRes> getGoodsResList;
+        private List<GetPopupImageRes> getPopupImageResList;
     }
 
-    @Getter
-    @Builder
-    public static class CreatePopupLikeReq {
-
-    }
-
-    // 팝업 좋아요 조회 응답 DTO
-    @Getter
-    @Builder
-    public static class SearchPopupLikeRes {
-        private Long popupIdx;
-        private String companyEmail;
-        private String popupName;
-        private String popupContent;
-        private String popupAddress;
-        private String category;
-        private Integer likeCount;
-        private Integer totalPeople;
-        private LocalDate popupStartDate;
-        private LocalDate popupEndDate;
-        private String popupStatus;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
-        private List<SearchPopupReviewRes> searchPopupReviewResList;
-        private List<GoodsDto.SearchGoodsRes> searchGoodsResList;
-        private List<PopupDto.SearchPopupImageRes> searchPopupImageResList;
-    }
 
     // 팝업 리뷰 응답 DTO
     @Getter
     @Builder
-    public static class SearchPopupReviewRes {
+    public static class GetPopupReviewRes {
         private Long reviewIdx;
         private String popupName;
         private String customerEmail;
@@ -205,13 +144,6 @@ public class PopupDto {
 
         @NotBlank(message = "팝업 종료 날짜는 필수 입력 항목입니다.")
         private LocalDate popupEndDate;
-    }
-
-    // 팝업 수정 응답 DTO
-    @Getter
-    @Builder
-    public static class UpdatePopupRes {
-        private Long popupIdx;
     }
 
 }

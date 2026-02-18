@@ -27,10 +27,4 @@ public interface PopupLikeRepository extends JpaRepository<PopupLike, Long> {
             "WHERE plc.idx = :customerIdx")
     Page<PopupLike> findAllByCustomerIdx(@Param("customerIdx") Long customerIdx, Pageable pageable);
 
-    // 고객, 팝업 인덱스로 삭제
-    @Modifying
-    @Query("DELETE FROM PopupLike pl " +
-            "WHERE pl.customer.idx = :customerIdx AND pl.popup.idx = :popupIdx")
-    void deleteByCustomerIdxAndPopupIdx(@Param("customerIdx") Long customerIdx, @Param("popupIdx") Long popupIdx);
-
 }

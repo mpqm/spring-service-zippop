@@ -1,6 +1,4 @@
-package com.fiiiiive.zippop.global.config;
-import com.fiiiiive.zippop.global.socket.CustomAuthenticationInterceptor;
-import com.fiiiiive.zippop.global.socket.CustomHandshakeInterceptor;
+package com.fiiiiive.zippop.global.socket;
 import com.fiiiiive.zippop.global.crypto.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

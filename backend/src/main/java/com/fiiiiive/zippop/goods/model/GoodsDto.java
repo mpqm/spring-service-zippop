@@ -1,7 +1,5 @@
 package com.fiiiiive.zippop.goods.model;
 
-import com.fiiiiive.zippop.popup.model.Popup;
-import com.fiiiiive.zippop.global.enums.GoodsStatus;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,24 +35,6 @@ public class GoodsDto {
 
     }
 
-    // 긋즈 생성 응답 DTO
-    @Getter
-    @Builder
-    public static class CreateGoodsRes {
-        private Long goodsIdx;
-    }
-
-    // 굿즈 이미지 생성 요청 DTO
-    public static class CreateGoodsImageReq {
-        // 상태 의존성 없음 유틸리티 함수 처럼 사용
-        public static GoodsImage toEntity(Goods goods, String url) {
-            return GoodsImage.builder()
-                    .url(url)
-                    .goods(goods)
-                    .build();
-        }
-    }
-
     // 굿즈 업데이트 요청 DTO
     @Getter
     @Builder
@@ -79,7 +59,7 @@ public class GoodsDto {
     // 굿즈 이미지 조회 응답 DTO
     @Getter
     @Builder
-    public static class SearchGoodsImageRes {
+    public static class GetGoodsImageRes {
         private Long goodsImageIdx;
         private String goodsImageUrl;
         private LocalDateTime createdAt;
@@ -89,7 +69,7 @@ public class GoodsDto {
     // 굿즈 조회 응답 DTO
     @Getter
     @Builder
-    public static class SearchGoodsRes {
+    public static class GetGoodsRes {
         private String popupName;
         private Long goodsIdx;
         private String goodsName;
@@ -99,14 +79,7 @@ public class GoodsDto {
         private String goodsStatus;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        private List<SearchGoodsImageRes> searchGoodsImageResList;
-    }
-
-    // 굿즈 업데이트 응답 DTO
-    @Getter
-    @Builder
-    public static class UpdateGoodsRes {
-        private Long goodsIdx;
+        private List<GetGoodsImageRes> getGoodsImageResList;
     }
 
 }

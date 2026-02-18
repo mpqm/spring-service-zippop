@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.config;
+package com.fiiiiive.zippop.global.redis;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

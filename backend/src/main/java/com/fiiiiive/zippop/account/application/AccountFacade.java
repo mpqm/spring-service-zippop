@@ -56,19 +56,19 @@ public class AccountFacade {
         getAccountService(user.getRole()).deactivateAccount(user);
     }
 
-    public void requestActivation(AccountDto.UpdateAccountStatusReq req) throws BaseException {
+    public void requestActivation(AccountDto.RequestActivationReq req) throws BaseException {
         getAccountService(req.getRole()).requestActivation(req);
     }
 
-    public void recoverUsername(AccountDto.FindAccountIdReq req) throws BaseException {
-        getAccountService(req.getRole()).recoverUsername(req);
+    public void recoverId(AccountDto.RecoverIdReq req) throws BaseException {
+        getAccountService(req.getRole()).recoverId(req);
     }
 
-    public void recoverPassword(AccountDto.FindAccountPwReq req) throws BaseException {
+    public void recoverPassword(AccountDto.RecoverPasswordReq req) throws BaseException {
         getAccountService(req.getRole()).recoverPassword(req);
     }
 
-    public void changePassword(CustomUserDetails user, AccountDto.ResetAccountPwReq req) throws BaseException {
+    public void changePassword(CustomUserDetails user, AccountDto.ChangePasswordReq req) throws BaseException {
         getAccountService(user.getRole()).changePassword(user, req);
     }
 

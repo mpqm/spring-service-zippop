@@ -1,6 +1,5 @@
 package com.fiiiiive.zippop.cart.service;
 
-import com.fiiiiive.zippop.account.model.Customer;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.cart.model.Cart;
 import com.fiiiiive.zippop.cart.model.CartDto;
@@ -8,6 +7,7 @@ import com.fiiiiive.zippop.cart.model.CartItem;
 import com.fiiiiive.zippop.cart.policy.CartPolicy;
 import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
+import com.fiiiiive.zippop.global.enums.Operation;
 import com.fiiiiive.zippop.goods.model.Goods;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
@@ -38,24 +38,26 @@ public class CartService {
     @Transactional
     public void createCart(CustomUserDetails user, CartDto.CreateCartReq req) throws BaseException {
 
-        // 고객 회원(customerIdx) 조회
-        Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.CART_REGISTER_FAIL_MEMBER_NOT_FOUND)
-        );
-
         // 굿즈(goodsIdx, popupIdx) 조회
         Goods goods = goodsRepository.findByGoodsIdxAndPopupIdx(req.getGoodsIdx(), req.getPopupIdx()).orElseThrow(
                 () -> new BaseException(BaseMessage.CART_REGISTER_FAIL_GOODS_NOT_FOUND)
         );
 
         // 장바구니 조회 후 없으면 장바구니 생성
-        Cart cart = cartRepository.findByCustomerIdxAndPopupIdx(user.getIdx(), req.getPopupIdx()).orElseGet(
-                () -> cartRepository.save(req.toEntity(customer, goods.getPopup()))
-        );
+        Cart cart = cartRepository.findByCustomerIdxAndPopupIdx(user.getIdx(), req.getPopupIdx()).orElse(null);;
+        if(cart == null){
+            cart = Cart.create(
+                    user.getIdx(),
+                    goods.getPopup()
+            );
+            cart.validateNoDuplicateGoods(goods);
 
-        cart.validateNoDuplicateGoods(goods);
+            cartRepository.save(cart);
+        }
 
-        cartItemRepository.save(CartDto.CreateCartItemReq.toEntity(cart, goods));
+        // 장바구니 아이템 저장
+        CartItem cartItem = CartItem.create(cart, goods);
+        cartItemRepository.save(cartItem);
 
     }
 
@@ -105,15 +107,15 @@ public class CartService {
 
     // 장바구니 아이템 수량 조절
     @Transactional
-    public void updateCartItemQuantity(CustomUserDetails user, Long cartItemIdx, CartDto.UpdateCartItemQuantityReq req) throws BaseException {
+    public void updateCartItemQuantity(CustomUserDetails user, Long cartIdx, Long cartItemIdx, String operation) throws BaseException {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
-        CartItem cartItem = cartItemRepository.findByCartItemIdxAndCustomerIdx(cartItemIdx, user.getIdx()).orElseThrow(
+        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getIdx()).orElseThrow(
                 () -> new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
         );
 
-        // Dirty Checking (operation = false -> +, operation = true -> --
-        if (!req.getOperation()){
+        // Dirty Checking
+        if (Objects.equals(operation, Operation.INCREMENT.getName())){
             cartItem.increase();
         } else {
             cartItem.decrease();
@@ -123,17 +125,17 @@ public class CartService {
 
     // 장바구니 아이템 삭제
     @Transactional
-    public void deleteCartItem(CustomUserDetails user, Long cartItemIdx) {
+    public void deleteCartItem(CustomUserDetails user, Long cartIdx, Long cartItemIdx) {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
-        CartItem cartItem = cartItemRepository.findByCartItemIdxAndCustomerIdx(cartItemIdx, user.getIdx()).orElseThrow(
+        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getIdx()).orElseThrow(
                 () -> new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
         );
 
         // 장바구니 소유권확인
         cartPolicy.validateCartItemOwner(cartItem, user);
 
-        // 장바구니 아이템 삭제(cartItemIdx, customerIdx)
+        // 장바구니 아이템 삭제
         cartItemRepository.delete(cartItem);
 
     }
