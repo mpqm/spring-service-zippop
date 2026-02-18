@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.cart.model;
 
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.goods.model.Goods;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class CartItem {
+public class CartItem extends BaseEntity {
 
     // Column
     @Id
@@ -35,14 +36,6 @@ public class CartItem {
     @Column(nullable = false)
     @PositiveOrZero(message = "총 가격은 0 이상이어야 합니다.")
     private Integer price;
-
-    @CreatedDate
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)

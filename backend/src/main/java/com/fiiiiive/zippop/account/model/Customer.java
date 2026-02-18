@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.account.model;
 
 import com.fiiiiive.zippop.cart.model.Cart;
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.enums.RoleType;
@@ -9,11 +10,8 @@ import com.fiiiiive.zippop.popup.model.PopupLike;
 import com.fiiiiive.zippop.popup.model.PopupReview;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Getter
@@ -21,7 +19,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Customer implements Account {
+public class Customer extends BaseEntity implements Account {
 
     // id
     @Id
@@ -68,14 +66,6 @@ public class Customer implements Account {
 
     @Column(nullable = false)
     private Boolean isInActive;
-
-    @CreatedDate
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
 
     // OneToMany
     @OneToMany(mappedBy = "customer")

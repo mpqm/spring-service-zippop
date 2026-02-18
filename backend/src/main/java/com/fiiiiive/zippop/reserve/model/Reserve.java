@@ -72,8 +72,8 @@ public class Reserve extends BaseEntity {
                 .build();
     }
 
-    public ReserveDto.SearchReserveRes toDto(){
-        return ReserveDto.SearchReserveRes.builder()
+    public ReserveDto.GetReserveRes toDto(){
+        return ReserveDto.GetReserveRes.builder()
                 .popupIdx(this.getPopup().getIdx())
                 .reserveIdx(this.getIdx())
                 .reservePeople(this.getTotalPeople())
@@ -85,7 +85,7 @@ public class Reserve extends BaseEntity {
     }
 
 
-    public static Page<ReserveDto.SearchReserveRes> toDtoPage(Page<Reserve> reservePage) {
+    public static Page<ReserveDto.GetReserveRes> toDtoPage(Page<Reserve> reservePage) {
         return reservePage.map(Reserve::toDto);
     }
 

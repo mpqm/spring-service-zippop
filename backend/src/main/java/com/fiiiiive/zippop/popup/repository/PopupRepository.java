@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.popup.repository;
 
+import com.fiiiiive.zippop.global.enums.PopupStatus;
 import com.fiiiiive.zippop.popup.model.Popup;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
@@ -35,13 +36,13 @@ public interface PopupRepository extends JpaRepository<Popup, Long> {
     // 검색어, 상태 기반으로 목록 조회
     @Query("SELECT p FROM Popup p " +
             "WHERE p.status = :status " +
-            "AND (p.address LIKE %:keyword% OR p.name LIKE %:keyword% OR p.category LIKE %:keyword% OR p.startDate LIKE %:keyword% OR p.companyEmail LIKE %:keyword%)")
-    Page<Popup> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") String status, Pageable pageable);
+            "AND (p.address LIKE %:keyword% OR p.name LIKE %:keyword% OR p.category LIKE %:keyword% OR p.companyEmail LIKE %:keyword%)")
+    Page<Popup> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") PopupStatus status, Pageable pageable);
 
     // 검색어, 기업 이메일로 목록 조회
     @Query("SELECT p FROM Popup p " +
             "WHERE p.companyEmail = :companyEmail " +
-            "AND (p.address LIKE %:keyword% OR p.name LIKE %:keyword% OR p.category LIKE %:keyword% OR p.startDate LIKE %:keyword%)")
+            "AND (p.address LIKE %:keyword% OR p.name LIKE %:keyword% OR p.category LIKE %:keyword%)")
     Page<Popup> findAllByKeywordAndCompanyEmail(@Param("keyword") String keyword, @Param("companyEmail") String companyEmail, Pageable pageable);
 
     // 팝업 종료일 조회

@@ -32,7 +32,7 @@ public class PopupController {
     private final FileUploadService fileUploadService;
 
     // 팝업 생성
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<BaseResponse<Void>> createPopup(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestPart(name = "files", required = false) MultipartFile[] files,
@@ -66,7 +66,7 @@ public class PopupController {
     }
 
     // 팝업 목록 조회
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<BaseResponse<Page<PopupDto.GetPopupRes>>> getPopups(
             @RequestParam String status,
             @RequestParam(required = false) String keyword,
@@ -74,18 +74,6 @@ public class PopupController {
             @RequestParam(defaultValue = "10") int size
     ) throws BaseException {
         Page<PopupDto.GetPopupRes> res = popupService.getPopups(status, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_SEARCH_ALL_SUCCESS, res));
-    }
-
-    // 내 팝업 목록 조회 (기업용)
-    @GetMapping("/me")
-    public ResponseEntity<BaseResponse<Page<PopupDto.GetPopupRes>>> getMyPopups(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) throws BaseException {
-        Page<PopupDto.GetPopupRes> res = popupService.getMyPopups(user, keyword, page, size);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_SEARCH_ALL_SUCCESS, res));
     }
 
@@ -153,39 +141,15 @@ public class PopupController {
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_REVIEW_SEARCH_ALL_SUCCESS, res));
     }
 
-    // 팝업의 정산 목록 조회
-    @GetMapping("/{popupIdx}/payouts")
-    public ResponseEntity<BaseResponse<Page<PayoutDto.GetPopupPayoutsRes>>> getPopupPayouts(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @PathVariable Long popupIdx,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) throws BaseException {
-        Page<PayoutDto.GetPopupPayoutsRes> res = popupService.getPopupPayouts(user, popupIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.PAYOUT_SEARCH_SUCCESS, res));
-    }
-
-    // 팝업 예약 목록 조회(기업용)
-    @GetMapping("/{popupIdx}/reservations/me")
-    public ResponseEntity<BaseResponse<Page<ReserveDto.SearchReserveRes>>> getPopupReservations(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @PathVariable Long popupIdx,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) throws BaseException {
-        Page<ReserveDto.SearchReserveRes> response = popupService.getMyPopupReservations(user, popupIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_CANCEL_SUCCESS, response));
-    }
-
-    // 예약 목록 조회
-    @GetMapping
-    public ResponseEntity<BaseResponse<Page<ReserveDto.SearchReserveRes>>> getReservations(
+    // 팝업 예약 목록 조회
+    @GetMapping("/{popupIdx}/reservations")
+    public ResponseEntity<BaseResponse<Page<ReserveDto.GetReserveRes>>> getPopupReservations(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Long storeIdx,
+            @PathVariable Long popupIdx,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) throws BaseException {
-        Page<ReserveDto.SearchReserveRes> response = popupService.getPopupReservation(storeIdx, keyword, page, size);
+        Page<ReserveDto.GetReserveRes> response = popupService.getPopupReservations(popupIdx, keyword, page, size);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_SEARCH_ALL_SUCCESS, response));
     }
 

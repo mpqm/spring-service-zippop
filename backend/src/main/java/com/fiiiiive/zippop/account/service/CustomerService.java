@@ -140,7 +140,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public void recoverId(AccountDto.RecoverIdReq dto) throws BaseException {
+    public void findId(AccountDto.FindIdReq dto) throws BaseException {
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByCustomerEmail(dto.getEmail()).orElseThrow(
@@ -159,7 +159,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void recoverPassword(AccountDto.RecoverPasswordReq dto) throws BaseException {
+    public void findPassword(AccountDto.FindPasswordReq dto) throws BaseException {
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByUserId(dto.getUserId()).orElseThrow(
@@ -178,7 +178,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void changePassword(CustomUserDetails user, AccountDto.ChangePasswordReq req) throws BaseException {
+    public void resetPassword(CustomUserDetails user, AccountDto.ResetPasswordReq req) throws BaseException {
 
         // 고객 회원 조회 (customerIdx)
         Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(

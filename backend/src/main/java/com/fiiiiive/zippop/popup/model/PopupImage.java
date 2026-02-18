@@ -18,6 +18,7 @@ public class PopupImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
+
     private String url;
 
     // ManyToOne

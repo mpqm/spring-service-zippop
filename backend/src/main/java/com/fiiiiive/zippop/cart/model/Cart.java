@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.cart.model;
 
 import com.fiiiiive.zippop.account.model.Customer;
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.goods.model.Goods;
@@ -20,20 +21,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Cart {
+public class Cart extends BaseEntity {
 
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
-
-    @CreatedDate
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
 
     // OneToMany
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)

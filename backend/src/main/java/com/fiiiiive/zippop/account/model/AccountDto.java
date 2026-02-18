@@ -97,7 +97,7 @@ public class AccountDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RecoverPasswordReq {
+    public static class FindPasswordReq {
 
         @NotNull(message = "역할은 필수 입력 항목입니다.")
         private String role;
@@ -112,7 +112,7 @@ public class AccountDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RecoverIdReq {
+    public static class FindIdReq {
 
         @NotNull(message = "역할은 필수 입력 항목입니다.")
         private String role;
@@ -128,7 +128,7 @@ public class AccountDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ChangePasswordReq {
+    public static class ResetPasswordReq {
 
         @NotNull(message = "이전 패스워드는 필수 입력 항목입니다.")
         private String originPassword;

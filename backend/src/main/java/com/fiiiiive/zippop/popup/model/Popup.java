@@ -4,7 +4,7 @@ import com.fiiiiive.zippop.account.model.Company;
 import com.fiiiiive.zippop.cart.model.Cart;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.enums.StoreStatus;
+import com.fiiiiive.zippop.global.enums.PopupStatus;
 import com.fiiiiive.zippop.goods.model.Goods;
 import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.payout.model.Payout;
@@ -13,12 +13,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,15 +72,7 @@ public class Popup extends BaseEntity {
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StoreStatus status;
-
-    @CreatedDate
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
+    private PopupStatus status;
 
     // OneToMany
     @OneToMany(mappedBy = "popup", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -133,7 +122,7 @@ public class Popup extends BaseEntity {
                 .startDate(startDate)
                 .endDate(endDate)
                 .likeCount(0)
-                .status(StoreStatus.STORE_START)
+                .status(PopupStatus.POPUP_START)
                 .company(company)
                 .build();
     }
@@ -174,7 +163,7 @@ public class Popup extends BaseEntity {
     }
 
     public void endPopup() {
-        this.status = StoreStatus.STORE_END;
+        this.status = PopupStatus.POPUP_END;
 
         for (Goods goods : this.goodsList) {
             goods.changeToStock();

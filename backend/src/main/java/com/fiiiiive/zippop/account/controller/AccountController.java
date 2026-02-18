@@ -32,7 +32,7 @@ public class AccountController {
     private final EmailAuthFacade emailAuthFacade;
 
     // 회원가입
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<BaseResponse<Void>> createAccount(
             @Valid @RequestPart(name = "req") AccountDto.CreateAccountReq req,
             @RequestPart(name = "file", required = false) MultipartFile file
@@ -63,7 +63,7 @@ public class AccountController {
     }
 
     // 계정 비활성화
-    @DeleteMapping("/me/activation")
+    @DeleteMapping("/me")
     public ResponseEntity<BaseResponse<Void>> deactivateAccount(
             @AuthenticationPrincipal CustomUserDetails user
     ) throws BaseException {
@@ -72,7 +72,7 @@ public class AccountController {
     }
 
     // 계정 활성화 요청
-    @PostMapping("/activation")
+    @PostMapping("/me/activation")
     public ResponseEntity<BaseResponse<Void>> requestActivation(
             @Valid @RequestBody AccountDto.RequestActivationReq req
     ) throws BaseException {
@@ -94,30 +94,30 @@ public class AccountController {
     }
 
     // 아이디 찾기
-    @PostMapping("/recovery/id")
-    public ResponseEntity<BaseResponse<Void>> recoverId(
-            @Valid @RequestBody AccountDto.RecoverIdReq req
+    @PostMapping("/id/find")
+    public ResponseEntity<BaseResponse<Void>> findId(
+            @Valid @RequestBody AccountDto.FindIdReq req
     ) throws BaseException {
-        accountFacade.recoverId(req);
+        accountFacade.findId(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_ID_SUCCESS));
     }
 
     // 비밀번호 찾기
-    @PostMapping("/recovery/password")
-    public ResponseEntity<BaseResponse<Void>> recoverPassword(
-            @Valid @RequestBody AccountDto.RecoverPasswordReq req
+    @PostMapping("/password/find")
+    public ResponseEntity<BaseResponse<Void>> findPassword(
+            @Valid @RequestBody AccountDto.FindPasswordReq req
     ) throws BaseException {
-        accountFacade.recoverPassword(req);
+        accountFacade.findPassword(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_PW_SUCCESS));
     }
 
     // 비밀번호 변경
-    @PatchMapping("/me/password")
-    public ResponseEntity<BaseResponse<Void>> changePassword(
+    @PatchMapping("/password/reset")
+    public ResponseEntity<BaseResponse<Void>> resetPassword(
             @AuthenticationPrincipal CustomUserDetails user,
-            @Valid @RequestBody AccountDto.ChangePasswordReq req
+            @Valid @RequestBody AccountDto.ResetPasswordReq req
     ) throws BaseException {
-        accountFacade.changePassword(user, req);
+        accountFacade.resetPassword(user, req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_RESET_PW_SUCCESS));
     }
 

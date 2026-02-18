@@ -28,7 +28,6 @@ public class CartController {
     private final CartService cartService;
 
     // 장바구니 생성
-    @GetMapping("/")
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> createCart(
             @AuthenticationPrincipal CustomUserDetails user,
@@ -39,7 +38,7 @@ public class CartController {
     }
 
     // 현재 사용자의 장바구니 목록 조회
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<BaseResponse<Page<CartDto.GetCartRes>>> getCarts(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") Integer page,

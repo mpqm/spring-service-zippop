@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.account.model;
 
+import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.enums.RoleType;
@@ -19,7 +20,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Company implements Account{
+public class Company extends BaseEntity implements Account  {
 
     // id
     @Id
@@ -69,16 +70,6 @@ public class Company implements Account{
     // 계정 비활성화 여부 (필수)
     @Column(nullable = false)
     private Boolean isInActive;
-
-    // 생성날짜 (필수)
-    @CreatedDate
-    @Column(updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
-    // 수정날짜
-    @LastModifiedDate
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
 
     // OneToMany
     @OneToMany(mappedBy = "company")

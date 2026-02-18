@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@Tag(name = "reserve-api", description = "Reservation Management")
+@Tag(name = "reserve-api", description = "Reserve Management")
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/reservations")
+@RequestMapping("/api/v1/reserves")
 @RequiredArgsConstructor
 public class ReserveController {
 
@@ -33,11 +33,11 @@ public class ReserveController {
 
     // 예약 생성
     @PostMapping
-    public ResponseEntity<BaseResponse<ReserveDto.CreateReserveRes>> createReservation(
+    public ResponseEntity<BaseResponse<ReserveDto.CreateReserveRes>> createReserve(
             @AuthenticationPrincipal CustomUserDetails user,
             @Valid @RequestBody ReserveDto.CreateReserveReq req
     ) throws BaseException {
-        ReserveDto.CreateReserveRes res = reserveService.createReservation(user, req);
+        ReserveDto.CreateReserveRes res = reserveService.createReserve(user, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.RESERVE_REGISTER_SUCCESS, res));
     }
 
@@ -47,7 +47,7 @@ public class ReserveController {
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long reserveIdx
     ) throws BaseException {
-        reserveService.deleteReservation(user, reserveIdx);
+        reserveService.deleteReserve(user, reserveIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_DELETE_SUCCESS));
     }
 
@@ -58,7 +58,7 @@ public class ReserveController {
             HttpServletResponse res,
             @PathVariable Long reserveIdx
     ) throws BaseException {
-        ReserveDto.EnrollReserveRes response = reserveService.enrollReservation(res, user, reserveIdx);
+        ReserveDto.EnrollReserveRes response = reserveService.enrollReserve(res, user, reserveIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_ENROLL_SUCCESS, response));
     }
 
@@ -70,11 +70,11 @@ public class ReserveController {
             HttpServletResponse res,
             @PathVariable Long reserveIdx
     ) throws BaseException {
-        String response = reserveService.cancelReservation(req, res, user, reserveIdx);
+        String response = reserveService.cancelReserve(req, res, user, reserveIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_CANCEL_SUCCESS, response));
     }
 
-    // 예약 상태 업데이트 (WebSocket)
+    // (WebSocket) 예약 상태 업데이트
     @MessageMapping("/status")
     public void updateReservationStatus(
         @AuthenticationPrincipal Principal principal,

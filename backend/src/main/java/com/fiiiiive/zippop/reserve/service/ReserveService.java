@@ -3,7 +3,7 @@ package com.fiiiiive.zippop.reserve.service;
 
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.enums.StoreStatus;
+import com.fiiiiive.zippop.global.enums.PopupStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.reserve.model.ReserveDto;
@@ -43,7 +43,7 @@ public class ReserveService {
 
     // 예약 생성
     @Transactional
-    public ReserveDto.CreateReserveRes createReservation(CustomUserDetails user, ReserveDto.CreateReserveReq req) throws BaseException {
+    public ReserveDto.CreateReserveRes createReserve(CustomUserDetails user, ReserveDto.CreateReserveReq req) throws BaseException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findById(req.getPopupIdx()).orElseThrow(
@@ -51,7 +51,7 @@ public class ReserveService {
         );
 
         // 팝업 상태 확인(종료 상태면 예약 생성 불가)
-        popupPolicy.validateReserveStatus(popup, StoreStatus.STORE_END);
+        popupPolicy.validateReserveStatus(popup, PopupStatus.POPUP_END);
 
         // 팝업 소유 확인
         popupPolicy.validateOwner(popup, user);
@@ -93,7 +93,7 @@ public class ReserveService {
 
     // 예약삭제
     @Transactional
-    public void deleteReservation(CustomUserDetails user, Long reserveIdx) throws BaseException {
+    public void deleteReserve(CustomUserDetails user, Long reserveIdx) throws BaseException {
 
         // 예약 조회
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
@@ -123,7 +123,7 @@ public class ReserveService {
     }
 
     // 예약 등록
-    public ReserveDto.EnrollReserveRes enrollReservation(HttpServletResponse res, CustomUserDetails user, Long reserveIdx) throws BaseException {
+    public ReserveDto.EnrollReserveRes enrollReserve(HttpServletResponse res, CustomUserDetails user, Long reserveIdx) throws BaseException {
         // 예약 조회(reserveIdx)
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
                 () -> new BaseException(BaseMessage.RESERVE_ENROLL_FAIL_NOT_FOUND)
@@ -184,7 +184,7 @@ public class ReserveService {
     }
 
     // 예약 취소 (개선: Lua Script + 토큰 발급)
-    public String cancelReservation(HttpServletRequest req, HttpServletResponse res, CustomUserDetails user, Long reserveIdx) throws BaseException {
+    public String cancelReserve(HttpServletRequest req, HttpServletResponse res, CustomUserDetails user, Long reserveIdx) throws BaseException {
 
         // 예약 조회(reserveIdx)
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(

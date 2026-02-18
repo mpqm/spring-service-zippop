@@ -30,7 +30,7 @@ public class GoodsController {
     private final FileUploadService fileUploadService;
 
     // 굿즈 등록
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<BaseResponse<Void>> createGoods(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestPart("files") MultipartFile[] files,
@@ -64,7 +64,7 @@ public class GoodsController {
     }
 
     // 굿즈 목록 조회
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<BaseResponse<Page<GoodsDto.GetGoodsRes>>> getGoodsList(
             @RequestParam(required = false) Long popupIdx,
             @RequestParam(required = false) String keyword,

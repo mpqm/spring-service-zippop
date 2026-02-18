@@ -137,7 +137,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public void recoverId(AccountDto.RecoverIdReq dto) throws BaseException {
+    public void findId(AccountDto.FindIdReq dto) throws BaseException {
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByCompanyEmail(dto.getEmail()).orElseThrow(
@@ -156,7 +156,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void recoverPassword(AccountDto.RecoverPasswordReq dto) throws BaseException {
+    public void findPassword(AccountDto.FindPasswordReq dto) throws BaseException {
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByUserId(dto.getUserId()).orElseThrow(
@@ -175,7 +175,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void changePassword(CustomUserDetails user, AccountDto.ChangePasswordReq req) throws BaseException {
+    public void resetPassword(CustomUserDetails user, AccountDto.ResetPasswordReq req) throws BaseException {
 
         // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(

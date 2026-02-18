@@ -26,12 +26,12 @@ public interface AccountService {
     void activateAccount(String email) throws BaseException;
 
     // 아이디 찾기
-    void recoverId(AccountDto.RecoverIdReq dto) throws BaseException;
+    void findId(AccountDto.FindIdReq dto) throws BaseException;
 
     // 비밀번호 찾기 (임시 비밀번호 발급)
-    void recoverPassword(AccountDto.RecoverPasswordReq dto) throws BaseException;
+    void findPassword(AccountDto.FindPasswordReq dto) throws BaseException;
 
     // 비밀번호 변경
-    void changePassword(CustomUserDetails user, AccountDto.ChangePasswordReq req) throws BaseException;
+    void resetPassword(CustomUserDetails user, AccountDto.ResetPasswordReq req) throws BaseException;
 
 }

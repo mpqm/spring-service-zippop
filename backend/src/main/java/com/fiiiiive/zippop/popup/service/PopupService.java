@@ -5,17 +5,13 @@ import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.global.enums.OrdersStatus;
-import com.fiiiiive.zippop.global.enums.StoreStatus;
+import com.fiiiiive.zippop.global.enums.PopupStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
-import com.fiiiiive.zippop.payout.model.Payout;
-import com.fiiiiive.zippop.payout.model.PayoutDto;
-import com.fiiiiive.zippop.payout.repository.PayoutRepository;
 import com.fiiiiive.zippop.popup.model.PopupDto;
 import com.fiiiiive.zippop.popup.model.Popup;
 import com.fiiiiive.zippop.popup.model.PopupLike;
 import com.fiiiiive.zippop.popup.model.PopupReview;
-import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.popup.repository.PopupLikeRepository;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.fiiiiive.zippop.popup.repository.PopupReviewRepository;
@@ -34,9 +30,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.*;
 
-/**
- * Popup 비즈니스 로직 서비스
- */
+// Popup 비즈니스 로직 서비스
 @Service
 @RequiredArgsConstructor
 public class PopupService {
@@ -44,11 +38,9 @@ public class PopupService {
     private final PopupRepository popupRepository;
     private final PopupLikeRepository popupLikeRepository;
     private final CompanyRepository companyRepository;
-    private final PayoutRepository payoutRepository;
     private final OrdersDetailRepository ordersDetailRepository;
     private final PopupReviewRepository popupReviewRepository;
     private final ReserveRepository reserveRepository;
-    private final PopupPolicy popupPolicy;
 
     // 팝업 등록
     @Transactional
@@ -98,25 +90,10 @@ public class PopupService {
         // false : 검색어가 없는 경우, 상태에 따라 활성화 또는 종료된 팝업을 페이징 조회
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Popup> popupPage = (keyword != null)
-                ? popupRepository.findAllByKeywordAndStatus(keyword, status, pageable)
+                ? popupRepository.findAllByKeywordAndStatus(keyword, PopupStatus.valueOf(status), pageable)
                 : popupRepository.findAllByStatus(status, pageable);
 
         // DTO 반환 (데이터가 없어도 빈 페이지 반환)
-        return Popup.toDtoPage(popupPage);
-
-    }
-
-    // 팝업 목록 조회(기업용)
-    public Page<PopupDto.GetPopupRes> getMyPopups(CustomUserDetails user, String keyword, int page, int size) throws BaseException {
-
-        // 팝업 페이지 조회(keyword, email, pageable) 조회
-        // true : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
-        // false : 키워드(keyword)가 없는 경우, 등록된 기업회원의 이메일로 페이징 조회
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
-        Page<Popup> popupPage = (keyword != null)
-            ? popupRepository.findAllByKeywordAndCompanyEmail(keyword, user.getEmail(), pageable)
-            : popupRepository.findAllByCompanyEmail(user.getEmail(), pageable);
-
         return Popup.toDtoPage(popupPage);
 
     }
@@ -250,44 +227,17 @@ public class PopupService {
         }
     }
 
-    // 기업 정산 금액 조회
-    public Page<PayoutDto.GetPopupPayoutsRes> getPopupPayouts(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
-
-        // 팝업 조회(popupIdx)
-        Popup popup = popupRepository.findByPopupIdx(popupIdx)
-                .orElseThrow(() -> new BaseException(BaseMessage.PAYOUT_SEARCH_FAIL_NOT_FOUND_STORE));
-
-        popupPolicy.validateOwner(popup, user);
-
-        // 팝업 페이지 조회(popupIdx, pageable)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
-        Page<Payout> payoutPage = payoutRepository.findAllByPopupIdx(popupIdx, pageable);
-
-        return Payout.toDtoPage(payoutPage);
-
-    }
-
-    // 예약 목록 조회(기업용)
-    public Page<ReserveDto.SearchReserveRes> getMyPopupReservations (CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
-
-        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(popupIdx, user.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
-                () -> new BaseException(BaseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
-        );
-
-        return Reserve.toDtoPage(reservePage);
-    }
-
     // 예약 목록 조회
-    public Page<ReserveDto.SearchReserveRes> getPopupReservation (Long popupIdx, String keyword, int page, int size) throws BaseException {
+    public Page<ReserveDto.GetReserveRes> getPopupReservations (Long popupIdx, String keyword, int page, int size) throws BaseException {
 
         // 예약 조회(status, popupIdx, keyword)
         Page<Reserve> reservePage;
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if(popupIdx == null){
-            if(keyword == null) reservePage = reserveRepository.findAllByStatus(StoreStatus.STORE_START.name(), pageable);
-            else reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, StoreStatus.STORE_START.name(), pageable);
+            if(keyword == null) reservePage = reserveRepository.findAllByStatus(PopupStatus.POPUP_START.name(), pageable);
+            else reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, PopupStatus.POPUP_START.name(), pageable);
         } else {
-            reservePage = reserveRepository.findAllByPopupIdx(popupIdx, StoreStatus.STORE_START.name(), pageable);
+            reservePage = reserveRepository.findAllByPopupIdx(popupIdx, PopupStatus.POPUP_START.name(), pageable);
         }
 
         return Reserve.toDtoPage(reservePage);

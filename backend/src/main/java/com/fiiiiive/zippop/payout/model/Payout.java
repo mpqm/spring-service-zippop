@@ -34,7 +34,7 @@ public class Payout extends BaseEntity {
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private PayoutStatus status;
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,7 +47,7 @@ public class Payout extends BaseEntity {
                 .popup(popup)
                 .revenue(revenue)
                 .payoutDate(date)
-                .status(PayoutStatus.PAYOUT_COMPLETE.name())
+                .status(PayoutStatus.PAYOUT_COMPLETE)
                 .build();
     }
 

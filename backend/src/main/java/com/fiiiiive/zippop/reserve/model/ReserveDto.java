@@ -82,7 +82,7 @@ public class ReserveDto {
     // 예약 조회 DTO
     @Getter
     @Builder
-    public static class SearchReserveRes {
+    public static class GetReserveRes {
         private Long popupIdx;
         private Long reserveIdx;
         private Integer reservePeople;
