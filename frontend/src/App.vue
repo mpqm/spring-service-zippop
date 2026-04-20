@@ -6,4 +6,4 @@
 
 </script>
 
-<style src="./assets/styles/style.css"></style>
+<style src="./assets/css/style.css"></style>

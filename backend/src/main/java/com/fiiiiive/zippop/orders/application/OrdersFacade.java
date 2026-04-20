@@ -3,7 +3,10 @@ package com.fiiiiive.zippop.orders.application;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.enums.OrdersStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.orders.model.OrdersDto;
+import com.fiiiiive.zippop.orders.model.dto.CreateOrdersReq;
+import com.fiiiiive.zippop.orders.model.dto.CreateOrdersRes;
+import com.fiiiiive.zippop.orders.model.dto.UpdateOrdersReq;
+import com.fiiiiive.zippop.orders.model.dto.UpdateOrdersRes;
 import com.fiiiiive.zippop.orders.service.OrdersService;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +23,8 @@ public class OrdersFacade {
     private final OrdersService ordersService;
 
     // 재고용, 예약용 분기 처리
-    public OrdersDto.CreateOrdersRes createOrders(CustomUserDetails user, OrdersDto.CreateOrdersReq req) throws BaseException, IamportResponseException, IOException {
-        OrdersDto.CreateOrdersRes res = null;
+    public CreateOrdersRes createOrders(CustomUserDetails user, CreateOrdersReq req) throws BaseException {
+        CreateOrdersRes res;
         if (req.getReserveIdx() != null) {
             res = ordersService.createReserveOrders(user, req);
         } else {
@@ -31,10 +34,10 @@ public class OrdersFacade {
     }
 
     // 주문 취소, 확정 분기 처리
-    public OrdersDto.UpdateOrdersRes updateOrders(CustomUserDetails user, Long orderIdx, OrdersDto.UpdateOrdersReq req) throws IamportResponseException, IOException {
-        OrdersDto.UpdateOrdersRes res = null;
+    public UpdateOrdersRes updateOrders(CustomUserDetails user, Long orderIdx, UpdateOrdersReq req) throws IamportResponseException, IOException {
+        UpdateOrdersRes res;
         if (Objects.equals(req.getStatus(), OrdersStatus.STOCK_CANCEL.getName()) || Objects.equals(req.getStatus(), OrdersStatus.RESERVE_CANCEL.getName())) {
-            res = ordersService.cancelOrders(user, orderIdx, req);
+            res = ordersService.cancelOrders(user, orderIdx);
         } else {
             res = ordersService.updateOrders(user, orderIdx, req);
         }

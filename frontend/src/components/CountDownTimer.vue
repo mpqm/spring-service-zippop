@@ -54,31 +54,3 @@ onUnmounted(() => {
 });
 
 </script>
-
-<style scoped>
-.countdown-timer {
-    font-weight: bold;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.3rem 0.75rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #e63946;
-    background-color: #f0fffc;
-    border: 1px solid #00c7ae;
-    border-radius: 9999px; /* pill 모양 */
-    cursor: pointer;
-    transition: all 0.25s ease-in-out;
-    white-space: nowrap;
-    gap: 4px;
-    margin: 0;
-    max-height: 30px;
-}
-
-.countdown-timer2 {
-    font-size: 12px;
-    color: #e63946;
-    font-weight: bold;
-}
-</style>

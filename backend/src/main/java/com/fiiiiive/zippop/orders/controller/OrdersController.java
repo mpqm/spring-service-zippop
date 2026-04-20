@@ -1,12 +1,11 @@
 package com.fiiiiive.zippop.orders.controller;
 
 
-import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.application.OrdersFacade;
-import com.fiiiiive.zippop.orders.model.OrdersDto;
+import com.fiiiiive.zippop.orders.model.dto.*;
 import com.fiiiiive.zippop.orders.service.OrdersService;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,44 +29,44 @@ public class OrdersController {
     
     // 주문 생성
     @PostMapping
-    public ResponseEntity<BaseResponse<OrdersDto.CreateOrdersRes>> createOrders(
+    public ResponseEntity<BaseResponse<CreateOrdersRes>> createOrders(
         @AuthenticationPrincipal CustomUserDetails user,
-        @RequestBody OrdersDto.CreateOrdersReq req
-    ) throws BaseException, IamportResponseException, IOException {
-        OrdersDto.CreateOrdersRes res = ordersFacade.createOrders(user, req);
+        @RequestBody CreateOrdersReq req
+    ) {
+        CreateOrdersRes res = ordersFacade.createOrders(user, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.ORDERS_PAY_SUCCESS, res));
     }
 
     // 주문 상태 변경
     @PatchMapping("/{orderIdx}")
-    public ResponseEntity<BaseResponse<OrdersDto.UpdateOrdersRes>> updateOrders(
+    public ResponseEntity<BaseResponse<UpdateOrdersRes>> updateOrders(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long orderIdx,
-            @RequestBody OrdersDto.UpdateOrdersReq req
-    ) throws BaseException, IamportResponseException, IOException{
-        OrdersDto.UpdateOrdersRes res = ordersFacade.updateOrders(user, orderIdx, req);
+            @RequestBody UpdateOrdersReq req
+    ) throws IamportResponseException, IOException {
+        UpdateOrdersRes res = ordersFacade.updateOrders(user, orderIdx, req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_COMPLETE_SUCCESS, res));
     }
 
     // 고객의 주문 상세 조회
     @GetMapping("/{ordersIdx}")
-    public ResponseEntity<BaseResponse<OrdersDto.GetOrdersRes>> getOrder(
+    public ResponseEntity<BaseResponse<GetOrdersRes>> getOrder(
         @AuthenticationPrincipal CustomUserDetails user,
-        @PathVariable Long ordersIdx) throws BaseException {
+        @PathVariable Long ordersIdx) {
 
-        OrdersDto.GetOrdersRes res = ordersService.getOrder(user, ordersIdx);
+        GetOrdersRes res = ordersService.getOrder(user, ordersIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_SEARCH_SUCCESS, res));
     }
 
     // 고객의 주문 목록 조회
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<OrdersDto.GetOrdersRes>>> getOrders(
+    public ResponseEntity<BaseResponse<Page<GetOrdersRes>>> getOrders(
         @AuthenticationPrincipal CustomUserDetails user,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
-    ) throws BaseException {
+    ) {
 
-        Page<OrdersDto.GetOrdersRes> res = ordersService.getOrders(user, page, size);
+        Page<GetOrdersRes> res = ordersService.getOrders(user, page, size);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_SEARCH_ALL_SUCCESS, res));
     }
 

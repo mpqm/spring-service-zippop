@@ -5,7 +5,10 @@ import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.reserve.model.ReserveDto;
+import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
+import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
+import com.fiiiiive.zippop.reserve.model.dto.EnrollReserveRes;
+import com.fiiiiive.zippop.reserve.model.dto.GetReserveQueueReq;
 import com.fiiiiive.zippop.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,38 +36,38 @@ public class ReserveController {
 
     // 예약 생성
     @PostMapping
-    public ResponseEntity<BaseResponse<ReserveDto.CreateReserveRes>> createReserve(
+    public ResponseEntity<BaseResponse<CreateReserveRes>> createReserve(
             @AuthenticationPrincipal CustomUserDetails user,
-            @Valid @RequestBody ReserveDto.CreateReserveReq req
-    ) throws BaseException {
-        ReserveDto.CreateReserveRes res = reserveService.createReserve(user, req);
+            @Valid @RequestBody CreateReserveReq req
+    ) {
+        CreateReserveRes res = reserveService.createReserve(user, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.RESERVE_REGISTER_SUCCESS, res));
     }
 
     // 예약 삭제
     @DeleteMapping("/{reserveIdx}")
-    public ResponseEntity<BaseResponse<String>> deleteReservation(
+    public ResponseEntity<BaseResponse<String>> deleteReserve(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long reserveIdx
-    ) throws BaseException {
+    ) {
         reserveService.deleteReserve(user, reserveIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_DELETE_SUCCESS));
     }
 
     // 예약 신청
-    @PostMapping("/{reserveIdx}/enrollment")
-    public ResponseEntity<BaseResponse<ReserveDto.EnrollReserveRes>> enrollReservation(
+    @GetMapping("/{reserveIdx}/enrollment")
+    public ResponseEntity<BaseResponse<EnrollReserveRes>> enrollReserve(
             @AuthenticationPrincipal CustomUserDetails user,
             HttpServletResponse res,
             @PathVariable Long reserveIdx
-    ) throws BaseException {
-        ReserveDto.EnrollReserveRes response = reserveService.enrollReserve(res, user, reserveIdx);
+    ) {
+        EnrollReserveRes response = reserveService.enrollReserve(res, user, reserveIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_ENROLL_SUCCESS, response));
     }
 
     // 예약 취소
     @DeleteMapping("/{reserveIdx}/enrollment")
-    public ResponseEntity<BaseResponse<String>> cancelReservation(
+    public ResponseEntity<BaseResponse<String>> cancelReserve(
             @AuthenticationPrincipal CustomUserDetails user,
             HttpServletRequest req,
             HttpServletResponse res,
@@ -75,11 +78,11 @@ public class ReserveController {
     }
 
     // (WebSocket) 예약 상태 업데이트
-    @MessageMapping("/status")
-    public void updateReservationStatus(
+    @MessageMapping("/reserve/status")
+    public void updateReserveStatus(
         @AuthenticationPrincipal Principal principal,
-        @Payload ReserveDto.StatusReserveReq statusReserveReq) throws BaseException {
-        reserveService.status(principal, statusReserveReq);
+        @Payload GetReserveQueueReq getReserveQueueReq) throws BaseException {
+        reserveService.status(principal, getReserveQueueReq);
     }
 
 }

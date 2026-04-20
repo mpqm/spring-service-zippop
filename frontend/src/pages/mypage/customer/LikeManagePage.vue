@@ -2,7 +2,7 @@
   <div>
     <div class="lyt-child">
       <div class="wrp-list" v-if="likeList && likeList.length">
-        <StoreList v-for="store in likeList" :key="store.storeIdx" :store="store" :showControl="showControl" />
+        <PopupList v-for="popup in likeList" :key="popup.popupIdx" :popup="popup" :showControl="showControl" />
       </div>
       <div class="txt-null" v-else>
         <p>좋아요한 팝업 스토어가 없습니다.</p>
@@ -13,15 +13,13 @@
 </template>
 
 <script setup>
-import StoreList from "@/components/StoreList.vue";
+import PopupList from "@/components/PopupList.vue";
 import AppPagination from "@/components/AppPagination.vue";
-import { useStoreStore } from "@/stores/useStoreStore";
+import { usePopupStore } from "@/stores/popupStore";
 import { onMounted, ref } from "vue";
 
-// store, router, route, toast
-const storeStore = useStoreStore();
+const popupStore = usePopupStore();
 
-// 변수(like)
 const likeList = ref([]);
 const currentPage = ref(0);
 const pageSize = ref(8);
@@ -30,26 +28,16 @@ const totalPages = ref(0);
 const hideBtns = ref(false);
 const showControl = ref(6);
 
-// onMounted
 onMounted(async () => {
-  await searchAll();
+  await getMyLikedPopups();
 });
 
-// 페이지 네이션
-const changePage = (newPage) => {
-  if (newPage >= 0) {
-    currentPage.value = newPage;
-    searchAll();
-  }
-};
-
-// 좋아요 목록 조회
-const searchAll = async () => {
-  const res = await storeStore.searchAllLike(currentPage.value, pageSize.value);
+const getMyLikedPopups = async () => {
+  const res = await popupStore.getMyLikedPopups(currentPage.value, pageSize.value);
   if (res.success) {
-    totalElements.value = storeStore.totalElements;
-    totalPages.value = storeStore.totalPages;
-    likeList.value = storeStore.likeList;
+    totalElements.value = popupStore.totalElements;
+    totalPages.value = popupStore.totalPages;
+    likeList.value = popupStore.likeList;
     hideBtns.value = false;
   } else {
     likeList.value = [];
@@ -59,4 +47,10 @@ const searchAll = async () => {
   }
 };
 
+const changePage = (newPage) => {
+  if (newPage >= 0) {
+    currentPage.value = newPage;
+    getMyLikedPopups();
+  }
+};
 </script>

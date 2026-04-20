@@ -7,7 +7,7 @@ import com.fiiiiive.zippop.global.base.BaseConstant;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.enums.RoleType;
-import com.fiiiiive.zippop.global.redis.RedisService;
+import com.fiiiiive.zippop.global.redis.RedisEmailService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailAuthFacade {
 
-    private final RedisService redisService;
+    private final RedisEmailService redisEmailService;
     private final CompanyService companyService;
     private final CustomerService customerService;
     private Map<String, AccountService> accountServiceMap;
@@ -48,7 +48,7 @@ public class EmailAuthFacade {
     public String verifyEmail(String email, String role, String uuid) throws BaseException {
 
         // 이메일에 해당하는 UUID 값 조회
-        String storedUuid = redisService.getEmailVerifyUuid(email);
+        String storedUuid = redisEmailService.getEmailVerifyUuid(email);
 
         // Redis에 저장된 값이 없거나 전달 받은 uuid와 다르면 이메일 인증 실패 리다이렉트 URL 반환
         if (storedUuid == null || !storedUuid.equals(uuid)) {
@@ -59,7 +59,7 @@ public class EmailAuthFacade {
         getAccountService(role).activateAccount(email);
 
         // 인증 성공 후 Redis 에서 해당 이메일 관련 UUID 삭제
-        redisService.deleteEmailVerifyUuid(email);
+        redisEmailService.deleteEmailVerifyUuid(email);
 
         // 성공 리다이렉트 URL 반환
         return BaseConstant.LOGIN_SUCCESS_REDIRECT_URL;

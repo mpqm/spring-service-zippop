@@ -1,24 +1,20 @@
 package com.fiiiiive.zippop.popup.service;
 
-import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.orders.model.Orders;
-import com.fiiiiive.zippop.orders.model.OrdersDto;
-import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
+import com.fiiiiive.zippop.orders.model.dto.GetOrdersRes;
+import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
-import com.fiiiiive.zippop.payout.model.Payout;
-import com.fiiiiive.zippop.payout.model.PayoutDto;
+import com.fiiiiive.zippop.payout.model.dto.GetPopupPayoutsRes;
+import com.fiiiiive.zippop.payout.model.entity.Payout;
 import com.fiiiiive.zippop.payout.repository.PayoutRepository;
-import com.fiiiiive.zippop.popup.model.Popup;
-import com.fiiiiive.zippop.popup.model.PopupDto;
+import com.fiiiiive.zippop.popup.model.dto.GetPopupRes;
+import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.policy.PopupPolicy;
-import com.fiiiiive.zippop.popup.repository.PopupLikeRepository;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
-import com.fiiiiive.zippop.popup.repository.PopupReviewRepository;
-import com.fiiiiive.zippop.reserve.model.Reserve;
-import com.fiiiiive.zippop.reserve.model.ReserveDto;
+import com.fiiiiive.zippop.reserve.model.dto.GetReserveRes;
+import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,7 +35,7 @@ public class CompanyPopupService {
     private final OrdersRepository ordersRepository;
 
     // 팝업 목록 조회(기업용)
-    public Page<PopupDto.GetPopupRes> getCompanyPopups(CustomUserDetails user, String keyword, int page, int size) throws BaseException {
+    public Page<GetPopupRes> getCompanyPopups(CustomUserDetails user, String keyword, int page, int size) throws BaseException {
 
         // 팝업 페이지 조회(keyword, email, pageable) 조회
         // true : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
@@ -54,7 +50,7 @@ public class CompanyPopupService {
     }
 
     // 기업 정산 금액 조회
-    public Page<PayoutDto.GetPopupPayoutsRes> getCompanyPopupPayouts(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
+    public Page<GetPopupPayoutsRes> getCompanyPopupPayouts(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findByPopupIdx(popupIdx)
@@ -71,7 +67,7 @@ public class CompanyPopupService {
     }
 
     // 예약 목록 조회(기업용)
-    public Page<ReserveDto.GetReserveRes> getCompanyPopupReservations (CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
+    public Page<GetReserveRes> getCompanyPopupReserves(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
 
         Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(popupIdx, user.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new BaseException(BaseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
@@ -81,7 +77,7 @@ public class CompanyPopupService {
     }
 
     // 기업 고객 주문 목록 조회
-    public Page<OrdersDto.GetOrdersRes> getCompanyPopupOrdersList(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
+    public Page<GetOrdersRes> getCompanyPopupOrdersList(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
 
         // 팝업(popupIdx) 조회
         Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
@@ -102,7 +98,7 @@ public class CompanyPopupService {
     }
 
     // 기업 고객 주문 상세 조회
-    public OrdersDto.GetOrdersRes getPopupOrdersDetail(CustomUserDetails user, Long popupIdx, Long ordersIdx) throws BaseException {
+    public GetOrdersRes getPopupOrdersDetail(CustomUserDetails user, Long popupIdx, Long ordersIdx) throws BaseException {
 
         // 팝업(popupIdx) 조회
         Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(

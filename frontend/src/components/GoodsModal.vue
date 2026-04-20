@@ -16,7 +16,6 @@
             <p class="txt-def1">{{ goods.goodsName }}</p>
             <p class="txt-desc"> {{ goods.goodsContent }}</p>
             <div class="ctn-tagbutton">
-              <button class="btn-tagdefault">{{ goods.storeName }}</button>
               <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsPrice }}원</button>
               <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsAmount }}개</button>
             </div>
@@ -48,8 +47,8 @@ onMounted(async () => {
 
 // 매핑 함수
 const mapper = async() => {
-  if (props.goods.searchGoodsImageResList && props.goods.searchGoodsImageResList.length) {
-    fileUrls.value = props.goods.searchGoodsImageResList.map(image => image.goodsImageUrl);
+  if (props.goods.getGoodsImageResList && props.goods.getGoodsImageResList.length) {
+    fileUrls.value = props.goods.getGoodsImageResList.map(image => image.goodsImageUrl);
   }
 }
 

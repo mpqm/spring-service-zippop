@@ -1,25 +1,26 @@
 package com.fiiiiive.zippop.orders.service;
 
 
-import com.fiiiiive.zippop.account.model.Customer;
+import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
-import com.fiiiiive.zippop.goods.model.Goods;
+import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.orders.event.RefundEvent;
-import com.fiiiiive.zippop.orders.model.Orders;
+import com.fiiiiive.zippop.orders.model.dto.*;
+import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.enums.RoleType;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
-import com.fiiiiive.zippop.orders.model.OrdersDto;
-import com.fiiiiive.zippop.orders.model.OrdersDetail;
+import com.fiiiiive.zippop.orders.model.entity.OrdersDetail;
 import com.fiiiiive.zippop.orders.policy.OrdersPolicy;
 import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
-import com.fiiiiive.zippop.popup.model.Popup;
+import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.Payment;
@@ -55,7 +56,7 @@ public class OrdersService {
 
     // 결제 검증(예약용)
     @Transactional
-    public OrdersDto.CreateOrdersRes createReserveOrders(CustomUserDetails user, OrdersDto.CreateOrdersReq req) throws BaseException {
+    public CreateOrdersRes createReserveOrders(CustomUserDetails user, CreateOrdersReq req) throws BaseException {
         Payment payment = null;
         try {
             // 주문자 역할 검증
@@ -73,7 +74,7 @@ public class OrdersService {
             );
 
             // 결제 굿즈 정보 확인 customData Map 형태로 변환
-            Map<String, Double> goodsMap = new Gson().fromJson(payment.getCustomData(), Map.class);
+            Map<String, Double> goodsMap = new Gson().fromJson(payment.getCustomData(), new TypeToken<Map<String, Double>>() {}.getType());
 
             // 총 구매 금액 계산 및 IamPort 결제 금액과 비교
             int totalPurchasePrice = 0;
@@ -151,7 +152,7 @@ public class OrdersService {
             reserveRepository.decreaseTotalPeople(req.getReserveIdx(), 1);
 
             // DTO 반환
-            return OrdersDto.CreateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
+            return CreateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
 
         } catch (Exception e) {
             if (payment != null) {
@@ -164,7 +165,7 @@ public class OrdersService {
 
     // 결제 검증(재고용)
     @Transactional
-    public OrdersDto.CreateOrdersRes createStockOrders(CustomUserDetails user, OrdersDto.CreateOrdersReq req) throws BaseException {
+    public CreateOrdersRes createStockOrders(CustomUserDetails user, CreateOrdersReq req) throws BaseException {
         Payment payment = null;
         try {
             // 주문자 역할 검증
@@ -182,7 +183,7 @@ public class OrdersService {
             }
 
             // 결제 굿즈 정보 확인 customData Map 형태로 변환
-            Map<String, Double> goodsMap = new Gson().fromJson(payment.getCustomData(), Map.class);
+            Map<String, Double> goodsMap = new Gson().fromJson(payment.getCustomData(), new TypeToken<Map<String, Double>>() {}.getType());
 
             // 총 구매 금액 계산 및 IamPort 결제 금액과 비교
             int totalPurchasePrice = 0;
@@ -207,7 +208,7 @@ public class OrdersService {
             }
 
             // 포인트 적립, 배송비 적용 2500, 포인트 사용 0 , 최종 구매 금액 조정 및 갱신
-            int usedPoint = 0;
+            int usedPoint;
             Integer payedPrice = payment.getAmount().intValue();
 
             // 포인트 적립 계산(총 구매 금액의 5%)
@@ -266,7 +267,7 @@ public class OrdersService {
                 ordersDetailRepository.save(ordersDetail);
             }
 
-            return OrdersDto.CreateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
+            return CreateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
 
         } catch (Exception e) {
             if (payment != null) {
@@ -279,7 +280,7 @@ public class OrdersService {
 
     // 주문 확정
     @Transactional
-    public OrdersDto.UpdateOrdersRes updateOrders(CustomUserDetails user, Long orderIdx, OrdersDto.UpdateOrdersReq req) throws BaseException {
+    public UpdateOrdersRes updateOrders(CustomUserDetails user, Long orderIdx, UpdateOrdersReq req) throws BaseException {
         if (Objects.equals(user.getRole(), RoleType.ROLE_COMPANY.name())) {
 
             // 기업 회원인 경우(배송 완료 처리)
@@ -300,7 +301,7 @@ public class OrdersService {
             // 주문 상태 변경 STOCK_DELIVERY, RESERVE_DELIVERY
             orders.changeToDelivery();
 
-            return OrdersDto.UpdateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
+            return UpdateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
 
         } else {
 
@@ -315,14 +316,14 @@ public class OrdersService {
             // 주문 상태 변경(STOCK_COMPLETE, RESERVE_COMPLETE)
             orders.changeToComplete();
 
-            return OrdersDto.UpdateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
+            return UpdateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
         }
     }
 
 
     // 결제 취소
     @Transactional
-    public OrdersDto.UpdateOrdersRes cancelOrders(CustomUserDetails user, Long ordersIdx, OrdersDto.UpdateOrdersReq req) throws BaseException, IamportResponseException, IOException {
+    public UpdateOrdersRes cancelOrders(CustomUserDetails user, Long ordersIdx) throws BaseException, IamportResponseException, IOException {
 
         // 주문자 역할 검증
         ordersPolicy.validateOrderRole(user);
@@ -347,8 +348,7 @@ public class OrdersService {
         }
 
         // 결제 굿즈 정보 확인 customData Map 형태로 변환
-        Map<String, Double> goodsMap = new Gson().fromJson(payment.getCustomData(), Map.class);
-
+        Map<String, Double> goodsMap = new Gson().fromJson(payment.getCustomData(), new TypeToken<Map<String, Double>>() {}.getType());
         // 굿즈 수량 복구
         for (String key : goodsMap.keySet()) {
             Integer purchaseGoodsAmount = goodsMap.get(key).intValue();
@@ -366,11 +366,11 @@ public class OrdersService {
         // 환불 처리 진행
         eventPublisher.publishEvent(new RefundEvent(payment));
 
-        return OrdersDto.UpdateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
+        return UpdateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
     }
 
     // 고객 주문 상세 조회
-    public OrdersDto.GetOrdersRes getOrder(CustomUserDetails user, Long ordersIdx) throws BaseException {
+    public GetOrdersRes getOrder(CustomUserDetails user, Long ordersIdx) throws BaseException {
 
         // 주문 조회(ordersIdx)
         Orders orders = ordersRepository.findByOrdersIdxAndCustomerIdx(ordersIdx, user.getIdx()).orElseThrow(
@@ -383,7 +383,7 @@ public class OrdersService {
     }
 
     // 고객 주문 목록 조회
-    public Page<OrdersDto.GetOrdersRes> getOrders(CustomUserDetails user, int page, int size) throws BaseException {
+    public Page<GetOrdersRes> getOrders(CustomUserDetails user, int page, int size) throws BaseException {
 
         // 주문 조회(customerIdx)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));

@@ -20,7 +20,7 @@
     "filepond-plugin-image-preview": "^4.6.12",
     "node-module": "^1.0.1",
     "pinia": "^2.2.0",
-    "pinia-plugin-persistedstate": "^3.2.1",
+    "pinia-plugin-persistedstate": "^3.2.3",
     "sockjs-client": "^1.6.1",
     "vue": "^3.2.13",
     "vue-filepond": "^7.0.4",

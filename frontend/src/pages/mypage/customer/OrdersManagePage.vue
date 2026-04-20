@@ -16,7 +16,7 @@
 import OrdersList from "@/components/OrdersList.vue";
 import AppPagination from "@/components/AppPagination.vue";
 import { onMounted, ref } from "vue";
-import { useOrdersStore } from "@/stores/useOrdersStore";
+import { useOrdersStore } from "@/stores/ordersStore";
 
 // store, router, route, toast
 const ordersStore = useOrdersStore();
@@ -32,12 +32,12 @@ const showControl = ref(true);
 
 // onMounted
 onMounted(async () => {
-    await searchAll();
+    await getOrders();
 });
 
 // 주문 목록 조회
-const searchAll = async () => {
-    const res = await ordersStore.searchAllAsCustomer(currentPage.value, pageSize.value);
+const getOrders = async () => {
+    const res = await ordersStore.getOrders(currentPage.value, pageSize.value);
     if (res.success) {
         totalElements.value = ordersStore.totalElements;
         totalPages.value = ordersStore.totalPages;
@@ -55,7 +55,7 @@ const searchAll = async () => {
 const changePage = async (newPage) => {
     if (newPage >= 0) {
         currentPage.value = newPage;
-        await searchAll(currentPage.value, pageSize.value);
+        await getOrders(currentPage.value, pageSize.value);
     }
 };
 

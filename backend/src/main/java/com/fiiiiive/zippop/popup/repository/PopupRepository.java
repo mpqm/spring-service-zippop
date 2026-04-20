@@ -1,12 +1,11 @@
 package com.fiiiiive.zippop.popup.repository;
 
 import com.fiiiiive.zippop.global.enums.PopupStatus;
-import com.fiiiiive.zippop.popup.model.Popup;
+import com.fiiiiive.zippop.popup.model.entity.Popup;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;

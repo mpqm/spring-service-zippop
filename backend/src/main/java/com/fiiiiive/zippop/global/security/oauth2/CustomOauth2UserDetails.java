@@ -79,7 +79,7 @@
 //}
 package com.fiiiiive.zippop.global.security.oauth2;
 
-import com.fiiiiive.zippop.account.model.Customer;
+import com.fiiiiive.zippop.account.model.entity.Customer;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -93,7 +93,7 @@ import java.util.Map;
 public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
 
     private final Customer customer;
-    private Map<String, Object> attributes;
+    private final Map<String, Object> attributes;
 
     public CustomOauth2UserDetails(Customer customer, Map<String, Object> attributes) {
         this.customer = customer;
@@ -121,12 +121,7 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new ArrayList<>();
-        collection.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return customer.getRole().name();
-            }
-        });
+        collection.add((GrantedAuthority) () -> customer.getRole().name());
         return collection;
     }
 
@@ -142,17 +137,17 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override

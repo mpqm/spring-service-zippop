@@ -3,7 +3,6 @@ package com.fiiiiive.zippop.account.policy;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.enums.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +13,7 @@ public class CustomerPolicy {
 
     private final CustomerRepository customerRepository;
 
+    // 고객 회원 ID 중복 검증
     public void validateDuplicateUserId(String userId) throws BaseException {
         if (customerRepository.findByUserId(userId).isPresent()) {
             throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_ALREADY_EXIST_ID);

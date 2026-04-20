@@ -7,11 +7,11 @@
                 
                 <!-- 회원 유형 선택 탭 -->
                 <div class="ctn-buttons">
-                    <div class="btn-big" :class="{ active: userType === 'customer' }" @click="userType = 'customer'"> 고객 가입</div>  
+                    <div class="btn-big" :class="{ active: userType === 'customer' }" @click="userType = 'customer'"> 고객 가입</div>
                     <div class="btn-big" :class="{ active: userType === 'company' }" @click="userType = 'company'"> 기업 가입</div>
                 </div>
                 
-                <form class="ctn-rootform" @submit.prevent="signup">
+                <form class="ctn-rootform" @submit.prevent="createAccount">
                     <!-- 아이디 -->
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">아이디</label>
@@ -85,18 +85,16 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { useAuthStore } from '@/stores/useAuthStore';
+import { useAccountStore } from '@/stores/accountStore';
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from "@/components/AppFooter.vue";
 import { useToast } from "vue-toastification";
 
-// store, router, route, toast
-const authStore = useAuthStore();
+const accountStore = useAccountStore();
 const router = useRouter();
 const toast = useToast();
-const userType = ref('customer');
 
-// 변수(auth)
+const userType = ref('customer');
 const userId = ref("");
 const email = ref("");
 const password = ref("");
@@ -105,8 +103,6 @@ const phoneNumber = ref("");
 const address = ref("");
 const addressDetail = ref("");
 const crn = ref("");
-
-// 파일 업로드용 변수
 const file = ref(null);
 const fileUrl = ref(null);
 
@@ -145,8 +141,8 @@ const openAddressSearch = async () => {
 };
 
 // 회원 가입 
-const signup = async () => {
-    const dto = {
+const createAccount = async () => {
+    const req = {
         role: userType.value === 'customer' ? "ROLE_CUSTOMER" : "ROLE_COMPANY",
         userId: userId.value,
         email: email.value,
@@ -158,12 +154,12 @@ const signup = async () => {
     };
 
     const formData = new FormData();
-    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+    formData.append('req', new Blob([JSON.stringify(req)], { type: 'application/json' }));
     if (file.value) { 
         formData.append('file', file.value); 
     }
     
-    const res = await authStore.signup(formData);
+    const res = await accountStore.createAccount(formData);
     if (res.success) {
         router.push("/");
         toast.success(res.message);

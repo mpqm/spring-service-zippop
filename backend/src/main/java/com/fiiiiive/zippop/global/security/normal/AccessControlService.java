@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.global.security.normal;
 
 
-import com.fiiiiive.zippop.global.redis.RedisService;
-import com.fiiiiive.zippop.reserve.model.Reserve;
+import com.fiiiiive.zippop.global.redis.RedisQueueService;
+import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class AccessControlService {
 
-    public final RedisService redisService;
+    public final RedisQueueService redisQueueService;
     public final ReserveRepository reserveRepository;
 
     public AuthorizationDecision hasReserveAccess(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
@@ -43,7 +43,7 @@ public class AccessControlService {
                 if ("WTOKEN".equals(cookie.getName())) {
                     String wToken = cookie.getValue();
                     if (wToken != null && !wToken.isEmpty()) {
-                        if (redisService.isReserveTokenBlacklisted(wToken)) {
+                        if (redisQueueService.isReserveTokenBlacklisted(wToken)) {
                             log.warn("블랙리스트된 예약 토큰 사용 시도 - 사용자: {}", auth.getName());
                             return new AuthorizationDecision(false);
                         }
@@ -67,7 +67,7 @@ public class AccessControlService {
         String userEmail = authentication.get().getName();
 
         // 작업큐에 유저가 있는지 확인
-        Long existUser = redisService.getOrder(reserve.getWorkingUUID(), userEmail);
+        Long existUser = redisQueueService.getOrder(reserve.getWorkingUUID(), userEmail);
 
         if (existUser == null) {
             return new AuthorizationDecision(false);

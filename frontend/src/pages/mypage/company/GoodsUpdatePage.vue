@@ -1,7 +1,6 @@
 <template>
   <div class="lyt-child">
-
-    <form class="ctn-rootform" @submit.prevent="update">
+    <form class="ctn-rootform" @submit.prevent="updateGoods">
       <div class="ctn-split">
         <h1 class="txt-def0">팝업 굿즈 수정</h1>
         <div class="ctn-buttons">
@@ -28,7 +27,6 @@
       <label for="file">
         <div class="btn-default">팝업 굿즈 이미지 파일 업로드</div>
       </label>
-
       <input @change="handleFileUpload" type="file" name="file" id="file" multiple />
       <div class="wrp-filepreview" v-if="fileUrls.length">
         <div v-for="(fileUrl, index) in fileUrls" :key="index" class="ctn-filepreview">
@@ -36,7 +34,6 @@
         </div>
       </div>
     </form>
-    
   </div>
 </template>
 
@@ -44,64 +41,50 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { useGoodsStore } from "@/stores/useGoodsStore";
+import { useGoodsStore } from "@/stores/goodsStore";
 
-// store, router, route, toast
 const goodsStore = useGoodsStore();
 const router = useRouter();
 const toast = useToast();
 const route = useRoute();
 
-// 변수(goods)
 const goodsName = ref("");
 const goodsAmount = ref(0);
 const goodsPrice = ref(0);
 const goodsContent = ref("");
-const goods = ref({});
 const fileUrls = ref([]);
 const files = ref([]);
 
-// onMounted 
 onMounted(async () => {
-  await search(route.params.goodsIdx);
+  await getGoods(route.params.goodsIdx);
 });
 
-// 굿즈 단일 조회
-const search = async (goodsIdx) => {
-  const res = await goodsStore.search(goodsIdx);
+const getGoods = async (goodsIdx) => {
+  const res = await goodsStore.getGoods(goodsIdx);
   if (res.success) {
-    goods.value = goodsStore.goods;
-    await mapper();
+      const g = goodsStore.goods;
+    goodsName.value = g.goodsName;
+    goodsAmount.value = g.goodsAmount;
+    goodsPrice.value = g.goodsPrice;
+    goodsContent.value = g.goodsContent;
+    if (g.getGoodsImageResList && g.getGoodsImageResList.length) {
+      fileUrls.value = g.getGoodsImageResList.map(image => image.goodsImageUrl);
+    }
   } else {
-    router.push(`/mypage/company/goods/${route.params.storeIdx}`);
+    router.push(`/mypage/company/goods/${route.params.popupIdx}`);
     toast.error(res.message);
   }
-}
+};
 
-// 매핑 함수
-const mapper = async () => {
-  goodsName.value = goodsStore.goods.goodsName;
-  goodsAmount.value = goodsStore.goods.goodsAmount;
-  goodsPrice.value = goodsStore.goods.goodsPrice;
-  goodsContent.value = goodsStore.goods.goodsContent;
-  if (goodsStore.goods.searchGoodsImageResList && goodsStore.goods.searchGoodsImageResList.length) {
-    fileUrls.value = goodsStore.goods.searchGoodsImageResList.map(image => image.goodsImageUrl);
-  }
-}
-
-// 파일 업로드 
 const handleFileUpload = (event) => {
   files.value = event.target.files;
   fileUrls.value = [];
   for (let i = 0; i < files.value.length; i++) {
-    const file = files.value[i];
-    fileUrls.value.push(URL.createObjectURL(file));
+    fileUrls.value.push(URL.createObjectURL(files.value[i]));
   }
-
 };
 
-// 굿즈 수정
-const update = async () => {
+const updateGoods = async () => {
   const req = {
     goodsName: goodsName.value,
     goodsAmount: goodsAmount.value,
@@ -110,21 +93,15 @@ const update = async () => {
   };
   const formData = new FormData();
   formData.append("dto", new Blob([JSON.stringify(req)], { type: "application/json" }));
-  
-  // 새로운 이미지를 선택한 경우에만 추가
   if (files.value.length > 0) {
-    Array.from(files.value).forEach((file) => {
-      formData.append("files", file);
-    });
+    Array.from(files.value).forEach((file) => { formData.append("files", file); });
   }
-  
-  const res = await goodsStore.update(route.params.goodsIdx, formData);
+  const res = await goodsStore.updateGoods(route.params.goodsIdx, formData);
   if (res.success) {
     toast.success(res.message);
-    router.push(`/mypage/company/goods/${route.params.storeIdx}`);
+    router.push(`/mypage/company/goods/${route.params.popupIdx}`);
   } else {
     toast.error(res.message);
   }
 };
-
 </script>

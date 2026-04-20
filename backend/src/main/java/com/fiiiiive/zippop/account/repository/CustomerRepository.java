@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.account.repository;
 
-import com.fiiiiive.zippop.account.model.Customer;
+import com.fiiiiive.zippop.account.model.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

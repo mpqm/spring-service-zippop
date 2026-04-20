@@ -6,8 +6,9 @@ import piniaPersistedstate from "pinia-plugin-persistedstate";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import axios from 'axios'
-import { useAuthStore } from '@/stores/useAuthStore';
+import { useAuthStore } from '@/stores/authStore';
 import { Icon } from '@iconify/vue'
+
 const pinia = createPinia();
 pinia.use(piniaPersistedstate);
 const app = createApp(App);

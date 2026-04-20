@@ -26,7 +26,7 @@
   import AppPagination from "@/components/AppPagination.vue";
   import { computed, onMounted, ref } from "vue";
   import { useRouter } from "vue-router";
-  import { usePayoutStore } from "@/stores/usePayoutStore";
+  import { usePayoutStore } from "@/stores/payoutStore";
   import { useRoute } from "vue-router";
   
   // payout, router, route, toast
@@ -44,7 +44,7 @@
   
   // onMounted
   onMounted(async () => {
-    await searchAll();
+    await getCompanyPopupPayouts();
   });
   
   const totalRevenueSum = computed(() => {
@@ -54,8 +54,8 @@
 });
 
   // 예약 목록 조회
-  const searchAll = async () => {
-    const res = await payoutStore.searchAllPayout(route.params.storeIdx, currentPage.value, pageSize.value);
+  const getCompanyPopupPayouts = async () => {
+    const res = await payoutStore.getCompanyPopupPayouts(route.params.popupIdx, currentPage.value, pageSize.value);
     if (res.success) {
       totalElements.value = payoutStore.totalElements;
       totalPages.value = payoutStore.totalPages;
@@ -73,7 +73,7 @@
   const changePage = async (newPage) => {
       if (newPage >= 0) {
           currentPage.value = newPage;
-          await searchAll(currentPage.value, pageSize.value);
+          await getCompanyPopupPayouts(currentPage.value, pageSize.value);
       }
   };
   

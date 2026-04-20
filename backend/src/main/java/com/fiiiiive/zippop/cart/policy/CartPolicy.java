@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.cart.policy;
 
-import com.fiiiiive.zippop.cart.model.Cart;
-import com.fiiiiive.zippop.cart.model.CartItem;
+import com.fiiiiive.zippop.cart.model.entity.Cart;
+import com.fiiiiive.zippop.cart.model.entity.CartItem;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;

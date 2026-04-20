@@ -2,7 +2,6 @@ package com.fiiiiive.zippop.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiiiiive.zippop.global.security.filter.*;
-import com.fiiiiive.zippop.global.security.normal.AccessControlService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetailService;
 import com.fiiiiive.zippop.global.security.oauth2.CustomOAuth2Service;
 import com.fiiiiive.zippop.global.crypto.JwtService;
@@ -42,14 +41,15 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomUserDetailService customUserDetailService;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final AccessControlService accessControlService;
 
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "https://d3iaa8b0a37h7p.cloudfront.net",
+                "http://localhost:8080",
                 "http://localhost:8081",
+                "http://localhost:8480",
                 "http://zippop-backend:8080"
         ));
         config.addAllowedMethod("*");
@@ -68,53 +68,44 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) ->
                         auth
                             // 소켓
-                            .requestMatchers("/ws/**").permitAll() // WebSocket 엔드포인트 허용
-                            .requestMatchers("/pub/**").permitAll() // 메시지 매핑 허용
-                            .requestMatchers("/sub/**").permitAll() // 메시지 브로커 허용
+                            .requestMatchers("/ws/**").permitAll()
+                            .requestMatchers("/pub/**").permitAll()
+                            .requestMatchers("/sub/**").permitAll()
                             .requestMatchers("/user/**").permitAll()
                             .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                             // 인증
-
                             .requestMatchers("/api/v1/auth/**").permitAll()
                             // 장바구니
-                            .requestMatchers("/api/v1/cartEntity/**").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers("/api/v1/carts/**").hasAuthority("ROLE_CUSTOMER")
                             // 굿즈
-                            .requestMatchers("/api/v1/goods/register").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/goods/update").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/goods/delete").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/goods/search").permitAll()
-                            .requestMatchers("/api/v1/goods/search-all").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/v1/goods").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.PATCH, "/api/v1/goods/*").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.DELETE, "/api/v1/goods/*").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/goods").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/goods/*").permitAll()
                             // 주문
-                            .requestMatchers("/api/v1/orders").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/orders/verify/stock").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/orders/verify/reserve").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/orders/cancel").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/orders/complete").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/orders/search/as-customer").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/orders/search-all/as-customer").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/orders/search/as-company").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/orders/search-all/as-company").hasAuthority("ROLE_COMPANY")
-                            // 팝업 스토어
-                            .requestMatchers("/api/v1/store/register").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/store/update").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/store/delete").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/store/search").permitAll()
-                            .requestMatchers("/api/v1/store/search-all").permitAll()
-                            .requestMatchers("/api/v1/store/search-all/as-company").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/store/like/register").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/store/like/search-all").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/store/review/register").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/store/review/search-all").permitAll()
-                            .requestMatchers("/api/v1/store/review/search-all/as-customer").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/auth/get-info").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.POST, "/api/v1/orders").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/*").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/orders").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/orders/*").hasAuthority("ROLE_CUSTOMER")
+                            // 팝업
+                            .requestMatchers(HttpMethod.POST, "/api/v1/popups").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.PATCH, "/api/v1/popups/*").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.DELETE, "/api/v1/popups/*").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/popups").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/popups/*").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/v1/popups/*/likes").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/popups/likes/me").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.POST, "/api/v1/popups/*/reviews").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/popups/reviews/me").hasAuthority("ROLE_CUSTOMER")
+                            // 기업 팝업 관리
+                            .requestMatchers("/api/v1/company/popups/**").hasAuthority("ROLE_COMPANY")
                             // 예약
-                            .requestMatchers("/api/v1/reserve/register").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/reserve/enroll").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/reserve/cancel").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/reserve/status").hasAuthority("ROLE_CUSTOMER")
-                            .requestMatchers("/api/v1/reserve/search-all/as-company").hasAuthority("ROLE_COMPANY")
-                            .requestMatchers("/api/v1/reserve/search-all").permitAll()
-                            .requestMatchers("/api/v1/reserve/access").access(accessControlService::hasReserveAccess)
+                            .requestMatchers(HttpMethod.POST, "/api/v1/reserves").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.DELETE, "/api/v1/reserves/*").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/reserves/*/enrollment").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.DELETE, "/api/v1/reserves/*/enrollment").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/popups/*/reserves").permitAll()
                             .anyRequest().permitAll()
         );
         http.oauth2Login((config) -> {
@@ -122,14 +113,14 @@ public class SecurityConfig {
             config.userInfoEndpoint((endpoint) -> endpoint.userService(customOAuth2Service));
         });
         http.logout((auth) -> auth
-                .logoutUrl("/api/v1/account/logout")
+                .logoutUrl("/api/v1/auth/logout")
                 .deleteCookies("JSESSIONID", "ATOKEN", "RTOKEN", "WTOKEN")
                 .logoutSuccessHandler(customLogoutSuccessHandler)
         );
         http.exceptionHandling(e ->e.authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler));
         http.addFilterBefore(new JwtFilter(jwtService, redisTemplate, customUserDetailService), LoginFilter.class);
         LoginFilter loginFilter = new LoginFilter(jwtService, mapper, authenticationManager(authenticationConfiguration), redisTemplate);
-        loginFilter.setFilterProcessesUrl("/api/v1/account/login");
+        loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
         loginFilter.setAuthenticationFailureHandler(customLoginFailureHandler);
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

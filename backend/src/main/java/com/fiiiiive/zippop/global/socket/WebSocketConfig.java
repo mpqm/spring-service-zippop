@@ -26,7 +26,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("https://d3iaa8b0a37h7p.cloudfront.net", "http://localhost:8081")
+                .setAllowedOrigins(
+                    "https://d3iaa8b0a37h7p.cloudfront.net",
+                    "http://localhost:8080",
+                    "http://localhost:8081",
+                    "http://localhost:8480"
+                )
                 .addInterceptors(new CustomHandshakeInterceptor(jwtService))
                 .withSockJS();
     }

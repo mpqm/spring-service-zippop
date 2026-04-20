@@ -1,12 +1,14 @@
 package com.fiiiiive.zippop.goods.service;
 
-import com.fiiiiive.zippop.goods.model.Goods;
+import com.fiiiiive.zippop.goods.model.dto.CreateGoodsReq;
+import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
+import com.fiiiiive.zippop.goods.model.dto.UpdateGoodsReq;
+import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.goods.model.GoodsDto;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
-import com.fiiiiive.zippop.popup.model.Popup;
+import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,7 @@ public class GoodsService {
 
     // 굿즈 등록
     @Transactional
-    public void createGoods(CustomUserDetails user, List<String> urls, GoodsDto.CreateGoodsReq req) throws BaseException {
+    public void createGoods(CustomUserDetails user, List<String> urls, CreateGoodsReq req) throws BaseException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findByPopupIdx(req.getPopupIdx()).orElseThrow(
@@ -57,7 +59,7 @@ public class GoodsService {
 
     // 굿즈 조회
     @Transactional(readOnly = true)
-    public GoodsDto.GetGoodsRes getGoods(Long goodIdx) throws BaseException {
+    public GetGoodsRes getGoods(Long goodIdx) throws BaseException {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodIdx).orElseThrow(
@@ -70,7 +72,7 @@ public class GoodsService {
 
     // 굿즈 목록 조회
     @Transactional(readOnly = true)
-    public Page<GoodsDto.GetGoodsRes> getGoodsList(Long popupIdx, String keyword, int page, int size) throws BaseException {
+    public Page<GetGoodsRes> getGoodsList(Long popupIdx, String keyword, int page, int size) throws BaseException {
 
         // 굿즈 페이지(popupIdx, keyword, pageable) 조회
         // if: 굿즈 검색 조회
@@ -90,7 +92,7 @@ public class GoodsService {
 
     // 굿즈 수정
     @Transactional
-    public void updateGoods(CustomUserDetails user, Long goodsIdx, List<String> urls, GoodsDto.UpdateGoodsReq req) throws BaseException {
+    public void updateGoods(CustomUserDetails user, Long goodsIdx, List<String> urls, UpdateGoodsReq req) throws BaseException {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(

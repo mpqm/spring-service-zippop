@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.global.security.oauth2;
 
-import com.fiiiiive.zippop.account.model.Customer;
+import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.enums.RoleType;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -30,10 +31,10 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
             log.info("카카오 로그인");
             oAuth2UserInfo = new KakaoUserDetails(oAuth2User.getAttributes());
         }
-        String email = oAuth2UserInfo.getEmail();
+        String email = Objects.requireNonNull(oAuth2UserInfo).getEmail();
         String name = oAuth2UserInfo.getName();
         Optional<Customer> result = customerRepository.findByCustomerEmail(email);
-        Customer customer = null;
+        Customer customer;
         if(result.isEmpty()){
             customer = Customer.builder()
                     .role(RoleType.ROLE_CUSTOMER)

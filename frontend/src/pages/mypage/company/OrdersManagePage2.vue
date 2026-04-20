@@ -17,7 +17,7 @@
 import OrdersTable from "@/components/OrdersTable.vue";
 import AppPagination from "@/components/AppPagination.vue";
 import { onMounted, ref } from "vue";
-import { useOrdersStore } from "@/stores/useOrdersStore";
+import { useOrdersStore } from "@/stores/ordersStore";
 import { useRoute } from "vue-router";
 
 // store, router, route, toast
@@ -35,12 +35,12 @@ const showControl = ref(false);
 
 // onMounted 
 onMounted(async () => {
-    await searchAll(currentPage.value, pageSize.value);
+    await getCompanyPopupOrdersList(currentPage.value, pageSize.value);
 });
 
 // 주문 목록 조회
-const searchAll = async () => {
-    const res = await ordersStore.searchAllAsCompany(route.params.storeIdx, currentPage.value, pageSize.value);
+const getCompanyPopupOrdersList = async () => {
+    const res = await ordersStore.getCompanyPopupOrdersList(route.params.popupIdx, currentPage.value, pageSize.value);
     if (res.success) {
         totalElements.value = ordersStore.totalElements;
         totalPages.value = ordersStore.totalPages;
@@ -58,7 +58,7 @@ const searchAll = async () => {
 const changePage = (newPage) => {
     if (newPage >= 0) {
         currentPage.value = newPage;
-        searchAll(currentPage.value, pageSize.value);
+        getCompanyPopupOrdersList(currentPage.value, pageSize.value);
     }
 };
 

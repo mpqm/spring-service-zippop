@@ -4,7 +4,7 @@ import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.enums.PopupStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.popup.model.Popup;
+import com.fiiiiive.zippop.popup.model.entity.Popup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

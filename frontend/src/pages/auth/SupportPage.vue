@@ -4,7 +4,7 @@
         <div class="lyt-centertop">
             <div class="wrp-centertop">
 
-                <form class="ctn-chidform" @submit.prevent="findId">
+                <form class="ctn-chidform" @submit.prevent="findUserId">
                     <h1 class="txt-def0">아이디 찾기</h1>
 
                     <div class="ctn-checkbox">
@@ -25,7 +25,7 @@
                     <button class="btn-default" type="submit">아이디 찾기</button>
                 </form>
                 
-                <form class="ctn-chidform" @submit.prevent="findPw">
+                <form class="ctn-chidform" @submit.prevent="findUserPassword">
                     <h1 class="txt-def0">비밀번호 찾기</h1>
 
                     <div class="ctn-checkbox">
@@ -46,7 +46,7 @@
                     <button class="btn-default" type="submit">비밀번호 찾기</button>
                 </form>
                 
-                <form class="ctn-chidform" @submit.prevent="active">
+                <form class="ctn-chidform" @submit.prevent="activateAccount">
                     <h1 class="txt-def0">계정 활성화</h1>
                     
                     <div class="ctn-checkbox">
@@ -79,26 +79,21 @@
 <script setup>
 import AppFooter from "@/components/AppFooter.vue";
 import AppHeader from '@/components/AppHeader.vue';
-import { useAuthStore } from '@/stores/useAuthStore';
+import { useAccountStore } from '@/stores/accountStore';
 import { ref } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 
-// store, router, route, toast
 const router = useRouter();
-const role = ref("");   // 단일 선택값(문자열)
-
-
-// store, router, route, toast
-const authStore = useAuthStore();
+const accountStore = useAccountStore();
 const toast = useToast();
 
-// 변수(auth)
+const role = ref("");
 const userEmail = ref("");
 const userId = ref("");
 
 // 아이디 찾기 
-const findId = async () => {
+const findUserId = async () => {
     if (!role.value) {
         toast.error("회원 유형을 선택해주세요.");
         return;
@@ -107,7 +102,7 @@ const findId = async () => {
         role: role.value,
         email: userEmail.value
     }
-    const res = await authStore.findId(req)
+    const res = await accountStore.findUserId(req)
     if (res.success) {
         toast.success(res.message)
     } else {
@@ -116,7 +111,7 @@ const findId = async () => {
 }
 
 // 비밀번호 찾기 
-const findPw = async () => {
+const findUserPassword = async () => {
     if (!role.value) {
         toast.error("회원 유형을 선택해주세요.");
         return;
@@ -125,7 +120,7 @@ const findPw = async () => {
         role: role.value,
         userId: userId.value
     }
-    const res = await authStore.findPw(req)
+    const res = await accountStore.findUserPassword(req)
     if (res.success) {
         toast.success(res.message)
     } else {
@@ -134,7 +129,7 @@ const findPw = async () => {
 }
 
 // 계정 활성화
-const active = async () => {
+const activateAccount = async () => {
     if (!role.value) {
         toast.error("회원 유형을 선택해주세요.");
         return;
@@ -143,7 +138,7 @@ const active = async () => {
         role: role.value,
         email: userEmail.value
     }
-    const res = await authStore.active(req)
+    const res = await accountStore.activateAccount(req)
     if (res.success) {
         toast.success(res.message)
     } else {

@@ -56,8 +56,8 @@ frontend/vite.config.js
 cicd/mariadb/data/**
 cicd/redis/**
 cicd/.env
-frontend/.env
+/frontend/.env
 cicd/grafana/state/**
 upload
 log
-backend\src\main\resources\.env
+/backend/src/main/resources/.env

@@ -15,7 +15,7 @@
     >
       <!-- 이미지 컬럼 -->
       <template #item-image="item">
-        <img v-if="item.searchGoodsImageResList && item.searchGoodsImageResList.length > 0" :src="item.searchGoodsImageResList[0].goodsImageUrl" alt="N/A" class="table-cell-image" />
+        <img v-if="item.getGoodsImageResList && item.getGoodsImageResList.length > 0" :src="item.getGoodsImageResList[0].goodsImageUrl" alt="N/A" class="table-cell-image" />
       </template>
 
       <!-- 굿즈명 -->
@@ -45,6 +45,7 @@
           {{ formatGoodsStatus1(item.goodsStatus) }}
         </span>
       </template>
+
       <!-- 굿즈 상태 -->
       <template #item-goodsStatus2="item">
         <span :class="getStatusClass2(item.goodsAmount)">
@@ -55,10 +56,10 @@
       <!-- 액션 버튼들 -->
       <template #item-actions="item">
         <div class="ctn-tablebuttons">
-          <router-link class="btn-tagaction" :to="item.goodsIdx ? `/goods/${route.params.storeIdx}/${item.goodsIdx}` : '#'">
+          <router-link class="btn-tagaction" :to="item.goodsIdx ? `/goods/${route.params.popupIdx}/${item.goodsIdx}` : '#'">
             <Icon icon="iconoir:eye" width="16px" height="16px" />
           </router-link>
-          <router-link class="btn-tagaction" :to="item.goodsIdx ? `/mypage/company/goods/${route.params.storeIdx}/update/${item.goodsIdx}` : '#'">
+          <router-link class="btn-tagaction" :to="item.goodsIdx ? `/mypage/company/goods/${route.params.popupIdx}/update/${item.goodsIdx}` : '#'">
             <Icon icon="iconoir:edit-pencil" width="16px" height="16px" />
           </router-link>
           <button class="btn-tagaction" @click="deleteGoods(item.goodsIdx)">
@@ -74,9 +75,10 @@
 import { ref, defineProps } from 'vue'
 import EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
-import { useGoodsStore } from '@/stores/useGoodsStore'
+import { useGoodsStore } from '@/stores/goodsStore'
 import { useToast } from 'vue-toastification'
 import { useRouter, useRoute } from 'vue-router'
+import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   goods: {
@@ -100,25 +102,22 @@ const headers = ref([
   { text: '', value: 'actions', sortable: false }
 ])
 
-// 굿즈 타입 포맷팅
 const formatGoodsStatus1 = (type) => {
   if (type === 'GOODS_RESERVED') return '예약 굿즈'
   if (type === 'GOODS_STOCK') return '재고 굿즈'
   return type
 }
 
-// 굿즈 상태 텍스트
 const formatGoodsStatus2 = (goodsAmount) => {
   if (goodsAmount <= 0) {
-    return '품절'+' '+goodsAmount
+    return '품절 ' + goodsAmount
   } else if (goodsAmount <= 5) {
-    return '재고 부족'+' '+goodsAmount
+    return '재고 부족 ' + goodsAmount
   } else {
-    return '판매 중'+' '+goodsAmount
+    return '판매 중 ' + goodsAmount
   }
 }
 
-// 스토어 상태별 클래스
 const getStatusClass1 = (status) => {
   if (status === 'GOODS_RESERVED') return 'btn-active'
   if (status === 'GOODS_STOCK') return 'btn-complete'
@@ -135,9 +134,9 @@ const getStatusClass2 = (goodsAmount) => {
   }
 }
 
-// 굿즈 삭제
 const deleteGoods = async (goodsIdx) => {
-  const res = await goodsStore.delete(goodsIdx)
+  if (!confirm('정말로 이 굿즈를 삭제하시겠습니까?')) return;
+  const res = await goodsStore.deleteGoods(goodsIdx)
   if (res.success) {
     toast.success(res.message)
     router.go(0)

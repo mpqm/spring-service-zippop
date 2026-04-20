@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.account.application;
 
-import com.fiiiiive.zippop.account.model.AccountDto;
+import com.fiiiiive.zippop.account.model.dto.*;
+import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
 import com.fiiiiive.zippop.account.service.AccountService;
 import com.fiiiiive.zippop.account.service.CompanyService;
 import com.fiiiiive.zippop.account.service.CustomerService;
@@ -40,15 +41,15 @@ public class AccountFacade {
         return service;
     }
 
-    public Boolean createAccount(AccountDto.CreateAccountReq req, String url) throws BaseException {
+    public Boolean createAccount(CreateAccountReq req, String url) throws BaseException {
         return getAccountService(req.getRole()).createAccount(req, url);
     }
 
-    public AccountDto.GetAccountRes getAccount(CustomUserDetails user) throws BaseException {
+    public GetAccountRes getAccount(CustomUserDetails user) throws BaseException {
         return getAccountService(user.getRole()).getAccount(user);
     }
 
-    public void updateAccount(CustomUserDetails user, AccountDto.UpdateAccountReq req, String url) throws BaseException {
+    public void updateAccount(CustomUserDetails user, UpdateAccountReq req, String url) throws BaseException {
         getAccountService(user.getRole()).updateAccount(user, req, url);
     }
 
@@ -56,19 +57,19 @@ public class AccountFacade {
         getAccountService(user.getRole()).deactivateAccount(user);
     }
 
-    public void requestActivation(AccountDto.RequestActivationReq req) throws BaseException {
+    public void requestActivation(ActivationReq req) throws BaseException {
         getAccountService(req.getRole()).requestActivation(req);
     }
 
-    public void findId(AccountDto.FindIdReq req) throws BaseException {
+    public void findId(FindIdReq req) throws BaseException {
         getAccountService(req.getRole()).findId(req);
     }
 
-    public void findPassword(AccountDto.FindPasswordReq req) throws BaseException {
+    public void findPassword(FindPasswordReq req) throws BaseException {
         getAccountService(req.getRole()).findPassword(req);
     }
 
-    public void resetPassword(CustomUserDetails user, AccountDto.ResetPasswordReq req) throws BaseException {
+    public void resetPassword(CustomUserDetails user, ResetPasswordReq req) {
         getAccountService(user.getRole()).resetPassword(user, req);
     }
 

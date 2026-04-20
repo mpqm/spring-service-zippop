@@ -1,14 +1,15 @@
 package com.fiiiiive.zippop.cart.service;
 
-import com.fiiiiive.zippop.account.repository.CustomerRepository;
-import com.fiiiiive.zippop.cart.model.Cart;
-import com.fiiiiive.zippop.cart.model.CartDto;
-import com.fiiiiive.zippop.cart.model.CartItem;
+import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
+import com.fiiiiive.zippop.cart.model.dto.GetCartItemRes;
+import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
+import com.fiiiiive.zippop.cart.model.entity.Cart;
+import com.fiiiiive.zippop.cart.model.entity.CartItem;
 import com.fiiiiive.zippop.cart.policy.CartPolicy;
 import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
 import com.fiiiiive.zippop.global.enums.Operation;
-import com.fiiiiive.zippop.goods.model.Goods;
+import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
@@ -30,13 +31,12 @@ public class CartService {
 
     private final CartRepository cartRepository;
     private final GoodsRepository goodsRepository;
-    private final CustomerRepository customerRepository;
     private final CartItemRepository cartItemRepository;
     private final CartPolicy cartPolicy;
 
     // 장바구니 등록
     @Transactional
-    public void createCart(CustomUserDetails user, CartDto.CreateCartReq req) throws BaseException {
+    public void createCart(CustomUserDetails user, CreateCartReq req) throws BaseException {
 
         // 굿즈(goodsIdx, popupIdx) 조회
         Goods goods = goodsRepository.findByGoodsIdxAndPopupIdx(req.getGoodsIdx(), req.getPopupIdx()).orElseThrow(
@@ -44,7 +44,7 @@ public class CartService {
         );
 
         // 장바구니 조회 후 없으면 장바구니 생성
-        Cart cart = cartRepository.findByCustomerIdxAndPopupIdx(user.getIdx(), req.getPopupIdx()).orElse(null);;
+        Cart cart = cartRepository.findByCustomerIdxAndPopupIdx(user.getIdx(), req.getPopupIdx()).orElse(null);
         if(cart == null){
             cart = Cart.create(
                     user.getIdx(),
@@ -63,7 +63,7 @@ public class CartService {
 
     // 장바구니 목록 조회
     @Transactional(readOnly = true)
-    public Page<CartDto.GetCartRes> getCarts(CustomUserDetails user, Integer page, Integer size) throws BaseException {
+    public Page<GetCartRes> getCarts(CustomUserDetails user, Integer page, Integer size) throws BaseException {
 
         // 장바구니 조회(customerIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
@@ -91,7 +91,7 @@ public class CartService {
 
     // 장바구니 아이템 목록 조회
     @Transactional(readOnly = true)
-    public List<CartDto.GetCartItemRes> getCartItems(CustomUserDetails user, Long cartIdx) throws BaseException {
+    public List<GetCartItemRes> getCartItems(CustomUserDetails user, Long cartIdx) throws BaseException {
 
         // 장바구니 조회(cartIdx)
         Cart cart = cartRepository.findByCartIdx(cartIdx).orElseThrow(

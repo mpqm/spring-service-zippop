@@ -2,10 +2,10 @@
   <div>
     <div class="lyt-child">
       <div class="wrp-list" v-if="cartList && cartList.length">
-        <StoreList v-for="cart in cartList" :key="cart.storeIdx" :store="cart" :showControl="showControl" />
+        <PopupList v-for="cart in cartList" :key="cart.cartIdx" :popup="cart" :showControl="showControl" />
       </div>
       <div class="txt-null" v-else>
-        <p>등록된 팝업 스토어가 없습니다.</p>
+        <p>장바구니가 비어있습니다.</p>
       </div>
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
@@ -14,14 +14,12 @@
 
 <script setup>
 import AppPagination from "@/components/AppPagination.vue";
-import StoreList from "@/components/StoreList.vue";
-import { useCartStore } from "@/stores/useCartStore";
+import PopupList from "@/components/PopupList.vue";
+import { useCartStore } from "@/stores/cartStore";
 import { onMounted, ref } from "vue";
 
-// store, router, route, toast
 const cartStore = useCartStore();
 
-// 변수(store)
 const cartList = ref([]);
 const currentPage = ref(0);
 const pageSize = ref(8);
@@ -30,14 +28,12 @@ const totalPages = ref(0);
 const hideBtns = ref(false);
 const showControl = ref(3);
 
-// onMounted 
 onMounted(async () => {
-  await searchAll();
+  await getCarts();
 });
 
-// 스토어 목록 조회
-const searchAll = async () => {
-  const res = await cartStore.searchAll(currentPage.value, pageSize.value);
+const getCarts = async () => {
+  const res = await cartStore.getCarts(currentPage.value, pageSize.value);
   if (res.success) {
     totalElements.value = cartStore.totalElements;
     totalPages.value = cartStore.totalPages;
@@ -51,12 +47,10 @@ const searchAll = async () => {
   }
 };
 
-// 페이지 네이션
 const changePage = (newPage) => {
   if (newPage >= 0) {
     currentPage.value = newPage;
-    searchAll();
+    getCarts();
   }
 };
-
 </script>

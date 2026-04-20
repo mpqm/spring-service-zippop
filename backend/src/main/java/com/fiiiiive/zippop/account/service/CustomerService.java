@@ -1,8 +1,9 @@
 package com.fiiiiive.zippop.account.service;
 
 import com.fiiiiive.zippop.account.application.EmailAuthSender;
-import com.fiiiiive.zippop.account.model.AccountDto;
-import com.fiiiiive.zippop.account.model.Customer;
+import com.fiiiiive.zippop.account.model.dto.*;
+import com.fiiiiive.zippop.account.model.entity.Customer;
+import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
 import com.fiiiiive.zippop.account.policy.CustomerPolicy;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.BaseMessage;
@@ -29,7 +30,7 @@ public class CustomerService implements AccountService {
     // 고객 회원 가입
     @Override
     @Transactional
-    public Boolean createAccount(AccountDto.CreateAccountReq req, String url) throws BaseException {
+    public Boolean createAccount(CreateAccountReq req, String url) throws BaseException {
 
         // 유저 중복 확인
         customerPolicy.validateDuplicateUserId(req.getUserId());
@@ -61,7 +62,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public AccountDto.GetAccountRes getAccount(CustomUserDetails user) throws BaseException {
+    public GetAccountRes getAccount(CustomUserDetails user) throws BaseException {
 
         // 고객 회원 조회(customerIdx)
         Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(
@@ -74,7 +75,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void updateAccount(CustomUserDetails user, AccountDto.UpdateAccountReq req, String url) throws BaseException {
+    public void updateAccount(CustomUserDetails user, UpdateAccountReq req, String url) throws BaseException {
 
         // 없으면 dto의 기존 url 유지
         if(url == null) url = req.getProfileImageUrl();
@@ -110,7 +111,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void requestActivation(AccountDto.RequestActivationReq req) throws BaseException {
+    public void requestActivation(ActivationReq req) throws BaseException {
 
         // 고객 회원(email) 조회
         Customer customer = customerRepository.findByCustomerEmail(req.getEmail()).orElseThrow(
@@ -140,7 +141,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public void findId(AccountDto.FindIdReq dto) throws BaseException {
+    public void findId(FindIdReq dto) throws BaseException {
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByCustomerEmail(dto.getEmail()).orElseThrow(
@@ -159,7 +160,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void findPassword(AccountDto.FindPasswordReq dto) throws BaseException {
+    public void findPassword(FindPasswordReq dto) throws BaseException {
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByUserId(dto.getUserId()).orElseThrow(
@@ -178,7 +179,7 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void resetPassword(CustomUserDetails user, AccountDto.ResetPasswordReq req) throws BaseException {
+    public void resetPassword(CustomUserDetails user, ResetPasswordReq req) throws BaseException {
 
         // 고객 회원 조회 (customerIdx)
         Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(

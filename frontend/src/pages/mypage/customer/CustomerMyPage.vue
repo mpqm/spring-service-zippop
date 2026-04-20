@@ -9,8 +9,7 @@
             <router-link active-class="active" class="lnk-subheader" to="/mypage/customer/like">좋아요</router-link>
             <router-link active-class="active" class="lnk-subheader" to="/mypage/customer/review">리뷰</router-link>
             <router-link active-class="active" class="lnk-subheader" to="/mypage/customer/orders">결제 내역</router-link>
-            <!-- <router-link class="lnk-subheader" to="/chats">문의 채팅</router-link> -->
-            <router-link active-class="active" class="lnk-subheader" to="/mypage/customer/account-edit">계정 관리</router-link>
+            <router-link active-class="active" class="lnk-subheader" to="/mypage/customer/account">계정 관리</router-link>
           </div>
         </div>
         <div class="lyt-router">

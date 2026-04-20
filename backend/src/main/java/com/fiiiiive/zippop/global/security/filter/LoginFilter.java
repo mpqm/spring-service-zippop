@@ -1,13 +1,12 @@
 package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiiiiive.zippop.account.model.AccountDto;
+import com.fiiiiive.zippop.account.model.dto.LoginReq;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.crypto.JwtService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,21 +36,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        AccountDto.LoginReq dto;
+        LoginReq req;
         try {
             ServletInputStream inputStream = request.getInputStream();
             String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            dto = mapper.readValue(messageBody, AccountDto.LoginReq.class);
+            req = mapper.readValue(messageBody, LoginReq.class);
             
             // 아이디와 비밀번호 입력 검증
-            if (dto.getUserId() == null || dto.getUserId().trim().isEmpty()) {
+            if (req.getUserId() == null || req.getUserId().trim().isEmpty()) {
                 throw new BadCredentialsException(BaseMessage.AUTH_LOGIN_FAIL_ID_NULL.getMessage());
             }
-            if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
+            if (req.getPassword() == null || req.getPassword().trim().isEmpty()) {
                 throw new BadCredentialsException(BaseMessage.AUTH_LOGIN_FAIL_PASSWORD_NULL.getMessage());
             }
             
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(dto.getUserId(), dto.getPassword(), null);
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(req.getUserId(), req.getPassword(), null);
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -59,7 +58,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         CustomUserDetails member = (CustomUserDetails)authResult.getPrincipal();
         Long idx = member.getIdx();
         String email = member.getEmail();

@@ -1,6 +1,6 @@
 <template>
   <div class="ctn-list1">
-    <img class="img-list" v-if="goods.searchGoodsImageResList && goods.searchGoodsImageResList.length" :src="goods.searchGoodsImageResList[0].goodsImageUrl" alt="N/A"/>
+    <img class="img-list" v-if="goods.getGoodsImageResList && goods.getGoodsImageResList.length" :src="goods.getGoodsImageResList[0].goodsImageUrl" alt="N/A"/>
     
     <div class="ctn-listinfo1">
       <h1 class="txt-def1">{{ goods.goodsName }}</h1>
@@ -11,10 +11,10 @@
     <!-- 굿즈 예약 페이지 용 -->
     <div v-if="showControl == true" class="ctn-listbuttons">
       <button class="btn-tagaction" @click="openModal"><Icon icon="iconoir:eye" width="20px" height="20px"/>상세 보기</button>
-      <button class="btn-tagaction" @click="registerCart"><Icon icon="iconoir:cart" width="20px" height="20px"/>장바구니</button>
+      <button class="btn-tagaction" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px"/>장바구니</button>
     </div>
 
-    <!-- 스토어 상세 페이지 -->
+    <!-- 팝업 상세 페이지 -->
     <div v-if="showControl == false" class="ctn-listbuttons">
       <button class="btn-tagaction" @click="openModal"><Icon icon="iconoir:eye" width="20px" height="20px"/>상세 보기</button>
     </div>
@@ -26,14 +26,15 @@
 <script setup>
 import { defineProps, defineEmits, ref } from "vue";
 import { useToast } from "vue-toastification";
-import { useAuthStore } from "@/stores/useAuthStore";
-import { useCartStore } from "@/stores/useCartStore";
-import GoodsModal from "@/components/GoodsModal.vue"; 
+import { useAuthStore } from "@/stores/authStore";
+import { useCartStore } from "@/stores/cartStore";
+import GoodsModal from "@/components/GoodsModal.vue";
+import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   goods: Object,
   showControl: Boolean,
-  storeIdx: Number,
+  popupIdx: Number,
 });
 
 const emit = defineEmits(['cartUpdated']);
@@ -43,35 +44,28 @@ const authStore = useAuthStore();
 const cartStore = useCartStore();
 const isModalOpen = ref(false);
 
-// 모달 열기
 const openModal = () => {
   isModalOpen.value = true;
 };
 
-// 모달 닫기
 const closeModal = () => {
   isModalOpen.value = false;
 };
 
-// 카트 등록
-const registerCart = async () => {
+const addToCart = async () => {
   if (!authStore.isLoggedIn) {
     toast.error("로그인이 필요합니다.");
-  } else {
-    const req = {
-      goodsIdx: props.goods.goodsIdx,
-      storeIdx: props.storeIdx,
-    }
-    const res = await cartStore.register(req);
-    if (res.success) {
-      // toast.success(res.message);
-      // 장바구니 업데이트 이벤트 발생
-      emit('cartUpdated');
-    } else {
-      toast.error(res.message);
-    }
+    return;
   }
-}
-
+  const req = {
+    goodsIdx: props.goods.goodsIdx,
+    popupIdx: props.popupIdx,
+  };
+  const res = await cartStore.createCart(req);
+  if (res.success) {
+    emit('cartUpdated');
+  } else {
+    toast.error(res.message);
+  }
+};
 </script>
-

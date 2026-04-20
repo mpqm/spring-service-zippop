@@ -1,12 +1,13 @@
 package com.fiiiiive.zippop.goods.controller;
 
 
-import com.fiiiiive.zippop.global.base.BaseException;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.upload.FileUploadService;
-import com.fiiiiive.zippop.goods.model.GoodsDto;
+import com.fiiiiive.zippop.goods.model.dto.CreateGoodsReq;
+import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
+import com.fiiiiive.zippop.goods.model.dto.UpdateGoodsReq;
 import com.fiiiiive.zippop.goods.service.GoodsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,8 +35,8 @@ public class GoodsController {
     public ResponseEntity<BaseResponse<Void>> createGoods(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestPart("files") MultipartFile[] files,
-            @Valid @RequestPart("req") GoodsDto.CreateGoodsReq req
-    ) throws BaseException {
+            @Valid @RequestPart("req") CreateGoodsReq req
+    ) {
         List<String> urls = fileUploadService.multipleUpload(files);
         goodsService.createGoods(customUserDetails, urls, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.GOODS_REGISTER_SUCCESS));
@@ -47,8 +48,8 @@ public class GoodsController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long goodsIdx,
             @RequestPart(name = "files") MultipartFile[] files,
-            @Valid @RequestPart(name = "req") GoodsDto.UpdateGoodsReq req
-    ) throws BaseException {
+            @Valid @RequestPart(name = "req") UpdateGoodsReq req
+    ) {
         List<String> urls = fileUploadService.multipleUpload(files);
         goodsService.updateGoods(customUserDetails, goodsIdx, urls, req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_UPDATE_SUCCESS));
@@ -56,22 +57,22 @@ public class GoodsController {
 
     // 굿즈 상세 조회
     @GetMapping("/{goodsIdx}")
-    public ResponseEntity<BaseResponse<GoodsDto.GetGoodsRes>> getGoods(
+    public ResponseEntity<BaseResponse<GetGoodsRes>> getGoods(
             @PathVariable Long goodsIdx
-    ) throws BaseException {
-        GoodsDto.GetGoodsRes res = goodsService.getGoods(goodsIdx);
+    ) {
+        GetGoodsRes res = goodsService.getGoods(goodsIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_SEARCH_SUCCESS, res));
     }
 
     // 굿즈 목록 조회
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<GoodsDto.GetGoodsRes>>> getGoodsList(
+    public ResponseEntity<BaseResponse<Page<GetGoodsRes>>> getGoodsList(
             @RequestParam(required = false) Long popupIdx,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-    ) throws BaseException {
-        Page<GoodsDto.GetGoodsRes> res = goodsService.getGoodsList(popupIdx, keyword, page, size);
+    ) {
+        Page<GetGoodsRes> res = goodsService.getGoodsList(popupIdx, keyword, page, size);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_SEARCH_ALL_SUCCESS, res));
     }
 
@@ -80,7 +81,7 @@ public class GoodsController {
     public ResponseEntity<BaseResponse<Void>> deleteGoods(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long goodsIdx
-    ) throws BaseException {
+    ) {
         goodsService.deleteGoods(user, goodsIdx);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.GOODS_DELETE_SUCCESS));
     }

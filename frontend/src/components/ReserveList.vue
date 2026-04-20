@@ -50,7 +50,7 @@ function formatTime(dateTimeString) {
 }
 
 const goReserve = () => {
-  router.push(`/reserve/${props.reserve.storeIdx}/${props.reserve.reserveIdx}`);
+  router.push(`/reserve/${props.reserve.popupIdx}/${props.reserve.reserveIdx}`);
 }
 
 </script>

@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.reserve.repository;
 
-import com.fiiiiive.zippop.reserve.model.Reserve;
+import com.fiiiiive.zippop.global.enums.PopupStatus;
+import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,18 +28,18 @@ public interface ReserveRepository extends JpaRepository<Reserve, Long> {
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.popup rp " +
             "WHERE rp.status = :status")
-    Page<Reserve> findAllByStatus(@Param("status") String status, Pageable pageable);
+    Page<Reserve> findAllByStatus(@Param("status") PopupStatus status, Pageable pageable);
 
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.popup rp " +
             "WHERE rp.status = :status " +
              "AND (rp.address LIKE CONCAT('%', :keyword, '%') OR rp.name LIKE CONCAT('%', :keyword, '%') OR rp.category LIKE CONCAT('%', :keyword, '%') OR rp.companyEmail LIKE CONCAT('%', :keyword, '%'))")
-    Page<Reserve> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") String status, Pageable pageable);
+    Page<Reserve> findAllByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") PopupStatus status, Pageable pageable);
 
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.popup rp " +
             "WHERE rp.idx = :popupIdx AND rp.status = :status")
-    Page<Reserve> findAllByPopupIdx(@Param("popupIdx") Long popupIdx, @Param("status") String status, Pageable pageable);
+    Page<Reserve> findAllByPopupIdx(@Param("popupIdx") Long popupIdx, @Param("status") PopupStatus status, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Reserve r SET r.totalPeople = r.totalPeople - :decreasePeople WHERE r.idx = :reserveIdx")

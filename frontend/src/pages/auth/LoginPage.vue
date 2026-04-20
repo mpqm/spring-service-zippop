@@ -33,19 +33,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useAuthStore } from '@/stores/useAuthStore';
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from "@/components/AppFooter.vue";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from '@/stores/authStore';
 import { useToast } from "vue-toastification";
 
-// store, router, route, toast
 const authStore = useAuthStore();
 const router = useRouter();
 const toast = useToast();
 
-// 변수(auth)
 const userId = ref("");
 const password = ref("");
 

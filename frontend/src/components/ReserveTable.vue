@@ -45,14 +45,16 @@
 
       <!-- 액션 버튼들 -->
       <template #item-actions="item">
+        <!-- 기업 예약 관리: 삭제 -->
         <div v-if="props.showControl === true" class="ctn-tablebuttons">
           <button class="btn-tagaction" @click="deleteReserve(item)">
             <Icon icon="iconoir:trash" width="16px" height="16px" />
           </button>
         </div>
 
+        <!-- 고객 예약 목록: 예약 시스템으로 이동 -->
         <div v-if="props.showControl === false" class="ctn-tablebuttons">
-          <router-link class="btn-tagaction" :to="`/reserve/${item.storeIdx}/${item.reserveIdx}`">
+          <router-link class="btn-tagaction" :to="`/reserve/${item.popupIdx}/${item.reserveIdx}`">
             <Icon icon="iconoir:calendar-plus" width="16px" height="16px" />
           </router-link>
         </div>
@@ -66,11 +68,11 @@ import { ref, defineProps } from 'vue'
 import EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
 import CountDownTimer from '@/components/CountDownTimer.vue'
-import { useReserveStore } from '@/stores/useReserveStore'
+import { useReserveStore } from '@/stores/reserveStore'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
+import { Icon } from "@iconify/vue";
 
-// props 정의
 const props = defineProps({
   reserves: {
     type: Array,
@@ -82,16 +84,13 @@ const props = defineProps({
   }
 })
 
-// 반응형 데이터
 const sortBy = ref('reserveStartDate')
 const sortType = ref('asc')
 
-// store, router, toast
 const toast = useToast()
 const router = useRouter()
 const reserveStore = useReserveStore()
 
-// 테이블 헤더 정의
 const headers = ref([
   { text: '예약인원', value: 'reservePeople', sortable: true },
   { text: '예약날짜', value: 'reserveStartDate', sortable: true },
@@ -101,10 +100,8 @@ const headers = ref([
   { text: '', value: 'actions', sortable: false }
 ])
 
-// 날짜 포맷팅 함수
 const formatDate = (dateString) => {
   if (!dateString) return ''
-  
   try {
     const date = new Date(dateString)
     return date.toLocaleDateString('ko-KR', {
@@ -117,14 +114,12 @@ const formatDate = (dateString) => {
   }
 }
 
-// 시간 포맷팅 함수
 const formatTime = (dateTimeString) => {
   if (!dateTimeString) return ""
   const timePart = dateTimeString.split("T")[1]
   return timePart ? timePart.slice(0, 5) : ""
 }
 
-// 예약 상태 텍스트
 const getStatusText = (reserve) => {
   const now = new Date()
   const startTime = new Date(reserve.reserveStartTime)
@@ -139,7 +134,6 @@ const getStatusText = (reserve) => {
   }
 }
 
-// 예약 상태별 클래스
 const getStatusClass = (reserve) => {
   const now = new Date()
   const startTime = new Date(reserve.reserveStartTime)
@@ -154,22 +148,14 @@ const getStatusClass = (reserve) => {
   }
 }
 
-// 예약 삭제
 const deleteReserve = async (reserve) => {
-  if (!confirm('정말로 이 예약을 삭제하시겠습니까?')) {
-    return
-  }
-
-  try {
-    const res = await reserveStore.delete(reserve.storeIdx, reserve.reserveIdx)
-    if (res.success) {
-      toast.success(res.message)
-      router.go(0)
-    } else {
-      toast.error(res.message)
-    }
-  } catch (error) {
-    toast.error('삭제 중 오류가 발생했습니다.')
+  if (!confirm('정말로 이 예약을 삭제하시겠습니까?')) return;
+  const res = await reserveStore.deleteReserve(reserve.reserveIdx)
+  if (res.success) {
+    toast.success(res.message)
+    router.go(0)
+  } else {
+    toast.error(res.message)
   }
 }
 </script>

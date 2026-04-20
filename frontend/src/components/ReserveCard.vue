@@ -38,7 +38,7 @@ const router = useRouter();
 
 // 스토어 상세 페이지 이동
 const goReserveDetail = () => {
-    router.push(`/store/${props.reserve.storeIdx}`);
+    router.push(`/reserve/${props.reserve.popupIdx}/${props.reserve.reserveIdx}`);
 }
 
 function formatTime(dateTimeString) {
@@ -50,7 +50,7 @@ function formatTime(dateTimeString) {
 
 // 굿즈 상세 페이지 이동
 const goGoodsDetail = () => {
-    router.push(`/goods/${props.storeIdx}`);
+    router.push(`/goods/${props.reserve.popupIdx}`);
 }
 
 </script>

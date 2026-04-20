@@ -2,8 +2,8 @@ package com.fiiiiive.zippop.account.controller;
 
 import com.fiiiiive.zippop.account.application.AccountFacade;
 import com.fiiiiive.zippop.account.application.EmailAuthFacade;
-import com.fiiiiive.zippop.account.model.AccountDto;
-import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.account.model.dto.*;
+import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
 import com.fiiiiive.zippop.global.base.BaseMessage;
 import com.fiiiiive.zippop.global.base.BaseResponse;
 import com.fiiiiive.zippop.global.upload.FileUploadService;
@@ -34,20 +34,19 @@ public class AccountController {
     // 회원가입
     @PostMapping
     public ResponseEntity<BaseResponse<Void>> createAccount(
-            @Valid @RequestPart(name = "req") AccountDto.CreateAccountReq req,
+            @Valid @RequestPart(name = "req") CreateAccountReq req,
             @RequestPart(name = "file", required = false) MultipartFile file
-    ) throws BaseException {
+    ) {
         Boolean res = accountFacade.createAccount(req, fileUploadService.singleUpload(file));
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new BaseResponse<>(res ? BaseMessage.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : BaseMessage.AUTH_SIGNUP_SUCCESS));
+        return ResponseEntity.ok(new BaseResponse<>(res ? BaseMessage.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : BaseMessage.AUTH_SIGNUP_SUCCESS));
     }
 
     // 회원 정보 조회
     @GetMapping("/me")
-    public ResponseEntity<BaseResponse<AccountDto.GetAccountRes>> getAccount(
+    public ResponseEntity<BaseResponse<GetAccountRes>> getAccount(
             @AuthenticationPrincipal CustomUserDetails user
-    ) throws BaseException{
-        AccountDto.GetAccountRes res = accountFacade.getAccount(user);
+    ) {
+        GetAccountRes res = accountFacade.getAccount(user);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_GET_PROFILE_SUCCESS, res));
     }
 
@@ -55,9 +54,9 @@ public class AccountController {
     @PatchMapping("/me")
     public ResponseEntity<BaseResponse<Void>> updateAccount(
             @AuthenticationPrincipal CustomUserDetails user,
-            @RequestPart(name = "req") AccountDto.UpdateAccountReq req,
+            @RequestPart(name = "req") UpdateAccountReq req,
             @RequestPart(name = "file", required = false) MultipartFile file
-    ) throws BaseException {
+    ) {
         accountFacade.updateAccount(user, req, fileUploadService.singleUpload(file));
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_EDIT_INFO_SUCCESS));
     }
@@ -66,7 +65,7 @@ public class AccountController {
     @DeleteMapping("/me")
     public ResponseEntity<BaseResponse<Void>> deactivateAccount(
             @AuthenticationPrincipal CustomUserDetails user
-    ) throws BaseException {
+    ) {
         accountFacade.deactivateAccount(user);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_INACTIVE_SUCCESS));
     }
@@ -74,8 +73,8 @@ public class AccountController {
     // 계정 활성화 요청
     @PostMapping("/me/activation")
     public ResponseEntity<BaseResponse<Void>> requestActivation(
-            @Valid @RequestBody AccountDto.RequestActivationReq req
-    ) throws BaseException {
+            @Valid @RequestBody ActivationReq req
+    ) {
         accountFacade.requestActivation(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_ACTIVE_SUCCESS));
     }
@@ -86,18 +85,16 @@ public class AccountController {
             @RequestParam String email,
             @RequestParam String role,
             @RequestParam String uuid
-    ) throws BaseException {
+    ) {
         String redirectUrl = emailAuthFacade.verifyEmail(email, role, uuid);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(redirectUrl))
-                .build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
     }
 
     // 아이디 찾기
     @PostMapping("/id/find")
     public ResponseEntity<BaseResponse<Void>> findId(
-            @Valid @RequestBody AccountDto.FindIdReq req
-    ) throws BaseException {
+            @Valid @RequestBody FindIdReq req
+    ) {
         accountFacade.findId(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_ID_SUCCESS));
     }
@@ -105,8 +102,8 @@ public class AccountController {
     // 비밀번호 찾기
     @PostMapping("/password/find")
     public ResponseEntity<BaseResponse<Void>> findPassword(
-            @Valid @RequestBody AccountDto.FindPasswordReq req
-    ) throws BaseException {
+            @Valid @RequestBody FindPasswordReq req
+    ) {
         accountFacade.findPassword(req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_FIND_PW_SUCCESS));
     }
@@ -115,8 +112,8 @@ public class AccountController {
     @PatchMapping("/password/reset")
     public ResponseEntity<BaseResponse<Void>> resetPassword(
             @AuthenticationPrincipal CustomUserDetails user,
-            @Valid @RequestBody AccountDto.ResetPasswordReq req
-    ) throws BaseException {
+            @Valid @RequestBody ResetPasswordReq req
+    ) {
         accountFacade.resetPassword(user, req);
         return ResponseEntity.ok(new BaseResponse<>(BaseMessage.AUTH_RESET_PW_SUCCESS));
     }

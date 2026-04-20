@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.payout.repository;
 
-import com.fiiiiive.zippop.payout.model.Payout;
+import com.fiiiiive.zippop.payout.model.entity.Payout;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

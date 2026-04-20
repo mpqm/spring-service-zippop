@@ -1,17 +1,11 @@
 package com.fiiiiive.zippop.popup.scheduler;
 
-import com.fiiiiive.zippop.goods.repository.GoodsRepository;
-import com.fiiiiive.zippop.popup.model.Popup;
-import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.fiiiiive.zippop.popup.service.PopupService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.util.List;
 
 
 @Slf4j

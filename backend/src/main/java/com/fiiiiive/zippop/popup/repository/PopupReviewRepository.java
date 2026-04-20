@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.popup.repository;
 
-import com.fiiiiive.zippop.popup.model.PopupReview;
+import com.fiiiiive.zippop.popup.model.entity.PopupReview;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

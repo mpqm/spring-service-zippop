@@ -2,7 +2,6 @@ package com.fiiiiive.zippop.global.security.normal;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fiiiiive.zippop.global.enums.RoleType;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +18,7 @@ public class CustomUserDetails implements UserDetails {
     private final Long idx;
     @Getter
     private final String userId;
+    @Getter
     private final String email;
     private String role;
     @Getter
@@ -61,17 +61,17 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
