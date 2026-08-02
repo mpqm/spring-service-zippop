@@ -39,14 +39,14 @@ export const useCartStore = defineStore('cart', {
     async getCartItems(cartIdx) {
       try {
         const res = await axios.get(`${BACKEND_URL}/carts/${cartIdx}/items`, { withCredentials: true });
-        this.cartItemList = res.data.result;
+        this.cartItemList = res.data.result || [];
         return res.data;
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
       }
     },
 
-    // 장바구니 아이템 수량 조절 - PATCH /api/v1/carts/{cartIdx}/items/{cartItemIdx}/quantity?operation=INCREASE|DECREASE
+    // 장바구니 아이템 수량 조절
     async updateCartItemQuantity(cartIdx, cartItemIdx, operation) {
       try {
         const res = await axios.patch(

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="lyt-page">
     <AppHeader></AppHeader>
     <div class="lyt-root">
       <div class="wrp-split">
@@ -31,9 +31,13 @@
         <div class="lyt-cardgrid" v-if="goodsList && goodsList.length">
           <GoodsCard v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="popup.popupIdx" />
         </div>
-        <div v-else>
-          <p>검색 결과에 해당하는 팝업 굿즈 목록이 없습니다.</p>
-        </div>
+        <AppEmptyState
+          v-else
+          title="검색된 굿즈가 없습니다"
+          description="다른 상품명으로 검색하거나 전체 굿즈를 확인해 보세요."
+          action-label="검색 초기화"
+          @action="getGoodsList(true)"
+        />
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
     </div>
@@ -114,7 +118,7 @@ const getGoodsList = async (reset = false) => {
 };
 
 const goPopupDetail = () => {
-  router.push(`/popup/${route.params.popupIdx}`);
+  router.push({ path: `/popup/${route.params.popupIdx}`, query: { mainTab: 'goods' } });
 };
 
 watch(() => popupStore.likeList, () => {

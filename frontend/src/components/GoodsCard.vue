@@ -1,16 +1,20 @@
 <template>
   <div class="ctn-card">
-    <p class="txt-def1">{{ goods.goodsName }}</p>
-
-    <div class="ctn-tagbutton">
-      <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsPrice }}원</button>
-      <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsAmount }}개</button>
-      <button class="btn-tagaction" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px"/>상세보기</button>
-      <button class="btn-tagaction" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px"/>장바구니</button>
+    <div class="ctn-cardmedia">
+      <img class="img-card" v-if="goods.getGoodsImageResList && goods.getGoodsImageResList.length" :src="goods.getGoodsImageResList[0].goodsImageUrl" :alt="goods.goodsName" />
+      <div class="img-card img-cardfallback" v-else><span>ZIPPOP</span></div>
     </div>
-
-    <img class="img-card" v-if="goods.getGoodsImageResList && goods.getGoodsImageResList.length" :src="goods.getGoodsImageResList[0].goodsImageUrl" alt="goods image" />
-
+    <div class="ctn-cardbody ctn-goodscardbody">
+      <p class="txt-def1 txt-goodscardname">{{ goods.goodsName }}</p>
+      <div class="ctn-goodscardmeta">
+        <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" class="ico-accent" />{{ goods.goodsPrice }}원</button>
+        <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" class="ico-accent" />{{ goods.goodsAmount }}개</button>
+      </div>
+      <div class="ctn-goodscardactions">
+        <button class="btn-tagaction" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px"/>상세보기</button>
+        <button class="btn-tagaction" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px"/>장바구니</button>
+      </div>
+    </div>
   </div>
 </template>
 

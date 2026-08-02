@@ -1,50 +1,61 @@
 <template>
   <div class="lyt-child">
-    <form class="ctn-rootform" @submit.prevent="updatePopup">
-      <div class="ctn-split">
-        <h1 class="txt-def0">팝업 스토어 수정</h1>
+    <form class="ctn-rootform ctn-reviewform ctn-popupform" @submit.prevent="updatePopup">
+      <div class="ctn-reviewheading">
+        <div>
+          <span class="txt-eyebrow">POPUP SETTINGS</span>
+          <h2>팝업 스토어 수정</h2>
+          <p>팝업의 기본 정보와 운영 일정, 대표 이미지를 관리할 수 있습니다.</p>
+        </div>
         <div class="ctn-buttons">
-          <button type="submit" class="btn-default">수정</button>
-          <button type="button" @click="router.back()" class="btn-normal">취소</button>
+          <button type="button" class="btn-normal btn-reviewsubmit" @click="router.back()">취소</button>
+          <button type="submit" class="btn-default btn-reviewsubmit">저장</button>
+        </div>
+      </div>
+
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label" for="popup-name">팝업 스토어 이름</label>
+        <input id="popup-name" class="ipt-default" v-model="popupName" type="text" placeholder="팝업 스토어 이름을 입력해주세요." required />
+      </div>
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label" for="popup-content">팝업 스토어 설명</label>
+        <textarea id="popup-content" class="ipt-default ipt-reviewcontent" v-model="popupContent" rows="5" placeholder="팝업 스토어에 대한 설명을 입력해주세요." required></textarea>
+      </div>
+      <div class="ctn-popupformgrid">
+        <div class="ctn-inputdefault">
+          <label class="ipt-default-label" for="popup-category">카테고리</label>
+          <input id="popup-category" class="ipt-default" v-model="category" type="text" placeholder="카테고리를 입력해주세요." required />
+        </div>
+        <div class="ctn-inputdefault">
+          <label class="ipt-default-label" for="popup-people">일일 총 인원</label>
+          <input id="popup-people" class="ipt-default" v-model="totalPeople" type="number" min="1" placeholder="총 인원을 입력해주세요." required />
         </div>
       </div>
       <div class="ctn-inputdefault">
-        <label class="ipt-default-label">팝업 스토어 이름</label>
-        <input class="ipt-default" v-model="popupName" type="text" placeholder="팝업 스토어 이름을 입력해주세요." />
-      </div>
-      <div class="ctn-inputdefault">
-        <label class="ipt-default-label">팝업 스토어 설명</label>
-        <textarea class="ipt-default" v-model="popupContent" placeholder="팝업 스토어에 대한 설명을 입력해주세요."></textarea>
-      </div>
-      <div class="ctn-inputdefault">
-        <label class="ipt-default-label">팝업 스토어 카테고리</label>
-        <input class="ipt-default" v-model="category" type="text" placeholder="팝업 스토어 카테고리를 입력해주세요." />
-      </div>
-      <div class="ctn-inputdefault">
-        <label class="ipt-default-label">팝업 스토어 온라인 총 인원</label>
-        <input class="ipt-default" v-model="totalPeople" type="number" placeholder="팝업 스토어 총 인원을 입력해주세요." />
-      </div>
-      <div class="ctn-inputdefault">
-        <label class="ipt-default-label">팝업스토어 시작일/종료일</label>
-        <div class="ctn-split">
-          <input class="ipt-default" v-model="popupStartDate" type="date" placeholder="시작일" />
-          <input class="ipt-default" v-model="popupEndDate" type="date" placeholder="종료일" />
+        <label class="ipt-default-label">운영 일정</label>
+        <div class="ctn-addressfields">
+          <input class="ipt-default" v-model="popupStartDate" type="date" aria-label="팝업 시작일" required />
+          <input class="ipt-default" v-model="popupEndDate" type="date" aria-label="팝업 종료일" required />
         </div>
       </div>
       <div class="ctn-inputdefault">
-        <label class="ipt-default-label">주소/상세주소</label>
-        <div class="ctn-split">
-          <input class="ipt-default" v-model="address" type="text" placeholder="주소" @click="openAddressSearch" />
+        <label class="ipt-default-label">주소</label>
+        <div class="ctn-addressfields">
+          <input class="ipt-default" v-model="address" type="text" placeholder="주소 검색" @click="openAddressSearch" readonly required />
           <input class="ipt-default" v-model="addressDetail" type="text" placeholder="상세 주소" />
         </div>
       </div>
-      <label for="file">
-        <div class="btn-default">팝업 스토어 이미지 파일 업로드</div>
-      </label>
-      <input @change="handleFileUpload" type="file" name="file" id="file" multiple />
-      <div class="wrp-filepreview" v-if="fileUrls.length">
-        <div v-for="(fileUrl, index) in fileUrls" :key="index" class="ctn-filepreview">
-          <img :src="fileUrl" alt="file preview" />
+      <div class="ctn-inputdefault">
+        <label class="ipt-default-label">대표 이미지</label>
+        <div class="ctn-popupupload">
+          <input id="popup-files" class="ipt-filehidden" @change="handleFileUpload" type="file" accept="image/*" name="files" multiple />
+          <label class="btn-normal btn-fileupload" for="popup-files">이미지 선택</label>
+          <span>새 이미지를 선택하지 않으면 기존 이미지가 유지됩니다.</span>
+        </div>
+        <div class="wrp-popuppreview" v-if="fileUrls.length">
+          <div v-for="(fileUrl, index) in fileUrls" :key="`${fileUrl}-${index}`" class="ctn-popuppreview">
+            <img :src="fileUrl" :alt="`팝업 이미지 ${index + 1}`" />
+          </div>
         </div>
       </div>
     </form>
@@ -52,16 +63,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { usePopupStore } from "@/stores/popupStore";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
+import { usePopupStore } from "@/stores/popupStore";
+import { createMultipartRequest } from "@/utils/multipart";
 
 const popupStore = usePopupStore();
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
-
 const popupName = ref("");
 const popupContent = ref("");
 const category = ref("");
@@ -78,68 +89,68 @@ onMounted(async () => {
   await loadMapjsApi();
 });
 
+onBeforeUnmount(() => {
+  fileUrls.value.filter(url => url.startsWith("blob:")).forEach(url => URL.revokeObjectURL(url));
+});
+
 const getPopup = async () => {
   const res = await popupStore.getPopup(route.params.popupIdx);
-  if (res.success) {
-    mapper();
-  } else {
-    router.push("/mypage/company/popup");
+  if (!res.success) {
     toast.error(res.message);
+    router.push("/mypage/company/popup");
+    return;
   }
-};
-
-const mapper = () => {
-  const p = popupStore.popup;
-  popupName.value = p.popupName;
-  popupContent.value = p.popupContent;
-  category.value = p.category;
-  totalPeople.value = p.totalPeople;
-  address.value = p.popupAddress?.split(',')[0] || '';
-  addressDetail.value = p.popupAddress?.split(',')[1] || '';
-  popupStartDate.value = p.popupStartDate;
-  popupEndDate.value = p.popupEndDate;
-  if (p.getPopupImageResList && p.getPopupImageResList.length) {
-    fileUrls.value = p.getPopupImageResList.map(image => image.popupImageUrl);
-  }
+  const popup = popupStore.popup;
+  popupName.value = popup.popupName;
+  popupContent.value = popup.popupContent;
+  category.value = popup.category;
+  totalPeople.value = popup.totalPeople;
+  const addressParts = popup.popupAddress?.split(",") || [];
+  address.value = addressParts[0] || "";
+  addressDetail.value = addressParts.slice(1).join(",") || "";
+  popupStartDate.value = popup.popupStartDate;
+  popupEndDate.value = popup.popupEndDate;
+  fileUrls.value = (popup.getPopupImageResList || []).map(image => image.popupImageUrl);
 };
 
 const loadMapjsApi = async () => {
-  const script = document.createElement("script");
-  script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-  document.head.appendChild(script);
+  if (window.daum?.Postcode) return;
+  await new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  }).catch(() => toast.error("주소 검색 서비스를 불러오지 못했습니다."));
 };
 
-const openAddressSearch = () => {
-  // eslint-disable-next-line no-undef
-  new daum.Postcode({
-    oncomplete: function (data) { address.value = data.address; },
-  }).open();
+const openAddressSearch = async () => {
+  if (!window.daum?.Postcode) await loadMapjsApi();
+  if (!window.daum?.Postcode) return;
+  new window.daum.Postcode({ oncomplete: data => { address.value = data.address; } }).open();
 };
 
-const handleFileUpload = (event) => {
-  files.value = event.target.files;
-  fileUrls.value = [];
-  for (let i = 0; i < files.value.length; i++) {
-    fileUrls.value.push(URL.createObjectURL(files.value[i]));
-  }
+const handleFileUpload = event => {
+  fileUrls.value.filter(url => url.startsWith("blob:")).forEach(url => URL.revokeObjectURL(url));
+  files.value = Array.from(event.target.files || []);
+  fileUrls.value = files.value.map(file => URL.createObjectURL(file));
 };
 
 const updatePopup = async () => {
+  if (popupEndDate.value < popupStartDate.value) {
+    toast.error("종료일은 시작일보다 빠를 수 없습니다.");
+    return;
+  }
   const req = {
     popupName: popupName.value,
     popupContent: popupContent.value,
     category: category.value,
-    totalPeople: totalPeople.value,
-    popupAddress: address.value + "," + addressDetail.value,
+    totalPeople: Number(totalPeople.value),
+    popupAddress: [address.value, addressDetail.value].filter(Boolean).join(","),
     popupStartDate: popupStartDate.value,
     popupEndDate: popupEndDate.value,
   };
-  const formData = new FormData();
-  formData.append("dto", new Blob([JSON.stringify(req)], { type: "application/json" }));
-  if (files.value.length > 0) {
-    Array.from(files.value).forEach((file) => { formData.append("files", file); });
-  }
-  const res = await popupStore.updatePopup(route.params.popupIdx, formData);
+  const res = await popupStore.updatePopup(route.params.popupIdx, createMultipartRequest(req, files.value));
   if (res.success) {
     toast.success(res.message);
     router.push("/mypage/company/popup");

@@ -20,7 +20,7 @@ export const usePopupStore = defineStore("popup", {
     // 팝업 등록
     async createPopup(req) {
       try {
-        const res = await axios.post(`${BACKEND_URL}/popups`, req, { headers: { "Content-Type": "multipart/form-data", }, withCredentials: true },);
+        const res = await axios.post(`${BACKEND_URL}/popups`, req, { withCredentials: true });
         return res.data
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
@@ -67,7 +67,7 @@ export const usePopupStore = defineStore("popup", {
     // 팝업 수정
     async updatePopup(popupIdx, req) {
       try {
-        const res = await axios.patch(`${BACKEND_URL}/popups/${popupIdx}`, req, { headers: { "Content-Type": "multipart/form-data", }, withCredentials: true },);
+        const res = await axios.patch(`${BACKEND_URL}/popups/${popupIdx}`, req, { withCredentials: true });
         return res.data
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };

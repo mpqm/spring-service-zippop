@@ -115,12 +115,11 @@
 |------------------|------------------------------------------------------------------------------------------------------------------|
 | 🎡 ERD           | [ERD](https://github.com/mpqm/spring-service-zippop/wiki/01.-%F0%9F%8E%A1-ERD)                              |
 | 🎡 Architecture  | [Architecture](https://github.com/mpqm/spring-service-zippop/wiki/02.-%F0%9F%8E%A1-Architecture)                     |
-| ➰ 요구사항 정의서       | [요구사항 정의서]() |
-| 📃 백엔드 API 명세서   | [백엔드 API 명세서]()                                                                                            |
-| 🌱 프론트엔드 화면 설계서  | [프론트엔드 화면 설계서]()                                                                                           |
+| ➰ 요구사항 정의서       | [요구사항 정의서](https://github.com/mpqm/spring-service-zippop/wiki/03.-%E2%9E%B0-%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD-%EC%A0%95%EC%9D%98%EC%84%9C) |
+| 📃 백엔드 API 명세서   | [백엔드 API 명세서](https://github.com/mpqm/spring-service-zippop/wiki/04.-%F0%9F%93%83-%EB%B0%B1%EC%97%94%EB%93%9C-API-%EB%AA%85%EC%84%B8%EC%84%9C)                                                                                            |
+| 🌱 프론트엔드 화면 설계서  | [프론트엔드 화면 설계서](https://github.com/mpqm/spring-service-zippop/wiki/05.-%F0%9F%8C%B1-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-%ED%99%94%EB%A9%B4-%EC%84%A4%EA%B3%84%EC%84%9C)                                                                                           |
 | 🎥 프로젝트 시연 영상    | [프로젝트 시연 영상](https://github.com/mpqm/spring-service-zippop/wiki/06.-%F0%9F%8E%A5-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81)                                                                                             |
 | 🔎 기능 설명 및 성능 개선 | [기능 설명 및 성능 개선](https://github.com/mpqm/spring-service-zippop/wiki/07.-%F0%9F%94%8E-%EA%B8%B0%EB%8A%A5-%EC%84%A4%EB%AA%85-%EB%B0%8F-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0)        
-| 🖥️ CICD 프로세스       | [CICD 프로세스](https://github.com/mpqm/spring-service-zippop/wiki/08.-%F0%9F%96%A5%EF%B8%8F-CICD-%ED%94%84%EB%A1%9C%EC%84%B8%EC%8A%A4)                                                               |
 | 📖 v1 개발문서          | [v1 개발문서](https://github.com/mpqm/spring-service-zippop/wiki/00.-v1-%EA%B0%9C%EB%B0%9C%EB%AC%B8%EC%84%9C)                                                                                                       | |
 
 </details>

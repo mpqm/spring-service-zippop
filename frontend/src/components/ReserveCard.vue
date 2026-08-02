@@ -4,16 +4,16 @@
         <div class="ctn-tagbutton">
             <button class="btn-tagdefault">{{ reserve.searchStoreRes.category }}</button>
             <button class="btn-tagdefault">
-                <Icon icon="iconoir:thumbs-up" width="20px" height="20px" style="color: #00c7ae" />
+                <Icon icon="iconoir:thumbs-up" width="20px" height="20px" class="ico-accent" />
                 {{ reserve.searchStoreRes.likeCount }}
             </button>
             <button class="btn-tagdefault">
-            <Icon icon="iconoir:user" width="20px" height="20px" style="color: #00c7ae" />{{ reserve.searchStoreRes.totalPeople }}</button>
-            <button class="btn-tagdefault"><Icon icon="iconoir:fire-flame" width="20px" height="20px" style="color: #00c7ae" />{{ reserve.reservePeople }}</button>
-            <button class="btn-tagdefault"> <Icon icon="iconoir:calendar-plus" width="20px" height="20px" style="color: #00c7ae" />{{ reserve.reserveStartDate }}</button>
-            <button class="btn-tagdefault"> <Icon icon="iconoir:clock" width="20px" height="20px" style="color: #00c7ae" />{{ formatTime(reserve.reserveStartTime) }} ~ {{ formatTime(reserve.reserveEndTime) }}</button>
-            <button v-if="redirecToGoodsDetail" class="btn-tagaction" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" /></button>
-            <button v-else class="btn-tagaction" @click="goReserveDetail"><Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" /></button>
+            <Icon icon="iconoir:user" width="20px" height="20px" class="ico-accent" />{{ reserve.searchStoreRes.totalPeople }}</button>
+            <button class="btn-tagdefault"><Icon icon="iconoir:fire-flame" width="20px" height="20px" class="ico-accent" />{{ reserve.reservePeople }}</button>
+            <button class="btn-tagdefault"> <Icon icon="iconoir:calendar-plus" width="20px" height="20px" class="ico-accent" />{{ reserve.reserveStartDate }}</button>
+            <button class="btn-tagdefault"> <Icon icon="iconoir:clock" width="20px" height="20px" class="ico-accent" />{{ formatTime(reserve.reserveStartTime) }} ~ {{ formatTime(reserve.reserveEndTime) }}</button>
+            <button v-if="redirecToGoodsDetail" class="btn-tagaction" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px" class="ico-inverse" /></button>
+            <button v-else class="btn-tagaction" @click="goReserveDetail"><Icon icon="iconoir:eye" width="20px" height="20px" class="ico-inverse" /></button>
         
     </div>
     <div class="ctn-buttons">

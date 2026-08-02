@@ -1,6 +1,6 @@
 <template>
   <div class="lyt-child">
-    <form class="ctn-rootform" @submit.prevent="updateGoods">
+    <form class="ctn-rootform ctn-reviewform ctn-standardform" @submit.prevent="updateGoods">
       <div class="ctn-split">
         <h1 class="txt-def0">팝업 굿즈 수정</h1>
         <div class="ctn-buttons">
@@ -42,6 +42,7 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useGoodsStore } from "@/stores/goodsStore";
+import { createMultipartRequest } from "@/utils/multipart";
 
 const goodsStore = useGoodsStore();
 const router = useRouter();
@@ -91,11 +92,11 @@ const updateGoods = async () => {
     goodsPrice: goodsPrice.value,
     goodsContent: goodsContent.value,
   };
-  const formData = new FormData();
-  formData.append("dto", new Blob([JSON.stringify(req)], { type: "application/json" }));
-  if (files.value.length > 0) {
-    Array.from(files.value).forEach((file) => { formData.append("files", file); });
+  if (files.value.length === 0) {
+    toast.error("수정할 상품 이미지를 선택해주세요.");
+    return;
   }
+  const formData = createMultipartRequest(req, files.value);
   const res = await goodsStore.updateGoods(route.params.goodsIdx, formData);
   if (res.success) {
     toast.success(res.message);

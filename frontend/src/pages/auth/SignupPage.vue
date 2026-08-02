@@ -3,7 +3,7 @@
         <AppHeader></AppHeader>
         <div class="lyt-centertop">
             <div class="wrp-centertop">
-                <img class="img-mainlogo" src="../../assets/img/zippopbanner.png">
+                <img class="img-mainlogo" src="../../assets/img/zippoicon-removebg.png" alt="ZIPPOP">
                 
                 <!-- 회원 유형 선택 탭 -->
                 <div class="ctn-buttons">
@@ -11,7 +11,7 @@
                     <div class="btn-big" :class="{ active: userType === 'company' }" @click="userType = 'company'"> 기업 가입</div>
                 </div>
                 
-                <form class="ctn-rootform" @submit.prevent="createAccount">
+                <form class="ctn-rootform ctn-formcard" @submit.prevent="createAccount">
                     <!-- 아이디 -->
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">아이디</label>
@@ -89,6 +89,7 @@ import { useAccountStore } from '@/stores/accountStore';
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from "@/components/AppFooter.vue";
 import { useToast } from "vue-toastification";
+import { createMultipartRequest } from "@/utils/multipart";
 
 const accountStore = useAccountStore();
 const router = useRouter();
@@ -153,11 +154,7 @@ const createAccount = async () => {
         ...(userType.value === 'company' && { crn: crn.value })
     };
 
-    const formData = new FormData();
-    formData.append('req', new Blob([JSON.stringify(req)], { type: 'application/json' }));
-    if (file.value) { 
-        formData.append('file', file.value); 
-    }
+    const formData = createMultipartRequest(req, file.value ? [file.value] : [], 'file');
     
     const res = await accountStore.createAccount(formData);
     if (res.success) {

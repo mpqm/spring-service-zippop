@@ -26,9 +26,13 @@
         <div class="wrp-list" v-if="goodsList && goodsList.length">
           <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="Number(popupIdx)" :showControl="true" @cartUpdated="handleCartUpdated" />
         </div>
-        <div class="txt-null" v-else>
-          <p>검색 결과에 해당하는 팝업 굿즈 목록이 없습니다.</p>
-        </div>
+        <AppEmptyState
+          v-else
+          title="검색된 예약 굿즈가 없습니다"
+          description="검색어를 바꾸거나 전체 예약 굿즈를 다시 확인해 보세요."
+          action-label="검색 초기화"
+          @action="fetchGoodsList(true)"
+        />
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
 
@@ -60,10 +64,10 @@
           <span class="txt-def0">{{ totalPrice }}원</span>
         </div>
         <div class="wrp-list">
-          <div class="ctn-list1" v-for="item in cartItemList" :key="item.goodsIdx">
-            <img v-if="item.searchGoodsRes.getGoodsImageResList && item.searchGoodsRes.getGoodsImageResList.length > 0" :src="item.searchGoodsRes.getGoodsImageResList[0].goodsImageUrl" class="img-list" />
+          <div class="ctn-list1" v-for="item in cartItemList" :key="item.cartItemIdx">
+            <img v-if="item.getGoodsRes.getGoodsImageResList && item.getGoodsRes.getGoodsImageResList.length > 0" :src="item.getGoodsRes.getGoodsImageResList[0].goodsImageUrl" class="img-list" />
             <div class="ctn-listinfo1">
-              <p class="txt-def0">{{ item.searchGoodsRes.goodsName }}</p>
+              <p class="txt-def0">{{ item.getGoodsRes.goodsName }}</p>
               <p class="txt-def1">{{ item.price * item.count }}원</p>
             </div>
             <div class="ctn-listbuttons">
@@ -98,10 +102,12 @@ import GoodsList from "@/components/GoodsList.vue";
 import { useAccountStore } from '@/stores/accountStore';
 import { useCartStore } from '@/stores/cartStore';
 import { useOrdersStore } from '@/stores/ordersStore';
+import { useAuthStore } from '@/stores/authStore';
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { IAMPORT_NAME, IAMPORT_PG, IAMPORT_UID, BACKEND_URL, BACKEND_SOCKET_URL } from '@/config';
 import { Icon } from '@iconify/vue';
+import { isSocketLoginRequiredError, redirectToLogin } from '@/utils/errorHandling';
 
 const goodsStore = useGoodsStore();
 const popupStore = usePopupStore();
@@ -109,6 +115,7 @@ const reserveStore = useReserveStore();
 const cartStore = useCartStore();
 const accountStore = useAccountStore();
 const ordersStore = useOrdersStore();
+const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -134,9 +141,12 @@ const stompClient = ref(null);
 const showQueueOverlay = ref(true);
 const queueStatusMessage = ref("대기열 연결 중...");
 let statusInterval = null;
+let reconnectTimer = null;
+let leavingForAuthentication = false;
 
 onMounted(async () => {
-  await enrollReserve();
+  const enrolled = await enrollReserve();
+  if (!enrolled) return;
   connectWebSocket();
 
   await getPopup();
@@ -161,6 +171,7 @@ onBeforeUnmount(() => {
     stompClient.value.disconnect();
   }
   clearInterval(statusInterval);
+  clearTimeout(reconnectTimer);
 });
 
 const handleBeforeUnload = () => {
@@ -175,6 +186,7 @@ const handleBeforeUnload = () => {
 };
 
 const connectWebSocket = () => {
+  if (leavingForAuthentication) return;
   const socket = new SockJS(BACKEND_SOCKET_URL);
   stompClient.value = Stomp.over(socket);
 
@@ -209,18 +221,30 @@ const connectWebSocket = () => {
     if (stompClient.value?.connected && reserveIdx.value) {
       stompClient.value.send("/pub/reserve/status", {}, JSON.stringify({ reserveIdx: reserveIdx.value }));
     }
-  }, (error) => {
+  }, async (error) => {
     console.error("WebSocket 연결 실패:", error);
-    setTimeout(() => connectWebSocket(), 5000);
+    if (isSocketLoginRequiredError(error) || !authStore.isLoggedIn) {
+      leavingForAuthentication = true;
+      clearInterval(statusInterval);
+      clearTimeout(reconnectTimer);
+      reserveStore.access = false;
+      await redirectToLogin(router, authStore, route.fullPath);
+      return;
+    }
+    reconnectTimer = setTimeout(connectWebSocket, 5000);
   });
 };
 
 const enrollReserve = async () => {
   const res = await reserveStore.enrollReserve(reserveIdx.value);
   if (!res.success) {
-    toast.error("예약 등록에 실패했습니다.");
-    router.push("/");
+    if (authStore.isLoggedIn) {
+      toast.error(res.message || "예약 등록에 실패했습니다.");
+      router.push("/");
+    }
+    return false;
   }
+  return true;
 };
 
 const cancelReserve = async () => {
@@ -228,6 +252,7 @@ const cancelReserve = async () => {
     stompClient.value.disconnect();
   }
   clearInterval(statusInterval);
+  clearTimeout(reconnectTimer);
   const res = await reserveStore.cancelReserve(reserveIdx.value);
   reserveStore.access = false;
   if (res.success) {
@@ -325,7 +350,7 @@ const payment = () => {
   const IMP = window.IMP;
   IMP.init(IAMPORT_UID);
 
-  const customData = cartItemList.value.map(item => ({ [item.searchGoodsRes.goodsIdx]: item.count }));
+  const customData = cartItemList.value.map(item => ({ [item.getGoodsRes.goodsIdx]: item.count }));
 
   IMP.request_pay({
     pg: IAMPORT_PG,
@@ -349,7 +374,7 @@ const payment = () => {
         await reserveStore.cancelReserve(route.params.reserveIdx);
         reserveStore.access = false;
         toast.success("결제를 처리했습니다.");
-        router.push("/");
+        router.push({ path: `/orders/${res.result.ordersIdx}`, query: { mainTab: 'reserve' } });
       } else {
         toast.error("결제를 처리하지 못했습니다.");
       }

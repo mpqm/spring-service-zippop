@@ -24,7 +24,7 @@
     </div>
     
     <div v-if="showControl === 0" class="ctn-listbuttons">
-      <button class="btn-default" @click="goReserve"><Icon icon="iconoir:bell" class="img-iconior"/>예약 참여</button>
+      <button class="btn-tagaction" @click="goReserve"><Icon icon="iconoir:bell" class="img-iconior"/>예약 참여</button>
     </div>
   </div>
 </template>

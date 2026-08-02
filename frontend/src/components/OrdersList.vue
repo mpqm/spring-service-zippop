@@ -16,26 +16,26 @@
         <div v-if="showControl == true" class="ctn-listbuttons">
             <p :class="getStatusClass(orders.orderStatus)">{{ formatedOrderStatus }}</p>
             <button class="btn-tagaction" :disabled="isCancelDisabled" @click="cancelOrders">
-                <Icon icon="iconoir:trash" width="20px" height="20px" style="color: #ffffff" />
+                <Icon icon="iconoir:trash" width="20px" height="20px" class="ico-inverse" />
                 주문 취소
             </button>
             <button class="btn-tagaction" @click="completeOrders">
-                <Icon icon="iconoir:check" width="20px" height="20px" style="color: #ffffff" />
+                <Icon icon="iconoir:check" width="20px" height="20px" class="ico-inverse" />
                 주문 확정
             </button>
             <button class="btn-tagaction" @click="goOrders">
-                <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
+                <Icon icon="iconoir:eye" width="20px" height="20px" class="ico-inverse" />
                 정보 보기
             </button>
         </div>
         <!-- 기업 주문 관리 -->
         <div v-if="showControl == false" class="ctn-buttons">
             <button class="btn-tagaction" @click="completeOrders">
-                <Icon icon="iconoir:check" width="20px" height="20px" style="color: #ffffff" />
+                <Icon icon="iconoir:check" width="20px" height="20px" class="ico-inverse" />
                 배송 확정
             </button>
             <router-link v-if="orders && route.params.popupIdx" class="btn-tagaction" :to="`/orders/${orders.ordersIdx}?popupIdx=${route.params.popupIdx}`">
-                <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
+                <Icon icon="iconoir:eye" width="20px" height="20px" class="ico-inverse" />
                 정보 보기
             </router-link>
         </div>

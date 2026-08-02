@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="lyt-page">
     <AppHeader></AppHeader>
     <div class="lyt-root">
       <div class="wrp-split">
@@ -39,32 +39,39 @@
         <div class="wrp-list" v-if="goodsList && goodsList.length">
           <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="false" :popupIdx="popup.popupIdx" />
         </div>
-        <div class="notice" v-else>
-          <p>등록된 굿즈가 없습니다.</p>
-        </div>
+        <AppEmptyState v-else title="등록된 굿즈가 없습니다" description="팝업 굿즈가 등록되면 이곳에서 확인할 수 있어요." />
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
 
       <div v-if="activeMenu === 'review'" class="lyt-child">
-        <form class="ctn-rootform" @submit.prevent="submitReview">
-          <div class="ctn-split">
-            <h1 class="txt-def0">후기 등록</h1>
-            <button type="submit" class="btn-default">등록</button>
+        <form class="ctn-rootform ctn-reviewform" @submit.prevent="submitReview">
+          <div class="ctn-reviewheading">
+            <div>
+              <span class="txt-eyebrow">SHARE YOUR EXPERIENCE</span>
+              <h2>리뷰 등록</h2>
+              <p>팝업에서 경험한 이야기를 다른 방문자에게 알려주세요.</p>
+            </div>
+            <button type="submit" class="btn-default btn-reviewsubmit">등록</button>
           </div>
-          <label class="ipt-default-label">제목</label>
-          <input class="ipt-default" v-model="reviewTitle" type="text" placeholder="후기의 제목을 남겨주세요" />
-          <label class="ipt-default-label">내용</label>
-          <input class="ipt-default" v-model="reviewContent" type="text" placeholder="후기의 내용을 남겨주세요" />
-          <label class="ipt-default-label">평점</label>
-          <input class="ipt-default" v-model="reviewRating" type="number" min="1" max="5" step="0.1" placeholder="평점을 남겨주세요" />
+          <div class="ctn-inputdefault">
+            <label class="ipt-default-label" for="review-title">제목</label>
+            <input id="review-title" class="ipt-default" v-model="reviewTitle" type="text" placeholder="후기의 제목을 남겨주세요" />
+          </div>
+          <div class="ctn-inputdefault">
+            <label class="ipt-default-label" for="review-content">내용</label>
+            <textarea id="review-content" class="ipt-default ipt-reviewcontent" v-model="reviewContent" rows="5" placeholder="팝업에서 좋았던 점과 방문 팁을 남겨주세요"></textarea>
+          </div>
+          <div class="ctn-inputdefault ctn-reviewrating">
+            <label class="ipt-default-label" for="review-rating">평점</label>
+            <input id="review-rating" class="ipt-default" v-model="reviewRating" type="number" min="1" max="5" step="0.5" placeholder="1점에서 5점 사이로 입력해주세요" />
+            <span>1점부터 5점까지 입력할 수 있습니다.</span>
+          </div>
         </form>
         <br>
         <div class="wrp-list" v-if="reviewList && reviewList.length">
           <ReviewList v-for="review in reviewList" :key="review.reviewIdx" :review="review" />
         </div>
-        <div class="notice" v-else>
-          <p>등록된 리뷰가 없습니다.</p>
-        </div>
+        <AppEmptyState v-else title="등록된 리뷰가 없습니다" description="첫 번째 방문 후기를 남겨보세요." />
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
 
@@ -72,9 +79,7 @@
         <div class="wrp-list" v-if="reserveList && reserveList.length">
           <ReserveList v-for="reserve in reserveList" :key="reserve.reserveIdx" :reserve="reserve" :showControl="0" />
         </div>
-        <div class="notice" v-else>
-          <p>등록된 예약이 없습니다.</p>
-        </div>
+        <AppEmptyState v-else title="등록된 예약 일정이 없습니다" description="새 예약 일정이 등록되면 이곳에서 확인할 수 있어요." />
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
       </div>
     </div>
@@ -110,7 +115,7 @@ const toast = useToast();
 
 const fileUrls = ref([]);
 const popup = ref({});
-const activeMenu = ref('');
+const activeMenu = ref('goods');
 
 const isLiked = ref(false);
 const currentLikeCount = ref(0);
@@ -133,6 +138,7 @@ const reserveList = ref([]);
 
 onMounted(async () => {
   await getPopup();
+  await getGoodsList();
 });
 
 const getPopup = async () => {

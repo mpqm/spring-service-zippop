@@ -22,7 +22,7 @@ export const useAccountStore = defineStore("account", {
     // 회원가입
     async createAccount(req) {
       try {
-        const res = await axios.post(`${BACKEND_URL}/accounts`, req, { headers: { "Content-Type": "multipart/form-data" },});
+        const res = await axios.post(`${BACKEND_URL}/accounts`, req);
         return res.data;
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
@@ -36,10 +36,6 @@ export const useAccountStore = defineStore("account", {
         this.userInfo = res.data.result || {};
         return res.data;
       } catch (error) {
-        if (error.response?.status === 401) {
-          const authStore = useAuthStore();
-          await authStore.logout();
-        }
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
       }
     },
@@ -47,8 +43,7 @@ export const useAccountStore = defineStore("account", {
     // 유저정보 수정
     async updateAccount(req) {
       try {
-        const res = await axios.patch(`${BACKEND_URL}/accounts/me`, req, { headers: { "Content-Type": "multipart/form-data" }, withCredentials: true,
-        });
+        const res = await axios.patch(`${BACKEND_URL}/accounts/me`, req, { withCredentials: true });
         return res.data;
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };

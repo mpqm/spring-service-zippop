@@ -4,9 +4,13 @@
             <div class="wrp-list" v-if="ordersList && ordersList.length">
                 <OrdersList v-for="orders in ordersList" :key="orders.ordersIdx" :orders="orders" :showControl="showControl" />
             </div>
-            <div class="notice" v-else>
-                <p>등록된 주문 내역이 없습니다.</p>
-            </div>
+            <AppEmptyState
+                v-else
+                title="결제 내역이 없습니다"
+                description="굿즈 결제를 완료하면 주문 상태와 상세 내역을 확인할 수 있어요."
+                to="/goods"
+                action-label="굿즈 둘러보기"
+            />
             <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
         </div>
     </div>

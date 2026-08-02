@@ -30,14 +30,14 @@
       <h3 class="txt-def0">상품 구매 정보</h3>
       <div class="ctn-defaultinfo">
         <div class="wrp-list">
-          <div class="ctn-list1" v-for="item in orders.searchOrdersDetailResList" :key="item.ordersDetailIdx">
-            <img v-if="item.searchGoodsRes.getGoodsImageResList && item.searchGoodsRes.getGoodsImageResList.length > 0" :src="item.searchGoodsRes.getGoodsImageResList[0].goodsImageUrl" class="img-list" />
+          <div class="ctn-list1" v-for="item in orders.getOrdersDetailResList" :key="item.ordersDetailIdx">
+            <img v-if="item.getGoodsRes.getGoodsImageResList && item.getGoodsRes.getGoodsImageResList.length > 0" :src="item.getGoodsRes.getGoodsImageResList[0].goodsImageUrl" class="img-list" />
             <div class="ctn-listinfo1">
-              <p class="txt-def0">{{ item.searchGoodsRes.goodsName }}</p>
+              <p class="txt-def0">{{ item.getGoodsRes.goodsName }}</p>
             </div>
             <div class="ctn-listbuttons">
-              <span class="txt-def0">{{ item.eachPrice }}원 ({{ item.searchGoodsRes.goodsPrice }})</span>
-              <button class="btn-tagaction" type="text" readonly>{{ item.eachPrice / item.searchGoodsRes.goodsPrice }}</button>
+              <span class="txt-def0">{{ item.eachPrice }}원 ({{ item.getGoodsRes.goodsPrice }})</span>
+              <button class="btn-tagaction" type="text" readonly>{{ item.eachPrice / item.getGoodsRes.goodsPrice }}</button>
             </div>
           </div>
         </div>

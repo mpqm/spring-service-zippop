@@ -36,7 +36,7 @@
       <!-- 사용 포인트 -->
       <template #item-usedPoint="item">
         <button class="btn-tagdefault">
-          <Icon icon="iconoir:coins" width="16px" height="16px" style="color: #00c7ae" />
+          <Icon icon="iconoir:coins" width="16px" height="16px" class="ico-accent" />
           <span>{{ item.usedPoint }}</span>
         </button>
       </template>

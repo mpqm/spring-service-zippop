@@ -16,7 +16,7 @@
       <!-- 예약 인원수 -->
       <template #item-reservePeople="item">
         <button class="btn-tagdefault">
-          <Icon icon="iconoir:user" width="16px" height="16px" style="color: #00c7ae" />
+          <Icon icon="iconoir:user" width="16px" height="16px" class="ico-accent" />
           <span>{{ item.reservePeople }}명</span>
         </button>
       </template>

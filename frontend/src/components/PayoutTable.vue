@@ -17,8 +17,8 @@
         <span>{{ item.payoutDate }}</span>
       </template>
       
-      <template #item-totalRevenue="item">
-        <span>{{ item.totalRevenue }}원</span>
+      <template #item-revenue="item">
+        <span>{{ item.revenue }}원</span>
       </template>
     </EasyDataTable>
   </div>
@@ -44,6 +44,6 @@ const sortType = ref('desc');
 // 테이블 헤더 정의
 const headers = ref([
   { text: '정산일', value: 'payoutDate', sortable: true },
-  { text: '정산금액', value: 'totalRevenue', sortable: true }
+  { text: '정산금액', value: 'revenue', sortable: true }
 ]);
 </script>

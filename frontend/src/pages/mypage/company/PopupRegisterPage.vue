@@ -1,6 +1,6 @@
 <template>
   <div class="lyt-child">
-    <form class="ctn-rootform" @submit.prevent="createPopup">
+    <form class="ctn-rootform ctn-reviewform ctn-standardform" @submit.prevent="createPopup">
       <div class="ctn-split">
         <h1 class="txt-def0">팝업 스토어 등록</h1>
         <div class="ctn-buttons">
@@ -56,6 +56,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { usePopupStore } from "@/stores/popupStore";
 import { useToast } from "vue-toastification";
+import { createMultipartRequest } from "@/utils/multipart";
 
 const popupStore = usePopupStore();
 const router = useRouter();
@@ -125,13 +126,11 @@ const createPopup = async () => {
     popupStartDate: popupStartDate.value,
     popupEndDate: popupEndDate.value,
   };
-  const formData = new FormData();
-  formData.append("dto", new Blob([JSON.stringify(req)], { type: "application/json" }));
   if (files.value.length === 0) {
     toast.error("이미지를 선택해주세요");
     return;
   }
-  Array.from(files.value).forEach((file) => { formData.append("files", file); });
+  const formData = createMultipartRequest(req, files.value);
   const res = await popupStore.createPopup(formData);
   if (res.success) {
     router.push("/mypage/company/popup");

@@ -4,9 +4,13 @@
       <div class="wrp-list" v-if="likeList && likeList.length">
         <PopupList v-for="popup in likeList" :key="popup.popupIdx" :popup="popup" :showControl="showControl" />
       </div>
-      <div class="txt-null" v-else>
-        <p>좋아요한 팝업 스토어가 없습니다.</p>
-      </div>
+      <AppEmptyState
+        v-else
+        title="좋아요한 팝업이 없습니다"
+        description="관심 있는 팝업을 저장하면 이곳에서 빠르게 다시 확인할 수 있어요."
+        to="/"
+        action-label="팝업 둘러보기"
+      />
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>

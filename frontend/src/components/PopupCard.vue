@@ -1,20 +1,21 @@
 <template>
   <div class="ctn-card">
-
+    <div class="ctn-cardmedia">
+      <img class="img-card" v-if="popup.getPopupImageResList && popup.getPopupImageResList.length" :src="popup.getPopupImageResList[0].popupImageUrl" :alt="popup.popupName" />
+      <div class="img-card img-cardfallback" v-else><span>ZIPPOP</span></div>
+      <span class="txt-cardcategory">{{ popup.category }}</span>
+    </div>
+    <div class="ctn-cardbody">
     <p class="txt-def1">{{ popup.popupName }}</p>
-
+    <p class="txt-carddate">{{ popup.popupStartDate }} — {{ popup.popupEndDate }}</p>
     <div class="ctn-tagbutton">
 
-      <button class="btn-tagdefault">{{ popup.category }}</button>
-
-      <button class="btn-tagdefault" :class="{ active: isLiked }" @click="toggleLike">
+      <button class="btn-tagdefault btn-like" :class="{ active: isLiked }" @click="toggleLike" aria-label="좋아요">
         <Icon icon="iconoir:thumbs-up" width="20px" height="20px" />{{ currentLikeCount }}
       </button>
       
       <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px"/>{{ popup.totalPeople }}</button>
 
-      <button class="btn-tagdefault">{{ popup.popupStartDate }}<span class="divider">~</span>{{ popup.popupEndDate }}</button>
-      
       <button v-if="redirectToGoodsDetail" class="btn-tagaction" @click="goGoodsDetail">
         <Icon icon="iconoir:eye" width="20px" height="20px"/>상세보기
       </button>
@@ -24,9 +25,7 @@
       </button>
     
     </div>
-
-    <img class="img-card" v-if="popup.getPopupImageResList && popup.getPopupImageResList.length" :src="popup.getPopupImageResList[0].popupImageUrl" alt="N/A" />
-    
+    </div>
   </div>
 </template>
 
@@ -42,6 +41,7 @@ import { Icon } from "@iconify/vue";
 const props = defineProps({
   popup: Object,
   redirectToGoodsDetail: Boolean,
+  mainTab: { type: String, default: '' },
 });
 
 const router = useRouter();
@@ -65,7 +65,10 @@ watch(() => popupStore.likeList, () => {
 }, { deep: true });
 
 const goPopupDetail = () => {
-  router.push(`/popup/${props.popup.popupIdx}`);
+  router.push({
+    path: `/popup/${props.popup.popupIdx}`,
+    query: props.mainTab ? { mainTab: props.mainTab } : {},
+  });
 };
 
 const goGoodsDetail = () => {

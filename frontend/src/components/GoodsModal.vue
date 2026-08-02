@@ -5,7 +5,7 @@
         <div class="ctn-split">
           <span class="txt-def1">{{ goods.goodsName }}</span>
           <button @click="closeModal" class="btn-default">
-            <Icon icon="iconoir:delete-circle" width="20px" height="20px" style="color: #ffffff" />
+            <Icon icon="iconoir:delete-circle" width="20px" height="20px" class="ico-inverse" />
           </button>
         </div>
         <div class="ctn-split">
@@ -16,8 +16,8 @@
             <p class="txt-def1">{{ goods.goodsName }}</p>
             <p class="txt-desc"> {{ goods.goodsContent }}</p>
             <div class="ctn-tagbutton">
-              <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsPrice }}원</button>
-              <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsAmount }}개</button>
+              <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" class="ico-accent" />{{ goods.goodsPrice }}원</button>
+              <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" class="ico-accent" />{{ goods.goodsAmount }}개</button>
             </div>
           </div>
         </div>
@@ -53,7 +53,3 @@ const mapper = async() => {
 }
 
 </script>
-
-<style scoped>
-
-</style>

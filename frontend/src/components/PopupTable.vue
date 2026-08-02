@@ -29,14 +29,14 @@
 
       <template #item-likeCount="item">
         <button class="btn-tagdefault">
-          <Icon icon="iconoir:thumbs-up" width="16px" height="16px" style="color: #00c7ae" />
+          <Icon icon="iconoir:thumbs-up" width="16px" height="16px" class="ico-accent" />
           <span>{{ item.likeCount }}</span>
         </button>
       </template>
 
       <template #item-totalPeople="item">
         <button class="btn-tagdefault">
-          <Icon icon="iconoir:user" width="16px" height="16px" style="color: #00c7ae" />
+          <Icon icon="iconoir:user" width="16px" height="16px" class="ico-accent" />
           <span>{{ item.totalPeople }}</span>
         </button>
       </template>

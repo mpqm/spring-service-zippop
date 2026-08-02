@@ -49,7 +49,7 @@
   
   const totalRevenueSum = computed(() => {
   return payout.value.reduce((sum, item) => {
-    return sum + (item.totalRevenue || 0); // totalRevenue가 없을 경우 0으로 처리
+    return sum + (item.revenue || 0);
   }, 0);
 });
 

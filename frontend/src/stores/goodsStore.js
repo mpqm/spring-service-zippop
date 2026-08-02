@@ -15,7 +15,7 @@ export const useGoodsStore = defineStore("goods", {
     // 굿즈 등록 - POST /api/v1/goods (req 안에 popupIdx 포함)
     async createGoods(req) {
       try {
-        const res = await axios.post(`${BACKEND_URL}/goods`, req, { headers: { "Content-Type": "multipart/form-data" }, withCredentials: true } );
+        const res = await axios.post(`${BACKEND_URL}/goods`, req, { withCredentials: true });
         return res.data;
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
@@ -49,7 +49,7 @@ export const useGoodsStore = defineStore("goods", {
     // 굿즈 수정
     async updateGoods(goodsIdx, req) {
       try {
-        const res = await axios.patch(`${BACKEND_URL}/goods/${goodsIdx}`, req, { headers: { "Content-Type": "multipart/form-data", }, withCredentials: true },);
+        const res = await axios.patch(`${BACKEND_URL}/goods/${goodsIdx}`, req, { withCredentials: true });
         return res.data
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };

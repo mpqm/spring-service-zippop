@@ -16,7 +16,7 @@
             <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />
           </router-link>
           <router-link class="btn-default" :to="`/mypage/company/goods/${route.params.popupIdx}/register`">
-            <Icon icon="iconoir:add-square" width="20px" height="20px" style="color: #ffffff" />팝업 굿즈 등록
+            <Icon icon="iconoir:add-square" width="20px" height="20px" class="ico-inverse" />팝업 굿즈 등록
           </router-link>
         </div>
       </div>

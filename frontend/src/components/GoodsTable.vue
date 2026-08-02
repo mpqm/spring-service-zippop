@@ -26,7 +26,7 @@
       <!-- 굿즈 가격 -->
       <template #item-goodsPrice="item">
         <button class="btn-tagdefault">
-          <Icon icon="iconoir:coin" width="16px" height="16px" style="color: #00c7ae" />
+          <Icon icon="iconoir:coin" width="16px" height="16px" class="ico-accent" />
           <span>{{ item.goodsPrice }}원</span>
         </button>
       </template>
@@ -34,7 +34,7 @@
       <!-- 굿즈 수량 -->
       <template #item-goodsAmount="item">
         <button class="btn-tagdefault">
-          <Icon icon="iconoir:box-iso" width="16px" height="16px" style="color: #00c7ae" />
+          <Icon icon="iconoir:box-iso" width="16px" height="16px" class="ico-accent" />
           <span>{{ item.goodsAmount }}개</span>
         </button>
       </template>

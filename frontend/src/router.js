@@ -22,6 +22,7 @@ import LikeManagePage from "@/pages/mypage/customer/LikeManagePage.vue";
 import ReviewManagePage from "@/pages/mypage/customer/ReviewManagePage.vue";
 import OrdersManagePage from "@/pages/mypage/customer/OrdersManagePage.vue";
 import OrdersDetailPage from "@/pages/orders/OrdersDetailPage.vue";
+import OrdersPage from "@/pages/orders/OrdersPage.vue";
 import OrdersManagePage1 from "@/pages/mypage/company/OrdersManagePage1.vue";
 import OrdersManagePage2 from "@/pages/mypage/company/OrdersManagePage2.vue";
 import CartManagePage2 from "@/pages/mypage/customer/CartManagePage2.vue";
@@ -35,9 +36,14 @@ import PayoutManagePage1 from "@/pages/mypage/company/PayoutManagePage1.vue";
 import PayoutManagePage2 from "@/pages/mypage/company/PayoutManagePage2.vue";
 import SupportPage from "@/pages/auth/SupportPage.vue";
 import { useReserveStore } from "@/stores/reserveStore";
+import { useAuthStore } from "@/stores/authStore";
+import { useAccountStore } from "@/stores/accountStore";
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { top: 0, left: 0 };
+  },
   routes: [
     { path: "/login", component: LoginPage },
     { path: "/signup", component: SignupPage },
@@ -47,13 +53,15 @@ const router = createRouter({
     { path: "/goods", component: GoodsMainPage },
     { path: '/goods/:popupIdx', component: GoodsDetailPage1 },
     { path: '/goods/:popupIdx/:goodsIdx', component: GoodsDetailPage2 },
-    { path: "/orders/:ordersIdx", component: OrdersDetailPage },
+    { path: "/orders", component: OrdersPage, meta: { requiresAuth: true, roles: ["ROLE_CUSTOMER"] } },
+    { path: "/orders/:ordersIdx", component: OrdersDetailPage, meta: { requiresAuth: true, roles: ["ROLE_CUSTOMER", "ROLE_COMPANY"] } },
     { path: "/reserve", component: ReserveMainPage },
-    { path: "/reserve/:popupIdx/:reserveIdx", component: ReserveSystemPage },
+    { path: "/reserve/:popupIdx/:reserveIdx", component: ReserveSystemPage, meta: { requiresAuth: true, roles: ["ROLE_CUSTOMER"] } },
 
     {
       path: '/mypage/company',
       component: CompanyMyPage,
+      meta: { requiresAuth: true, roles: ["ROLE_COMPANY"] },
       children: [
         { path: 'popup', component: PopupManagePage },
         { path: 'popup/register', component: PopupRegisterPage },
@@ -77,6 +85,7 @@ const router = createRouter({
     {
       path: '/mypage/customer',
       component: CustomerMyPage,
+      meta: { requiresAuth: true, roles: ["ROLE_CUSTOMER"] },
       children: [
         { path: 'review', component: ReviewManagePage },
         { path: 'account', component: EditProfilePage },
@@ -93,6 +102,17 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore();
+  const accountStore = useAccountStore();
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const allowedRoles = to.matched.flatMap(record => record.meta.roles || []);
+
+  if (requiresAuth && (!authStore.isLoggedIn || !allowedRoles.includes(accountStore.userInfo.role))) {
+    authStore.clearSession();
+    next({ path: "/login", query: { reason: "auth", redirect: to.fullPath } });
+    return;
+  }
+
   const reserveStore = useReserveStore();
   const popupIdx = from.params.popupIdx;
   const reserveIdx = from.params.reserveIdx;

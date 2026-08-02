@@ -4,10 +4,10 @@
       <div class="wrp-split">
         <div class="ctn-l60">
           <div class="wrp-list">
-            <div class="ctn-list1" v-for="item in cartItemList" :key="item.goodsIdx">
-              <img v-if="item.searchGoodsRes.getGoodsImageResList && item.searchGoodsRes.getGoodsImageResList.length > 0" :src="item.searchGoodsRes.getGoodsImageResList[0].goodsImageUrl" class="img-list" />
+            <div class="ctn-list1" v-for="item in cartItemList" :key="item.cartItemIdx">
+              <img v-if="item.getGoodsRes.getGoodsImageResList && item.getGoodsRes.getGoodsImageResList.length > 0" :src="item.getGoodsRes.getGoodsImageResList[0].goodsImageUrl" class="img-list" />
               <div class="ctn-listinfo1">
-                <p class="txt-def0">{{ item.searchGoodsRes.goodsName }}</p>
+                <p class="txt-def0">{{ item.getGoodsRes.goodsName }}</p>
                 <p class="txt-def1">{{ item.price * item.count }}원 ({{ item.price }}원)</p>
               </div>
               <div class="ctn-listbuttons">
@@ -91,6 +91,7 @@ watch(() => usePoints.value, () => {
 });
 
 const getCartItems = async () => {
+  await cartStore.getCarts(0, 100);
   const res = await cartStore.getCartItems(route.params.cartIdx);
   if (res.success) {
     await accountStore.getAccount();
@@ -104,7 +105,7 @@ const getCartItems = async () => {
 };
 
 const updateCartItemQuantity = async (cartItemIdx, direction) => {
-  const operation = direction === -1 ? "DECREASE" : "INCREASE";
+  const operation = direction === -1 ? "DECREMENT" : "INCREMENT";
   const res = await cartStore.updateCartItemQuantity(route.params.cartIdx, cartItemIdx, operation);
   if (res.success) {
     const item = cartItemList.value.find(i => i.cartItemIdx === cartItemIdx);
@@ -137,7 +138,9 @@ const updateTotalPrice = () => {
 };
 
 const updateTotalDiscount = () => {
-  totalDiscount.value = usePoints.value ? userPoints.value : 0;
+  totalDiscount.value = usePoints.value && userPoints.value >= 3000
+    ? Math.min(userPoints.value, totalPrice.value)
+    : 0;
 };
 
 const updateFinalOrderPrice = () => {
@@ -145,7 +148,7 @@ const updateFinalOrderPrice = () => {
 };
 
 const setPaymentData = async () => {
-  const customData = cartItemList.value.map(item => ({ [item.searchGoodsRes.goodsIdx]: item.count }));
+  const customData = cartItemList.value.map(item => ({ [item.getGoodsRes.goodsIdx]: item.count }));
   const paymentData = {
     goodsList: cartItemList.value,
     customData,
@@ -155,6 +158,7 @@ const setPaymentData = async () => {
     usePoints: usePoints.value,
     finalOrderPrice: finalOrderPrice.value,
     cartIdx: route.params.cartIdx,
+    popupIdx: cartStore.cartList.find(cart => String(cart.cartIdx) === String(route.params.cartIdx))?.popupIdx,
   };
   await ordersStore.setPaymentData(paymentData);
   router.push('/orders');

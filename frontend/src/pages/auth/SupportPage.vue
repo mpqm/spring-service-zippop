@@ -4,7 +4,7 @@
         <div class="lyt-centertop">
             <div class="wrp-centertop">
 
-                <form class="ctn-chidform" @submit.prevent="findUserId">
+                <form class="ctn-chidform ctn-formcard" @submit.prevent="findUserId">
                     <h1 class="txt-def0">아이디 찾기</h1>
 
                     <div class="ctn-checkbox">
@@ -25,7 +25,7 @@
                     <button class="btn-default" type="submit">아이디 찾기</button>
                 </form>
                 
-                <form class="ctn-chidform" @submit.prevent="findUserPassword">
+                <form class="ctn-chidform ctn-formcard" @submit.prevent="findUserPassword">
                     <h1 class="txt-def0">비밀번호 찾기</h1>
 
                     <div class="ctn-checkbox">
@@ -46,7 +46,7 @@
                     <button class="btn-default" type="submit">비밀번호 찾기</button>
                 </form>
                 
-                <form class="ctn-chidform" @submit.prevent="activateAccount">
+                <form class="ctn-chidform ctn-formcard" @submit.prevent="activateAccount">
                     <h1 class="txt-def0">계정 활성화</h1>
                     
                     <div class="ctn-checkbox">

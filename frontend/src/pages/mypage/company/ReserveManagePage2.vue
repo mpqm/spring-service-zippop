@@ -8,7 +8,7 @@
             <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />
           </button>
           <router-link class="btn-default" :to="`/mypage/company/reserve/register/${route.params.popupIdx}`">
-            <Icon icon="iconoir:add-square" width="20px" height="20px" style="color: #ffffff" />예약 등록
+            <Icon icon="iconoir:add-square" width="20px" height="20px" class="ico-inverse" />예약 등록
           </router-link>
         </div>
       </div>

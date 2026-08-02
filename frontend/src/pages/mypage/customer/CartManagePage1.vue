@@ -4,9 +4,13 @@
       <div class="wrp-list" v-if="cartList && cartList.length">
         <PopupList v-for="cart in cartList" :key="cart.cartIdx" :popup="cart" :showControl="showControl" />
       </div>
-      <div class="txt-null" v-else>
-        <p>장바구니가 비어있습니다.</p>
-      </div>
+      <AppEmptyState
+        v-else
+        title="장바구니가 비어 있습니다"
+        description="종료된 팝업의 남은 굿즈를 둘러보고 원하는 상품을 담아보세요."
+        to="/goods"
+        action-label="재고 마켓 둘러보기"
+      />
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>

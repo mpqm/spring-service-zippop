@@ -1,10 +1,14 @@
 <template>
   <div class="lyt-child">
-    <div class="ctn-rootform">
-      <form @submit.prevent="updateAccount" class="ctn-chidform">
-        <div class="ctn-split">
-          <h1 class="txt-def0">회원정보 수정</h1>
-          <button class="btn-default" type="submit">수정하기</button>
+    <div class="ctn-rootform ctn-accountforms">
+      <form @submit.prevent="updateAccount" class="ctn-rootform ctn-reviewform">
+        <div class="ctn-reviewheading">
+          <div>
+            <span class="txt-eyebrow">PROFILE SETTINGS</span>
+            <h2>회원정보 수정</h2>
+            <p>이름과 연락처, 주소 및 프로필 이미지를 관리할 수 있습니다.</p>
+          </div>
+          <button class="btn-default btn-reviewsubmit" type="submit">저장</button>
         </div>
         <div class="ctn-inputdefault">
           <label class="ipt-default-label">이름</label>
@@ -20,20 +24,29 @@
         </div>
         <div class="ctn-inputdefault">
           <label class="ipt-default-label">주소/상세주소</label>
-          <div class="ctn-split">
+          <div class="ctn-addressfields">
             <input class="ipt-default" v-model="address" type="text" placeholder="주소" @click="openAddressSearch">
             <input class="ipt-default" v-model="addressDetail" type="text" placeholder="상세 주소">
           </div>
         </div>
-        <input @change="handleFileUpload" type="file" name="file" id="file">
-        <div class="ctn-filepreview" v-if="fileUrl"><img :src="fileUrl" /></div>
-        <label for="file"><div class="btn-default">프로필 파일 업로드</div></label>
+        <div class="ctn-inputdefault">
+          <label class="ipt-default-label">프로필 이미지</label>
+          <div class="ctn-profileupload">
+            <div class="ctn-filepreview" v-if="fileUrl"><img :src="fileUrl" alt="프로필 미리보기" /></div>
+            <input class="ipt-filehidden" @change="handleFileUpload" type="file" accept="image/*" name="file" id="file">
+            <label class="btn-normal btn-fileupload" for="file">이미지 선택</label>
+          </div>
+        </div>
       </form>
 
-      <form @submit.prevent="editPassword" class="ctn-chidform">
-        <div class="ctn-split">
-          <h1 class="txt-def0">비밀번호 변경</h1>
-          <button class="btn-default" type="submit">비밀번호 변경</button>
+      <form @submit.prevent="editPassword" class="ctn-rootform ctn-reviewform">
+        <div class="ctn-reviewheading">
+          <div>
+            <span class="txt-eyebrow">SECURITY</span>
+            <h2>비밀번호 변경</h2>
+            <p>현재 비밀번호를 확인한 후 새로운 비밀번호로 변경합니다.</p>
+          </div>
+          <button class="btn-default btn-reviewsubmit" type="submit">변경</button>
         </div>
         <div class="ctn-inputdefault">
           <label class="ipt-default-label">기존 비밀번호</label>
@@ -45,10 +58,14 @@
         </div>
       </form>
 
-      <div class="ctn-chidform">
-        <div class="ctn-split">
-          <h1 class="txt-def0">계정 비활성화</h1>
-          <button class="btn-default" @click="deactivateAccount">계정 비활성화</button>
+      <div class="ctn-reviewform ctn-accountdanger">
+        <div class="ctn-reviewheading">
+          <div>
+            <span class="txt-eyebrow">ACCOUNT STATUS</span>
+            <h2>계정 비활성화</h2>
+            <p>계정을 비활성화하면 ZIPPOP 서비스를 더 이상 이용할 수 없습니다.</p>
+          </div>
+          <button class="btn-danger" type="button" @click="deactivateAccount">계정 비활성화</button>
         </div>
       </div>
     </div>
@@ -60,6 +77,7 @@ import { useAccountStore } from '@/stores/accountStore';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
+import { createMultipartRequest } from '@/utils/multipart';
 
 const accountStore = useAccountStore();
 const toast = useToast();
@@ -108,12 +126,24 @@ const openAddressSearch = () => {
 };
 
 const handleFileUpload = (event) => {
-  file.value = event.target.files[0];
-  if (file.value) { fileUrl.value = URL.createObjectURL(file.value); }
+  const selectedFile = event.target.files?.[0];
+  if (!selectedFile) return;
+  if (!selectedFile.type.startsWith('image/')) {
+    toast.error('이미지 파일만 선택할 수 있습니다.');
+    event.target.value = '';
+    return;
+  }
+  if (selectedFile.size > 5 * 1024 * 1024) {
+    toast.error('프로필 이미지는 5MB 이하만 등록할 수 있습니다.');
+    event.target.value = '';
+    return;
+  }
+  if (fileUrl.value?.startsWith('blob:')) URL.revokeObjectURL(fileUrl.value);
+  file.value = selectedFile;
+  fileUrl.value = URL.createObjectURL(selectedFile);
 };
 
 const updateAccount = async () => {
-  const formData = new FormData();
   const req = {
     name: userInfo.value.name,
     phoneNumber: userInfo.value.phoneNumber,
@@ -121,11 +151,11 @@ const updateAccount = async () => {
     profileImageUrl: file.value ? null : accountStore.userInfo.profileImageUrl,
     crn: userInfo.value.crn,
   };
-  formData.append('dto', new Blob([JSON.stringify(req)], { type: 'application/json' }));
-  if (file.value) { formData.append('file', file.value); }
+  const formData = createMultipartRequest(req, file.value ? [file.value] : [], 'file');
 
   const res = await accountStore.updateAccount(formData);
   if (res.success) {
+    await accountStore.getAccount();
     toast.success(res.message);
     router.push("/");
   } else {

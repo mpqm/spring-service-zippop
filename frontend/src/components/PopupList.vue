@@ -7,18 +7,18 @@
       <h4 class="txt-def1">{{ popup.popupName }}</h4>
       <button class="btn-tagdefault">{{ popup.category }}</button>
       <button class="btn-tagdefault">{{ popup.popupStartDate }}<span class="divider">~</span>{{ popup.popupEndDate }}</button>
-      <button class="btn-tagdefault"><Icon icon="iconoir:thumbs-up" width="20px" height="20px" style="color: #00c7ae" /> {{ popup.likeCount }}</button>
-      <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px" style="color: #00c7ae" /> {{ popup.totalPeople }}</button>
+      <button class="btn-tagdefault"><Icon icon="iconoir:thumbs-up" width="20px" height="20px" class="ico-accent" /> {{ popup.likeCount }}</button>
+      <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px" class="ico-accent" /> {{ popup.totalPeople }}</button>
     </div>
 
     <!-- CartManagePage1 용 -->
     <div v-if="showControl === 3" class="ctn-listbuttons">
       <button class="btn-tagaction" @click="goCart">
-        <Icon icon="iconoir:eye" width="20px" height="20px" style="color: #ffffff" />
+        <Icon icon="iconoir:eye" width="20px" height="20px" class="ico-inverse" />
         카트 보기
       </button>
       <button class="btn-tagaction" @click="deleteCart">
-        <Icon icon="iconoir:trash" width="20px" height="20px" style="color: #ffffff" />
+        <Icon icon="iconoir:trash" width="20px" height="20px" class="ico-inverse" />
         비우기
       </button>
     </div>

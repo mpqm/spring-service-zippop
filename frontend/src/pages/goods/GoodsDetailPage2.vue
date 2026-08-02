@@ -11,8 +11,8 @@
           <p class="txt-desc">{{ goods.goodsContent }}</p>
           <div class="ctn-tagbutton">
             <button class="btn-tagdefault">{{ goods.popupName }}</button>
-            <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsPrice }}원</button>
-            <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" style="color: #00c7ae" />{{ goods.goodsAmount }}개</button>
+            <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" class="ico-accent" />{{ goods.goodsPrice }}원</button>
+            <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" class="ico-accent" />{{ goods.goodsAmount }}개</button>
             <button class="btn-tagaction" @click="createCart"><Icon icon="iconoir:cart" width="20px" height="20px" />장바구니</button>
             <button class="btn-tagaction" @click="router.back()"><Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />뒤로가기</button>
           </div>

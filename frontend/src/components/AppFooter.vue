@@ -1,6 +1,10 @@
 <template>
-    <div class="lyt-footer">
+    <footer class="lyt-footer">
         <div class="wrp-footer">
+            <div class="ctn-footerbrand">
+                <strong class="txt-footerlogo">ZIPPOP</strong>
+                <span>팝업의 경험과 남은 재고를 더 오래 연결합니다</span>
+            </div>
             <p class="txt-footer">
                 <strong>ZIPPOP 문의 센터: 1234-1234 / 평일 10:00 - 18:00 (점심시간 13:00 - 14:00 제외· 주말/공휴일 제외)</strong>
             </p>
@@ -10,5 +14,5 @@
                 <strong> Copyright ©ZIPPOP Inc. All Rights Reserved.</strong>
             </p>
         </div>
-    </div>
+    </footer>
 </template>

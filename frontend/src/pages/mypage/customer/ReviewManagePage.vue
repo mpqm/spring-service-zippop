@@ -4,9 +4,13 @@
       <div class="wrp-list" v-if="reviewList && reviewList.length">
         <ReviewList v-for="review in reviewList" :key="review.reviewIdx" :review="review" :hideStoreName="true" />
       </div>
-      <div class="txt-null" v-else>
-        <p>등록된 리뷰가 없습니다.</p>
-      </div>
+      <AppEmptyState
+        v-else
+        title="등록한 리뷰가 없습니다"
+        description="방문한 팝업의 경험을 남기면 이곳에서 리뷰를 관리할 수 있어요."
+        to="/"
+        action-label="팝업 둘러보기"
+      />
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>

@@ -3,8 +3,8 @@
         <AppHeader></AppHeader>
         <div class="lyt-centertop">
             <div class="wrp-centertop">
-                <form class="ctn-rootform" @submit.prevent="login">
-                    <img class="img-mainlogo" src="../../assets/img/zippopbanner.png">
+                <form class="ctn-rootform ctn-formcard" @submit.prevent="login">
+                    <img class="img-mainlogo" src="../../assets/img/zippoicon-removebg.png" alt="ZIPPOP">
                     
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">아이디</label>
@@ -61,6 +61,9 @@ const emailVerify = async () => {
     if (query.error) {
         toast.error("이메일 인증에 실패했습니다. 다시 시도해주세요.");
     }
+    if (query.reason === 'auth') {
+        toast.error('로그인이 필요합니다.');
+    }
 }
 
 // 로그인 
@@ -71,7 +74,8 @@ const login = async () => {
     }
     const res = await authStore.login(req);
     if (res.success) {
-        router.push("/");
+        const redirect = router.currentRoute.value.query.redirect;
+        router.push(typeof redirect === 'string' && redirect.startsWith('/') ? redirect : '/');
         toast.success(res.message)
     } else {
         toast.error(res.message)
