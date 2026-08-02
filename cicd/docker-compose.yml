@@ -1,100 +1,83 @@
 services:
-
   backend:
     container_name: zippop-backend
-    image: okqkrwhdtjd/backend:${DOCKER_IMAGE_TAG}
+    build:
+      context: ..
+      dockerfile: cicd/Dockerfile_backend
+    env_file:
+      - .env
     environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - DB_URL=${DB_URL}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - REDIS_URL=${REDIS_URL}
-      - REDIS_PORT=${REDIS_PORT}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - MAIL_HOST=${MAIL_HOST}
-      - MAIL_PORT=${MAIL_PORT}
-      - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
-      - KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
-#      - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
-#      - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
-#      - NAVER_REDIRECT_URL=${NAVER_REDIRECT_URL}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL}
-      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
-      - S3_SECRET_KEY=${S3_SECRET_KEY}
-      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-      - IMP_KEY=${IMP_KEY}
-      - IMP_SECRET=${IMP_SECRET}
+      SERVER_PORT: 8080
+      SERVER_ADDR: 0.0.0.0
+      DB_URL: jdbc:mariadb://mariadb:3306/${MARIADB_DATABASE}
+      DB_USERNAME: root
+      DB_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      REDIS_URL: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-qwer1234}
+      NAVER_CLIENT_SECRET: ${NAVER_CILENT_SECRET:-local-secret}
+      FILE_UPLOAD_TYPE: local
+      LOCAL_UPLOAD_PATH: /app/uploads
+      S3_REGION: ap-northeast-2
     ports:
       - "8080:8080"
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/swagger-ui/index.html"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
 
   frontend:
     container_name: zippop-frontend
+    build:
+      context: ..
+      dockerfile: cicd/Dockerfile_frontend
     ports:
-      - "80:80"
-    image: okqkrwhdtjd/frontend:${DOCKER_IMAGE_TAG}
-    volumes:
-      - ../cicd/nginx:/etc/nginx/conf.d
+      - "8081:80"
+    depends_on:
+      backend:
+        condition: service_healthy
 
   mariadb:
     container_name: zippop-mariadb
-    ports:
-      - 3306:3306
     image: mariadb:10.11
     environment:
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
     volumes:
-      - ./mariadb/data/:/var/lib/mysql
-      - ./mariadb/mariadb.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-#      - ./mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql
-    mem_limit: 2g
-    cpus: 2.0
+      - mariadb_data:/var/lib/mysql
+      - ./mariadb/mariadb.cnf:/etc/mysql/conf.d/zippop.cnf:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   redis:
     container_name: zippop-redis
     image: redis:7.2-alpine
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-qwer1234}"]
     ports:
       - "6379:6379"
-    command: >
-      sh -c "echo 'requirepass qwer1234' > /usr/local/etc/redis/redis.conf && 
-      exec redis-server /usr/local/etc/redis/redis.conf"
     volumes:
-      - ./redis:/usr/local/etc/redis
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-qwer1234}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
-  mysqld_exporter:
-    image: prom/mysqld-exporter:latest
-    container_name: zippop-mariadb-exporter
-    volumes:
-      - ./exporter/my.cnf:/.my.cnf
-    depends_on:
-      - mariadb
-    ports:
-      - "9104:9104"
-
-  prometheus:
-      image: prom/prometheus
-      container_name: zippop-prometheus
-      command:
-        - '--config.file=/etc/prometheus/prometheus.yml'
-      volumes:
-        - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      ports:
-        - "9090:9090"
-
-  # grafana
-  # https://grafana.com/grafana/dashboards/4701-jvm-micrometer/
-  # https://grafana.com/grafana/dashboards/7362-mysql-overview/
-  grafana:
-    image: grafana/grafana
-    container_name: zippop-grafana
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - ./grafana/state:/var/lib/grafana
-    ports:
-      - "3000:3000"
-
+volumes:
+  mariadb_data:
+  redis_data:
+  uploads:

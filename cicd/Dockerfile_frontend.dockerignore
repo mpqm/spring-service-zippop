@@ -1,0 +1,10 @@
+.git
+.gradle-local
+backend
+frontend/node_modules
+frontend/dist
+frontend/.cache
+cicd/mariadb/data
+cicd/grafana/state
+docs
+meta

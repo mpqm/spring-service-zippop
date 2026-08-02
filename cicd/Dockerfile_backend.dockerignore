@@ -1,0 +1,9 @@
+.git
+.gradle-local
+backend/.gradle
+backend/build
+frontend
+cicd/mariadb/data
+cicd/grafana/state
+docs
+meta
