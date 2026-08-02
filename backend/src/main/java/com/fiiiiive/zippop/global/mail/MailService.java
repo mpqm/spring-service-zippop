@@ -1,9 +1,12 @@
 package com.fiiiiive.zippop.global.mail;
 
 import com.fiiiiive.zippop.global.base.BaseConstant;
+import com.fiiiiive.zippop.global.base.ServerErrorCode;
+import com.fiiiiive.zippop.global.base.ServerException;
 import com.fiiiiive.zippop.global.enums.RoleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -43,7 +46,11 @@ public class MailService {
 
         // 메시지 생성 및 전송
         message.setText(BaseConstant.DEFAULT_SERVER_URL+"/api/v1/auth/verify?email="+email+"&role="+role+"&uuid="+uuid);
-        emailSender.send(message);
+        try {
+            emailSender.send(message);
+        } catch (MailException exception) {
+            throw new ServerException(ServerErrorCode.EMAIL_SEND_ERROR, exception);
+        }
 
     }
 
@@ -64,7 +71,11 @@ public class MailService {
 
         // 메시지 생성 및 전송
         message.setText(text.toString());
-        emailSender.send(message);
+        try {
+            emailSender.send(message);
+        } catch (MailException exception) {
+            throw new ServerException(ServerErrorCode.EMAIL_SEND_ERROR, exception);
+        }
 
     }
 
@@ -85,7 +96,11 @@ public class MailService {
 
         // 메시지 생성 및 전송
         message.setText(text.toString());
-        emailSender.send(message);
+        try {
+            emailSender.send(message);
+        } catch (MailException exception) {
+            throw new ServerException(ServerErrorCode.EMAIL_SEND_ERROR, exception);
+        }
 
     }
 }

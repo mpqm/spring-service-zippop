@@ -1,5 +1,7 @@
 package com.fiiiiive.zippop.global.redis;
 
+import com.fiiiiive.zippop.global.base.ServerErrorCode;
+import com.fiiiiive.zippop.global.base.ServerException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -28,47 +30,71 @@ public class RedisQueueService {
             zSetOperations.remove(key, "start");
             redisTemplate.expire(key, expirationTimeMinutes, TimeUnit.MINUTES);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_CREATE_ERROR, e);
         }
     }
 
     // 큐 존재 여부 확인
     public boolean existQueue(String key) {
-        return redisTemplate.hasKey(key);
+        try {
+            return redisTemplate.hasKey(key);
+        } catch (Exception exception) {
+            throw new ServerException(ServerErrorCode.REDIS_READ_ERROR, exception);
+        }
     }
 
     // 큐 등록
     public void enrollQueue(String key, String value, long timestamp) {
-        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
-        zSetOperations.add(key, value, timestamp);
+        try {
+            ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+            zSetOperations.add(key, value, timestamp);
+        } catch (Exception exception) {
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_ENROLL_ERROR, exception);
+        }
     }
 
     // 큐 삭제
     public void deleteQueue(String workingQueueUUID, String waitingQueueUUID) {
-        redisTemplate.delete(workingQueueUUID);
-        redisTemplate.delete(waitingQueueUUID);
+        try {
+            redisTemplate.delete(workingQueueUUID);
+            redisTemplate.delete(waitingQueueUUID);
+        } catch (Exception exception) {
+            throw new ServerException(ServerErrorCode.REDIS_DELETE_ERROR, exception);
+        }
     }
 
     // SortedSet 전체 값(로그) 조회 및 사이즈
     public String getSize(String key) {
-        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
-        Set<ZSetOperations.TypedTuple<Object>> values = zSetOperations.rangeWithScores(key, 0, -1);
-        Objects.requireNonNull(values).forEach(value -> log.info("Value: " + value.getValue() + ", Score: " + value.getScore()) );
-        String total = String.valueOf(zSetOperations.zCard(key));
-        log.info(total);
-        return total;
+        try {
+            ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+            Set<ZSetOperations.TypedTuple<Object>> values = zSetOperations.rangeWithScores(key, 0, -1);
+            Objects.requireNonNull(values).forEach(value -> log.info("Value: " + value.getValue() + ", Score: " + value.getScore()) );
+            String total = String.valueOf(zSetOperations.zCard(key));
+            log.info(total);
+            return total;
+        } catch (Exception exception) {
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_SIZE_ERROR, exception);
+        }
     }
 
     // SortedSet 내 값의 순위 조회
     public Long getOrder(String key, String value) {
-        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
-        return zSetOperations.rank(key, value);
+        try {
+            ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+            return zSetOperations.rank(key, value);
+        } catch (Exception exception) {
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_ORDER_ERROR, exception);
+        }
     }
 
     // SortedSet 값 삭제
     public void remove(String key, String value) {
-        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
-        zSetOperations.remove(key, value);
+        try {
+            ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+            zSetOperations.remove(key, value);
+        } catch (Exception exception) {
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_REMOVE_ERROR, exception);
+        }
     }
 
     // 예약 토큰 블랙리스트에 추가 (만료 시간: 10분)
@@ -78,6 +104,7 @@ public class RedisQueueService {
             log.info("예약 토큰 블랙리스트 추가: {}", token);
         } catch (Exception e) {
             log.error("예약 토큰 블랙리스트 추가 중 오류: {}", e.getMessage());
+            throw new ServerException(ServerErrorCode.REDIS_SAVE_ERROR, e);
         }
     }
 
@@ -87,7 +114,7 @@ public class RedisQueueService {
             return redisTemplate.hasKey("blacklist:wtoken:" + token);
         } catch (Exception e) {
             log.error("예약 토큰 블랙리스트 확인 중 오류: {}", e.getMessage());
-            return false;
+            throw new ServerException(ServerErrorCode.REDIS_READ_ERROR, e);
         }
     }
 
@@ -98,25 +125,24 @@ public class RedisQueueService {
             return null;
         }
 
-        ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
-        Set<ZSetOperations.TypedTuple<Object>> waitingList = zSetOperations.rangeWithScores(key2, 0, 0);
+        try {
+            ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+            Set<ZSetOperations.TypedTuple<Object>> waitingList = zSetOperations.rangeWithScores(key2, 0, 0);
 
-        if (waitingList == null || waitingList.isEmpty()) {
-            return null;
+            if (waitingList == null || waitingList.isEmpty()) return null;
+            Long currentSize = zSetOperations.zCard(key1);
+            if (currentSize == null || currentSize >= fixedSize) return null;
+            ZSetOperations.TypedTuple<Object> firstWaitingUser = waitingList.iterator().next();
+            if (firstWaitingUser.getValue() == null || firstWaitingUser.getScore() == null) return null;
+
+            String userId = (String) firstWaitingUser.getValue();
+            double score = firstWaitingUser.getScore();
+            zSetOperations.remove(key2, userId);
+            zSetOperations.add(key1, userId, score);
+            return userId;
+        } catch (Exception exception) {
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_FIRST_USER_ERROR, exception);
         }
-        Long currentSize = zSetOperations.zCard(key1);
-        if (currentSize == null || currentSize >= fixedSize) {
-            return null;
-        }
-        ZSetOperations.TypedTuple<Object> firstWaitingUser = waitingList.iterator().next();
-        if (firstWaitingUser == null || firstWaitingUser.getValue() == null || firstWaitingUser.getScore() == null) {
-            return null;
-        }
-        String userId = (String) firstWaitingUser.getValue();
-        double score = firstWaitingUser.getScore();
-        zSetOperations.remove(key2, userId);
-        zSetOperations.add(key1, userId, score);
-        return userId;
     }
 
     // Redisson 분산 락을 사용한 원자적 큐 등록 (정원 제한 포함) Pub/Sub 방식으로 스핀 락 문제 해결
@@ -170,10 +196,10 @@ public class RedisQueueService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             log.error("⚠️ 락 대기 중 인터럽트 발생 - key: {}, error: {}", key, e.getMessage());
-            return false;
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_ENROLL_ERROR, e);
         } catch (Exception e) {
             log.error("❌ 큐 등록 중 오류 발생 - key: {}, error: {}", key, e.getMessage(), e);
-            return false;
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_ENROLL_ERROR, e);
         } finally {
             // 락 해제 (반드시 finally에서 실행)
             if (lock.isHeldByCurrentThread()) {

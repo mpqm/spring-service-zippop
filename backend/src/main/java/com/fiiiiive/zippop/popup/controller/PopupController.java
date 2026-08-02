@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.popup.controller;
 
-import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.base.SuccessCode;
+import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.upload.FileUploadService;
 import com.fiiiiive.zippop.popup.model.dto.*;
@@ -31,19 +31,19 @@ public class PopupController {
 
     // 팝업 생성
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> createPopup(
+    public ResponseEntity<SuccessResponse<Void>> createPopup(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart(name = "req") CreatePopupReq req
     ) {
         List<String> urls = fileUploadService.multipleUpload(files);
         popupService.createPopup(user, req, urls);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.STORE_REGISTER_SUCCESS));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(SuccessCode.STORE_REGISTER_SUCCESS));
     }
 
     // 팝업 수정
     @PatchMapping("/{popupIdx}")
-    public ResponseEntity<BaseResponse<Void>> updatePopup(
+    public ResponseEntity<SuccessResponse<Void>> updatePopup(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long popupIdx,
             @RequestPart(name = "files", required = false) MultipartFile[] files,
@@ -51,104 +51,104 @@ public class PopupController {
     ) {
         List<String> urls = fileUploadService.multipleUpload(files);
         popupService.updatePopup(user, popupIdx, req, urls);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_UPDATE_SUCCESS));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_UPDATE_SUCCESS));
     }
 
     // 팝업 상세 조회
     @GetMapping("/{popupIdx}")
-    public ResponseEntity<BaseResponse<GetPopupRes>> getPopup(
+    public ResponseEntity<SuccessResponse<GetPopupRes>> getPopup(
             @PathVariable Long popupIdx
     ) {
         GetPopupRes getPopupRes = popupService.getPopup(popupIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_SEARCH_SUCCESS, getPopupRes));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_SEARCH_SUCCESS, getPopupRes));
     }
 
     // 팝업 목록 조회
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<GetPopupRes>>> getPopups(
+    public ResponseEntity<SuccessResponse<Page<GetPopupRes>>> getPopups(
             @RequestParam String status,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetPopupRes> res = popupService.getPopups(status, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_SEARCH_ALL_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_SEARCH_ALL_SUCCESS, res));
     }
 
     // 팝업 삭제
     @DeleteMapping("/{popupIdx}")
-    public ResponseEntity<BaseResponse<Void>> deletePopup(
+    public ResponseEntity<SuccessResponse<Void>> deletePopup(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long popupIdx
     ) {
         popupService.deletePopup(user, popupIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_DELETE_SUCCESS));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_DELETE_SUCCESS));
     }
 
     // 팝업 좋아요 토글
     @PostMapping("/{popupIdx}/likes")
-    public ResponseEntity<BaseResponse<Void>> togglePopupLike(
+    public ResponseEntity<SuccessResponse<Void>> togglePopupLike(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long popupIdx
     ) {
         popupService.togglePopupLike(user, popupIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_LIKE_SUCCESS));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_LIKE_SUCCESS));
     }
 
     // 내가 좋아요한 팝업 목록 조회
     @GetMapping("/likes/me")
-    public ResponseEntity<BaseResponse<Page<GetPopupRes>>> getMyLikedPopups(
+    public ResponseEntity<SuccessResponse<Page<GetPopupRes>>> getMyLikedPopups(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetPopupRes> res = popupService.getMyLikedPopups(user, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_LIKE_SEARCH_ALL_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_LIKE_SEARCH_ALL_SUCCESS, res));
     }
 
     // 팝업 리뷰 등록
     @PostMapping("/{popupIdx}/reviews")
-    public ResponseEntity<BaseResponse<Void>> createPopupReview(
+    public ResponseEntity<SuccessResponse<Void>> createPopupReview(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long popupIdx,
             @Valid @RequestBody CreatePopupReviewReq req
     ) {
         popupService.createPopupReview(user, popupIdx, req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.STORE_REVIEW_SUCCESS));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(SuccessCode.STORE_REVIEW_SUCCESS));
     }
 
     // 팝업 리뷰 목록 조회
     @GetMapping("/{popupIdx}/reviews")
-    public ResponseEntity<BaseResponse<Page<GetPopupReviewRes>>> getPopupReviews(
+    public ResponseEntity<SuccessResponse<Page<GetPopupReviewRes>>> getPopupReviews(
             @PathVariable Long popupIdx,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetPopupReviewRes> res = popupService.getPopupReviews(popupIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_REVIEW_SEARCH_ALL_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_REVIEW_SEARCH_ALL_SUCCESS, res));
     }
 
     // 내가 작성한 리뷰 목록 조회
     @GetMapping("/reviews/me")
-    public ResponseEntity<BaseResponse<Page<GetPopupReviewRes>>> getMyReviews(
+    public ResponseEntity<SuccessResponse<Page<GetPopupReviewRes>>> getMyReviews(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetPopupReviewRes> res = popupService.getMyReviews(user, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_REVIEW_SEARCH_ALL_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_REVIEW_SEARCH_ALL_SUCCESS, res));
     }
 
     // 팝업 예약 목록 조회
     @GetMapping("/{popupIdx}/reserves")
-    public ResponseEntity<BaseResponse<Page<GetReserveRes>>> getPopupReserves(
+    public ResponseEntity<SuccessResponse<Page<GetReserveRes>>> getPopupReserves(
             @RequestParam(required = false) String keyword,
             @PathVariable Long popupIdx,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetReserveRes> response = popupService.getPopupReserves(popupIdx, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_SEARCH_ALL_SUCCESS, response));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.RESERVE_SEARCH_ALL_SUCCESS, response));
     }
 
 }

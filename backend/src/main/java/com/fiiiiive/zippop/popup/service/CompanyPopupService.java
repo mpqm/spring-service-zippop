@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.popup.service;
 
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.model.dto.GetOrdersRes;
 import com.fiiiiive.zippop.orders.model.entity.Orders;
@@ -35,7 +35,7 @@ public class CompanyPopupService {
     private final OrdersRepository ordersRepository;
 
     // 팝업 목록 조회(기업용)
-    public Page<GetPopupRes> getCompanyPopups(CustomUserDetails user, String keyword, int page, int size) throws BaseException {
+    public Page<GetPopupRes> getCompanyPopups(CustomUserDetails user, String keyword, int page, int size) throws ServiceException {
 
         // 팝업 페이지 조회(keyword, email, pageable) 조회
         // true : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
@@ -50,11 +50,11 @@ public class CompanyPopupService {
     }
 
     // 기업 정산 금액 조회
-    public Page<GetPopupPayoutsRes> getCompanyPopupPayouts(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
+    public Page<GetPopupPayoutsRes> getCompanyPopupPayouts(CustomUserDetails user, Long popupIdx, int page, int size) throws ServiceException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findByPopupIdx(popupIdx)
-                .orElseThrow(() -> new BaseException(BaseMessage.PAYOUT_SEARCH_FAIL_NOT_FOUND_STORE));
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.PAYOUT_SEARCH_FAIL_NOT_FOUND_STORE));
 
         popupPolicy.validateOwner(popup, user);
 
@@ -67,30 +67,30 @@ public class CompanyPopupService {
     }
 
     // 예약 목록 조회(기업용)
-    public Page<GetReserveRes> getCompanyPopupReserves(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
+    public Page<GetReserveRes> getCompanyPopupReserves(CustomUserDetails user, Long popupIdx, int page, int size) throws ServiceException {
 
         Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(popupIdx, user.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
-                () -> new BaseException(BaseMessage.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         return Reserve.toDtoPage(reservePage);
     }
 
     // 기업 고객 주문 목록 조회
-    public Page<GetOrdersRes> getCompanyPopupOrdersList(CustomUserDetails user, Long popupIdx, int page, int size) throws BaseException {
+    public Page<GetOrdersRes> getCompanyPopupOrdersList(CustomUserDetails user, Long popupIdx, int page, int size) throws ServiceException {
 
         // 팝업(popupIdx) 조회
         Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND_STORE)
+                () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND_STORE)
         );
 
         // 팝업 소유 확인
         if(!(popup.getCompanyEmail().equals(user.getEmail()))) {
-            throw new BaseException(BaseMessage.ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER);
+            throw new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER);
         }
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Orders> ordersPage = ordersRepository.findAllByPopupIdx(popupIdx, pageable).orElseThrow(
-                () -> new BaseException(BaseMessage.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
         return Orders.toDtoPage(ordersPage);
@@ -98,20 +98,20 @@ public class CompanyPopupService {
     }
 
     // 기업 고객 주문 상세 조회
-    public GetOrdersRes getPopupOrdersDetail(CustomUserDetails user, Long popupIdx, Long ordersIdx) throws BaseException {
+    public GetOrdersRes getPopupOrdersDetail(CustomUserDetails user, Long popupIdx, Long ordersIdx) throws ServiceException {
 
         // 팝업(popupIdx) 조회
         Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.ORDERS_SEARCH_FAIL_NOT_FOUND_STORE)
+                () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_FAIL_NOT_FOUND_STORE)
         );
 
         // 팝업 소유 확인
         if(!(popup.getCompanyEmail().equals(user.getEmail()))) {
-            throw new BaseException(BaseMessage.ORDERS_SEARCH_FAIL_INVALID_MEMBER);
+            throw new ServiceException(ServiceErrorCode.ORDERS_SEARCH_FAIL_INVALID_MEMBER);
         }
 
         Orders orders = ordersRepository.findByOrdersIdxAndPopupIdx(ordersIdx, popupIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.ORDERS_SEARCH_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_FAIL_NOT_FOUND)
         );
 
         return orders.toDto();

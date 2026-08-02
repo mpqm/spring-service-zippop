@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.global.security.filter;
 
+import com.fiiiiive.zippop.global.base.ServerException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +23,10 @@ public class CustomLoginFailureHandler extends SimpleUrlAuthenticationFailureHan
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        if (exception.getCause() instanceof ServerException serverException) {
+            handlerExceptionResolver.resolveException(request, response, null, serverException);
+            return;
+        }
         handlerExceptionResolver.resolveException(request, response, null, exception);
     }
 

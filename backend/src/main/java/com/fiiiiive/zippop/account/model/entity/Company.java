@@ -2,8 +2,8 @@ package com.fiiiiive.zippop.account.model.entity;
 
 import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.enums.RoleType;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import jakarta.persistence.*;
@@ -132,14 +132,14 @@ public class Company extends BaseEntity implements Account{
     // 회원가입 검증
     public void validateSignup() {
         if (!(this.isInActive && !this.isEmailAuth)) {
-            throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_ALREADY_EXIST);
+            throw new ServiceException(ServiceErrorCode.AUTH_SIGNUP_FAIL_ALREADY_EXIST);
         }
     }
 
     // 활성화 검증
     public void validateActive() {
         if (!this.isInActive) {
-            throw new BaseException(BaseMessage.AUTH_ACTIVE_FAIL_NOT_INACTIVE);
+            throw new ServiceException(ServiceErrorCode.AUTH_ACTIVE_FAIL_NOT_INACTIVE);
         }
     }
 
@@ -147,14 +147,14 @@ public class Company extends BaseEntity implements Account{
     public void validateUserIdSendable() {
         if (this.isEmailAuth && !this.isInActive) return; // 이메일 인증한 회원
         if (!isEmailAuth && isInActive) return; // 비활성화 회원
-        throw new BaseException(BaseMessage.AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY);
+        throw new ServiceException(ServiceErrorCode.AUTH_FIND_ID_FAIL_NOT_EMAIL_VERIFY);
     }
 
     // 임시 비밀번호 발급 조건 검증
     public void validateTempPasswordIssuable() {
         if (!isInActive && isEmailAuth) return;
         if (isInActive && !isEmailAuth) return;
-        throw new BaseException(BaseMessage.AUTH_FIND_PW_FAIL_NOT_EMAIL_VERIFY);
+        throw new ServiceException(ServiceErrorCode.AUTH_FIND_PW_FAIL_NOT_EMAIL_VERIFY);
     }
 
     // 복구계정확인
@@ -190,7 +190,7 @@ public class Company extends BaseEntity implements Account{
     // 패스워드 초기화
     public void resetPassword(String originPassword, String newPassword, PasswordEncoder encoder) {
         if (!encoder.matches(originPassword, this.password)) {
-            throw new BaseException(BaseMessage.AUTH_RESET_PW_FAIL_PASSWORD_NOT_MATCH);
+            throw new ServiceException(ServiceErrorCode.AUTH_RESET_PW_FAIL_PASSWORD_NOT_MATCH);
         }
         this.password = encoder.encode(newPassword);
     }

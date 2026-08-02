@@ -2,8 +2,11 @@ package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiiiiive.zippop.account.model.dto.LoginReq;
-import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.base.SuccessCode;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.base.SuccessResponse;
+import com.fiiiiive.zippop.global.base.ServerErrorCode;
+import com.fiiiiive.zippop.global.base.ServerException;
 import com.fiiiiive.zippop.global.crypto.JwtService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.FilterChain;
@@ -16,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -44,16 +48,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             
             // 아이디와 비밀번호 입력 검증
             if (req.getUserId() == null || req.getUserId().trim().isEmpty()) {
-                throw new BadCredentialsException(BaseMessage.AUTH_LOGIN_FAIL_ID_NULL.getMessage());
+                throw new BadCredentialsException(ServiceErrorCode.AUTH_LOGIN_FAIL_ID_NULL.getMessage());
             }
             if (req.getPassword() == null || req.getPassword().trim().isEmpty()) {
-                throw new BadCredentialsException(BaseMessage.AUTH_LOGIN_FAIL_PASSWORD_NULL.getMessage());
+                throw new BadCredentialsException(ServiceErrorCode.AUTH_LOGIN_FAIL_PASSWORD_NULL.getMessage());
             }
             
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(req.getUserId(), req.getPassword(), null);
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            ServerException serverException = new ServerException(ServerErrorCode.MALFORMED_JSON, e);
+            throw new InternalAuthenticationServiceException(serverException.getMessage(), serverException);
         }
     }
 
@@ -90,8 +95,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");
-        BaseResponse<Void> baseResponse = new BaseResponse<>(BaseMessage.AUTH_LOGIN_SUCCESS);
-        mapper.writeValue(response.getWriter(), baseResponse);
+        SuccessResponse<Void> successResponse = new SuccessResponse<>(SuccessCode.AUTH_LOGIN_SUCCESS);
+        mapper.writeValue(response.getWriter(), successResponse);
         response.getWriter().flush();
     }
 

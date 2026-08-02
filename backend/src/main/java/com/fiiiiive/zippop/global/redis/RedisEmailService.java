@@ -1,5 +1,7 @@
 package com.fiiiiive.zippop.global.redis;
 
+import com.fiiiiive.zippop.global.base.ServerErrorCode;
+import com.fiiiiive.zippop.global.base.ServerException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,7 +23,7 @@ public class RedisEmailService {
             return uuid;
         } catch (Exception e) {
             log.error("이메일 인증 UUID 저장 중 오류: {}", e.getMessage());
-            throw new RuntimeException("이메일 인증 UUID 조회에 실패했습니다.", e);
+            throw new ServerException(ServerErrorCode.REDIS_SAVE_ERROR, e);
         }
     }
 
@@ -32,7 +34,7 @@ public class RedisEmailService {
             return value != null ? value.toString() : null;
         } catch (Exception e) {
             log.error("이메일 인증 UUID 조회 중 오류: {}", e.getMessage());
-            throw new RuntimeException("이메일 인증 UUID 조회에 실패했습니다.", e);
+            throw new ServerException(ServerErrorCode.REDIS_READ_ERROR, e);
         }
     }
 
@@ -42,7 +44,7 @@ public class RedisEmailService {
             redisTemplate.delete("emailVerify:" + email);
         } catch (Exception e) {
             log.error("이메일 인증 UUID 삭제 중 오류: {}", e.getMessage());
-            throw new RuntimeException("이메일 인증 UUID 삭제에 실패했습니다.", e);
+            throw new ServerException(ServerErrorCode.REDIS_DELETE_ERROR, e);
         }
     }
 

@@ -3,8 +3,8 @@ package com.fiiiiive.zippop.cart.model.entity;
 import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.model.entity.PopupImage;
@@ -13,6 +13,7 @@ import lombok.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Getter
 @Builder
@@ -28,7 +29,8 @@ public class Cart extends BaseEntity {
 
     // OneToMany
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> cartItemList;
+    @Builder.Default
+    private List<CartItem> cartItemList = new ArrayList<>();
 
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
@@ -55,6 +57,7 @@ public class Cart extends BaseEntity {
     // toDTO
     public GetCartRes toDto() {
         return GetCartRes.builder()
+                .cartIdx(this.getIdx())
                 .popupIdx(this.getPopup().getIdx())
                 .companyEmail(this.getPopup().getCompanyEmail())
                 .popupName(this.getPopup().getName())
@@ -78,11 +81,14 @@ public class Cart extends BaseEntity {
 
 
     public void validateNoDuplicateGoods(Goods goods) {
+        if (this.cartItemList == null) {
+            this.cartItemList = new ArrayList<>();
+        }
         boolean exists = this.cartItemList.stream()
                 .anyMatch(item -> item.getGoods().equals(goods));
 
         if (exists) {
-            throw new BaseException(BaseMessage.CART_REGISTER_FAIL_ITEM_EXIST);
+            throw new ServiceException(ServiceErrorCode.CART_REGISTER_FAIL_ITEM_EXIST);
         }
     }
 

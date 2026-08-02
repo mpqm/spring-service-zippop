@@ -2,8 +2,8 @@ package com.fiiiiive.zippop.orders.model.entity;
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.account.model.entity.Customer;
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.enums.OrdersStatus;
 import com.fiiiiive.zippop.orders.model.dto.GetOrdersRes;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
@@ -118,16 +118,16 @@ public class Orders extends BaseEntity {
         } else if (Objects.equals(this.status, OrdersStatus.RESERVE_READY) || Objects.equals(this.status, OrdersStatus.RESERVE_COMPLETE)){
             this.status = OrdersStatus.RESERVE_CANCEL;
         } else {
-            throw new BaseException(BaseMessage.ORDERS_CANCEL_FAIL_IS_DELIVERY);
+            throw new ServiceException(ServiceErrorCode.ORDERS_CANCEL_FAIL_IS_DELIVERY);
         }
     }
 
     public void validateOrders(){
         if(Objects.equals(this.status, OrdersStatus.STOCK_DELIVERY) || Objects.equals(this.status, OrdersStatus.RESERVE_DELIVERY)) {
-            throw new BaseException(BaseMessage.ORDERS_CANCEL_FAIL_IS_DELIVERY);
+            throw new ServiceException(ServiceErrorCode.ORDERS_CANCEL_FAIL_IS_DELIVERY);
         }
         if(Objects.equals(this.getStatus(), OrdersStatus.STOCK_CANCEL) || Objects.equals(this.getStatus(), OrdersStatus.RESERVE_CANCEL)) {
-            throw new BaseException(BaseMessage.ORDERS_CANCEL_FAIL_ALREADY_CANCEL);
+            throw new ServiceException(ServiceErrorCode.ORDERS_CANCEL_FAIL_ALREADY_CANCEL);
         }
     }
 
@@ -135,8 +135,8 @@ public class Orders extends BaseEntity {
         switch (this.status) {
             case STOCK_READY, STOCK_COMPLETE -> this.status = OrdersStatus.STOCK_DELIVERY;
             case RESERVE_READY, RESERVE_COMPLETE -> this.status = OrdersStatus.RESERVE_DELIVERY;
-            case STOCK_DELIVERY, RESERVE_DELIVERY -> throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_IS_DELIVERY);
-            case STOCK_CANCEL, RESERVE_CANCEL -> throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_IS_CANCEL);
+            case STOCK_DELIVERY, RESERVE_DELIVERY -> throw new ServiceException(ServiceErrorCode.ORDERS_COMPLETE_FAIL_IS_DELIVERY);
+            case STOCK_CANCEL, RESERVE_CANCEL -> throw new ServiceException(ServiceErrorCode.ORDERS_COMPLETE_FAIL_IS_CANCEL);
         }
     }
 
@@ -144,8 +144,8 @@ public class Orders extends BaseEntity {
         switch (this.status) {
             case STOCK_READY -> this.status = OrdersStatus.STOCK_COMPLETE;
             case RESERVE_READY -> this.status = OrdersStatus.RESERVE_COMPLETE;
-            case STOCK_DELIVERY, RESERVE_DELIVERY -> throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_IS_DELIVERY);
-            case STOCK_CANCEL, RESERVE_CANCEL -> throw new BaseException(BaseMessage.ORDERS_COMPLETE_FAIL_IS_CANCEL);
+            case STOCK_DELIVERY, RESERVE_DELIVERY -> throw new ServiceException(ServiceErrorCode.ORDERS_COMPLETE_FAIL_IS_DELIVERY);
+            case STOCK_CANCEL, RESERVE_CANCEL -> throw new ServiceException(ServiceErrorCode.ORDERS_COMPLETE_FAIL_IS_CANCEL);
         }
     }
 

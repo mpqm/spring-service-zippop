@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.global.enums;
 
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
 import lombok.Getter;
 
 @Getter

@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum Operation {
 
-    INCREMENT("increment"),
-    DECREMENT("decrement");
+    INCREMENT("INCREMENT"),
+    DECREMENT("DECREMENT");
 
     private final String name;
 

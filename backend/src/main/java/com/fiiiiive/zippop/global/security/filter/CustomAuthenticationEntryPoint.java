@@ -1,6 +1,5 @@
 package com.fiiiiive.zippop.global.security.filter;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +23,13 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException) throws IOException {
-        Exception exception = (Exception) request.getAttribute("exception");
-        if(exception instanceof ExpiredJwtException){
-            handlerExceptionResolver.resolveException(request, response, null, exception);
-        }  else {
-            handlerExceptionResolver.resolveException(request, response, null, authenticationException);
-        }
+        Object exception = request.getAttribute("exception");
+        handlerExceptionResolver.resolveException(
+                request,
+                response,
+                null,
+                exception instanceof Exception cause ? cause : authenticationException
+        );
     }
 
 }

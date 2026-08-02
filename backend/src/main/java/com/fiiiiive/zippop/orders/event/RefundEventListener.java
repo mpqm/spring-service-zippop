@@ -1,5 +1,7 @@
 package com.fiiiiive.zippop.orders.event;
 
+import com.fiiiiive.zippop.global.base.ServerErrorCode;
+import com.fiiiiive.zippop.global.base.ServerException;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.CancelData;
@@ -17,10 +19,14 @@ public class RefundEventListener {
     private final IamportClient iamportClient;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
-    public void handleRefundAfterRollback(RefundEvent event) throws IamportResponseException, IOException {
+    public void handleRefundAfterRollback(RefundEvent event) {
+        try {
             var payment = event.getPayment();
             CancelData cancelData = new CancelData(payment.getImpUid(), true, payment.getAmount());
             iamportClient.cancelPaymentByImpUid(cancelData);
+        } catch (IamportResponseException | IOException exception) {
+            throw new ServerException(ServerErrorCode.PAYMENT_PROVIDER_ERROR, exception);
+        }
     }
 
 }

@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Builder
 public class GetCartRes {
+    private Long cartIdx;
     private Long popupIdx;
     private String companyEmail;
     private String popupName;

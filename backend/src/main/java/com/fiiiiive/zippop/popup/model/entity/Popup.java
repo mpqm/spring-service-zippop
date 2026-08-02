@@ -2,8 +2,8 @@ package com.fiiiiive.zippop.popup.model.entity;
 
 import com.fiiiiive.zippop.account.model.entity.Company;
 import com.fiiiiive.zippop.cart.model.entity.Cart;
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.enums.PopupStatus;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.global.base.BaseEntity;
@@ -209,7 +209,7 @@ public class Popup extends BaseEntity {
     public void validateTotalPeople() {
         // 팝업 최대 예약자 수를 넘었는지 확인
         if(this.totalPeople <= 0) {
-            throw new BaseException(BaseMessage.RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED);
+            throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED);
         }
     }
 }

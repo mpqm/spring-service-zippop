@@ -75,6 +75,10 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                             // 인증
                             .requestMatchers("/api/v1/auth/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/accounts/me").authenticated()
+                            .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/me").authenticated()
+                            .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/me").authenticated()
+                            .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/password/reset").authenticated()
                             // 장바구니
                             .requestMatchers("/api/v1/carts/**").hasAuthority("ROLE_CUSTOMER")
                             // 굿즈

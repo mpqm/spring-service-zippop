@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.reserve.service;
 
 
-import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.enums.PopupStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.popup.policy.PopupPolicy;
@@ -43,11 +43,11 @@ public class ReserveService {
 
     // 예약 생성
     @Transactional
-    public CreateReserveRes createReserve(CustomUserDetails user, CreateReserveReq req) throws BaseException {
+    public CreateReserveRes createReserve(CustomUserDetails user, CreateReserveReq req) throws ServiceException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findById(req.getPopupIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.RESERVE_REGISTER_FAIL_NOT_FOUND_STORE)
+                () -> new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_NOT_FOUND_STORE)
         );
 
         // 팝업 상태 확인(종료 상태면 예약 생성 불가)
@@ -76,7 +76,7 @@ public class ReserveService {
         // Redis 큐 초기화 (예약 종료 시간까지 유효)
         long expirationMinutes = java.time.Duration.between(java.time.LocalDateTime.now(), req.getReserveEndTime()).toMinutes();
         if (expirationMinutes <= 0) {
-            throw new BaseException(BaseMessage.RESERVE_REGISTER_FAIL_TIME_CLOSED);
+            throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_TIME_CLOSED);
         }
 
         redisQueueService.createQueue(workingUUID, expirationMinutes);
@@ -93,16 +93,16 @@ public class ReserveService {
 
     // 예약삭제
     @Transactional
-    public void deleteReserve(CustomUserDetails user, Long reserveIdx) throws BaseException {
+    public void deleteReserve(CustomUserDetails user, Long reserveIdx) throws ServiceException {
 
         // 예약 조회
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.RESERVE_DELETE_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.RESERVE_DELETE_FAIL_NOT_FOUND)
         );
 
         // 스토어 조회(storeIdx)
         Popup popup = popupRepository.findById(reserve.getPopup().getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.RESERVE_DELETE_FAIL_NOT_FOUND_STORE)
+                () -> new ServiceException(ServiceErrorCode.RESERVE_DELETE_FAIL_NOT_FOUND_STORE)
         );
 
         // 팝업 소유 확인
@@ -110,7 +110,7 @@ public class ReserveService {
 
         // 예약 종료시간이 지나서 취소할때
         if(reserve.getEndTime().isBefore(LocalDateTime.now())) {
-            throw new  BaseException(BaseMessage.RESERVE_DELETE_FAIL_END_TIME);
+            throw new  ServiceException(ServiceErrorCode.RESERVE_DELETE_FAIL_END_TIME);
         }
 
         // 인원수 복구
@@ -123,10 +123,10 @@ public class ReserveService {
     }
 
     // 예약 등록
-    public EnrollReserveRes enrollReserve(HttpServletResponse res, CustomUserDetails user, Long reserveIdx) throws BaseException {
+    public EnrollReserveRes enrollReserve(HttpServletResponse res, CustomUserDetails user, Long reserveIdx) throws ServiceException {
         // 예약 조회(reserveIdx)
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.RESERVE_ENROLL_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.RESERVE_ENROLL_FAIL_NOT_FOUND)
         );
 
         String email = user.getEmail();
@@ -184,11 +184,11 @@ public class ReserveService {
     }
 
     // 예약 취소 (개선: Lua Script + 토큰 발급)
-    public String cancelReserve(HttpServletRequest req, HttpServletResponse res, CustomUserDetails user, Long reserveIdx) throws BaseException {
+    public String cancelReserve(HttpServletRequest req, HttpServletResponse res, CustomUserDetails user, Long reserveIdx) throws ServiceException {
 
         // 예약 조회(reserveIdx)
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.RESERVE_CANCEL_FAIL)
+                () -> new ServiceException(ServiceErrorCode.RESERVE_CANCEL_FAIL)
         );
 
         // 현재 사용자가 예약 큐에 있는 경우
@@ -258,10 +258,10 @@ public class ReserveService {
     }
 
     // 소켓 방식
-    public void status(Principal principal, GetReserveQueueReq req) throws BaseException {
+    public void status(Principal principal, GetReserveQueueReq req) throws ServiceException {
 
         Reserve reserve = reserveRepository.findById(req.getReserveIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND)
         );
 
         // 접속자

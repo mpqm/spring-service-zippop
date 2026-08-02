@@ -5,8 +5,8 @@ import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
 import com.fiiiiive.zippop.account.service.AccountService;
 import com.fiiiiive.zippop.account.service.CompanyService;
 import com.fiiiiive.zippop.account.service.CustomerService;
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.enums.RoleType;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.annotation.PostConstruct;
@@ -33,39 +33,39 @@ public class AccountFacade {
         accountServiceMap.put(RoleType.ROLE_COMPANY.name(), companyService);
     }
 
-    private AccountService getAccountService(String role) throws BaseException {
+    private AccountService getAccountService(String role) throws ServiceException {
         AccountService service = accountServiceMap.get(role);
         if (service == null) {
-            throw new BaseException(BaseMessage.AUTH_SIGNUP_FAIL_INVALID_ROLE_TYPE);
+            throw new ServiceException(ServiceErrorCode.AUTH_SIGNUP_FAIL_INVALID_ROLE_TYPE);
         }
         return service;
     }
 
-    public Boolean createAccount(CreateAccountReq req, String url) throws BaseException {
+    public Boolean createAccount(CreateAccountReq req, String url) throws ServiceException {
         return getAccountService(req.getRole()).createAccount(req, url);
     }
 
-    public GetAccountRes getAccount(CustomUserDetails user) throws BaseException {
+    public GetAccountRes getAccount(CustomUserDetails user) throws ServiceException {
         return getAccountService(user.getRole()).getAccount(user);
     }
 
-    public void updateAccount(CustomUserDetails user, UpdateAccountReq req, String url) throws BaseException {
+    public void updateAccount(CustomUserDetails user, UpdateAccountReq req, String url) throws ServiceException {
         getAccountService(user.getRole()).updateAccount(user, req, url);
     }
 
-    public void deactivateAccount(CustomUserDetails user) throws BaseException {
+    public void deactivateAccount(CustomUserDetails user) throws ServiceException {
         getAccountService(user.getRole()).deactivateAccount(user);
     }
 
-    public void requestActivation(ActivationReq req) throws BaseException {
+    public void requestActivation(ActivationReq req) throws ServiceException {
         getAccountService(req.getRole()).requestActivation(req);
     }
 
-    public void findId(FindIdReq req) throws BaseException {
+    public void findId(FindIdReq req) throws ServiceException {
         getAccountService(req.getRole()).findId(req);
     }
 
-    public void findPassword(FindPasswordReq req) throws BaseException {
+    public void findPassword(FindPasswordReq req) throws ServiceException {
         getAccountService(req.getRole()).findPassword(req);
     }
 

@@ -30,7 +30,7 @@ public interface PopupRepository extends JpaRepository<Popup, Long> {
 
     // 상태값으로 목록 조회
     @Query("SELECT p FROM Popup p WHERE p.status = :status")
-    Page<Popup> findAllByStatus(@Param("status") String status, Pageable pageable);
+    Page<Popup> findAllByStatus(@Param("status") PopupStatus status, Pageable pageable);
 
     // 검색어, 상태 기반으로 목록 조회
     @Query("SELECT p FROM Popup p " +

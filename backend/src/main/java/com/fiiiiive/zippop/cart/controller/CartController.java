@@ -4,8 +4,8 @@ import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
 import com.fiiiiive.zippop.cart.model.dto.GetCartItemRes;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.cart.service.CartService;
-import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.base.SuccessCode;
+import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -30,66 +30,66 @@ public class CartController {
 
     // 장바구니 생성
     @PostMapping
-    public ResponseEntity<BaseResponse<Void>> createCart(
+    public ResponseEntity<SuccessResponse<Void>> createCart(
             @AuthenticationPrincipal CustomUserDetails user,
             @Valid @RequestBody CreateCartReq req
     ) {
         cartService.createCart(user, req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(BaseMessage.CART_REGISTER_SUCCESS));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(SuccessCode.CART_REGISTER_SUCCESS));
     }
 
     // 현재 사용자의 장바구니 목록 조회
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<GetCartRes>>> getCarts(
+    public ResponseEntity<SuccessResponse<Page<GetCartRes>>> getCarts(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size
     ) {
         Page<GetCartRes> res = cartService.getCarts(user, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_SEARCH_ALL_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.CART_SEARCH_ALL_SUCCESS, res));
     }
 
     // 특정 장바구니 삭제
     @DeleteMapping("/{cartIdx}")
-    public ResponseEntity<BaseResponse<Void>> deleteCart(
+    public ResponseEntity<SuccessResponse<Void>> deleteCart(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long cartIdx
     ) {
         cartService.deleteCart(user, cartIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_DELETE_ALL_SUCCESS));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.CART_ITEM_DELETE_ALL_SUCCESS));
     }
 
     // 장바구니의 아이템 목록 조회
     @GetMapping("/{cartIdx}/items")
-    public ResponseEntity<BaseResponse<List<GetCartItemRes>>> getCartItems(
+    public ResponseEntity<SuccessResponse<List<GetCartItemRes>>> getCartItems(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long cartIdx
     ) {
         List<GetCartItemRes> res = cartService.getCartItems(user, cartIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_SEARCH_ALL_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.CART_ITEM_SEARCH_ALL_SUCCESS, res));
     }
 
     // 장바구니 아이템 수량 변경
     @PatchMapping("/{cartIdx}/items/{cartItemIdx}/quantity")
-    public ResponseEntity<BaseResponse<Void>> updateCartItemQuantity(
+    public ResponseEntity<SuccessResponse<Void>> updateCartItemQuantity(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long cartIdx,
             @PathVariable Long cartItemIdx,
             @RequestParam String operation
     ) {
         cartService.updateCartItemQuantity(user, cartIdx, cartItemIdx, operation);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_COUNT_SUCCESS));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.CART_ITEM_COUNT_SUCCESS));
     }
 
     // 장바구니 아이템 삭제
     @DeleteMapping("/{cartIdx}/items/{cartItemIdx}")
-    public ResponseEntity<BaseResponse<Void>> deleteCartItem(
+    public ResponseEntity<SuccessResponse<Void>> deleteCartItem(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long cartIdx,
             @PathVariable Long cartItemIdx
     ) {
         cartService.deleteCartItem(user, cartIdx, cartItemIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.CART_ITEM_DELETE_SUCCESS));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.CART_ITEM_DELETE_SUCCESS));
     }
 
 }

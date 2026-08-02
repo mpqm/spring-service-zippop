@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.payout.service;
 
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.enums.OrdersStatus;
 import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
@@ -61,7 +61,7 @@ public class PayoutService {
                     .filter(o -> o.getPopup().getIdx().equals(popupIdx))
                     .findFirst()
                     .map(Orders::getPopup)
-                    .orElseThrow(() -> new BaseException(BaseMessage.STORE_SEARCH_FAIL_NOT_FOUND));
+                    .orElseThrow(() -> new ServiceException(ServiceErrorCode.STORE_SEARCH_FAIL_NOT_FOUND));
 
             if (payoutRepository.existsByPopupIdxAndPayoutDate(popupIdx, targetDate)) {
                 log.info("이미 정산 존재 - popupIdx: {}", popupIdx);

@@ -6,8 +6,8 @@ import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
 import com.fiiiiive.zippop.account.policy.CustomerPolicy;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
-import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.mail.MailService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class CustomerService implements AccountService {
     // 고객 회원 가입
     @Override
     @Transactional
-    public Boolean createAccount(CreateAccountReq req, String url) throws BaseException {
+    public Boolean createAccount(CreateAccountReq req, String url) throws ServiceException {
 
         // 유저 중복 확인
         customerPolicy.validateDuplicateUserId(req.getUserId());
@@ -62,11 +62,11 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetAccountRes getAccount(CustomUserDetails user) throws BaseException {
+    public GetAccountRes getAccount(CustomUserDetails user) throws ServiceException {
 
         // 고객 회원 조회(customerIdx)
         Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_GET_PROFILE_FAIL)
+                () -> new ServiceException(ServiceErrorCode.AUTH_GET_PROFILE_FAIL)
         );
 
         return customer.toDto();
@@ -75,14 +75,14 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void updateAccount(CustomUserDetails user, UpdateAccountReq req, String url) throws BaseException {
+    public void updateAccount(CustomUserDetails user, UpdateAccountReq req, String url) throws ServiceException {
 
         // 없으면 dto의 기존 url 유지
         if(url == null) url = req.getProfileImageUrl();
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
+                () -> new ServiceException(ServiceErrorCode.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
         );
 
         // 고객 회원 정보 수정
@@ -97,11 +97,11 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void deactivateAccount(CustomUserDetails user) throws BaseException {
+    public void deactivateAccount(CustomUserDetails user) throws ServiceException {
 
         // 고객 조회(email)
         Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_INACTIVE_FAIL)
+                () -> new ServiceException(ServiceErrorCode.AUTH_INACTIVE_FAIL)
         );
 
         // 고객 회원 이메일 인증, 비활성화 회원(isEmailAuth - 0, isInActive - 1) 여부 수정 후 저장
@@ -111,11 +111,11 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void requestActivation(ActivationReq req) throws BaseException {
+    public void requestActivation(ActivationReq req) throws ServiceException {
 
         // 고객 회원(email) 조회
         Customer customer = customerRepository.findByCustomerEmail(req.getEmail()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_ACTIVE_FAIL)
+                () -> new ServiceException(ServiceErrorCode.AUTH_ACTIVE_FAIL)
         );
 
         // if: 조회 결과가 있고, IsInactive true면 계정 복구 이메일 인증 재전송
@@ -127,11 +127,11 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void activateAccount(String email) throws BaseException {
+    public void activateAccount(String email) throws ServiceException {
 
         // 고객 조회(email)
         Customer customer = customerRepository.findByCustomerEmail(email).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_VERIFY_FAIL)
+                () -> new ServiceException(ServiceErrorCode.AUTH_VERIFY_FAIL)
         );
 
         // 고객 회원 이메일 인증, 비활성화 회원(isEmailAuth - 1, isInActive - 0) 여부 수정 후 저장
@@ -141,11 +141,11 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public void findId(FindIdReq dto) throws BaseException {
+    public void findId(FindIdReq dto) throws ServiceException {
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByCustomerEmail(dto.getEmail()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_FIND_ID_FAIL_NOT_EXIST)
+                () -> new ServiceException(ServiceErrorCode.AUTH_FIND_ID_FAIL_NOT_EXIST)
         );
 
         customer.validateUserIdSendable();
@@ -160,11 +160,11 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void findPassword(FindPasswordReq dto) throws BaseException {
+    public void findPassword(FindPasswordReq dto) throws ServiceException {
 
         // 고객 회원 조회(email)
         Customer customer = customerRepository.findByUserId(dto.getUserId()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_FIND_PW_FAIL_NOT_EXIST)
+                () -> new ServiceException(ServiceErrorCode.AUTH_FIND_PW_FAIL_NOT_EXIST)
         );
 
         String rawPassword = customer.issueTempPassword(passwordEncoder);
@@ -179,11 +179,11 @@ public class CustomerService implements AccountService {
 
     @Override
     @Transactional
-    public void resetPassword(CustomUserDetails user, ResetPasswordReq req) throws BaseException {
+    public void resetPassword(CustomUserDetails user, ResetPasswordReq req) throws ServiceException {
 
         // 고객 회원 조회 (customerIdx)
         Customer customer = customerRepository.findByCustomerIdx(user.getIdx()).orElseThrow(
-                () ->  new BaseException(BaseMessage.AUTH_RESET_PW_FAIL_NOT_FOUND_MEMBER)
+                () ->  new ServiceException(ServiceErrorCode.AUTH_RESET_PW_FAIL_NOT_FOUND_MEMBER)
         );
 
         customer.resetPassword(

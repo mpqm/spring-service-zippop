@@ -6,8 +6,8 @@ import com.fiiiiive.zippop.account.model.entity.Company;
 import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
 import com.fiiiiive.zippop.account.policy.CompanyPolicy;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
-import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.mail.MailService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public Boolean createAccount(CreateAccountReq req, String url) throws BaseException {
+    public Boolean createAccount(CreateAccountReq req, String url) throws ServiceException {
 
         // 유저 중복 확인
         companyPolicy.validateDuplicateUserId(req.getUserId());
@@ -60,11 +60,11 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetAccountRes getAccount(CustomUserDetails user) throws BaseException {
+    public GetAccountRes getAccount(CustomUserDetails user) throws ServiceException {
 
         // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_GET_PROFILE_FAIL)
+                () -> new ServiceException(ServiceErrorCode.AUTH_GET_PROFILE_FAIL)
         );
 
         return company.toDto();
@@ -73,14 +73,14 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void updateAccount(CustomUserDetails user, UpdateAccountReq req, String url) throws BaseException {
+    public void updateAccount(CustomUserDetails user, UpdateAccountReq req, String url) throws ServiceException {
 
         // 없으면 dto의 기존 url 유지
         if(url == null) url = req.getProfileImageUrl();
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
+                () -> new ServiceException(ServiceErrorCode.AUTH_EDIT_INFO_FAIL_NOT_FOUND_MEMBER)
         );
 
         // 기업 회원 정보 수정
@@ -96,11 +96,11 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void deactivateAccount(CustomUserDetails user) throws BaseException {
+    public void deactivateAccount(CustomUserDetails user) throws ServiceException {
 
         // 기업 조회(email)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_INACTIVE_FAIL)
+                () -> new ServiceException(ServiceErrorCode.AUTH_INACTIVE_FAIL)
         );
 
         // 기업 회원 이메일 인증, 비활성화 회원(isEmailAuth - 0, isInActive - 1) 여부 수정 후 저장
@@ -110,11 +110,11 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void requestActivation(ActivationReq req) throws BaseException {
+    public void requestActivation(ActivationReq req) throws ServiceException {
 
         // 기업 회원(email) 조회
         Company company = companyRepository.findByCompanyEmail(req.getEmail()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_ACTIVE_FAIL)
+                () -> new ServiceException(ServiceErrorCode.AUTH_ACTIVE_FAIL)
         );
 
         company.validateActive();
@@ -124,11 +124,11 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void activateAccount(String email) throws BaseException {
+    public void activateAccount(String email) throws ServiceException {
 
         // 기업 조회(email)
         Company company = companyRepository.findByCompanyEmail(email).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_VERIFY_FAIL)
+                () -> new ServiceException(ServiceErrorCode.AUTH_VERIFY_FAIL)
         );
 
         // 기업 회원 이메일 인증, 비활성화 회원(isEmailAuth - 1, isInActive - 0) 여부 수정 후 저장
@@ -138,11 +138,11 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public void findId(FindIdReq dto) throws BaseException {
+    public void findId(FindIdReq dto) throws ServiceException {
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByCompanyEmail(dto.getEmail()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_FIND_ID_FAIL_NOT_EXIST)
+                () -> new ServiceException(ServiceErrorCode.AUTH_FIND_ID_FAIL_NOT_EXIST)
         );
 
         company.validateUserIdSendable();
@@ -157,11 +157,11 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void findPassword(FindPasswordReq dto) throws BaseException {
+    public void findPassword(FindPasswordReq dto) throws ServiceException {
 
         // 기업 회원 조회(email)
         Company company = companyRepository.findByUserId(dto.getUserId()).orElseThrow(
-                () -> new BaseException(BaseMessage.AUTH_FIND_PW_FAIL_NOT_EXIST)
+                () -> new ServiceException(ServiceErrorCode.AUTH_FIND_PW_FAIL_NOT_EXIST)
         );
 
         String rawPassword = company.issueTempPassword(passwordEncoder);
@@ -176,11 +176,11 @@ public class CompanyService implements AccountService {
 
     @Override
     @Transactional
-    public void resetPassword(CustomUserDetails user, ResetPasswordReq req) throws BaseException {
+    public void resetPassword(CustomUserDetails user, ResetPasswordReq req) throws ServiceException {
 
         // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
-                () ->  new BaseException(BaseMessage.AUTH_RESET_PW_FAIL_NOT_FOUND_MEMBER)
+                () ->  new ServiceException(ServiceErrorCode.AUTH_RESET_PW_FAIL_NOT_FOUND_MEMBER)
         );
 
         company.resetPassword(

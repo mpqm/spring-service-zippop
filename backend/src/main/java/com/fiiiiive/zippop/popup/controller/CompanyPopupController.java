@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.popup.controller;
 
-import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.base.BaseResponse;
+import com.fiiiiive.zippop.global.base.SuccessCode;
+import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.model.dto.GetOrdersRes;
 import com.fiiiiive.zippop.payout.model.dto.GetPopupPayoutsRes;
@@ -26,61 +26,61 @@ public class CompanyPopupController {
 
     // 내 팝업 목록 조회 (기업용)
     @GetMapping
-    public ResponseEntity<BaseResponse<Page<GetPopupRes>>> getCompanyPopups(
+    public ResponseEntity<SuccessResponse<Page<GetPopupRes>>> getCompanyPopups(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetPopupRes> res = companyPopupService.getCompanyPopups(user, keyword, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.STORE_SEARCH_ALL_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_SEARCH_ALL_SUCCESS, res));
     }
 
     // 팝업의 정산 목록 조회 (기업용)
     @GetMapping("/{popupIdx}/payouts")
-    public ResponseEntity<BaseResponse<Page<GetPopupPayoutsRes>>> getCompanyPopupPayouts(
+    public ResponseEntity<SuccessResponse<Page<GetPopupPayoutsRes>>> getCompanyPopupPayouts(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long popupIdx,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetPopupPayoutsRes> res = companyPopupService.getCompanyPopupPayouts(user, popupIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.PAYOUT_SEARCH_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.PAYOUT_SEARCH_SUCCESS, res));
     }
 
     // 팝업 예약 목록 조회 (기업용)
     @GetMapping("/{popupIdx}/reserves")
-    public ResponseEntity<BaseResponse<Page<GetReserveRes>>> getCompanyPopupReserves(
+    public ResponseEntity<SuccessResponse<Page<GetReserveRes>>> getCompanyPopupReserves(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long popupIdx,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetReserveRes> response = companyPopupService.getCompanyPopupReserves(user, popupIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.RESERVE_CANCEL_SUCCESS, response));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.RESERVE_CANCEL_SUCCESS, response));
     }
 
     // 팝업의 주문 목록 조회 (기업용)
     @GetMapping("/{popupIdx}/orders")
-    public ResponseEntity<BaseResponse<Page<GetOrdersRes>>> getCompanyPopupOrdersList(
+    public ResponseEntity<SuccessResponse<Page<GetOrdersRes>>> getCompanyPopupOrdersList(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long popupIdx,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Page<GetOrdersRes> res = companyPopupService.getCompanyPopupOrdersList(user, popupIdx, page, size);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_SEARCH_ALL_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.ORDERS_SEARCH_ALL_SUCCESS, res));
     }
 
     // 팝업의 주문 상세 조회 (기업용)
     @GetMapping("/{popupIdx}/orders/{ordersIdx}")
-    public ResponseEntity<BaseResponse<GetOrdersRes>> getPopupOrdersDetail(
+    public ResponseEntity<SuccessResponse<GetOrdersRes>> getPopupOrdersDetail(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long popupIdx,
             @PathVariable Long ordersIdx
     ) {
         GetOrdersRes res = companyPopupService.getPopupOrdersDetail(user, popupIdx, ordersIdx);
-        return ResponseEntity.ok(new BaseResponse<>(BaseMessage.ORDERS_SEARCH_SUCCESS, res));
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.ORDERS_SEARCH_SUCCESS, res));
     }
 
 }

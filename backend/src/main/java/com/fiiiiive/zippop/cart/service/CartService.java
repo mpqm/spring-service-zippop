@@ -10,8 +10,8 @@ import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
 import com.fiiiiive.zippop.global.enums.Operation;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +36,11 @@ public class CartService {
 
     // 장바구니 등록
     @Transactional
-    public void createCart(CustomUserDetails user, CreateCartReq req) throws BaseException {
+    public void createCart(CustomUserDetails user, CreateCartReq req) throws ServiceException {
 
         // 굿즈(goodsIdx, popupIdx) 조회
         Goods goods = goodsRepository.findByGoodsIdxAndPopupIdx(req.getGoodsIdx(), req.getPopupIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.CART_REGISTER_FAIL_GOODS_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.CART_REGISTER_FAIL_GOODS_NOT_FOUND)
         );
 
         // 장바구니 조회 후 없으면 장바구니 생성
@@ -63,7 +63,7 @@ public class CartService {
 
     // 장바구니 목록 조회
     @Transactional(readOnly = true)
-    public Page<GetCartRes> getCarts(CustomUserDetails user, Integer page, Integer size) throws BaseException {
+    public Page<GetCartRes> getCarts(CustomUserDetails user, Integer page, Integer size) throws ServiceException {
 
         // 장바구니 조회(customerIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
@@ -75,11 +75,11 @@ public class CartService {
 
     // 장바구니 전체 삭제
     @Transactional(rollbackFor = Exception.class)
-    public void deleteCart(CustomUserDetails user, Long cartIdx) throws BaseException {
+    public void deleteCart(CustomUserDetails user, Long cartIdx) throws ServiceException {
 
         // 장바구니 조회(cartIdx)
         Cart cart = cartRepository.findByCartIdx(cartIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_NOT_FOUND)
         );
 
         // 장바구니 소유권확인
@@ -91,11 +91,11 @@ public class CartService {
 
     // 장바구니 아이템 목록 조회
     @Transactional(readOnly = true)
-    public List<GetCartItemRes> getCartItems(CustomUserDetails user, Long cartIdx) throws BaseException {
+    public List<GetCartItemRes> getCartItems(CustomUserDetails user, Long cartIdx) throws ServiceException {
 
         // 장바구니 조회(cartIdx)
         Cart cart = cartRepository.findByCartIdx(cartIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.CART_DELETE_ALL_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_NOT_FOUND)
         );
 
         // 장바구니 소유권확인
@@ -107,11 +107,11 @@ public class CartService {
 
     // 장바구니 아이템 수량 조절
     @Transactional
-    public void updateCartItemQuantity(CustomUserDetails user, Long cartIdx, Long cartItemIdx, String operation) throws BaseException {
+    public void updateCartItemQuantity(CustomUserDetails user, Long cartIdx, Long cartItemIdx, String operation) throws ServiceException {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
         CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.CART_ITEM_COUNT_FAIL_NOT_FOUND)
         );
 
         // Dirty Checking
@@ -129,7 +129,7 @@ public class CartService {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
         CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.CART_ITEM_COUNT_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.CART_ITEM_COUNT_FAIL_NOT_FOUND)
         );
 
         // 장바구니 소유권확인

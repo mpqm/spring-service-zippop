@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.popup.service;
 
 import com.fiiiiive.zippop.account.model.entity.Company;
-import com.fiiiiive.zippop.global.base.BaseMessage;
-import com.fiiiiive.zippop.global.base.BaseException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.global.enums.OrdersStatus;
 import com.fiiiiive.zippop.global.enums.PopupStatus;
@@ -44,11 +44,11 @@ public class PopupService {
 
     // 팝업 등록
     @Transactional
-    public void createPopup(CustomUserDetails user, CreatePopupReq req, List<String> urls) throws BaseException {
+    public void createPopup(CustomUserDetails user, CreatePopupReq req, List<String> urls) throws ServiceException {
 
         // 기업 회원 조회(companyIdx)
         Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.STORE_REGISTER_FAIL_UNAUTHORIZED)
+                () -> new ServiceException(ServiceErrorCode.STORE_REGISTER_FAIL_UNAUTHORIZED)
         );
 
         // Popup 생성
@@ -71,11 +71,11 @@ public class PopupService {
     }
 
     // 팝업 조회
-    public GetPopupRes getPopup(Long popupIdx) throws BaseException {
+    public GetPopupRes getPopup(Long popupIdx) throws ServiceException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.STORE_SEARCH_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.STORE_SEARCH_FAIL_NOT_FOUND)
         );
 
         return popup.toDto();
@@ -83,7 +83,7 @@ public class PopupService {
     }
 
     // 팝업 목록 조회
-    public Page<GetPopupRes> getPopups(String status, String keyword, int page, int size) throws BaseException {
+    public Page<GetPopupRes> getPopups(String status, String keyword, int page, int size) throws ServiceException {
 
         // 팝업 페이지 조회(keyword, status, pageable) 조회
         // true : 검색어가 있는 경우, 상태에 따라 활성화된 또는 종료된 팝업을 검색어로 페이징 조회
@@ -91,7 +91,7 @@ public class PopupService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Popup> popupPage = (keyword != null)
                 ? popupRepository.findAllByKeywordAndStatus(keyword, PopupStatus.valueOf(status), pageable)
-                : popupRepository.findAllByStatus(status, pageable);
+                : popupRepository.findAllByStatus(PopupStatus.valueOf(status), pageable);
 
         // DTO 반환 (데이터가 없어도 빈 페이지 반환)
         return Popup.toDtoPage(popupPage);
@@ -100,11 +100,11 @@ public class PopupService {
 
     // 팝업 수정
     @Transactional
-    public void updatePopup(CustomUserDetails user, Long popupIdx, UpdatePopupReq req, List<String> urls) throws BaseException {
+    public void updatePopup(CustomUserDetails user, Long popupIdx, UpdatePopupReq req, List<String> urls) throws ServiceException {
 
         // 팝업 조회(popupIdx, email)
         Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail()).orElseThrow(
-                () -> new BaseException(BaseMessage.STORE_UPDATE_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.STORE_UPDATE_FAIL_NOT_FOUND)
         );
 
         // 팝업 수정
@@ -119,11 +119,11 @@ public class PopupService {
 
     // 팝업 삭제
     @Transactional
-    public void deletePopup(CustomUserDetails user, Long popupIdx) throws BaseException{
+    public void deletePopup(CustomUserDetails user, Long popupIdx) throws ServiceException{
 
         // 팝업 조회(popupIdx, email)
         Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail()).orElseThrow(
-                () -> new BaseException(BaseMessage.STORE_DELETE_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.STORE_DELETE_FAIL_NOT_FOUND)
         );
 
         // 팝업 소프트 삭제
@@ -133,11 +133,11 @@ public class PopupService {
 
     // 팝업 좋아요 증감
     @Transactional
-    public void togglePopupLike(CustomUserDetails user, Long popupIdx) throws BaseException {
+    public void togglePopupLike(CustomUserDetails user, Long popupIdx) throws ServiceException {
 
         // 팝업 인덱스로 조회 없으면 예외 반환
         Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.STORE_LIKE_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.STORE_LIKE_FAIL_NOT_FOUND)
         );
 
         // 좋아요 증감
@@ -154,7 +154,7 @@ public class PopupService {
     }
 
     // 팝업 좋아요 목록 조회(고객용)
-    public Page<GetPopupRes> getMyLikedPopups(CustomUserDetails user, int page, int size) throws BaseException {
+    public Page<GetPopupRes> getMyLikedPopups(CustomUserDetails user, int page, int size) throws ServiceException {
 
         // 팝업 페이지 조회(customerIdx)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
@@ -166,22 +166,22 @@ public class PopupService {
 
     // 팝업 리뷰 등록
     @Transactional
-    public void createPopupReview(CustomUserDetails user, Long popupIdx, CreatePopupReviewReq req) throws BaseException {
+    public void createPopupReview(CustomUserDetails user, Long popupIdx, CreatePopupReviewReq req) throws ServiceException {
 
         // 결제 조회(popupIdx, customerIdx, 결제 완료 상태) / 결제한 사람만 리뷰 작성 가능
         ordersDetailRepository.existsReviewableOrder(user.getIdx(), popupIdx, List.of(OrdersStatus.STOCK_COMPLETE, OrdersStatus.RESERVE_COMPLETE)).orElseThrow(() ->
-                new BaseException(BaseMessage.STORE_REVIEW_FAIL_INVALID_MEMBER)
+                new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_INVALID_MEMBER)
         );
 
         // 팝업 조회 (popupIdx)
         Popup popup = popupRepository.findById(popupIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.STORE_REVIEW_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_NOT_FOUND)
         );
 
         // 팝업 리뷰 조회(popupIdx, customerIdx) / 팝업 하나당 한개의 리뷰 작성 가능
         Optional<PopupReview> popupReviewOpt = popupReviewRepository.findByPopupIdxAndCustomerIdx(popupIdx, user.getIdx());
         if(popupReviewOpt.isPresent()) {
-            throw new BaseException(BaseMessage.STORE_REVIEW_FAIL_DUPLICATED);
+            throw new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_DUPLICATED);
         }
 
         PopupReview popupReview = PopupReview.create(
@@ -199,7 +199,7 @@ public class PopupService {
     }
 
     // 팝업 리뷰 목록 조회
-    public Page<GetPopupReviewRes> getPopupReviews(Long popupIdx, int page, int size) throws BaseException {
+    public Page<GetPopupReviewRes> getPopupReviews(Long popupIdx, int page, int size) throws ServiceException {
 
         // 리뷰 조회(popupIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
@@ -209,7 +209,7 @@ public class PopupService {
     }
 
     // 팝업 리뷰 목록 조회(고객용)
-    public Page<GetPopupReviewRes> getMyReviews(CustomUserDetails user, int page, int size) throws BaseException {
+    public Page<GetPopupReviewRes> getMyReviews(CustomUserDetails user, int page, int size) throws ServiceException {
 
         // 리뷰 목록 조회(customerIdx, pageable)
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
@@ -228,7 +228,7 @@ public class PopupService {
     }
 
     // 예약 목록 조회
-    public Page<GetReserveRes> getPopupReserves(Long popupIdx, String keyword, int page, int size) throws BaseException {
+    public Page<GetReserveRes> getPopupReserves(Long popupIdx, String keyword, int page, int size) throws ServiceException {
 
         // 예약 조회(status, popupIdx, keyword)
         Page<Reserve> reservePage;

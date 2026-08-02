@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.global.upload;
 
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServerErrorCode;
+import com.fiiiiive.zippop.global.base.ServerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,14 +24,8 @@ public class LocalFileUploadService implements FileUploadService {
     @Value("${upload.local.path}")
     private String uploadPath;
     
-    @Value("${server.port}")
-    private String serverPort;
-    
-    @Value("${server.addr}")
-    private String serverAddress;
-
     // 단일 파일 업로드
-    public String singleUpload(MultipartFile file) throws BaseException {
+    public String singleUpload(MultipartFile file) {
         if (file == null || file.isEmpty()) return null;
 
         try {
@@ -50,19 +44,19 @@ public class LocalFileUploadService implements FileUploadService {
             Files.copy(file.getInputStream(), filePath);
             
             // 접근 가능한 URL 반환
-            String fileUrl = "http://" + serverAddress + ":" + serverPort + "/uploads/" + saveFileName;
+            String fileUrl = "/uploads/" + saveFileName;
             
             log.info("파일 업로드 완료: {}", fileUrl);
             return fileUrl;
             
         } catch (IOException e) {
             log.error("파일 업로드 실패: {}", e.getMessage());
-            throw new BaseException(BaseMessage.FILE_UPLOAD_FAIL, e.getMessage());
+            throw new ServerException(ServerErrorCode.FILE_UPLOAD_ERROR, e);
         }
     }
 
     // 복수 파일 업로드
-    public List<String> multipleUpload(MultipartFile[] files) throws BaseException {
+    public List<String> multipleUpload(MultipartFile[] files) {
         if (files == null || files.length == 0) {
             return null;
         }
@@ -90,7 +84,7 @@ public class LocalFileUploadService implements FileUploadService {
                     Files.copy(file.getInputStream(), filePath);
                     
                     // 접근 가능한 URL 생성
-                    String fileUrl = "http://" + serverAddress + ":" + serverPort + "/uploads/" + saveFileName;
+                    String fileUrl = "/uploads/" + saveFileName;
                     fileUrls.add(fileUrl);
                     
                     log.info("파일 업로드 완료: {}", fileUrl);
@@ -101,13 +95,8 @@ public class LocalFileUploadService implements FileUploadService {
             
         } catch (IOException e) {
             log.error("파일 업로드 실패: {}", e.getMessage());
-            throw new BaseException(BaseMessage.FILE_UPLOAD_FAIL, e.getMessage());
+            throw new ServerException(ServerErrorCode.FILE_UPLOAD_ERROR, e);
         }
     }
     
-    // 업로드 디렉토리 생성
-    private void createUploadDirectory() throws IOException {
-
-    }
-
 }

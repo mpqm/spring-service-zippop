@@ -4,8 +4,8 @@ import com.fiiiiive.zippop.goods.model.dto.CreateGoodsReq;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
 import com.fiiiiive.zippop.goods.model.dto.UpdateGoodsReq;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
-import com.fiiiiive.zippop.global.base.BaseException;
-import com.fiiiiive.zippop.global.base.BaseMessage;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
@@ -31,11 +31,11 @@ public class GoodsService {
 
     // 굿즈 등록
     @Transactional
-    public void createGoods(CustomUserDetails user, List<String> urls, CreateGoodsReq req) throws BaseException {
+    public void createGoods(CustomUserDetails user, List<String> urls, CreateGoodsReq req) throws ServiceException {
 
         // 팝업 조회(popupIdx)
         Popup popup = popupRepository.findByPopupIdx(req.getPopupIdx()).orElseThrow(
-                () -> new BaseException(BaseMessage.GOODS_REGISTER_FAIL_NOT_FOUND_STORE)
+                () -> new ServiceException(ServiceErrorCode.GOODS_REGISTER_FAIL_NOT_FOUND_STORE)
         );
 
         // 팝업 소유권 확인
@@ -59,11 +59,11 @@ public class GoodsService {
 
     // 굿즈 조회
     @Transactional(readOnly = true)
-    public GetGoodsRes getGoods(Long goodIdx) throws BaseException {
+    public GetGoodsRes getGoods(Long goodIdx) throws ServiceException {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.GOODS_SEARCH_FAIL_NOT_FOUND_STORE)
+                () -> new ServiceException(ServiceErrorCode.GOODS_SEARCH_FAIL_NOT_FOUND_STORE)
         );
 
         return goods.toDto();
@@ -72,7 +72,7 @@ public class GoodsService {
 
     // 굿즈 목록 조회
     @Transactional(readOnly = true)
-    public Page<GetGoodsRes> getGoodsList(Long popupIdx, String keyword, int page, int size) throws BaseException {
+    public Page<GetGoodsRes> getGoodsList(Long popupIdx, String keyword, int page, int size) throws ServiceException {
 
         // 굿즈 페이지(popupIdx, keyword, pageable) 조회
         // if: 굿즈 검색 조회
@@ -92,11 +92,11 @@ public class GoodsService {
 
     // 굿즈 수정
     @Transactional
-    public void updateGoods(CustomUserDetails user, Long goodsIdx, List<String> urls, UpdateGoodsReq req) throws BaseException {
+    public void updateGoods(CustomUserDetails user, Long goodsIdx, List<String> urls, UpdateGoodsReq req) throws ServiceException {
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.GOODS_UPDATE_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.GOODS_UPDATE_FAIL_NOT_FOUND)
         );
         
         // 팝업 소유 확인
@@ -114,11 +114,11 @@ public class GoodsService {
 
     // 굿즈 삭제
     @Transactional
-    public void deleteGoods(CustomUserDetails user, Long goodsIdx) throws BaseException{
+    public void deleteGoods(CustomUserDetails user, Long goodsIdx) throws ServiceException{
 
         // 굿즈 조회(goodsIdx)
         Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
-                () -> new BaseException(BaseMessage.STORE_DELETE_FAIL_NOT_FOUND)
+                () -> new ServiceException(ServiceErrorCode.STORE_DELETE_FAIL_NOT_FOUND)
         );
 
         // 팝업 소유 확인

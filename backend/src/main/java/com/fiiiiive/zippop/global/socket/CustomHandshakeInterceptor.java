@@ -1,75 +1,104 @@
 package com.fiiiiive.zippop.global.socket;
 
+import com.fiiiiive.zippop.global.base.ServerErrorCode;
 import com.fiiiiive.zippop.global.crypto.JwtService;
-import com.fiiiiive.zippop.global.enums.RoleType;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-
-import org.springframework.http.server.ServletServerHttpRequest;
 import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CustomHandshakeInterceptor implements HandshakeInterceptor {
 
+    public static final String SESSION_AUTHENTICATION = "AUTHENTICATION";
+
     private final JwtService jwtService;
 
     @Override
-    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        // TCP 연결을 하기전에 요청을 가로챔
-        if (request instanceof ServletServerHttpRequest) {
-            HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
+    public boolean beforeHandshake(
+            ServerHttpRequest request,
+            ServerHttpResponse response,
+            WebSocketHandler wsHandler,
+            Map<String, Object> attributes
+    ) {
+        Authentication currentAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        if (currentAuthentication != null
+                && currentAuthentication.isAuthenticated()
+                && currentAuthentication.getPrincipal() instanceof CustomUserDetails) {
+            attributes.put(SESSION_AUTHENTICATION, currentAuthentication);
+            return true;
+        }
 
-            // 쿠키에서 인증 정보를 추출하여 WebSocket 세션에 저장
-            String accessToken = null;
-            Cookie[] cookies = servletRequest.getCookies();
-            
-            // 쿠키가 null이 아닐 때만 처리
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if ("ATOKEN".equals(cookie.getName())) {
-                        accessToken = cookie.getValue();
-                        if (accessToken != null) {
-                            attributes.put("ATOKEN", accessToken);
-                        }
-                    }
+        if (!(request instanceof ServletServerHttpRequest servletRequest)) {
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            response.getHeaders().set("X-Error-Code", ServerErrorCode.AUTHENTICATION_REQUIRED.name());
+            return false;
+        }
+
+        String accessToken = null;
+        Cookie[] cookies = servletRequest.getServletRequest().getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("ATOKEN".equals(cookie.getName())) {
+                    accessToken = cookie.getValue();
+                    break;
                 }
             }
-
-            // accessToken이 있을 때만 인증 처리
-            if (accessToken != null) {
-                Long idx = jwtService.getIdx(accessToken);
-                String email = jwtService.getUsername(accessToken);
-                String role = jwtService.getRole(accessToken);
-                String userId = jwtService.getUserId(accessToken);
-                CustomUserDetails customUserDetails = CustomUserDetails.builder()
-                        .idx(idx)
-                        .email(email)
-                        .role(role)
-                        .userId(userId)
-                        .build();
-                Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            } else {
-                log.warn("WebSocket 연결 차단: 쿠키에서 ATOKEN을 찾을 수 없습니다.");
-                return false; // 인증 실패 시 연결 차단
-            }
         }
-        return true;
+        if (accessToken == null || accessToken.isBlank()) {
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            response.getHeaders().set("X-Error-Code", ServerErrorCode.AUTHENTICATION_REQUIRED.name());
+            return false;
+        }
+
+        try {
+            CustomUserDetails user = CustomUserDetails.builder()
+                    .idx(jwtService.getIdx(accessToken))
+                    .email(jwtService.getUsername(accessToken))
+                    .role(jwtService.getRole(accessToken))
+                    .userId(jwtService.getUserId(accessToken))
+                    .build();
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    user,
+                    null,
+                    user.getAuthorities()
+            );
+            attributes.put(SESSION_AUTHENTICATION, authentication);
+            return true;
+        } catch (ExpiredJwtException exception) {
+            log.debug("WebSocket access token expired");
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            response.getHeaders().set("X-Error-Code", ServerErrorCode.TOKEN_EXPIRED.name());
+            return false;
+        } catch (JwtException | IllegalArgumentException exception) {
+            log.debug("WebSocket authentication failed: {}", exception.getClass().getSimpleName());
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            response.getHeaders().set("X-Error-Code", ServerErrorCode.INVALID_TOKEN.name());
+            return false;
+        }
     }
 
     @Override
-    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Exception ex) {}
-
+    public void afterHandshake(
+            ServerHttpRequest request,
+            ServerHttpResponse response,
+            WebSocketHandler wsHandler,
+            Exception exception
+    ) {
+        // no-op
+    }
 }
