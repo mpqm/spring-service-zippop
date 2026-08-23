@@ -3,7 +3,7 @@ services:
     container_name: zippop-backend
     build:
       context: ..
-      dockerfile: cicd/Dockerfile_backend
+      dockerfile: infra/Dockerfile_backend
     env_file:
       - .env
     environment:
@@ -39,7 +39,7 @@ services:
     container_name: zippop-frontend
     build:
       context: ..
-      dockerfile: cicd/Dockerfile_frontend
+      dockerfile: infra/Dockerfile_frontend
     ports:
       - "8081:80"
     depends_on:

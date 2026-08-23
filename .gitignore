@@ -53,10 +53,10 @@ frontend/*.sln
 frontend/*.sw?
 frontend/*.tsbuildinfo
 frontend/vite.config.js
-cicd/mariadb/data/**
-cicd/redis/**
-cicd/.env
+meta/infra/mariadb/data/**
+meta/infra/redis/**
+meta/infra/.env
 /frontend/.env
-cicd/grafana/state/**
+meta/infra/grafana/state/**
 log
 /backend/src/main/resources/.env
