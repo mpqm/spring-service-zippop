@@ -9,7 +9,6 @@
 <div align=center>
 	<h3>
 	    🌐 ZIPPOP 사이트
-	    <a href="https://www.sabujaks-irs.kro.kr/">https://www.sabujaks-irs.kro.kr</a>
 	</h3>
 </div>
 
@@ -111,16 +110,15 @@
 <summary><b> 🗄️ 프로젝트 문서 </b></summary>
 <br>
 
-| **프로젝트 개발 산출물**  | **링크**                                                                                                           |
-|------------------|------------------------------------------------------------------------------------------------------------------|
-| 🎡 ERD           | [ERD](https://github.com/mpqm/spring-service-zippop/wiki/01.-%F0%9F%8E%A1-ERD)                              |
-| 🎡 Architecture  | [Architecture](https://github.com/mpqm/spring-service-zippop/wiki/02.-%F0%9F%8E%A1-Architecture)                     |
-| ➰ 요구사항 정의서       | [요구사항 정의서](https://github.com/mpqm/spring-service-zippop/wiki/03.-%E2%9E%B0-%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD-%EC%A0%95%EC%9D%98%EC%84%9C) |
-| 📃 백엔드 API 명세서   | [백엔드 API 명세서](https://github.com/mpqm/spring-service-zippop/wiki/04.-%F0%9F%93%83-%EB%B0%B1%EC%97%94%EB%93%9C-API-%EB%AA%85%EC%84%B8%EC%84%9C)                                                                                            |
-| 🌱 프론트엔드 화면 설계서  | [프론트엔드 화면 설계서](https://github.com/mpqm/spring-service-zippop/wiki/05.-%F0%9F%8C%B1-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-%ED%99%94%EB%A9%B4-%EC%84%A4%EA%B3%84%EC%84%9C)                                                                                           |
-| 🎥 프로젝트 시연 영상    | [프로젝트 시연 영상](https://github.com/mpqm/spring-service-zippop/wiki/06.-%F0%9F%8E%A5-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81)                                                                                             |
-| 🔎 기능 설명 및 성능 개선 | [기능 설명 및 성능 개선](https://github.com/mpqm/spring-service-zippop/wiki/07.-%F0%9F%94%8E-%EA%B8%B0%EB%8A%A5-%EC%84%A4%EB%AA%85-%EB%B0%8F-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0)        
-| 📖 v1 개발문서          | [v1 개발문서](https://github.com/mpqm/spring-service-zippop/wiki/00.-v1-%EA%B0%9C%EB%B0%9C%EB%AC%B8%EC%84%9C)                                                                                                       | |
+| **프로젝트 개발 산출물**  | **링크**                                                                                                                                                                           |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 🎡 ERD           | [ERD](./meta/docs/ERD%20%26%20아키텍처.md)                                                                                                                                             |
+| 🎡 Architecture  | [Architecture](./meta/docs/ERD%20%26%20아키텍처.md)                                                                                                                                   |
+| ➰ 요구사항 정의서       | [요구사항 정의서](./meta/docs/요구사항정의서.md)                                                                                                                                      |
+| 📃 백엔드 API 명세서   | [백엔드 API 명세서](./meta/docs/백엔드%20API%20명세서.md)                                                                                                                             |
+| 🌱 프론트엔드 화면 설계서  | [프론트엔드 화면 설계서](https://github.com/mpqm/spring-service-zippop/wiki/05.-%F0%9F%8C%B1-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-%ED%99%94%EB%A9%B4-%EC%84%A4%EA%B3%84%EC%84%9C) |
+| 🎥 프로젝트 시연 영상    | [프로젝트 시연 영상](https://github.com/mpqm/spring-service-zippop/wiki/06.-%F0%9F%8E%A5-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%8B%9C%EC%97%B0-%EC%98%81%EC%83%81)                     |
+| 🔎 기능 설명 및 성능 개선 | [기능 설명 및 성능 개선](./meta/docs/기능%20설명%20및%20개선.md)                                                                                                                       
 
 </details>
 <br>

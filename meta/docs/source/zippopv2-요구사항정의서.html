@@ -1,0 +1,927 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>백엔드 API 명세서</title><meta name="data-notion-page-icon" content="/icons/document_blue.svg"/><link rel="icon" href="https://app.notion.com/icons/document_blue.svg"/><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+/*
+ * Toggles and callouts hold arbitrary content, so they can easily be taller
+ * than a page. They must stay breakable: avoiding breaks inside them makes
+ * Chromium push the whole block onto the next page, which leaves the previous
+ * page mostly empty before every long toggle.
+ */
+details,
+aside {
+	margin: 1.25em 0;
+}
+
+/* Keep a toggle's title on the same page as the start of its content. */
+summary {
+	page-break-after: avoid;
+	break-after: avoid;
+}
+
+/*
+ * Toggle headings render as <h1/h2/h3 style="display:inline-block"> inside
+ * <summary>. Without this reset, the heading's margin-top pushes it below the
+ * ::marker (▼), so the triangle and the title appear on separate lines.
+ */
+summary h1,
+summary h2,
+summary h3,
+summary h4 {
+	margin-top: 0;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="39ba64eb-8b50-807c-9ec6-d7ad5d67d4b6" class="page sans" data-notion-page-icon="/icons/document_blue.svg"><header><div class="page-header-icon undefined"><img class="icon notion-static-icon" src="https://app.notion.com/icons/document_blue.svg"/></div><h1 class="page-title" dir="auto">백엔드 API 명세서</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><hr id="39ba64eb-8b50-8156-a17d-d387aae8275d" dir="auto"/><h2 id="39ba64eb-8b50-8147-a08c-cfd6664b91e8" class="" dir="auto">0. 공통</h2><h3 id="39ba64eb-8b50-810c-bbe1-f3a4c01fd394" class="" dir="auto">응답 형식 <code>BaseResponse&lt;T&gt;</code></h3><table id="39ba64eb-8b50-81e1-9177-d51d1dd042bd" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8107-950d-e0af9b4fd64e" dir="ltr"><th id="afjy" class="simple-table-header-color simple-table-header">Field</th><th id="qd{o" class="simple-table-header-color simple-table-header">Type</th><th id="grj=" class="simple-table-header-color simple-table-header" style="width:280px">Description</th></tr></thead><tbody><tr id="39ba64eb-8b50-812d-afaf-fa8d9b9d6911" dir="ltr"><td id="afjy" class="">success</td><td id="qd{o" class="">Boolean</td><td id="grj=" class="" style="width:280px">성공 여부</td></tr><tr id="39ba64eb-8b50-8116-aa23-ec25f4ba1442" dir="ltr"><td id="afjy" class="">code</td><td id="qd{o" class="">Integer</td><td id="grj=" class="" style="width:280px">비즈니스 코드</td></tr><tr id="39ba64eb-8b50-81a6-bd60-dd2cf7c68230" dir="ltr"><td id="afjy" class="">message</td><td id="qd{o" class="">String</td><td id="grj=" class="" style="width:280px">메시지</td></tr><tr id="39ba64eb-8b50-814e-8807-ecdfb545bc86" dir="ltr"><td id="afjy" class="">result</td><td id="qd{o" class="">T | null</td><td id="grj=" class="" style="width:280px">페이로드</td></tr></tbody></table><h4 id="39ba64eb-8b50-8165-94af-f89dbf03cfd7" class="" dir="auto">인증</h4><table id="39ba64eb-8b50-8160-af45-d36dab869c7a" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-814f-91ec-e00faf8def4e" dir="ltr"><th id="&gt;iXp" class="simple-table-header-color simple-table-header">항목</th><th id="{l]]" class="simple-table-header-color simple-table-header" style="width:390px">내용</th></tr></thead><tbody><tr id="39ba64eb-8b50-81e9-bfbf-cdc29c40c935" dir="ltr"><td id="&gt;iXp" class="">Access Token</td><td id="{l]]" class="" style="width:390px">쿠키 <code>ATOKEN</code> (1시간)</td></tr><tr id="39ba64eb-8b50-817c-97ff-e9a05c3665b3" dir="ltr"><td id="&gt;iXp" class="">Refresh Token</td><td id="{l]]" class="" style="width:390px">쿠키 <code>RTOKEN</code> (5일), Redis <code>refreshToken:{userId}</code></td></tr><tr id="39ba64eb-8b50-8122-8ed1-f46762802806" dir="ltr"><td id="&gt;iXp" class="">예약 토큰</td><td id="{l]]" class="" style="width:390px">쿠키 <code>WTOKEN</code> (대기열 승격 시, 10분)</td></tr><tr id="39ba64eb-8b50-81c7-a0dc-cfe5f4f66eae" dir="ltr"><td id="&gt;iXp" class="">Cookie 속성</td><td id="{l]]" class="" style="width:390px">HttpOnly, Secure, Path=/, SameSite=None</td></tr><tr id="39ba64eb-8b50-8199-8ed7-f770b9ceae3a" dir="ltr"><td id="&gt;iXp" class="">역할</td><td id="{l]]" class="" style="width:390px"><code>ROLE_CUSTOMER</code>, <code>ROLE_COMPANY</code></td></tr></tbody></table><h3 id="39ba64eb-8b50-816b-889c-d9eb2de689dc" class="" dir="auto">공통 에러</h3><table id="39ba64eb-8b50-815a-9f97-ed88cceb37e8" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-816c-946c-ed94f570489e" dir="ltr"><th id="KoO]" class="simple-table-header-color simple-table-header" style="width:270.5px">상황</th><th id="Zqan" class="simple-table-header-color simple-table-header" style="width:270.5px">HTTP</th><th id="M{]:" class="simple-table-header-color simple-table-header" style="width:270.5px">code</th><th id="l=Ng" class="simple-table-header-color simple-table-header" style="width:270.5px">message</th></tr></thead><tbody><tr id="39ba64eb-8b50-8160-8eeb-f2611f5d701e" dir="ltr"><td id="KoO]" class="" style="width:270.5px">Validation 실패</td><td id="Zqan" class="" style="width:270.5px">400</td><td id="M{]:" class="" style="width:270.5px">315</td><td id="l=Ng" class="" style="width:270.5px">입력값이 잘못되었습니다.</td></tr><tr id="39ba64eb-8b50-81ab-8d93-e300409b9f6e" dir="ltr"><td id="KoO]" class="" style="width:270.5px">BaseException</td><td id="Zqan" class="" style="width:270.5px">400</td><td id="M{]:" class="" style="width:270.5px">(해당 코드)</td><td id="l=Ng" class="" style="width:270.5px">BaseMessage</td></tr><tr id="39ba64eb-8b50-8171-910a-f50dd40c17bd" dir="ltr"><td id="KoO]" class="" style="width:270.5px">AccessDenied</td><td id="Zqan" class="" style="width:270.5px">403</td><td id="M{]:" class="" style="width:270.5px">403</td><td id="l=Ng" class="" style="width:270.5px">접근이 거부되었습니다.</td></tr><tr id="39ba64eb-8b50-816d-a949-e9c1a0a6e81c" dir="ltr"><td id="KoO]" class="" style="width:270.5px">Bad Credential</td><td id="Zqan" class="" style="width:270.5px">401</td><td id="M{]:" class="" style="width:270.5px">307</td><td id="l=Ng" class="" style="width:270.5px">아이디 또는 비밀번호가 틀렸습니다.</td></tr><tr id="39ba64eb-8b50-81b2-b927-fe54663f2026" dir="ltr"><td id="KoO]" class="" style="width:270.5px">JWT 만료</td><td id="Zqan" class="" style="width:270.5px">401</td><td id="M{]:" class="" style="width:270.5px">303</td><td id="l=Ng" class="" style="width:270.5px">JWT 토큰이 만료되었습니다.</td></tr></tbody></table><h3 id="39ba64eb-8b50-81e2-b030-feae4e1ccf96" class="" dir="auto">Page 응답 (<code>result</code>)</h3><p id="39ba64eb-8b50-8156-904f-df2028331c63" class="" dir="auto"><code>content</code>, <code>totalElements</code>, <code>totalPages</code>, <code>size</code>, <code>number</code>, <code>first</code>, <code>last</code>, <code>empty</code> 등 Spring Data Page 직렬화</p><h3 id="39ba64eb-8b50-815a-baf0-f60b0f09b825" class="" dir="auto">Enum</h3><table id="39ba64eb-8b50-811d-b10b-fbd59b644b17" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8142-821f-f9bb869f0f00" dir="ltr"><th id="\QTD" class="simple-table-header-color simple-table-header" style="width:124px">이름</th><th id="ESrg" class="simple-table-header-color simple-table-header" style="width:541px">값</th></tr></thead><tbody><tr id="39ba64eb-8b50-8159-a1f6-cd499469c33e" dir="ltr"><th id="\QTD" class="simple-table-header-color simple-table-header" style="width:124px">PopupStatus</th><td id="ESrg" class="" style="width:541px"><code>POPUP_START</code>, <code>POPUP_END</code>, <code>POPUP_RESERVE</code>, <code>POPUP_STOCK</code></td></tr><tr id="39ba64eb-8b50-8176-90fc-c640e62b96a1" dir="ltr"><th id="\QTD" class="simple-table-header-color simple-table-header" style="width:124px">OrdersStatus</th><td id="ESrg" class="" style="width:541px"><code>RESERVE_READY</code>, <code>RESERVE_DELIVERY</code>, <code>RESERVE_CANCEL</code>, <code>RESERVE_COMPLETE</code>, <code>STOCK_READY</code>, <code>STOCK_DELIVERY</code>, <code>STOCK_CANCEL</code>, <code>STOCK_COMPLETE</code></td></tr><tr id="39ba64eb-8b50-81b8-8fd9-c95ec8429376" dir="ltr"><th id="\QTD" class="simple-table-header-color simple-table-header" style="width:124px">GoodsStatus</th><td id="ESrg" class="" style="width:541px"><code>GOODS_RESERVED</code>, <code>GOODS_STOCK</code> 등</td></tr><tr id="39ba64eb-8b50-81e7-b2b3-c279d9ff15d0" dir="ltr"><th id="\QTD" class="simple-table-header-color simple-table-header" style="width:124px">Operation</th><td id="ESrg" class="" style="width:541px"><code>increment</code>, <code>decrement</code></td></tr><tr id="39ba64eb-8b50-8121-9839-c3c87ba9e215" dir="ltr"><th id="\QTD" class="simple-table-header-color simple-table-header" style="width:124px">Role</th><td id="ESrg" class="" style="width:541px"><code>ROLE_CUSTOMER</code>, <code>ROLE_COMPANY</code></td></tr></tbody></table><hr id="39ba64eb-8b50-8143-837b-ef0b46d2b7a7" dir="auto"/><h2 id="39ba64eb-8b50-8188-982b-df088abe7920" class="" dir="auto">1. 회원 / 인증</h2><h3 id="39ba64eb-8b50-818d-8393-e4a72d76e21a" class="" dir="auto"><code>[POST]</code> 회원가입</h3><table id="39ba64eb-8b50-817a-9460-f2d02f53c90e" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8164-8222-e93f8c559eb3" dir="ltr"><th id="z;]l" class="simple-table-header-color simple-table-header">Description</th><th id="L[XE" class="simple-table-header-color simple-table-header">고객/기업 회원가입 (role 분기 단일 API). 인증 메일 발송</th></tr></thead><tbody><tr id="39ba64eb-8b50-8113-9f65-f3a552ac3473" dir="ltr"><td id="z;]l" class="">URL</td><td id="L[XE" class=""><code>/api/v1/accounts</code></td></tr><tr id="39ba64eb-8b50-8111-80ef-ca592188322f" dir="ltr"><td id="z;]l" class="">Auth</td><td id="L[XE" class="">No</td></tr><tr id="39ba64eb-8b50-8159-8ae3-f10fd6fb4e5b" dir="ltr"><td id="z;]l" class="">Content-Type</td><td id="L[XE" class=""><code>multipart/form-data</code></td></tr></tbody></table><table id="39ba64eb-8b50-8135-843d-fac8ea248fdf" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81ba-a900-d203176e91b2" dir="ltr"><th id="lHLa" class="simple-table-header-color simple-table-header">Part</th><th id="sb}t" class="simple-table-header-color simple-table-header">내용</th></tr></thead><tbody><tr id="39ba64eb-8b50-81d4-bc4d-cbf57d11c37c" dir="ltr"><td id="lHLa" class="">req</td><td id="sb}t" class="">CreateAccountReq (JSON)</td></tr><tr id="39ba64eb-8b50-8166-913a-de7d379cb94e" dir="ltr"><td id="lHLa" class="">file</td><td id="sb}t" class="">MultipartFile (프로필, 선택)</td></tr></tbody></table><p id="39ba64eb-8b50-8167-826b-e5c9326cb1a0" class="" dir="auto"><strong>req body</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js" integrity="sha512-QXFMVAusM85vUYDaNgcYeU3rzSlc+bTV4JvkfJhjxSHlQEo+ig53BtnGkvFTiNJh8D+wv6uWAQ2vJaVmxe8d3w==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><pre id="39ba64eb-8b50-81c1-800e-fb6e6f2cf478" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;role&quot;: &quot;ROLE_CUSTOMER&quot;,
+  &quot;userId&quot;: &quot;test01&quot;,
+  &quot;email&quot;: &quot;test@example.com&quot;,
+  &quot;password&quot;: &quot;pass1234&quot;,
+  &quot;name&quot;: &quot;홍길동&quot;,
+  &quot;phoneNumber&quot;: &quot;01012345678&quot;,
+  &quot;address&quot;: &quot;서울시 강남구 ...,상세주소&quot;,
+  &quot;crn&quot;: null
+}</code></pre><table id="39ba64eb-8b50-8173-b789-fde89261fdc4" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8189-a67c-c723199ef9b2" dir="ltr"><th id="=&gt;cE" class="simple-table-header-color simple-table-header">필드</th><th id="eX=A" class="simple-table-header-color simple-table-header">제약</th></tr></thead><tbody><tr id="39ba64eb-8b50-81e8-84ed-f454930a3b10" dir="ltr"><td id="=&gt;cE" class="">role</td><td id="eX=A" class="">필수. ROLE_CUSTOMER / ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-81d7-af83-c51b8ca7eedc" dir="ltr"><td id="=&gt;cE" class="">userId</td><td id="eX=A" class="">필수, 5~20자, 중복 불가</td></tr><tr id="39ba64eb-8b50-8173-b7da-f6a5e5baf32a" dir="ltr"><td id="=&gt;cE" class="">email</td><td id="eX=A" class="">필수, 이메일 형식, 중복 불가</td></tr><tr id="39ba64eb-8b50-81da-815b-d8055f2a6115" dir="ltr"><td id="=&gt;cE" class="">password</td><td id="eX=A" class="">필수, min 4, BCrypt 저장</td></tr><tr id="39ba64eb-8b50-81b9-904f-c2f2533e129a" dir="ltr"><td id="=&gt;cE" class="">name</td><td id="eX=A" class="">필수, max 50</td></tr><tr id="39ba64eb-8b50-8148-93b8-cf03b445f8b5" dir="ltr"><td id="=&gt;cE" class="">phoneNumber</td><td id="eX=A" class="">필수, <code>^01[0-9]\d{3,4}\d{4}$</code></td></tr><tr id="39ba64eb-8b50-8175-bf96-d7ca6afc1395" dir="ltr"><td id="=&gt;cE" class="">address</td><td id="eX=A" class="">필수, max 200</td></tr><tr id="39ba64eb-8b50-81a2-96c9-c94a6e168256" dir="ltr"><td id="=&gt;cE" class="">crn</td><td id="eX=A" class="">기업만</td></tr></tbody></table><ul id="39ba64eb-8b50-81b2-9dfb-c6eb28da1d4b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>Response 200 / 성공 코드 2000 or 2001</strong></li></ul><pre id="39ba64eb-8b50-8110-9e11-e4bb52175921" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;success&quot;: true,
+  &quot;code&quot;: 2000,
+  &quot;message&quot;: &quot;회원가입에 성공했습니다. 이메일을 확인해주세요.(유효시간 3분)&quot;,
+  &quot;result&quot;: null
+}</code></pre><ul id="39ba64eb-8b50-817e-9b4c-d271e309871c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>Error</strong></li></ul><table id="39ba64eb-8b50-812b-a490-c84f9be360d6" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8164-a685-dd30ab5d34d6" dir="ltr"><th id="n@wq" class="simple-table-header-color simple-table-header">code</th><th id="esrx" class="simple-table-header-color simple-table-header">message</th></tr></thead><tbody><tr id="39ba64eb-8b50-81eb-93c8-c2c544b72321" dir="ltr"><td id="n@wq" class="">2004</td><td id="esrx" class="">이미 가입된 회원입니다.</td></tr><tr id="39ba64eb-8b50-818b-8289-edcadf50d72d" dir="ltr"><td id="n@wq" class="">2023</td><td id="esrx" class="">이미 존재하는 아이디입니다.</td></tr><tr id="39ba64eb-8b50-81fe-b694-edcf087aaff5" dir="ltr"><td id="n@wq" class="">2025</td><td id="esrx" class="">올바르지 않은 역할입니다.</td></tr></tbody></table><hr id="39ba64eb-8b50-81b6-94ea-d6f6889e20f0" dir="auto"/><h3 id="39ba64eb-8b50-81bb-8ee4-f35b4852e3ef" class="" dir="auto"><code>[GET]</code> 이메일 인증</h3><table id="39ba64eb-8b50-8125-a183-d17badfb54f1" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-811e-a4d2-c6949b50542d" dir="ltr"><th id="wSqw" class="simple-table-header-color simple-table-header">Description</th><th id="zcNc" class="simple-table-header-color simple-table-header">Redis UUID 검증 후 계정 활성화, 프론트로 302 리다이렉트</th></tr></thead><tbody><tr id="39ba64eb-8b50-81b8-8584-c1b26fd42e40" dir="ltr"><td id="wSqw" class="">URL</td><td id="zcNc" class=""><code>/api/v1/accounts/verification</code></td></tr><tr id="39ba64eb-8b50-8150-9e28-e4d045137229" dir="ltr"><td id="wSqw" class="">Auth</td><td id="zcNc" class="">No</td></tr></tbody></table><table id="39ba64eb-8b50-8194-b3e7-c653c0f37f82" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8190-949d-d874b53f6e56" dir="ltr"><th id=":\{I" class="simple-table-header-color simple-table-header">Query</th><th id="ufIf" class="simple-table-header-color simple-table-header">Type</th><th id="@^Aa" class="simple-table-header-color simple-table-header">설명</th></tr></thead><tbody><tr id="39ba64eb-8b50-8134-aa69-d69c5c88c5a5" dir="ltr"><td id=":\{I" class="">email</td><td id="ufIf" class="">String</td><td id="@^Aa" class="">이메일</td></tr><tr id="39ba64eb-8b50-81e0-b890-e9a88ab4e523" dir="ltr"><td id=":\{I" class="">role</td><td id="ufIf" class="">String</td><td id="@^Aa" class="">ROLE_CUSTOMER / ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-81a7-9f9c-daed22d14cd5" dir="ltr"><td id=":\{I" class="">uuid</td><td id="ufIf" class="">String</td><td id="@^Aa" class="">인증 UUID</td></tr></tbody></table><ul id="39ba64eb-8b50-81be-8e98-c38a99bcb39e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>Response 302</strong> → <code>http://localhost:8081/login?success=true</code></li></ul><ul id="39ba64eb-8b50-81a5-895a-d6a444e42093" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>실패 302</strong> → <code>http://localhost:8081/login?error=true</code> (code 2005)</li></ul><hr id="39ba64eb-8b50-819d-806c-ea96b9b7a56c" dir="auto"/><h3 id="39ba64eb-8b50-8143-8838-f21b60112ad5" class="" dir="auto"><code>[POST]</code> 로그인</h3><table id="39ba64eb-8b50-81b3-b8e9-d074a2f966aa" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8122-9719-faea3d64ae4b" dir="ltr"><th id="RxfK" class="simple-table-header-color simple-table-header">Description</th><th id="f}Kf" class="simple-table-header-color simple-table-header">userId/password 인증 후 JWT 쿠키 발급</th></tr></thead><tbody><tr id="39ba64eb-8b50-81d4-9888-fc71f5f2a3f7" dir="ltr"><td id="RxfK" class="">URL</td><td id="f}Kf" class=""><code>/api/v1/auth/login</code></td></tr><tr id="39ba64eb-8b50-8101-aee5-cbfb42b5b5a7" dir="ltr"><td id="RxfK" class="">Auth</td><td id="f}Kf" class="">No</td></tr><tr id="39ba64eb-8b50-8105-9684-c518984cb3ea" dir="ltr"><td id="RxfK" class="">Content-Type</td><td id="f}Kf" class=""><code>application/json</code></td></tr></tbody></table><pre id="39ba64eb-8b50-811a-baa6-c64babbd0637" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;userId&quot;: &quot;test01&quot;,
+  &quot;password&quot;: &quot;pass1234&quot;
+}</code></pre><ul id="39ba64eb-8b50-81e2-aabd-f729f133aba7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>Response 200 / code 1000</strong></li></ul><pre id="39ba64eb-8b50-8172-ac81-f496b258ca03" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;success&quot;: true,
+  &quot;code&quot;: 1000,
+  &quot;message&quot;: &quot;로그인에 성공했습니다.&quot;,
+  &quot;result&quot;: null
+}</code></pre><p id="39ba64eb-8b50-81cb-9319-cdabeedefeb3" class="" dir="auto">Set-Cookie: <code>ATOKEN</code>, <code>RTOKEN</code></p><ul id="39ba64eb-8b50-81c3-a9b5-ff02919d7586" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>Error</strong></li></ul><table id="39ba64eb-8b50-8106-ace6-fc6ee9f316c1" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-816b-b5d2-cacd65e037ba" dir="ltr"><th id="hEQx" class="simple-table-header-color simple-table-header">code</th><th id="mpY]" class="simple-table-header-color simple-table-header">message</th></tr></thead><tbody><tr id="39ba64eb-8b50-8177-b1da-e67d5e4d24ef" dir="ltr"><td id="hEQx" class="">1001</td><td id="mpY]" class="">아이디를 입력해주세요.</td></tr><tr id="39ba64eb-8b50-81da-bca8-c3e61c4e9933" dir="ltr"><td id="hEQx" class="">1002</td><td id="mpY]" class="">비밀번호를 입력해주세요.</td></tr><tr id="39ba64eb-8b50-8182-9976-f75d1d836f45" dir="ltr"><td id="hEQx" class="">307</td><td id="mpY]" class="">아이디 또는 비밀번호가 틀렸습니다.</td></tr><tr id="39ba64eb-8b50-8126-a638-fc0ca7b5c9e4" dir="ltr"><td id="hEQx" class="">316</td><td id="mpY]" class="">비활성화된 회원입니다.</td></tr></tbody></table><hr id="39ba64eb-8b50-813f-8374-e7ef4c75842a" dir="auto"/><h3 id="39ba64eb-8b50-812e-b3d8-c2125bf87e0d" class="" dir="auto"><code>[POST]</code> 로그아웃</h3><table id="39ba64eb-8b50-8131-8ae6-e0185b6923e3" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81e7-8a63-e24ef5bfaca9" dir="ltr"><th id="Kap?" class="simple-table-header-color simple-table-header">Description</th><th id="yOdY" class="simple-table-header-color simple-table-header">인증 쿠키 삭제</th></tr></thead><tbody><tr id="39ba64eb-8b50-81c0-94cd-e309244486d5" dir="ltr"><td id="Kap?" class="">URL</td><td id="yOdY" class=""><code>/api/v1/auth/logout</code></td></tr><tr id="39ba64eb-8b50-8181-83bd-d2fa8b915d71" dir="ltr"><td id="Kap?" class="">Auth</td><td id="yOdY" class="">No (쿠키 삭제)</td></tr></tbody></table><ul id="39ba64eb-8b50-8164-8ed0-d90e2cbb6a71" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>Response 200</strong></li></ul><pre id="39ba64eb-8b50-81e2-b6b4-d1b7669ec5a0" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;success&quot;: true,
+  &quot;code&quot;: 2080,
+  &quot;message&quot;: &quot;로그아웃에 성공했습니다.&quot;,
+  &quot;result&quot;: null
+}</code></pre><hr id="39ba64eb-8b50-8197-83b4-ff2d79b9e767" dir="auto"/><h3 id="39ba64eb-8b50-81b7-b47a-ff35cd34a8d8" class="" dir="auto"><code>[GET]</code> 소셜 로그인 (OAuth2)</h3><table id="39ba64eb-8b50-8167-a5a9-ca9aa200bfdc" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81d0-9c2e-fe9577b9f78e" dir="ltr"><th id="[Nj&gt;" class="simple-table-header-color simple-table-header">Description</th><th id="yj`k" class="simple-table-header-color simple-table-header">카카오 OAuth2 로그인 (네이버/구글은 설정만 존재)</th></tr></thead><tbody><tr id="39ba64eb-8b50-81e9-8148-f02124f6d974" dir="ltr"><td id="[Nj&gt;" class="">URL</td><td id="yj`k" class=""><code>/oauth2/authorization/kakao</code></td></tr><tr id="39ba64eb-8b50-81a2-9bfe-da827b1c7888" dir="ltr"><td id="[Nj&gt;" class="">Auth</td><td id="yj`k" class="">No</td></tr><tr id="39ba64eb-8b50-81fb-b7a4-cfdb222e5c38" dir="ltr"><td id="[Nj&gt;" class="">Callback</td><td id="yj`k" class=""><code>/login/oauth2/code/kakao</code></td></tr></tbody></table><table id="39ba64eb-8b50-8199-a286-e3806e6b98b2" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81be-95ac-c5c6fd3f1804" dir="ltr"><th id="fdWA" class="simple-table-header-color simple-table-header">처리</th><th id="o@S&gt;" class="simple-table-header-color simple-table-header">내용</th></tr></thead><tbody><tr id="39ba64eb-8b50-81e1-aa50-d82a1d9be698" dir="ltr"><td id="fdWA" class="">신규</td><td id="o@S&gt;" class="">ROLE_CUSTOMER 생성, point 3000, isEmailAuth=true</td></tr><tr id="39ba64eb-8b50-8187-8208-d531f8f85e96" dir="ltr"><td id="fdWA" class="">성공</td><td id="o@S&gt;" class="">ATOKEN 쿠키 발급 후 리다이렉트</td></tr><tr id="39ba64eb-8b50-8146-8ce6-c36a0ea06a6e" dir="ltr"><td id="fdWA" class="">상태</td><td id="o@S&gt;" class="">카카오만 구현 (부분)</td></tr></tbody></table><hr id="39ba64eb-8b50-81bf-bcd4-c491882abbf6" dir="auto"/><h3 id="39ba64eb-8b50-81d4-82eb-eb37892a0088" class="" dir="auto"><code>[POST]</code> 아이디 찾기</h3><table id="39ba64eb-8b50-8115-8981-efa5cd240ff4" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8175-9e7e-eafcbc741fbe" dir="ltr"><th id="Crnj" class="simple-table-header-color simple-table-header">Description</th><th id="SSzw" class="simple-table-header-color simple-table-header">이메일로 계정 ID 발송</th></tr></thead><tbody><tr id="39ba64eb-8b50-8111-b983-e9aff7ae91cb" dir="ltr"><td id="Crnj" class="">URL</td><td id="SSzw" class=""><code>/api/v1/accounts/id/find</code></td></tr><tr id="39ba64eb-8b50-8186-ae01-c034545127d5" dir="ltr"><td id="Crnj" class="">Auth</td><td id="SSzw" class="">No</td></tr></tbody></table><pre id="39ba64eb-8b50-8132-8d28-e0c22e6d7f84" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;role&quot;: &quot;ROLE_CUSTOMER&quot;,
+  &quot;email&quot;: &quot;test@example.com&quot;
+}</code></pre><ul id="39ba64eb-8b50-8107-842a-d188a18da508" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 2010</strong> — 아이디 찾기 성공</li></ul><ul id="39ba64eb-8b50-81dd-b7c2-f2b06c43cb6b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>2011</strong> 이메일 미인증 / <strong>2012</strong> 회원 없음</li></ul><hr id="39ba64eb-8b50-8174-9474-ff97823ac495" dir="auto"/><h3 id="39ba64eb-8b50-8100-ba0b-e8a5d0ed8001" class="" dir="auto"><code>[POST]</code> 비밀번호 찾기</h3><table id="39ba64eb-8b50-81d1-8602-cde3c0f77fdc" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81d4-a20d-f1ddb4ebb8d3" dir="ltr"><th id="WXp:" class="simple-table-header-color simple-table-header">Description</th><th id="Whj=" class="simple-table-header-color simple-table-header">임시 비밀번호 생성·저장 후 이메일 발송</th></tr></thead><tbody><tr id="39ba64eb-8b50-8107-8b51-e689017749e7" dir="ltr"><td id="WXp:" class="">URL</td><td id="Whj=" class=""><code>/api/v1/accounts/password/find</code></td></tr><tr id="39ba64eb-8b50-81a4-a595-d35a51e35252" dir="ltr"><td id="WXp:" class="">Auth</td><td id="Whj=" class="">No</td></tr></tbody></table><pre id="39ba64eb-8b50-81f6-8dd8-dfb95982d0de" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;role&quot;: &quot;ROLE_CUSTOMER&quot;,
+  &quot;userId&quot;: &quot;test01&quot;
+}</code></pre><ul id="39ba64eb-8b50-811a-aaec-dcce0f8e84da" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 2013</strong></li></ul><ul id="39ba64eb-8b50-810b-a085-d9f656e5d0f2" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>2014</strong> 발급 불가 / <strong>2015</strong> 회원 없음</li></ul><hr id="39ba64eb-8b50-81ca-9643-db6c04ff6ff0" dir="auto"/><h3 id="39ba64eb-8b50-81c3-ae73-cf57e6e5a518" class="" dir="auto"><code>[GET]</code> 회원 정보 조회</h3><table id="39ba64eb-8b50-816e-8ca5-da97a7e11d5b" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8198-8adf-d588f9bef293" dir="ltr"><th id="HC{^" class="simple-table-header-color simple-table-header">Description</th><th id="ukjZ" class="simple-table-header-color simple-table-header">로그인 회원 프로필 조회</th></tr></thead><tbody><tr id="39ba64eb-8b50-8122-92b5-fc132c055672" dir="ltr"><td id="HC{^" class="">URL</td><td id="ukjZ" class=""><code>/api/v1/accounts/me</code></td></tr><tr id="39ba64eb-8b50-813d-a883-cde473b883b5" dir="ltr"><td id="HC{^" class="">Auth</td><td id="ukjZ" class="">Yes</td></tr></tbody></table><ul id="39ba64eb-8b50-81b2-92ad-caa2df7de608" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 2021</strong></li></ul><pre id="39ba64eb-8b50-816c-905c-e50c890eeab2" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;success&quot;: true,
+  &quot;code&quot;: 2021,
+  &quot;message&quot;: &quot;회원 정보 조회에 성공했습니다.&quot;,
+  &quot;result&quot;: {
+    &quot;name&quot;: &quot;홍길동&quot;,
+    &quot;email&quot;: &quot;test@example.com&quot;,
+    &quot;role&quot;: &quot;ROLE_CUSTOMER&quot;,
+    &quot;point&quot;: 3000,
+    &quot;phoneNumber&quot;: &quot;01012345678&quot;,
+    &quot;address&quot;: &quot;서울시 ...,상세&quot;,
+    &quot;crn&quot;: null,
+    &quot;profileImageUrl&quot;: &quot;https://...&quot;
+  }
+}</code></pre><hr id="39ba64eb-8b50-8149-acc4-c7c8467b6db2" dir="auto"/><h3 id="39ba64eb-8b50-8116-a8fc-f962a6c6722a" class="" dir="auto"><code>[PATCH]</code> 회원 정보 수정</h3><table id="39ba64eb-8b50-8193-a7e8-d5ae6e2becf7" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8178-864a-e857584768c6" dir="ltr"><th id="mtsE" class="simple-table-header-color simple-table-header">Description</th><th id="WO^}" class="simple-table-header-color simple-table-header">프로필 수정</th></tr></thead><tbody><tr id="39ba64eb-8b50-81e1-b6ca-ca92eca1c9da" dir="ltr"><td id="mtsE" class="">URL</td><td id="WO^}" class=""><code>/api/v1/accounts/me</code></td></tr><tr id="39ba64eb-8b50-8172-ac36-cdf6427572ea" dir="ltr"><td id="mtsE" class="">Auth</td><td id="WO^}" class="">Yes</td></tr><tr id="39ba64eb-8b50-81b0-aa4b-c6a0f28c94c1" dir="ltr"><td id="mtsE" class="">Content-Type</td><td id="WO^}" class=""><code>multipart/form-data</code></td></tr></tbody></table><table id="39ba64eb-8b50-810a-bfac-fd533a194409" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-815b-838d-f2c9356b58d7" dir="ltr"><th id="nGz[" class="simple-table-header-color simple-table-header">Part</th><th id="Vke_" class="simple-table-header-color simple-table-header">내용</th></tr></thead><tbody><tr id="39ba64eb-8b50-8199-827d-e3ba457ef0eb" dir="ltr"><td id="nGz[" class="">req</td><td id="Vke_" class="">UpdateAccountReq</td></tr><tr id="39ba64eb-8b50-81b7-9ca2-c80730bcd807" dir="ltr"><td id="nGz[" class="">file</td><td id="Vke_" class="">프로필 이미지 (선택)</td></tr></tbody></table><pre id="39ba64eb-8b50-81f9-b5d8-e3b4dd4f9e5a" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;name&quot;: &quot;홍길동&quot;,
+  &quot;phoneNumber&quot;: &quot;01012345678&quot;,
+  &quot;address&quot;: &quot;서울시 ...,상세&quot;,
+  &quot;crn&quot;: null,
+  &quot;profileImageUrl&quot;: &quot;https://...&quot;
+}</code></pre><ul id="39ba64eb-8b50-81ce-8aaf-d30d4c52f2d7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 2016</strong></li></ul><ul id="39ba64eb-8b50-811e-aafc-d63d0e1814d1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>2018</strong> 회원 없음</li></ul><hr id="39ba64eb-8b50-8163-8427-ed60fac150b0" dir="auto"/><h3 id="39ba64eb-8b50-8100-a11b-d4a7cbe63c54" class="" dir="auto"><code>[PATCH]</code> 비밀번호 변경</h3><table id="39ba64eb-8b50-81b3-93ca-e2e1741aa50d" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81dd-8692-ead01d828d78" dir="ltr"><th id="mpjf" class="simple-table-header-color simple-table-header">Description</th><th id="FT@j" class="simple-table-header-color simple-table-header">기존 비밀번호 검증 후 변경</th></tr></thead><tbody><tr id="39ba64eb-8b50-81f5-a4de-c166b275d7b5" dir="ltr"><td id="mpjf" class="">URL</td><td id="FT@j" class=""><code>/api/v1/accounts/password/reset</code></td></tr><tr id="39ba64eb-8b50-811a-8552-da302546a546" dir="ltr"><td id="mpjf" class="">Auth</td><td id="FT@j" class="">Yes</td></tr></tbody></table><pre id="39ba64eb-8b50-81be-aa49-d4d2ca5a0e78" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;originPassword&quot;: &quot;oldPass&quot;,
+  &quot;newPassword&quot;: &quot;newPass&quot;
+}</code></pre><ul id="39ba64eb-8b50-81a4-a227-e3d87c84f8de" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 2019</strong></li></ul><ul id="39ba64eb-8b50-814b-a373-ce1b041a2bef" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>2022</strong> 비밀번호 불일치</li></ul><hr id="39ba64eb-8b50-815c-b598-e7d4385b6c07" dir="auto"/><h3 id="39ba64eb-8b50-81d6-9275-d9028587d7fd" class="" dir="auto"><code>[DELETE]</code> 계정 비활성화</h3><table id="39ba64eb-8b50-8136-986e-fa52179020f7" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-818c-ab6a-cc5e7afb1b1c" dir="ltr"><th id="eGIJ" class="simple-table-header-color simple-table-header">Description</th><th id="j]vB" class="simple-table-header-color simple-table-header">소프트 비활성 처리</th></tr></thead><tbody><tr id="39ba64eb-8b50-811e-b484-fe37bc50fcf5" dir="ltr"><td id="eGIJ" class="">URL</td><td id="j]vB" class=""><code>/api/v1/accounts/me</code></td></tr><tr id="39ba64eb-8b50-813b-b69b-f455d2acf17e" dir="ltr"><td id="eGIJ" class="">Auth</td><td id="j]vB" class="">Yes</td></tr></tbody></table><ul id="39ba64eb-8b50-816d-b7c1-c4427d20fb7c" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 2006</strong></li></ul><hr id="39ba64eb-8b50-8152-b630-d3a47f5fe339" dir="auto"/><h3 id="39ba64eb-8b50-81f1-a936-c87a5f131e34" class="" dir="auto"><code>[POST]</code> 계정 활성화 요청</h3><table id="39ba64eb-8b50-81b8-9e04-cea00b5765f7" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81e7-a7bc-ff2dc54f80d9" dir="ltr"><th id="JOQj" class="simple-table-header-color simple-table-header">Description</th><th id="ofj`" class="simple-table-header-color simple-table-header">비활성 계정 인증 메일 재발송</th></tr></thead><tbody><tr id="39ba64eb-8b50-8163-afcb-fd667b53d14e" dir="ltr"><td id="JOQj" class="">URL</td><td id="ofj`" class=""><code>/api/v1/accounts/me/activation</code></td></tr><tr id="39ba64eb-8b50-81d3-bd2f-c06c6060d85f" dir="ltr"><td id="JOQj" class="">Auth</td><td id="ofj`" class="">No</td></tr></tbody></table><pre id="39ba64eb-8b50-816a-a6cf-c4779c877076" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;role&quot;: &quot;ROLE_CUSTOMER&quot;,
+  &quot;email&quot;: &quot;test@example.com&quot;
+}</code></pre><ul id="39ba64eb-8b50-81ae-9982-c0cd5d2b005e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 2008</strong></li></ul><ul id="39ba64eb-8b50-8191-9255-c74d221c091a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>2009</strong> 실패 / <strong>2010</strong> 이미 활성</li></ul><hr id="39ba64eb-8b50-8100-9af1-e99d7502a1aa" dir="auto"/><h2 id="39ba64eb-8b50-81d7-929f-e23ad764938a" class="" dir="auto">2. 장바구니</h2><blockquote id="39ba64eb-8b50-81a8-b1a8-e5ee61aa6bba" class="" dir="auto">전체 <code>/api/v1/carts/**</code> → <strong>ROLE_CUSTOMER</strong></blockquote><h3 id="39ba64eb-8b50-8188-935a-f82150ecc2c8" class="" dir="auto"><code>[POST]</code> 카트 등록</h3><table id="39ba64eb-8b50-81c3-8fd5-f0a2c134d3e1" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81f0-9877-cb7a9eba74e5" dir="ltr"><th id="O]Dp" class="simple-table-header-color simple-table-header">Description</th><th id="uKkd" class="simple-table-header-color simple-table-header">팝업 단위 장바구니에 굿즈 담기</th></tr></thead><tbody><tr id="39ba64eb-8b50-8100-8fde-fbeb94422d4e" dir="ltr"><td id="O]Dp" class="">URL</td><td id="uKkd" class=""><code>/api/v1/carts</code></td></tr><tr id="39ba64eb-8b50-8119-a0a8-f7c8b6f3a821" dir="ltr"><td id="O]Dp" class="">Auth</td><td id="uKkd" class="">ROLE_CUSTOMER</td></tr></tbody></table><pre id="39ba64eb-8b50-8163-8a41-cf82f183711c" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;goodsIdx&quot;: 1,
+  &quot;popupIdx&quot;: 1
+}</code></pre><ul id="39ba64eb-8b50-81e9-a0d0-c5697ad2b7b0" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>HTTP 201 / code 3000</strong></li></ul><ul id="39ba64eb-8b50-81b2-a6c2-d7a9bd1cc1b4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>3002</strong> 상품 없음 / <strong>3004</strong> 이미 존재</li></ul><hr id="39ba64eb-8b50-810b-b7e3-f4a7a6aa1eaa" dir="auto"/><h3 id="39ba64eb-8b50-8175-8cf1-eb881fde93bb" class="" dir="auto"><code>[GET]</code> 카트 목록</h3><table id="39ba64eb-8b50-81ff-b222-fc603bf46333" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-817d-a040-f33ebc5b0b84" dir="ltr"><th id="uXAq" class="simple-table-header-color simple-table-header">Description</th><th id="qhHA" class="simple-table-header-color simple-table-header">내 장바구니(팝업 단위) 페이징</th></tr></thead><tbody><tr id="39ba64eb-8b50-8148-9210-d42c1537bf30" dir="ltr"><td id="uXAq" class="">URL</td><td id="qhHA" class=""><code>/api/v1/carts</code></td></tr><tr id="39ba64eb-8b50-81d6-afc8-d022299b92c2" dir="ltr"><td id="uXAq" class="">Auth</td><td id="qhHA" class="">ROLE_CUSTOMER</td></tr></tbody></table><table id="39ba64eb-8b50-8154-ab87-f2bfca6441ef" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8183-93f5-e01bbb51c7a3" dir="ltr"><th id="U&lt;Mq" class="simple-table-header-color simple-table-header">Query</th><th id="Ikg}" class="simple-table-header-color simple-table-header">Default</th></tr></thead><tbody><tr id="39ba64eb-8b50-81b3-bc4b-eccc27d0504d" dir="ltr"><td id="U&lt;Mq" class="">page</td><td id="Ikg}" class="">0</td></tr><tr id="39ba64eb-8b50-8113-9d52-f7ebf57f95c7" dir="ltr"><td id="U&lt;Mq" class="">size</td><td id="Ikg}" class="">10</td></tr></tbody></table><ul id="39ba64eb-8b50-815e-bcb4-cdd0bee89537" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 3005</strong> + <code>Page&lt;GetCartRes&gt;</code></li></ul><p id="39ba64eb-8b50-8181-9f0a-febcfffcd838" class="" dir="auto"><code>GetCartRes</code>: popupIdx, companyEmail, popupName, popupContent, popupAddress, category, likeCount, totalPeople, popupStatus, popupStartDate, popupEndDate, createdAt, updatedAt, getPopupImageResList</p><hr id="39ba64eb-8b50-819f-bf9f-e72a4663078c" dir="auto"/><h3 id="39ba64eb-8b50-818f-bb12-f449f4fe3fca" class="" dir="auto"><code>[GET]</code> 카트 아이템 목록</h3><table id="39ba64eb-8b50-8168-a837-d4b202a8f22e" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8103-b10a-f6dd99d09c7d" dir="ltr"><th id="~_la" class="simple-table-header-color simple-table-header">Description</th><th id="n[\V" class="simple-table-header-color simple-table-header">특정 카트의 아이템 목록</th></tr></thead><tbody><tr id="39ba64eb-8b50-8191-b2bb-ddc6cb20f9ba" dir="ltr"><td id="~_la" class="">URL</td><td id="n[\V" class=""><code>/api/v1/carts/{cartIdx}/items</code></td></tr><tr id="39ba64eb-8b50-8165-8bd3-c25fd75c0d6d" dir="ltr"><td id="~_la" class="">Auth</td><td id="n[\V" class="">ROLE_CUSTOMER</td></tr></tbody></table><ul id="39ba64eb-8b50-8131-9d79-c07105626d6a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 3007</strong></li></ul><pre id="39ba64eb-8b50-81ab-829d-ce860aedce2e" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;success&quot;: true,
+  &quot;code&quot;: 3007,
+  &quot;message&quot;: &quot;장바구니 아이템 목록 조회에 성공했습니다.&quot;,
+  &quot;result&quot;: [
+    {
+      &quot;cartItemIdx&quot;: 1,
+      &quot;count&quot;: 1,
+      &quot;price&quot;: 15000,
+      &quot;getGoodsRes&quot;: { &quot;goodsIdx&quot;: 1, &quot;goodsName&quot;: &quot;...&quot;, &quot;goodsPrice&quot;: 15000 }
+    }
+  ]
+}</code></pre><hr id="39ba64eb-8b50-81f1-a462-d101a14c425c" dir="auto"/><h3 id="39ba64eb-8b50-8135-bbd3-f13e9e49efaf" class="" dir="auto"><code>[PATCH]</code> 수량 조절</h3><table id="39ba64eb-8b50-8196-b9f3-fceea4e9e3c1" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81b0-90af-dfaab9753dda" dir="ltr"><th id="jEsD" class="simple-table-header-color simple-table-header">Description</th><th id="UevN" class="simple-table-header-color simple-table-header">아이템 수량 증가/감소</th></tr></thead><tbody><tr id="39ba64eb-8b50-81a9-bf94-fc969115ddbe" dir="ltr"><td id="jEsD" class="">URL</td><td id="UevN" class=""><code>/api/v1/carts/{cartIdx}/items/{cartItemIdx}/quantity</code></td></tr><tr id="39ba64eb-8b50-811c-82b5-d3cdf7a42dd8" dir="ltr"><td id="jEsD" class="">Auth</td><td id="UevN" class="">ROLE_CUSTOMER</td></tr></tbody></table><table id="39ba64eb-8b50-81be-be2e-eb8a97ac325e" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-812d-82ca-cce691cc3721" dir="ltr"><th id="RCGu" class="simple-table-header-color simple-table-header">Query</th><th id="}Zn@" class="simple-table-header-color simple-table-header">값</th></tr></thead><tbody><tr id="39ba64eb-8b50-8124-9444-c389fce57d4d" dir="ltr"><td id="RCGu" class="">operation</td><td id="}Zn@" class=""><code>increment</code> | <code>decrement</code></td></tr></tbody></table><ul id="39ba64eb-8b50-81b5-9b65-f12f930eae46" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 3009</strong></li></ul><ul id="39ba64eb-8b50-8169-b231-ec4a73c1c69f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>3010</strong> 없음 / <strong>3011</strong> 수량 1 이하</li></ul><hr id="39ba64eb-8b50-8124-8ad6-e7ce8489fde6" dir="auto"/><h3 id="39ba64eb-8b50-8148-8e38-c40d0eed6994" class="" dir="auto"><code>[DELETE]</code> 아이템 삭제</h3><table id="39ba64eb-8b50-81a5-a384-f8800d52ac56" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-814f-8d6e-cf32b3bb26a3" dir="ltr"><th id="g}[Y" class="simple-table-header-color simple-table-header">URL</th><th id="Ey&gt;|" class="simple-table-header-color simple-table-header"><code>/api/v1/carts/{cartIdx}/items/{cartItemIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81f5-8405-c808a3df4e71" dir="ltr"><td id="g}[Y" class="">Auth</td><td id="Ey&gt;|" class="">ROLE_CUSTOMER</td></tr></tbody></table><ul id="39ba64eb-8b50-810e-9b59-f4b8b67315d7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 3012</strong></li></ul><hr id="39ba64eb-8b50-81cb-aff4-cfed4d47efc0" dir="auto"/><h3 id="39ba64eb-8b50-81fc-a06d-fec272bfcb4c" class="" dir="auto"><code>[DELETE]</code> 카트 전체 삭제</h3><table id="39ba64eb-8b50-812e-9ca8-e503b427df03" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-811e-8168-f99fdfa9a3dc" dir="ltr"><th id="vRn~" class="simple-table-header-color simple-table-header">URL</th><th id="k&lt;PO" class="simple-table-header-color simple-table-header"><code>/api/v1/carts/{cartIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81c0-9154-f2a26b70138f" dir="ltr"><td id="vRn~" class="">Auth</td><td id="k&lt;PO" class="">ROLE_CUSTOMER</td></tr></tbody></table><ul id="39ba64eb-8b50-81d1-a04d-cc96b1114202" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 3013</strong></li></ul><ul id="39ba64eb-8b50-81f3-a180-c0a9a37d83c8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>3014</strong> 없음 / <strong>3015</strong> 권한 없음</li></ul><hr id="39ba64eb-8b50-81f1-9bd9-dc9b4a2df54d" dir="auto"/><h2 id="39ba64eb-8b50-8196-a55e-ff07f2d7416b" class="" dir="auto">3. 팝업 스토어</h2><h3 id="39ba64eb-8b50-8190-9f56-da46d0fb42e0" class="" dir="auto"><code>[POST]</code> 팝업 등록</h3><table id="39ba64eb-8b50-813e-9871-cc84c8df6e5e" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8196-89e7-ffae26c8c183" dir="ltr"><th id="`j&lt;^" class="simple-table-header-color simple-table-header">Description</th><th id="^auF" class="simple-table-header-color simple-table-header">기업 팝업 스토어 등록</th></tr></thead><tbody><tr id="39ba64eb-8b50-8185-a956-dffc26c83388" dir="ltr"><td id="`j&lt;^" class="">URL</td><td id="^auF" class=""><code>/api/v1/popups</code></td></tr><tr id="39ba64eb-8b50-8130-a642-c7c54cd86949" dir="ltr"><td id="`j&lt;^" class="">Auth</td><td id="^auF" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-81cd-a9b5-c4764a95d881" dir="ltr"><td id="`j&lt;^" class="">Content-Type</td><td id="^auF" class=""><code>multipart/form-data</code></td></tr></tbody></table><table id="39ba64eb-8b50-818d-ad18-cf4a2556060b" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8160-8cd6-cb63f6168b87" dir="ltr"><th id="xGD[" class="simple-table-header-color simple-table-header">Part</th><th id="|a?e" class="simple-table-header-color simple-table-header">내용</th></tr></thead><tbody><tr id="39ba64eb-8b50-813f-b992-e12680c66369" dir="ltr"><td id="xGD[" class="">req</td><td id="|a?e" class="">CreatePopupReq</td></tr><tr id="39ba64eb-8b50-81a4-91c1-e9b3fe8f3a18" dir="ltr"><td id="xGD[" class="">files</td><td id="|a?e" class="">MultipartFile[] (선택)</td></tr></tbody></table><pre id="39ba64eb-8b50-81de-83ef-f7c4a4480668" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;popupName&quot;: &quot;팝업명&quot;,
+  &quot;popupAddress&quot;: &quot;서울시 ...&quot;,
+  &quot;popupContent&quot;: &quot;내용&quot;,
+  &quot;category&quot;: &quot;패션&quot;,
+  &quot;totalPeople&quot;: 100,
+  &quot;popupStartDate&quot;: &quot;2026-07-01&quot;,
+  &quot;popupEndDate&quot;: &quot;2026-07-31&quot;
+}</code></pre><ul id="39ba64eb-8b50-81fa-aaab-f97ab87b2682" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>HTTP 201 / code 4000</strong> (초기 status=<code>POPUP_START</code>)</li></ul><ul id="39ba64eb-8b50-8119-a224-e69e7a778ae7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>4001</strong> 권한 없음</li></ul><hr id="39ba64eb-8b50-8143-bc82-da2f79a9ca9c" dir="auto"/><h3 id="39ba64eb-8b50-815b-8899-d795d16f8a86" class="" dir="auto"><code>[PATCH]</code> 팝업 수정</h3><table id="39ba64eb-8b50-8148-96b9-d7d303742ae4" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81a1-857d-eda427ee0ac7" dir="ltr"><th id="B;OY" class="simple-table-header-color simple-table-header">URL</th><th id="n_X\" class="simple-table-header-color simple-table-header"><code>/api/v1/popups/{popupIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8185-91c4-d2c221ef804b" dir="ltr"><td id="B;OY" class="">Auth</td><td id="n_X\" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-8161-925b-d1f2668eb8a6" dir="ltr"><td id="B;OY" class="">Content-Type</td><td id="n_X\" class=""><code>multipart/form-data</code></td></tr></tbody></table><ul id="39ba64eb-8b50-817c-b8af-e0a42830b483" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4006</strong></li></ul><ul id="39ba64eb-8b50-8184-93d3-e5f37dd3a309" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>4007</strong> 없음 / <strong>4008</strong> 소유자 아님</li></ul><hr id="39ba64eb-8b50-8144-9b63-de1a4dd0dda6" dir="auto"/><h3 id="39ba64eb-8b50-8160-ae7c-c20c4f63585a" class="" dir="auto"><code>[GET]</code> 팝업 단일 조회</h3><table id="39ba64eb-8b50-8179-9563-fc22c81073a0" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8166-96f6-c09047eef814" dir="ltr"><th id="Fyur" class="simple-table-header-color simple-table-header">URL</th><th id="Wq&gt;f" class="simple-table-header-color simple-table-header"><code>/api/v1/popups/{popupIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8172-ae7b-f6601000a330" dir="ltr"><td id="Fyur" class="">Auth</td><td id="Wq&gt;f" class="">No</td></tr></tbody></table><ul id="39ba64eb-8b50-818f-821b-fc870ab1300a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4002</strong> + <code>GetPopupRes</code></li></ul><ul id="39ba64eb-8b50-811c-9a5b-c388a2dcdcca" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>4003</strong> 없음</li></ul><hr id="39ba64eb-8b50-814c-beff-df11ee7b0e35" dir="auto"/><h3 id="39ba64eb-8b50-8124-9b7f-d7df10197c7f" class="" dir="auto"><code>[GET]</code> 팝업 목록 (공개)</h3><table id="39ba64eb-8b50-81c2-854e-c655d35ae947" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-810e-8e9a-c32d7ec46664" dir="ltr"><th id="b?rp" class="simple-table-header-color simple-table-header">URL</th><th id="{m&lt;v" class="simple-table-header-color simple-table-header"><code>/api/v1/popups</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8172-b62a-da1d13fc9421" dir="ltr"><td id="b?rp" class="">Auth</td><td id="{m&lt;v" class="">No</td></tr></tbody></table><table id="39ba64eb-8b50-812e-bd61-c988cf88a544" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81ca-8504-d1e356593bb5" dir="ltr"><th id="sdWy" class="simple-table-header-color simple-table-header">Query</th><th id="h@V|" class="simple-table-header-color simple-table-header">설명</th></tr></thead><tbody><tr id="39ba64eb-8b50-8187-97a8-f8bd8694b89b" dir="ltr"><td id="sdWy" class="">status</td><td id="h@V|" class="">필수. PopupStatus</td></tr><tr id="39ba64eb-8b50-8139-bc67-d12e49b85c91" dir="ltr"><td id="sdWy" class="">keyword</td><td id="h@V|" class="">선택</td></tr><tr id="39ba64eb-8b50-81d8-8ed9-cf180ab883f4" dir="ltr"><td id="sdWy" class="">page, size</td><td id="h@V|" class="">기본 0 / 10</td></tr></tbody></table><ul id="39ba64eb-8b50-81ec-a096-e8facef363bb" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4004</strong> + <code>Page&lt;GetPopupRes&gt;</code></li></ul><hr id="39ba64eb-8b50-8163-9fef-c377f77535d2" dir="auto"/><h3 id="39ba64eb-8b50-810c-a180-c127ae94bc91" class="" dir="auto"><code>[DELETE]</code> 팝업 삭제</h3><table id="39ba64eb-8b50-81e5-9d27-ec557c1ab53f" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8124-9a88-e30b926de266" dir="ltr"><th id="iyCO" class="simple-table-header-color simple-table-header">Description</th><th id="C@Mf" class="simple-table-header-color simple-table-header">소프트 종료 (POPUP_END + 굿즈 STOCK 전환)</th></tr></thead><tbody><tr id="39ba64eb-8b50-8140-b519-f73213a1d314" dir="ltr"><td id="iyCO" class="">URL</td><td id="C@Mf" class=""><code>/api/v1/popups/{popupIdx}</code></td></tr><tr id="39ba64eb-8b50-8172-8941-ea9ced79801b" dir="ltr"><td id="iyCO" class="">Auth</td><td id="C@Mf" class="">ROLE_COMPANY</td></tr></tbody></table><ul id="39ba64eb-8b50-81f3-8a79-d4bb1e8e54d4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4009</strong></li></ul><hr id="39ba64eb-8b50-8197-91b2-f7e5df856fb1" dir="auto"/><h3 id="39ba64eb-8b50-8110-8c28-faa899216b60" class="" dir="auto"><code>[POST]</code> 좋아요 토글</h3><table id="39ba64eb-8b50-8115-b5cf-d2d3d5703d81" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81a1-96d3-caf92496300d" dir="ltr"><th id="obEP" class="simple-table-header-color simple-table-header">URL</th><th id="aHB~" class="simple-table-header-color simple-table-header"><code>/api/v1/popups/{popupIdx}/likes</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-813e-ba23-de6eca43a163" dir="ltr"><td id="obEP" class="">Auth</td><td id="aHB~" class="">ROLE_CUSTOMER</td></tr></tbody></table><ul id="39ba64eb-8b50-810d-94f3-f9ab67e2169b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4012</strong></li></ul><ul id="39ba64eb-8b50-8127-85d8-ce4f96f236c5" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>4013</strong> 팝업 없음</li></ul><hr id="39ba64eb-8b50-817e-84f3-de141355406d" dir="auto"/><h3 id="39ba64eb-8b50-8178-992a-de15a0c91a4f" class="" dir="auto"><code>[GET]</code> 내 좋아요 목록</h3><table id="39ba64eb-8b50-8103-95e1-f5930f201465" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81c2-865f-f707a17d3594" dir="ltr"><th id="=jWm" class="simple-table-header-color simple-table-header">URL</th><th id="Susu" class="simple-table-header-color simple-table-header"><code>/api/v1/popups/likes/me</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-811f-a074-cf4744ca67bd" dir="ltr"><td id="=jWm" class="">Auth</td><td id="Susu" class="">ROLE_CUSTOMER</td></tr></tbody></table><table id="39ba64eb-8b50-813c-ad95-c3cca980d7a6" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8132-ab23-eabab802caaf" dir="ltr"><th id="jiVx" class="simple-table-header-color simple-table-header">Query</th><th id="|q?&gt;" class="simple-table-header-color simple-table-header">page, size</th></tr></thead><tbody></tbody></table><ul id="39ba64eb-8b50-8181-8ab7-c02c95a5ca1a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4015</strong> + <code>Page&lt;GetPopupRes&gt;</code></li></ul><hr id="39ba64eb-8b50-81cf-97f0-f2a90350c006" dir="auto"/><h3 id="39ba64eb-8b50-8169-9f7b-eb5cf6e2fc87" class="" dir="auto"><code>[POST]</code> 리뷰 등록</h3><table id="39ba64eb-8b50-813f-8937-d0bbc6efab74" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81c0-ad9b-c6cf78f5578b" dir="ltr"><th id="sFHD" class="simple-table-header-color simple-table-header">URL</th><th id=";D`|" class="simple-table-header-color simple-table-header"><code>/api/v1/popups/{popupIdx}/reviews</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81d4-a5c8-d37cc14f7daf" dir="ltr"><td id="sFHD" class="">Auth</td><td id=";D`|" class="">ROLE_CUSTOMER</td></tr></tbody></table><pre id="39ba64eb-8b50-8174-8c9f-fd8be1006a91" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;reviewTitle&quot;: &quot;좋았어요&quot;,
+  &quot;reviewContent&quot;: &quot;내용&quot;,
+  &quot;reviewRating&quot;: 5
+}</code></pre><table id="39ba64eb-8b50-8180-b5e4-cddf4d0f59de" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8194-a993-d086222cbc15" dir="ltr"><th id="iLlr" class="simple-table-header-color simple-table-header">필드</th><th id="`qe&lt;" class="simple-table-header-color simple-table-header">제약</th></tr></thead><tbody><tr id="39ba64eb-8b50-815f-bfa3-e5580fd8b2c2" dir="ltr"><td id="iLlr" class="">reviewTitle</td><td id="`qe&lt;" class="">필수, max 100</td></tr><tr id="39ba64eb-8b50-812f-85a8-de9797217863" dir="ltr"><td id="iLlr" class="">reviewContent</td><td id="`qe&lt;" class="">필수, max 1000</td></tr><tr id="39ba64eb-8b50-819c-9a85-fd1f81cc1190" dir="ltr"><td id="iLlr" class="">reviewRating</td><td id="`qe&lt;" class="">필수, 1~5</td></tr></tbody></table><ul id="39ba64eb-8b50-81df-8f3d-e8fe50c9d219" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>HTTP 201 / code 4018</strong></li></ul><ul id="39ba64eb-8b50-81f9-b4bf-e62c62be8cb6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>4020</strong> 구매이력 없음 / <strong>4022</strong> 중복</li></ul><hr id="39ba64eb-8b50-81a8-ae71-d1564314957b" dir="auto"/><h3 id="39ba64eb-8b50-81e6-8344-e58f949ec226" class="" dir="auto"><code>[GET]</code> 팝업 리뷰 목록</h3><table id="39ba64eb-8b50-8110-8134-dcf6ca198141" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81cf-af03-e977443c720a" dir="ltr"><th id="evmc" class="simple-table-header-color simple-table-header">URL</th><th id="_?UE" class="simple-table-header-color simple-table-header"><code>/api/v1/popups/{popupIdx}/reviews</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8193-9ac1-ebeaf509aeed" dir="ltr"><td id="evmc" class="">Auth</td><td id="_?UE" class="">No</td></tr></tbody></table><ul id="39ba64eb-8b50-81f2-8de9-e3cb05339baa" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4023</strong> + <code>Page&lt;GetPopupReviewRes&gt;</code></li></ul><hr id="39ba64eb-8b50-8146-b290-f47a8ec46c32" dir="auto"/><h3 id="39ba64eb-8b50-8186-9ee6-f4a730f02bb0" class="" dir="auto"><code>[GET]</code> 내 리뷰 목록</h3><table id="39ba64eb-8b50-81b7-850f-e317611f581e" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81e7-9b43-c7786979abca" dir="ltr"><th id="rLPl" class="simple-table-header-color simple-table-header">URL</th><th id="UM~x" class="simple-table-header-color simple-table-header"><code>/api/v1/popups/reviews/me</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81ad-9d3a-f2ddd7d5e5e1" dir="ltr"><td id="rLPl" class="">Auth</td><td id="UM~x" class="">ROLE_CUSTOMER</td></tr></tbody></table><ul id="39ba64eb-8b50-81b0-b9b0-ee87beadad75" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4023</strong> + <code>Page&lt;GetPopupReviewRes&gt;</code></li></ul><hr id="39ba64eb-8b50-8119-90ce-e0c4a2528f7f" dir="auto"/><h3 id="39ba64eb-8b50-818a-b876-e34404daa991" class="" dir="auto"><code>[GET]</code> 팝업별 예약 슬롯 목록 (공개)</h3><table id="39ba64eb-8b50-81d4-81ed-c0464b469d76" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81a6-89f8-f06980b335d9" dir="ltr"><th id="[Z\=" class="simple-table-header-color simple-table-header">URL</th><th id="se{Q" class="simple-table-header-color simple-table-header"><code>/api/v1/popups/{popupIdx}/reserves</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81c6-862d-d060cd534459" dir="ltr"><td id="[Z\=" class="">Auth</td><td id="se{Q" class="">No</td></tr></tbody></table><table id="39ba64eb-8b50-8153-9c67-c71aa0672ea4" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8164-95fe-e78ac5c50f5b" dir="ltr"><th id="\pJ|" class="simple-table-header-color simple-table-header">Query</th><th id="BjUD" class="simple-table-header-color simple-table-header">keyword(선택), page, size</th></tr></thead><tbody></tbody></table><ul id="39ba64eb-8b50-81fc-91d0-f4dd1542d08e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 7008</strong> + <code>Page&lt;GetReserveRes&gt;</code></li></ul><p id="39ba64eb-8b50-81de-958a-e197a516da6d" class="" dir="auto"><code>GetReserveRes</code>: popupIdx, reserveIdx, reservePeople, reserveStartDate, reserveStartTime, reserveEndTime, getPopupRes</p><hr id="39ba64eb-8b50-81cc-9b29-c64c8f66209e" dir="auto"/><h2 id="39ba64eb-8b50-81aa-af11-d858d6fd5fdf" class="" dir="auto">4. 기업 팝업 관리</h2><blockquote id="39ba64eb-8b50-811c-8359-ce0f974af64b" class="" dir="auto">전체 <code>/api/v1/company/popups/**</code> → <strong>ROLE_COMPANY</strong></blockquote><h3 id="39ba64eb-8b50-819c-8c5f-e5a1b52e636a" class="" dir="auto"><code>[GET]</code> 내 팝업 목록</h3><table id="39ba64eb-8b50-81a3-808b-f87f9c849fe8" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8128-a4af-c6bd45d62f17" dir="ltr"><th id="iob_" class="simple-table-header-color simple-table-header">URL</th><th id="Bfy?" class="simple-table-header-color simple-table-header"><code>/api/v1/company/popups</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-818d-b289-c528b2b425d2" dir="ltr"><td id="iob_" class="">Auth</td><td id="Bfy?" class="">ROLE_COMPANY</td></tr></tbody></table><table id="39ba64eb-8b50-81fc-ac68-f28c847bce4e" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8145-bdaa-d67185e3d464" dir="ltr"><th id="cNfN" class="simple-table-header-color simple-table-header">Query</th><th id="Nvj&gt;" class="simple-table-header-color simple-table-header">keyword, page, size</th></tr></thead><tbody></tbody></table><ul id="39ba64eb-8b50-81aa-a7fa-deaf77840551" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 4004</strong></li></ul><hr id="39ba64eb-8b50-8145-b57b-c72ef060d41a" dir="auto"/><h3 id="39ba64eb-8b50-81cd-a4be-c2665b0a11fc" class="" dir="auto"><code>[GET]</code> 팝업 정산 목록</h3><table id="39ba64eb-8b50-81a1-b4f8-c00081c2b301" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8131-a5d2-c3d2ab7f53ef" dir="ltr"><th id=";y&gt;f" class="simple-table-header-color simple-table-header">URL</th><th id="NEY_" class="simple-table-header-color simple-table-header"><code>/api/v1/company/popups/{popupIdx}/payouts</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81a0-a52d-d460a2e3e80f" dir="ltr"><td id=";y&gt;f" class="">Auth</td><td id="NEY_" class="">ROLE_COMPANY</td></tr></tbody></table><ul id="39ba64eb-8b50-8191-b8e3-f5f0d563b32d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 8000</strong></li></ul><pre id="39ba64eb-8b50-81c2-ba07-e39ca90538fa" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;success&quot;: true,
+  &quot;code&quot;: 8000,
+  &quot;message&quot;: &quot;정산 조회에 성공했습니다.&quot;,
+  &quot;result&quot;: {
+    &quot;content&quot;: [
+      { &quot;revenue&quot;: 150000, &quot;payoutDate&quot;: &quot;2026-07-11&quot; }
+    ],
+    &quot;totalElements&quot;: 1,
+    &quot;totalPages&quot;: 1
+  }
+}</code></pre><hr id="39ba64eb-8b50-811f-801f-ca71abb219da" dir="auto"/><h3 id="39ba64eb-8b50-81cb-be58-f5fc3da8b9ef" class="" dir="auto"><code>[GET]</code> 팝업 예약 목록 (기업)</h3><table id="39ba64eb-8b50-812c-ac0a-f280146657ae" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8139-a33b-c3d284ee358d" dir="ltr"><th id="YChc" class="simple-table-header-color simple-table-header">URL</th><th id="}dar" class="simple-table-header-color simple-table-header"><code>/api/v1/company/popups/{popupIdx}/reserves</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8126-a26d-d8ad7723ba25" dir="ltr"><td id="YChc" class="">Auth</td><td id="}dar" class="">ROLE_COMPANY</td></tr></tbody></table><ul id="39ba64eb-8b50-81ee-8bef-cff8e6213b77" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 7008</strong> + <code>Page&lt;GetReserveRes&gt;</code></li></ul><hr id="39ba64eb-8b50-8122-b5af-f69dfe9cd841" dir="auto"/><h3 id="39ba64eb-8b50-8109-accd-dd8dd815ebfb" class="" dir="auto"><code>[GET]</code> 팝업 주문 목록 (기업)</h3><table id="39ba64eb-8b50-81ac-bd52-fee199914c25" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8132-9f3d-e47a1ee900d2" dir="ltr"><th id="Y@Wq" class="simple-table-header-color simple-table-header">URL</th><th id="ZXk|" class="simple-table-header-color simple-table-header"><code>/api/v1/company/popups/{popupIdx}/orders</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8134-8312-c4ec31d66f6d" dir="ltr"><td id="Y@Wq" class="">Auth</td><td id="ZXk|" class="">ROLE_COMPANY</td></tr></tbody></table><ul id="39ba64eb-8b50-81f0-8609-f9a011e0c186" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 6025</strong> + <code>Page&lt;GetOrdersRes&gt;</code></li></ul><hr id="39ba64eb-8b50-8139-9dca-ce26899c2018" dir="auto"/><h3 id="39ba64eb-8b50-817b-b971-c6c537a5eb31" class="" dir="auto"><code>[GET]</code> 팝업 주문 상세 (기업)</h3><table id="39ba64eb-8b50-8193-9aba-f5b23cfb9a3a" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81a3-ba54-c4140310c513" dir="ltr"><th id="g|de" class="simple-table-header-color simple-table-header">URL</th><th id="n@_\" class="simple-table-header-color simple-table-header"><code>/api/v1/company/popups/{popupIdx}/orders/{ordersIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81a4-abd3-c13201cf2ee2" dir="ltr"><td id="g|de" class="">Auth</td><td id="n@_\" class="">ROLE_COMPANY</td></tr></tbody></table><ul id="39ba64eb-8b50-8188-ac8e-c6afef28fe2f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 6021</strong> + <code>GetOrdersRes</code></li></ul><hr id="39ba64eb-8b50-8147-9872-d18a80222d1d" dir="auto"/><h2 id="39ba64eb-8b50-81fe-ab28-f53b5ff7dd27" class="" dir="auto">5. 팝업 굿즈</h2><h3 id="39ba64eb-8b50-81f9-a6b5-c7942d7f22ed" class="" dir="auto"><code>[POST]</code> 굿즈 등록</h3><table id="39ba64eb-8b50-81fb-a796-ddc6f799586f" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81fc-8a8a-df31b20a0d78" dir="ltr"><th id="jsK@" class="simple-table-header-color simple-table-header">URL</th><th id="XkML" class="simple-table-header-color simple-table-header"><code>/api/v1/goods</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8165-8f38-eb1cf00d6521" dir="ltr"><td id="jsK@" class="">Auth</td><td id="XkML" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-81e2-9198-e0adeb4b71a1" dir="ltr"><td id="jsK@" class="">Content-Type</td><td id="XkML" class=""><code>multipart/form-data</code></td></tr></tbody></table><table id="39ba64eb-8b50-81d3-910e-fd40c82f3d8f" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81ae-9275-f28d9827b7d0" dir="ltr"><th id="nQrZ" class="simple-table-header-color simple-table-header">Part</th><th id="HW[w" class="simple-table-header-color simple-table-header">내용</th></tr></thead><tbody><tr id="39ba64eb-8b50-81dd-9c58-d0632359c473" dir="ltr"><td id="nQrZ" class="">req</td><td id="HW[w" class="">CreateGoodsReq</td></tr><tr id="39ba64eb-8b50-81d5-9c60-dc06d819d3f9" dir="ltr"><td id="nQrZ" class="">files</td><td id="HW[w" class="">MultipartFile[] (필수)</td></tr></tbody></table><pre id="39ba64eb-8b50-8109-8072-fb84f4d12b5b" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;popupIdx&quot;: 1,
+  &quot;goodsName&quot;: &quot;티셔츠&quot;,
+  &quot;goodsPrice&quot;: 25000,
+  &quot;goodsAmount&quot;: 50,
+  &quot;goodsContent&quot;: &quot;설명&quot;
+}</code></pre><ul id="39ba64eb-8b50-8198-91cb-f69ecdbe36c6" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>HTTP 201 / code 5000</strong> (초기 <code>GOODS_RESERVED</code>)</li></ul><ul id="39ba64eb-8b50-8186-9750-ddd7fa7ec7b7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>5001</strong> 스토어 없음 / <strong>4008</strong> 소유권</li></ul><hr id="39ba64eb-8b50-81ae-8ba8-d6e174c93f4a" dir="auto"/><h3 id="39ba64eb-8b50-8151-ad88-e9d2db17e9ff" class="" dir="auto"><code>[PATCH]</code> 굿즈 수정</h3><table id="39ba64eb-8b50-81af-87af-d0d8103f90bb" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8143-bb43-fd4af05873b8" dir="ltr"><th id="I`QY" class="simple-table-header-color simple-table-header">URL</th><th id="GGJo" class="simple-table-header-color simple-table-header"><code>/api/v1/goods/{goodsIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8133-9373-d1059054bce7" dir="ltr"><td id="I`QY" class="">Auth</td><td id="GGJo" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-8177-aae3-c3f19934a6ff" dir="ltr"><td id="I`QY" class="">Content-Type</td><td id="GGJo" class=""><code>multipart/form-data</code></td></tr></tbody></table><ul id="39ba64eb-8b50-81b9-92d9-e1632cd2643f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 5007</strong></li></ul><hr id="39ba64eb-8b50-81da-9466-ce57d709d013" dir="auto"/><h3 id="39ba64eb-8b50-810d-b6da-cf886fe30c98" class="" dir="auto"><code>[GET]</code> 굿즈 단일 조회</h3><table id="39ba64eb-8b50-819e-9606-c2425c0b58b2" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8133-ac02-c83b38c70f0b" dir="ltr"><th id="&lt;:]q" class="simple-table-header-color simple-table-header">URL</th><th id="yY[a" class="simple-table-header-color simple-table-header"><code>/api/v1/goods/{goodsIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8110-8c70-cdf7232a97b2" dir="ltr"><td id="&lt;:]q" class="">Auth</td><td id="yY[a" class="">No</td></tr></tbody></table><ul id="39ba64eb-8b50-819e-834e-d914861c0327" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 5003</strong> + <code>GetGoodsRes</code></li></ul><ul id="39ba64eb-8b50-8102-a727-c4a114576c86" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>5004</strong> 없음</li></ul><p id="39ba64eb-8b50-81b1-adb1-f9f493b65d3b" class="" dir="auto"><code>GetGoodsRes</code>: popupName, goodsIdx, goodsName, goodsPrice, goodsContent, goodsAmount, goodsStatus, getGoodsImageResList</p><hr id="39ba64eb-8b50-818b-ae71-ed4aa4486af6" dir="auto"/><h3 id="39ba64eb-8b50-814b-98e5-f72d063417b0" class="" dir="auto"><code>[GET]</code> 굿즈 목록</h3><table id="39ba64eb-8b50-815b-b056-e53b96949af6" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81e9-b3ce-f450816ff210" dir="ltr"><th id="[&lt;^w" class="simple-table-header-color simple-table-header">URL</th><th id="vhGq" class="simple-table-header-color simple-table-header"><code>/api/v1/goods</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8146-8e60-c4fc336fdd94" dir="ltr"><td id="[&lt;^w" class="">Auth</td><td id="vhGq" class="">No</td></tr></tbody></table><table id="39ba64eb-8b50-8140-b11f-ff026fbc97b2" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81be-b440-c31ea6e567fa" dir="ltr"><th id="q&gt;WX" class="simple-table-header-color simple-table-header">Query</th><th id="Keor" class="simple-table-header-color simple-table-header">popupIdx, keyword, page, size</th></tr></thead><tbody></tbody></table><ul id="39ba64eb-8b50-812d-b5ff-f9a351c2bcdd" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 5005</strong> + <code>Page&lt;GetGoodsRes&gt;</code></li></ul><hr id="39ba64eb-8b50-8138-8b27-c3f4fa43d7b9" dir="auto"/><h3 id="39ba64eb-8b50-817e-be5c-c0b6346a2ae0" class="" dir="auto"><code>[DELETE]</code> 굿즈 삭제</h3><table id="39ba64eb-8b50-8155-8587-ebdd5f5a0b4e" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8199-8f9a-cf846642247b" dir="ltr"><th id="&lt;:^`" class="simple-table-header-color simple-table-header">URL</th><th id="t~MH" class="simple-table-header-color simple-table-header"><code>/api/v1/goods/{goodsIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-813b-97e3-c98f24a89c97" dir="ltr"><td id="&lt;:^`" class="">Auth</td><td id="t~MH" class="">ROLE_COMPANY</td></tr></tbody></table><ul id="39ba64eb-8b50-8175-bedd-c336789c876e" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 5010</strong></li></ul><hr id="39ba64eb-8b50-8183-9199-c3d176a983e2" dir="auto"/><h2 id="39ba64eb-8b50-8158-9222-c9d4e86a189a" class="" dir="auto">6. 결제 / 주문</h2><h3 id="39ba64eb-8b50-8140-b8b7-c7b658878f16" class="" dir="auto"><code>[POST]</code> 결제 검증 · 주문 생성</h3><table id="39ba64eb-8b50-8172-ba2f-ddd21f741561" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81e0-a42a-ee1ace3f6bba" dir="ltr"><th id="]kSc" class="simple-table-header-color simple-table-header">Description</th><th id="iB]p" class="simple-table-header-color simple-table-header">Iamport 결제 검증 후 예약/재고 주문 생성</th></tr></thead><tbody><tr id="39ba64eb-8b50-81b2-897d-de607ce662b8" dir="ltr"><td id="]kSc" class="">URL</td><td id="iB]p" class=""><code>/api/v1/orders</code></td></tr><tr id="39ba64eb-8b50-81ca-b984-fc2e849404c4" dir="ltr"><td id="]kSc" class="">Auth</td><td id="iB]p" class="">ROLE_CUSTOMER</td></tr></tbody></table><pre id="39ba64eb-8b50-81c0-808c-e6b5702d5676" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;impUid&quot;: &quot;imp_xxxxxxxx&quot;,
+  &quot;popupIdx&quot;: 1,
+  &quot;reserveIdx&quot;: 10
+}</code></pre><table id="39ba64eb-8b50-8155-8fcb-e27bb0297390" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8148-b170-e4ce2949452a" dir="ltr"><th id="RH`{" class="simple-table-header-color simple-table-header">필드</th><th id="VerL" class="simple-table-header-color simple-table-header">설명</th></tr></thead><tbody><tr id="39ba64eb-8b50-81e4-a508-cb2bf8b49ee9" dir="ltr"><td id="RH`{" class="">impUid</td><td id="VerL" class="">PortOne 결제 UID</td></tr><tr id="39ba64eb-8b50-81c4-bd8e-e5f7682851a2" dir="ltr"><td id="RH`{" class="">popupIdx</td><td id="VerL" class="">팝업 인덱스</td></tr><tr id="39ba64eb-8b50-8141-9c2b-ebe0724f3f56" dir="ltr"><td id="RH`{" class="">reserveIdx</td><td id="VerL" class="">있으면 예약구매, null이면 재고구매</td></tr></tbody></table><table id="39ba64eb-8b50-8131-89de-c45e4d722559" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-812d-97dd-d5c0cb409d09" dir="ltr"><th id="F}P}" class="simple-table-header-color simple-table-header">구분</th><th id="~yhF" class="simple-table-header-color simple-table-header">규칙</th></tr></thead><tbody><tr id="39ba64eb-8b50-81db-b29c-dd0797a5644a" dir="ltr"><td id="F}P}" class="">예약</td><td id="~yhF" class="">품목당 1개, 배송비 0, 포인트 사용 불가, 5% 적립, <code>RESERVE_READY</code></td></tr><tr id="39ba64eb-8b50-8150-b097-e10c30d0e61f" dir="ltr"><td id="F}P}" class="">재고</td><td id="~yhF" class="">재고한도, 배송비 2500, 포인트 3000↑ 사용, <code>STOCK_READY</code></td></tr></tbody></table><ul id="39ba64eb-8b50-818b-aca2-f5da1136aae9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>HTTP 201 / code 6000</strong></li></ul><pre id="39ba64eb-8b50-8167-af1d-c3c700445ff0" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;success&quot;: true,
+  &quot;code&quot;: 6000,
+  &quot;message&quot;: &quot;결제에 성공했습니다.&quot;,
+  &quot;result&quot;: { &quot;ordersIdx&quot;: 1 }
+}</code></pre><ul id="39ba64eb-8b50-811f-a398-dc1e63774c98" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>6001~6007</strong> 역할/회원/상품/한도/포인트/금액 오류</li></ul><hr id="39ba64eb-8b50-81d3-98a4-f6a91c6e88c8" dir="auto"/><h3 id="39ba64eb-8b50-812d-acc5-d46670a8f348" class="" dir="auto"><code>[PATCH]</code> 주문 상태 변경 (취소/확정/배송)</h3><table id="39ba64eb-8b50-8135-b743-d8f79c674527" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8138-821b-d44c7c8a6a7e" dir="ltr"><th id="hxy{" class="simple-table-header-color simple-table-header">URL</th><th id="kL&lt;&lt;" class="simple-table-header-color simple-table-header"><code>/api/v1/orders/{orderIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81c1-8cdc-c5ddb86fa934" dir="ltr"><td id="hxy{" class="">Auth</td><td id="kL&lt;&lt;" class="">ROLE_CUSTOMER 또는 ROLE_COMPANY</td></tr></tbody></table><pre id="39ba64eb-8b50-815c-8459-d3078412234e" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;popupIdx&quot;: 1,
+  &quot;status&quot;: &quot;STOCK_CANCEL&quot;
+}</code></pre><table id="39ba64eb-8b50-8174-8df4-e84141df5386" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8103-a7fa-ee6742d83c16" dir="ltr"><th id="R~wr" class="simple-table-header-color simple-table-header">status</th><th id="GQzG" class="simple-table-header-color simple-table-header">동작</th></tr></thead><tbody><tr id="39ba64eb-8b50-81aa-be62-e7c9898552a0" dir="ltr"><td id="R~wr" class="">STOCK_CANCEL / RESERVE_CANCEL</td><td id="GQzG" class="">고객 취소·환불</td></tr><tr id="39ba64eb-8b50-81cd-ac32-cb5500279eab" dir="ltr"><td id="R~wr" class="">(그 외, 기업)</td><td id="GQzG" class="">배송 처리 → <code>*_DELIVERY</code></td></tr><tr id="39ba64eb-8b50-81f3-b3f6-d63167f1c162" dir="ltr"><td id="R~wr" class="">(그 외, 고객)</td><td id="GQzG" class="">구매 확정 → <code>*_COMPLETE</code></td></tr></tbody></table><ul id="39ba64eb-8b50-815a-818e-fed8505be239" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 6015</strong></li></ul><ul id="39ba64eb-8b50-8151-9e94-e0611c9ae328" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ 취소 <strong>6008~6014</strong> / 확정 <strong>6017~6020</strong></li></ul><hr id="39ba64eb-8b50-8109-a04e-c7cdfd258f79" dir="auto"/><h3 id="39ba64eb-8b50-8132-8817-fab38f89ec63" class="" dir="auto"><code>[GET]</code> 고객 주문 상세</h3><table id="39ba64eb-8b50-8115-a66e-de09a29e38a5" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81c3-b1cf-e81d066c07f2" dir="ltr"><th id="c=^`" class="simple-table-header-color simple-table-header">URL</th><th id="fP=U" class="simple-table-header-color simple-table-header"><code>/api/v1/orders/{ordersIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-81a1-b02d-c689705f521f" dir="ltr"><td id="c=^`" class="">Auth</td><td id="fP=U" class="">ROLE_CUSTOMER</td></tr></tbody></table><ul id="39ba64eb-8b50-81e2-b465-d1469745f582" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 6021</strong> + <code>GetOrdersRes</code></li></ul><p id="39ba64eb-8b50-813f-9d07-d412b61dc944" class="" dir="auto"><code>GetOrdersRes</code>: ordersIdx, impUid, name, email, address, phoneNumber, usedPoint, totalPrice, orderStatus, deliveryCost, getOrdersDetailResList</p><hr id="39ba64eb-8b50-813e-b2f9-e1e4136dfafc" dir="auto"/><h3 id="39ba64eb-8b50-81aa-a8a6-e48564408670" class="" dir="auto"><code>[GET]</code> 고객 주문 목록</h3><table id="39ba64eb-8b50-8130-80f6-ca3dd10afa15" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8112-8ef4-de8be4f61914" dir="ltr"><th id="WUd]" class="simple-table-header-color simple-table-header">URL</th><th id="KcR`" class="simple-table-header-color simple-table-header"><code>/api/v1/orders</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-8192-8e47-f4d79ebc124e" dir="ltr"><td id="WUd]" class="">Auth</td><td id="KcR`" class="">ROLE_CUSTOMER</td></tr></tbody></table><table id="39ba64eb-8b50-81a4-859d-d85f76d55e95" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8171-8410-fa99c1f4d5e0" dir="ltr"><th id="{;{D" class="simple-table-header-color simple-table-header">Query</th><th id="KCS:" class="simple-table-header-color simple-table-header">page, size</th></tr></thead><tbody></tbody></table><ul id="39ba64eb-8b50-81bd-a0bd-c7904457ffe8" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 6025</strong> + <code>Page&lt;GetOrdersRes&gt;</code></li></ul><hr id="39ba64eb-8b50-8123-bdbd-cba88918d7df" dir="auto"/><h2 id="39ba64eb-8b50-81d1-a5d9-fa85ee706477" class="" dir="auto">7. 예약 / 대기열</h2><h3 id="39ba64eb-8b50-811b-b407-debd4370bdd4" class="" dir="auto"><code>[POST]</code> 예약 슬롯 등록</h3><table id="39ba64eb-8b50-8131-99d0-c98a62d17881" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81d3-90bb-d895229c9503" dir="ltr"><th id="NwNm" class="simple-table-header-color simple-table-header">URL</th><th id="YP?&gt;" class="simple-table-header-color simple-table-header"><code>/api/v1/reserves</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-815c-9457-f1eb0f54891c" dir="ltr"><td id="NwNm" class="">Auth</td><td id="YP?&gt;" class="">ROLE_COMPANY</td></tr></tbody></table><pre id="39ba64eb-8b50-8101-b4a1-d7170db3f847" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;popupIdx&quot;: 1,
+  &quot;reservePeople&quot;: 20,
+  &quot;reserveStartDate&quot;: &quot;2026-07-15&quot;,
+  &quot;reserveStartTime&quot;: &quot;2026-07-15T10:00:00&quot;,
+  &quot;reserveEndTime&quot;: &quot;2026-07-15T12:00:00&quot;
+}</code></pre><ul id="39ba64eb-8b50-81a2-b19e-dba8a6f79d7d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>HTTP 201 / code 7000</strong></li></ul><pre id="39ba64eb-8b50-8162-8fe7-e9584810ae79" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;success&quot;: true,
+  &quot;code&quot;: 7000,
+  &quot;message&quot;: &quot;예약 등록에 성공했습니다.&quot;,
+  &quot;result&quot;: { &quot;reserveIdx&quot;: 1 }
+}</code></pre><hr id="39ba64eb-8b50-81e9-afac-e5155773ec52" dir="auto"/><h3 id="39ba64eb-8b50-81b4-a0c2-ca97c4de6cea" class="" dir="auto"><code>[DELETE]</code> 예약 슬롯 삭제</h3><table id="39ba64eb-8b50-815a-b840-f1879769df98" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-818f-9bac-fd61ac785d97" dir="ltr"><th id="U`UJ" class="simple-table-header-color simple-table-header">URL</th><th id="Bi}j" class="simple-table-header-color simple-table-header"><code>/api/v1/reserves/{reserveIdx}</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-817a-9109-d3d17ee0dbad" dir="ltr"><td id="U`UJ" class="">Auth</td><td id="Bi}j" class="">ROLE_COMPANY</td></tr></tbody></table><ul id="39ba64eb-8b50-8166-b2e2-d950e54b6a8d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 7014</strong></li></ul><hr id="39ba64eb-8b50-8132-9d0b-eec0262ae2e5" dir="auto"/><h3 id="39ba64eb-8b50-814b-a87a-e5d79adcca44" class="" dir="auto"><code>[GET]</code> 예약 신청 (대기열 등록)</h3><table id="39ba64eb-8b50-81f9-a780-da003b270e2f" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8133-8b7a-d49bf5d89e3e" dir="ltr"><th id="heiz" class="simple-table-header-color simple-table-header">Description</th><th id="_K}Q" class="simple-table-header-color simple-table-header">working/waiting 큐 등록, 승격 시 WTOKEN 발급</th></tr></thead><tbody><tr id="39ba64eb-8b50-819a-b1d6-c47812911d98" dir="ltr"><td id="heiz" class="">URL</td><td id="_K}Q" class=""><code>/api/v1/reserves/{reserveIdx}/enrollment</code></td></tr><tr id="39ba64eb-8b50-819d-91ad-eadbeb8c822f" dir="ltr"><td id="heiz" class="">Auth</td><td id="_K}Q" class="">ROLE_CUSTOMER</td></tr></tbody></table><ul id="39ba64eb-8b50-818c-9b1b-c62af466a2bf" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 7005</strong> + Set-Cookie <code>WTOKEN</code> (working 진입 시)</li></ul><ul id="39ba64eb-8b50-8100-85c3-e525eb8ff7da" class="bulleted-list" dir="auto"><li style="list-style-type:disc">❌ <strong>7006</strong> / <strong>7007</strong> / Redis 900x</li></ul><hr id="39ba64eb-8b50-817a-b6be-d24e41dfd32f" dir="auto"/><h3 id="39ba64eb-8b50-81a4-b926-eb91cdec909b" class="" dir="auto"><code>[DELETE]</code> 예약 취소 (대기열 이탈)</h3><table id="39ba64eb-8b50-8181-abb3-f97ca73abacd" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-810c-8d93-ea0aab87a968" dir="ltr"><th id="~E`B" class="simple-table-header-color simple-table-header">URL</th><th id="UhH;" class="simple-table-header-color simple-table-header"><code>/api/v1/reserves/{reserveIdx}/enrollment</code></th></tr></thead><tbody><tr id="39ba64eb-8b50-813d-82ab-d0076aea6889" dir="ltr"><td id="~E`B" class="">Auth</td><td id="UhH;" class="">ROLE_CUSTOMER</td></tr></tbody></table><ul id="39ba64eb-8b50-815a-9545-c3aa430b608b" class="bulleted-list" dir="auto"><li style="list-style-type:disc">✅ <strong>code 7008</strong></li></ul><ul id="39ba64eb-8b50-8138-b1b5-d1542e30c124" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Side effect: WTOKEN 삭제, waiting 승격 시 WebSocket 알림</li></ul><hr id="39ba64eb-8b50-81b5-8d86-d2e86f15cd06" dir="auto"/><h3 id="39ba64eb-8b50-811f-9e5c-d54473002323" class="" dir="auto"><code>[STOMP]</code> 예약 상태 조회</h3><table id="39ba64eb-8b50-8123-adb1-f03c6c160fe3" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-81cd-bac9-e1b19299a8ca" dir="ltr"><th id="?~zn" class="simple-table-header-color simple-table-header">Description</th><th id="hPpF" class="simple-table-header-color simple-table-header">대기열 상태 실시간 조회</th></tr></thead><tbody><tr id="39ba64eb-8b50-81d2-80d3-dfb732b94e2c" dir="ltr"><td id="?~zn" class="">Endpoint</td><td id="hPpF" class=""><code>/ws</code> (SockJS)</td></tr><tr id="39ba64eb-8b50-8147-b92b-c318a8a3cca1" dir="ltr"><td id="?~zn" class="">Publish</td><td id="hPpF" class=""><code>/pub/reserve/status</code></td></tr><tr id="39ba64eb-8b50-81db-9cfe-c2694657724f" dir="ltr"><td id="?~zn" class="">Subscribe</td><td id="hPpF" class=""><code>/user/{email}/reserve/status</code></td></tr><tr id="39ba64eb-8b50-810d-9c13-c0da5b7a5f87" dir="ltr"><td id="?~zn" class="">Handshake</td><td id="hPpF" class="">Cookie <code>ATOKEN</code> 필요</td></tr></tbody></table><p id="39ba64eb-8b50-8161-9e10-e5f1246ade78" class="" dir="auto"><strong>요청</strong></p><pre id="39ba64eb-8b50-8182-8f03-efc056dac5cb" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{ &quot;reserveIdx&quot;: 1 }</code></pre><p id="39ba64eb-8b50-810a-bc70-f29e5240d3bf" class="" dir="auto"><strong>응답 </strong><code><strong>GetReserveQueueRes</strong></code></p><pre id="39ba64eb-8b50-8118-a15c-efd7928553ae" class="code code-wrap" data-notion-code-syntax="json"><code class="language-json" style="white-space:pre-wrap;word-break:break-all">{
+  &quot;waitingTotal&quot;: &quot;3&quot;,
+  &quot;workingTotal&quot;: &quot;10&quot;,
+  &quot;statusMessage&quot;: &quot;대기 중입니다.&quot;,
+  &quot;access&quot;: 0,
+  &quot;wtoken&quot;: null
+}</code></pre><table id="39ba64eb-8b50-818e-be34-c5c89b1c8b6f" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8185-87f8-ef5367493f18" dir="ltr"><th id="lnvA" class="simple-table-header-color simple-table-header">access</th><th id="EE`N" class="simple-table-header-color simple-table-header">의미</th></tr></thead><tbody><tr id="39ba64eb-8b50-8148-8ae6-ea1206b4eb5c" dir="ltr"><td id="lnvA" class="">0</td><td id="EE`N" class="">대기</td></tr><tr id="39ba64eb-8b50-8133-88de-fad926f02a67" dir="ltr"><td id="lnvA" class="">1</td><td id="EE`N" class="">접속(결제 가능)</td></tr><tr id="39ba64eb-8b50-81c7-b5d6-f40567cc1f0d" dir="ltr"><td id="lnvA" class="">2</td><td id="EE`N" class="">종료</td></tr><tr id="39ba64eb-8b50-8127-be7a-c8cd1fab7388" dir="ltr"><td id="lnvA" class="">3</td><td id="EE`N" class="">마감</td></tr></tbody></table><hr id="39ba64eb-8b50-811b-b3f3-c3d59980e3e0" dir="auto"/><h2 id="39ba64eb-8b50-811b-850f-e74b2f7650a1" class="" dir="auto">8. 권한 매트릭스</h2><table id="39ba64eb-8b50-81eb-933a-c5ac911ffdc3" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-819d-8759-d929b37fb54b" dir="ltr"><th id="]`uJ" class="simple-table-header-color simple-table-header">Pattern</th><th id="XzQl" class="simple-table-header-color simple-table-header">Method</th><th id="WIp=" class="simple-table-header-color simple-table-header">Authority</th></tr></thead><tbody><tr id="39ba64eb-8b50-8103-b6c2-c55d7ae8e4e0" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/auth/**</code></td><td id="XzQl" class="">*</td><td id="WIp=" class="">permitAll</td></tr><tr id="39ba64eb-8b50-810d-86c9-f2c20b6c3426" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/accounts/**</code></td><td id="XzQl" class="">*</td><td id="WIp=" class="">permitAll (principal 필요 API는 실질 인증)</td></tr><tr id="39ba64eb-8b50-8191-81b8-d776bde2258d" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/carts/**</code></td><td id="XzQl" class="">*</td><td id="WIp=" class="">ROLE_CUSTOMER</td></tr><tr id="39ba64eb-8b50-8180-bb37-dcd0d2eac656" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/popups</code></td><td id="XzQl" class="">POST</td><td id="WIp=" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-8119-95fd-f6ed48efe199" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/popups/*</code></td><td id="XzQl" class="">PATCH, DELETE</td><td id="WIp=" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-81a5-ba12-ea5a2b57029d" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/popups</code>, <code>/api/v1/popups/*</code></td><td id="XzQl" class="">GET</td><td id="WIp=" class="">permitAll</td></tr><tr id="39ba64eb-8b50-8123-af68-f449982ddc4b" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/popups/*/likes</code></td><td id="XzQl" class="">POST</td><td id="WIp=" class="">ROLE_CUSTOMER</td></tr><tr id="39ba64eb-8b50-81c6-8ebc-c50180cbc6a4" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/popups/likes/me</code></td><td id="XzQl" class="">GET</td><td id="WIp=" class="">ROLE_CUSTOMER</td></tr><tr id="39ba64eb-8b50-8176-91e9-ca61c1e47287" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/popups/*/reviews</code></td><td id="XzQl" class="">POST</td><td id="WIp=" class="">ROLE_CUSTOMER</td></tr><tr id="39ba64eb-8b50-8149-9fbf-ed084a31b37d" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/popups/reviews/me</code></td><td id="XzQl" class="">GET</td><td id="WIp=" class="">ROLE_CUSTOMER</td></tr><tr id="39ba64eb-8b50-81ed-bea3-c5935a455127" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/company/popups/**</code></td><td id="XzQl" class="">*</td><td id="WIp=" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-81d6-8392-d0a2433101ea" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/goods</code></td><td id="XzQl" class="">POST</td><td id="WIp=" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-819c-9f1b-c7152ef47841" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/goods/*</code></td><td id="XzQl" class="">PATCH, DELETE</td><td id="WIp=" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-81bb-8d56-eafaecab135e" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/goods</code>, <code>/api/v1/goods/*</code></td><td id="XzQl" class="">GET</td><td id="WIp=" class="">permitAll</td></tr><tr id="39ba64eb-8b50-818f-ac72-ef8f43c81540" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/orders</code></td><td id="XzQl" class="">POST, GET</td><td id="WIp=" class="">ROLE_CUSTOMER</td></tr><tr id="39ba64eb-8b50-81be-8856-e504713577d2" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/orders/*</code></td><td id="XzQl" class="">GET</td><td id="WIp=" class="">ROLE_CUSTOMER</td></tr><tr id="39ba64eb-8b50-81bd-ac7f-dd27d139b1dd" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/orders/*</code></td><td id="XzQl" class="">PATCH</td><td id="WIp=" class="">ROLE_CUSTOMER | ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-8189-b66b-eb3ac8cbb6ff" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/reserves</code></td><td id="XzQl" class="">POST</td><td id="WIp=" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-810b-898c-e90a21d929f5" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/reserves/*</code></td><td id="XzQl" class="">DELETE</td><td id="WIp=" class="">ROLE_COMPANY</td></tr><tr id="39ba64eb-8b50-81d7-a4dc-d84b9ef18989" dir="ltr"><td id="]`uJ" class=""><code>/api/v1/reserves/*/enrollment</code></td><td id="XzQl" class="">GET, DELETE</td><td id="WIp=" class="">ROLE_CUSTOMER</td></tr><tr id="39ba64eb-8b50-81c1-af4c-e97fe2794214" dir="ltr"><td id="]`uJ" class=""><code>/ws/**</code>, <code>/pub/**</code>, <code>/user/**</code></td><td id="XzQl" class="">*</td><td id="WIp=" class="">permitAll</td></tr></tbody></table><hr id="39ba64eb-8b50-81db-94e7-e71d62d843a7" dir="auto"/><h2 id="39ba64eb-8b50-8113-b53b-ed1be07e12a5" class="" dir="auto">9. 주요 코드 대역</h2><table id="39ba64eb-8b50-8146-b88a-f00717195407" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39ba64eb-8b50-8193-ba5c-d1d1712b1cea" dir="ltr"><th id="cEsl" class="simple-table-header-color simple-table-header">대역</th><th id="bOC}" class="simple-table-header-color simple-table-header">도메인</th></tr></thead><tbody><tr id="39ba64eb-8b50-817b-9794-f7699716e639" dir="ltr"><td id="cEsl" class="">1000~</td><td id="bOC}" class="">로그인/로그아웃</td></tr><tr id="39ba64eb-8b50-81fc-b9fb-e682887dbc2a" dir="ltr"><td id="cEsl" class="">2000~</td><td id="bOC}" class="">회원/인증</td></tr><tr id="39ba64eb-8b50-81dd-b5d0-d592a6b94953" dir="ltr"><td id="cEsl" class="">3000~</td><td id="bOC}" class="">장바구니</td></tr><tr id="39ba64eb-8b50-8148-ba2e-cfe2757e803b" dir="ltr"><td id="cEsl" class="">4000~</td><td id="bOC}" class="">팝업/좋아요/리뷰</td></tr><tr id="39ba64eb-8b50-81ec-852c-db87d2e2b11e" dir="ltr"><td id="cEsl" class="">5000~</td><td id="bOC}" class="">굿즈</td></tr><tr id="39ba64eb-8b50-8127-8196-c70a6fd736e4" dir="ltr"><td id="cEsl" class="">6000~</td><td id="bOC}" class="">주문/결제</td></tr><tr id="39ba64eb-8b50-8116-ac6d-cc197617fcc4" dir="ltr"><td id="cEsl" class="">7000~</td><td id="bOC}" class="">예약</td></tr><tr id="39ba64eb-8b50-81f0-9c08-ffd5985613a1" dir="ltr"><td id="cEsl" class="">8000~</td><td id="bOC}" class="">정산</td></tr><tr id="39ba64eb-8b50-8139-9975-ccebf88b9b66" dir="ltr"><td id="cEsl" class="">9000~</td><td id="bOC}" class="">Redis 대기열</td></tr><tr id="39ba64eb-8b50-817f-8c10-e22f665eadfb" dir="ltr"><td id="cEsl" class="">300~</td><td id="bOC}" class="">JWT/공통 보안</td></tr></tbody></table><p id="39ba64eb-8b50-806c-94d6-c5205de4871d" class="" dir="auto">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

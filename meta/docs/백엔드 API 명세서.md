@@ -1,0 +1,1213 @@
+# ZIPPOP 백엔드 API 명세서
+
+> 상태: `CURRENT`
+> 기준 일자: `2026-08-23`
+> Base URL: `확인 필요`
+> Source: `input/docs/spring-service-zippop/v2/zippopv2-백엔드 API 명세서`
+
+
+> Spring Boot 현재 구현 기준입니다.  
+> 공통 응답 / 인증 / 도메인별 API를 정리합니다.
+
+---
+
+## 2 공통 규약
+
+### 응답 형식 `SuccessResponse<T>`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| success | Boolean | 성공 여부 |
+| code | Integer | 비즈니스 코드 |
+| message | String | 메시지 |
+| result | T \| null | 페이로드 |
+
+### 인증
+
+| 항목 | 내용 |
+| --- | --- |
+| Access Token | 쿠키 `ATOKEN` (1시간) |
+| Refresh Token | 쿠키 `RTOKEN` (5일), Redis `refreshToken:{userId}` |
+| 예약 토큰 | 쿠키 `WTOKEN` (대기열 승격 시, 10분) |
+| Cookie 속성 | HttpOnly, Secure, Path=/, SameSite=None |
+| 역할 | `ROLE_CUSTOMER`, `ROLE_COMPANY` |
+
+### 공통 에러
+
+| 상황 | HTTP | code | message |
+| --- | --- | --- | --- |
+| Validation 실패 | 400 | 315 | 입력값이 잘못되었습니다. |
+| BaseException | 400 | (해당 코드) | BaseMessage |
+| AccessDenied | 403 | 403 | 접근이 거부되었습니다. |
+| Bad Credential | 401 | 307 | 아이디 또는 비밀번호가 틀렸습니다. |
+| JWT 만료 | 401 | 303 | JWT 토큰이 만료되었습니다. |
+
+### Page 응답 (`result`)
+
+`content`, `totalElements`, `totalPages`, `size`, `number`, `first`, `last`, `empty` 등 Spring Data Page 직렬화
+
+### Enum
+
+| 이름 | 값 |
+| --- | --- |
+| PopupStatus | `POPUP_START`, `POPUP_END`, `POPUP_RESERVE`, `POPUP_STOCK` |
+| OrdersStatus | `RESERVE_READY`, `RESERVE_DELIVERY`, `RESERVE_CANCEL`, `RESERVE_COMPLETE`, `STOCK_READY`, `STOCK_DELIVERY`, `STOCK_CANCEL`, `STOCK_COMPLETE` |
+| GoodsStatus | `GOODS_RESERVED`, `GOODS_STOCK` 등 |
+| Operation | `increment`, `decrement` |
+| Role | `ROLE_CUSTOMER`, `ROLE_COMPANY` |
+
+---
+
+## 3 회원 / 인증
+
+<details>
+<summary><strong>[POST] 회원가입</strong></summary>
+
+
+| Description | 고객/기업 회원가입 (role 분기 단일 API). 인증 메일 발송 |
+| --- | --- |
+| URL | `/api/v1/accounts` |
+| Auth | No |
+| Content-Type | `multipart/form-data` |
+
+| Part | 내용 |
+| --- | --- |
+| req | CreateAccountReq (JSON) |
+| file | MultipartFile (프로필, 선택) |
+
+**req body**
+
+```json
+{
+  "role": "ROLE_CUSTOMER",
+  "userId": "test01",
+  "email": "test@example.com",
+  "password": "pass1234",
+  "name": "홍길동",
+  "phoneNumber": "01012345678",
+  "address": "서울시 강남구 ...,상세주소",
+  "crn": null
+}
+```
+
+| 필드 | 제약 |
+| --- | --- |
+| role | 필수. ROLE_CUSTOMER / ROLE_COMPANY |
+| userId | 필수, 5~20자, 중복 불가 |
+| email | 필수, 이메일 형식, 중복 불가 |
+| password | 필수, min 4, BCrypt 저장 |
+| name | 필수, max 50 |
+| phoneNumber | 필수, `^01[0-9]\d{3,4}\d{4}$` |
+| address | 필수, max 200 |
+| crn | 기업만 |
+
+- ✅ **Response 200 / 성공 코드 2000 or 2001**
+
+```json
+{
+  "success": true,
+  "code": 2000,
+  "message": "회원가입에 성공했습니다. 이메일을 확인해주세요.(유효시간 3분)",
+  "result": null
+}
+```
+
+- ❌ **Error**
+
+| code | message |
+| --- | --- |
+| 2004 | 이미 가입된 회원입니다. |
+| 2023 | 이미 존재하는 아이디입니다. |
+| 2025 | 올바르지 않은 역할입니다. |
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 이메일 인증</strong></summary>
+
+
+| Description | Redis UUID 검증 후 계정 활성화, 프론트로 302 리다이렉트 |
+| --- | --- |
+| URL | `/api/v1/accounts/verification` |
+| Auth | No |
+
+| Query | Type | 설명 |
+| --- | --- | --- |
+| email | String | 이메일 |
+| role | String | ROLE_CUSTOMER / ROLE_COMPANY |
+| uuid | String | 인증 UUID |
+
+- ✅ **Response 302** → `http://localhost:8081/login?success=true`
+- ❌ **실패 302** → `http://localhost:8081/login?error=true` (code 2005)
+
+---
+
+</details>
+
+<details>
+<summary><strong>[POST] 로그인</strong></summary>
+
+
+| Description | userId/password 인증 후 JWT 쿠키 발급 |
+| --- | --- |
+| URL | `/api/v1/auth/login` |
+| Auth | No |
+| Content-Type | `application/json` |
+
+```json
+{
+  "userId": "test01",
+  "password": "pass1234"
+}
+```
+
+- ✅ **Response 200 / code 1000**
+
+```json
+{
+  "success": true,
+  "code": 1000,
+  "message": "로그인에 성공했습니다.",
+  "result": null
+}
+```
+
+Set-Cookie: `ATOKEN`, `RTOKEN`
+
+- ❌ **Error**
+
+| code | message |
+| --- | --- |
+| 1001 | 아이디를 입력해주세요. |
+| 1002 | 비밀번호를 입력해주세요. |
+| 307 | 아이디 또는 비밀번호가 틀렸습니다. |
+| 316 | 비활성화된 회원입니다. |
+
+---
+
+</details>
+
+<details>
+<summary><strong>[POST] 로그아웃</strong></summary>
+
+
+| Description | 인증 쿠키 삭제 |
+| --- | --- |
+| URL | `/api/v1/auth/logout` |
+| Auth | No (쿠키 삭제) |
+
+- ✅ **Response 200**
+
+```json
+{
+  "success": true,
+  "code": 2080,
+  "message": "로그아웃에 성공했습니다.",
+  "result": null
+}
+```
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 소셜 로그인 (OAuth2)</strong></summary>
+
+
+| Description | 카카오 OAuth2 로그인 (네이버/구글은 설정만 존재) |
+| --- | --- |
+| URL | `/oauth2/authorization/kakao` |
+| Auth | No |
+| Callback | `/login/oauth2/code/kakao` |
+
+| 처리 | 내용 |
+| --- | --- |
+| 신규 | ROLE_CUSTOMER 생성, point 3000, isEmailAuth=true |
+| 성공 | ATOKEN 쿠키 발급 후 리다이렉트 |
+| 상태 | 카카오만 구현 (부분) |
+
+---
+
+</details>
+
+<details>
+<summary><strong>[POST] 아이디 찾기</strong></summary>
+
+
+| Description | 이메일로 계정 ID 발송 |
+| --- | --- |
+| URL | `/api/v1/accounts/id/find` |
+| Auth | No |
+
+```json
+{
+  "role": "ROLE_CUSTOMER",
+  "email": "test@example.com"
+}
+```
+
+- ✅ **code 2010** — 아이디 찾기 성공
+- ❌ **2011** 이메일 미인증 / **2012** 회원 없음
+
+---
+
+</details>
+
+<details>
+<summary><strong>[POST] 비밀번호 찾기</strong></summary>
+
+
+| Description | 임시 비밀번호 생성·저장 후 이메일 발송 |
+| --- | --- |
+| URL | `/api/v1/accounts/password/find` |
+| Auth | No |
+
+```json
+{
+  "role": "ROLE_CUSTOMER",
+  "userId": "test01"
+}
+```
+
+- ✅ **code 2013**
+- ❌ **2014** 발급 불가 / **2015** 회원 없음
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 회원 정보 조회</strong></summary>
+
+
+| Description | 로그인 회원 프로필 조회 |
+| --- | --- |
+| URL | `/api/v1/accounts/me` |
+| Auth | Yes |
+
+- ✅ **code 2021**
+
+```json
+{
+  "success": true,
+  "code": 2021,
+  "message": "회원 정보 조회에 성공했습니다.",
+  "result": {
+    "name": "홍길동",
+    "email": "test@example.com",
+    "role": "ROLE_CUSTOMER",
+    "point": 3000,
+    "phoneNumber": "01012345678",
+    "address": "서울시 ...,상세",
+    "crn": null,
+    "profileImageUrl": "https://..."
+  }
+}
+```
+
+---
+
+</details>
+
+<details>
+<summary><strong>[PATCH] 회원 정보 수정</strong></summary>
+
+
+| Description | 프로필 수정 |
+| --- | --- |
+| URL | `/api/v1/accounts/me` |
+| Auth | Yes |
+| Content-Type | `multipart/form-data` |
+
+| Part | 내용 |
+| --- | --- |
+| req | UpdateAccountReq |
+| file | 프로필 이미지 (선택) |
+
+```json
+{
+  "name": "홍길동",
+  "phoneNumber": "01012345678",
+  "address": "서울시 ...,상세",
+  "crn": null,
+  "profileImageUrl": "https://..."
+}
+```
+
+- ✅ **code 2016**
+- ❌ **2018** 회원 없음
+
+---
+
+</details>
+
+<details>
+<summary><strong>[PATCH] 비밀번호 변경</strong></summary>
+
+
+| Description | 기존 비밀번호 검증 후 변경 |
+| --- | --- |
+| URL | `/api/v1/accounts/password/reset` |
+| Auth | Yes |
+
+```json
+{
+  "originPassword": "oldPass",
+  "newPassword": "newPass"
+}
+```
+
+- ✅ **code 2019**
+- ❌ **2022** 비밀번호 불일치
+
+---
+
+</details>
+
+<details>
+<summary><strong>[DELETE] 계정 비활성화</strong></summary>
+
+
+| Description | 소프트 비활성 처리 |
+| --- | --- |
+| URL | `/api/v1/accounts/me` |
+| Auth | Yes |
+
+- ✅ **code 2006**
+
+---
+
+</details>
+
+<details>
+<summary><strong>[POST] 계정 활성화 요청</strong></summary>
+
+
+| Description | 비활성 계정 인증 메일 재발송 |
+| --- | --- |
+| URL | `/api/v1/accounts/me/activation` |
+| Auth | No |
+
+```json
+{
+  "role": "ROLE_CUSTOMER",
+  "email": "test@example.com"
+}
+```
+
+- ✅ **code 2008**
+- ❌ **2009** 실패 / **2010** 이미 활성
+
+---
+
+</details>
+
+## 4 장바구니
+
+> 전체 `/api/v1/carts/**` → **ROLE_CUSTOMER**
+
+<details>
+<summary><strong>[POST] 카트 등록</strong></summary>
+
+
+| Description | 팝업 단위 장바구니에 굿즈 담기 |
+| --- | --- |
+| URL | `/api/v1/carts` |
+| Auth | ROLE_CUSTOMER |
+
+```json
+{
+  "goodsIdx": 1,
+  "popupIdx": 1
+}
+```
+
+- ✅ **HTTP 201 / code 3000**
+- ❌ **3002** 상품 없음 / **3004** 이미 존재
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 카트 목록</strong></summary>
+
+
+| Description | 내 장바구니(팝업 단위) 페이징 |
+| --- | --- |
+| URL | `/api/v1/carts` |
+| Auth | ROLE_CUSTOMER |
+
+| Query | Default |
+| --- | --- |
+| page | 0 |
+| size | 10 |
+
+- ✅ **code 3005** + `Page<GetCartRes>`
+
+`GetCartRes`: popupIdx, companyEmail, popupName, popupContent, popupAddress, category, likeCount, totalPeople, popupStatus, popupStartDate, popupEndDate, createdAt, updatedAt, getPopupImageResList
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 카트 아이템 목록</strong></summary>
+
+
+| Description | 특정 카트의 아이템 목록 |
+| --- | --- |
+| URL | `/api/v1/carts/{cartIdx}/items` |
+| Auth | ROLE_CUSTOMER |
+
+- ✅ **code 3007**
+
+```json
+{
+  "success": true,
+  "code": 3007,
+  "message": "장바구니 아이템 목록 조회에 성공했습니다.",
+  "result": [
+    {
+      "cartItemIdx": 1,
+      "count": 1,
+      "price": 15000,
+      "getGoodsRes": { "goodsIdx": 1, "goodsName": "...", "goodsPrice": 15000 }
+    }
+  ]
+}
+```
+
+---
+
+</details>
+
+<details>
+<summary><strong>[PATCH] 수량 조절</strong></summary>
+
+
+| Description | 아이템 수량 증가/감소 |
+| --- | --- |
+| URL | `/api/v1/carts/{cartIdx}/items/{cartItemIdx}/quantity` |
+| Auth | ROLE_CUSTOMER |
+
+| Query | 값 |
+| --- | --- |
+| operation | `increment` \| `decrement` |
+
+- ✅ **code 3009**
+- ❌ **3010** 없음 / **3011** 수량 1 이하
+
+---
+
+</details>
+
+<details>
+<summary><strong>[DELETE] 아이템 삭제</strong></summary>
+
+
+| URL | `/api/v1/carts/{cartIdx}/items/{cartItemIdx}` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+- ✅ **code 3012**
+
+---
+
+</details>
+
+<details>
+<summary><strong>[DELETE] 카트 전체 삭제</strong></summary>
+
+
+| URL | `/api/v1/carts/{cartIdx}` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+- ✅ **code 3013**
+- ❌ **3014** 없음 / **3015** 권한 없음
+
+---
+
+</details>
+
+## 5 팝업 스토어
+
+<details>
+<summary><strong>[POST] 팝업 등록</strong></summary>
+
+
+| Description | 기업 팝업 스토어 등록 |
+| --- | --- |
+| URL | `/api/v1/popups` |
+| Auth | ROLE_COMPANY |
+| Content-Type | `multipart/form-data` |
+
+| Part | 내용 |
+| --- | --- |
+| req | CreatePopupReq |
+| files | MultipartFile[] (선택) |
+
+```json
+{
+  "popupName": "팝업명",
+  "popupAddress": "서울시 ...",
+  "popupContent": "내용",
+  "category": "패션",
+  "totalPeople": 100,
+  "popupStartDate": "2026-07-01",
+  "popupEndDate": "2026-07-31"
+}
+```
+
+- ✅ **HTTP 201 / code 4000** (초기 status=`POPUP_START`)
+- ❌ **4001** 권한 없음
+
+---
+
+</details>
+
+<details>
+<summary><strong>[PATCH] 팝업 수정</strong></summary>
+
+
+| URL | `/api/v1/popups/{popupIdx}` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+| Content-Type | `multipart/form-data` |
+
+- ✅ **code 4006**
+- ❌ **4007** 없음 / **4008** 소유자 아님
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 팝업 단일 조회</strong></summary>
+
+
+| URL | `/api/v1/popups/{popupIdx}` |
+| --- | --- |
+| Auth | No |
+
+- ✅ **code 4002** + `GetPopupRes`
+- ❌ **4003** 없음
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 팝업 목록 (공개)</strong></summary>
+
+
+| URL | `/api/v1/popups` |
+| --- | --- |
+| Auth | No |
+
+| Query | 설명 |
+| --- | --- |
+| status | 필수. PopupStatus |
+| keyword | 선택 |
+| page, size | 기본 0 / 10 |
+
+- ✅ **code 4004** + `Page<GetPopupRes>`
+
+---
+
+</details>
+
+<details>
+<summary><strong>[DELETE] 팝업 삭제</strong></summary>
+
+
+| Description | 소프트 종료 (POPUP_END + 굿즈 STOCK 전환) |
+| --- | --- |
+| URL | `/api/v1/popups/{popupIdx}` |
+| Auth | ROLE_COMPANY |
+
+- ✅ **code 4009**
+
+---
+
+</details>
+
+<details>
+<summary><strong>[POST] 좋아요 토글</strong></summary>
+
+
+| URL | `/api/v1/popups/{popupIdx}/likes` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+- ✅ **code 4012**
+- ❌ **4013** 팝업 없음
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 내 좋아요 목록</strong></summary>
+
+
+| URL | `/api/v1/popups/likes/me` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+| Query | page, size |
+| --- | --- |
+
+- ✅ **code 4015** + `Page<GetPopupRes>`
+
+---
+
+</details>
+
+<details>
+<summary><strong>[POST] 리뷰 등록</strong></summary>
+
+
+| URL | `/api/v1/popups/{popupIdx}/reviews` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+```json
+{
+  "reviewTitle": "좋았어요",
+  "reviewContent": "내용",
+  "reviewRating": 5
+}
+```
+
+| 필드 | 제약 |
+| --- | --- |
+| reviewTitle | 필수, max 100 |
+| reviewContent | 필수, max 1000 |
+| reviewRating | 필수, 1~5 |
+
+- ✅ **HTTP 201 / code 4018**
+- ❌ **4020** 구매이력 없음 / **4022** 중복
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 팝업 리뷰 목록</strong></summary>
+
+
+| URL | `/api/v1/popups/{popupIdx}/reviews` |
+| --- | --- |
+| Auth | No |
+
+- ✅ **code 4023** + `Page<GetPopupReviewRes>`
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 내 리뷰 목록</strong></summary>
+
+
+| URL | `/api/v1/popups/reviews/me` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+- ✅ **code 4023** + `Page<GetPopupReviewRes>`
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 팝업별 예약 슬롯 목록 (공개)</strong></summary>
+
+
+| URL | `/api/v1/popups/{popupIdx}/reserves` |
+| --- | --- |
+| Auth | No |
+
+| Query | keyword(선택), page, size |
+| --- | --- |
+
+- ✅ **code 7008** + `Page<GetReserveRes>`
+
+`GetReserveRes`: popupIdx, reserveIdx, reservePeople, reserveStartDate, reserveStartTime, reserveEndTime, getPopupRes
+
+---
+
+</details>
+
+## 6 기업 팝업 관리
+
+> 전체 `/api/v1/company/popups/**` → **ROLE_COMPANY**
+
+<details>
+<summary><strong>[GET] 내 팝업 목록</strong></summary>
+
+
+| URL | `/api/v1/company/popups` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+
+| Query | keyword, page, size |
+| --- | --- |
+
+- ✅ **code 4004**
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 팝업 정산 목록</strong></summary>
+
+
+| URL | `/api/v1/company/popups/{popupIdx}/payouts` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+
+- ✅ **code 8000**
+
+```json
+{
+  "success": true,
+  "code": 8000,
+  "message": "정산 조회에 성공했습니다.",
+  "result": {
+    "content": [
+      { "revenue": 150000, "payoutDate": "2026-07-11" }
+    ],
+    "totalElements": 1,
+    "totalPages": 1
+  }
+}
+```
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 팝업 예약 목록 (기업)</strong></summary>
+
+
+| URL | `/api/v1/company/popups/{popupIdx}/reserves` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+
+- ✅ **code 7008** + `Page<GetReserveRes>`
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 팝업 주문 목록 (기업)</strong></summary>
+
+
+| URL | `/api/v1/company/popups/{popupIdx}/orders` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+
+- ✅ **code 6025** + `Page<GetOrdersRes>`
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 팝업 주문 상세 (기업)</strong></summary>
+
+
+| URL | `/api/v1/company/popups/{popupIdx}/orders/{ordersIdx}` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+
+- ✅ **code 6021** + `GetOrdersRes`
+
+---
+
+</details>
+
+## 7 팝업 굿즈
+
+<details>
+<summary><strong>[POST] 굿즈 등록</strong></summary>
+
+
+| URL | `/api/v1/goods` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+| Content-Type | `multipart/form-data` |
+
+| Part | 내용 |
+| --- | --- |
+| req | CreateGoodsReq |
+| files | MultipartFile[] (필수) |
+
+```json
+{
+  "popupIdx": 1,
+  "goodsName": "티셔츠",
+  "goodsPrice": 25000,
+  "goodsAmount": 50,
+  "goodsContent": "설명"
+}
+```
+
+- ✅ **HTTP 201 / code 5000** (초기 `GOODS_RESERVED`)
+- ❌ **5001** 스토어 없음 / **4008** 소유권
+
+---
+
+</details>
+
+<details>
+<summary><strong>[PATCH] 굿즈 수정</strong></summary>
+
+
+| URL | `/api/v1/goods/{goodsIdx}` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+| Content-Type | `multipart/form-data` |
+
+- ✅ **code 5007**
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 굿즈 단일 조회</strong></summary>
+
+
+| URL | `/api/v1/goods/{goodsIdx}` |
+| --- | --- |
+| Auth | No |
+
+- ✅ **code 5003** + `GetGoodsRes`
+- ❌ **5004** 없음
+
+`GetGoodsRes`: popupName, goodsIdx, goodsName, goodsPrice, goodsContent, goodsAmount, goodsStatus, getGoodsImageResList
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 굿즈 목록</strong></summary>
+
+
+| URL | `/api/v1/goods` |
+| --- | --- |
+| Auth | No |
+
+| Query | popupIdx, keyword, page, size |
+| --- | --- |
+
+- ✅ **code 5005** + `Page<GetGoodsRes>`
+
+---
+
+</details>
+
+<details>
+<summary><strong>[DELETE] 굿즈 삭제</strong></summary>
+
+
+| URL | `/api/v1/goods/{goodsIdx}` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+
+- ✅ **code 5010**
+
+---
+
+</details>
+
+## 8 결제 / 주문
+
+<details>
+<summary><strong>[POST] 결제 검증 · 주문 생성</strong></summary>
+
+
+| Description | Iamport 결제 검증 후 예약/재고 주문 생성 |
+| --- | --- |
+| URL | `/api/v1/orders` |
+| Auth | ROLE_CUSTOMER |
+
+```json
+{
+  "impUid": "imp_xxxxxxxx",
+  "popupIdx": 1,
+  "reserveIdx": 10
+}
+```
+
+| 필드 | 설명 |
+| --- | --- |
+| impUid | PortOne 결제 UID |
+| popupIdx | 팝업 인덱스 |
+| reserveIdx | 있으면 예약구매, null이면 재고구매 |
+
+| 구분 | 규칙 |
+| --- | --- |
+| 예약 | 품목당 1개, 배송비 0, 포인트 사용 불가, 5% 적립, `RESERVE_READY` |
+| 재고 | 재고한도, 배송비 2500, 포인트 3000↑ 사용, `STOCK_READY` |
+
+- ✅ **HTTP 201 / code 6000**
+
+```json
+{
+  "success": true,
+  "code": 6000,
+  "message": "결제에 성공했습니다.",
+  "result": { "ordersIdx": 1 }
+}
+```
+
+- ❌ **6001~6007** 역할/회원/상품/한도/포인트/금액 오류
+
+---
+
+</details>
+
+<details>
+<summary><strong>[PATCH] 주문 상태 변경 (취소/확정/배송)</strong></summary>
+
+
+| URL | `/api/v1/orders/{orderIdx}` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER 또는 ROLE_COMPANY |
+
+```json
+{
+  "popupIdx": 1,
+  "status": "STOCK_CANCEL"
+}
+```
+
+| status | 동작 |
+| --- | --- |
+| STOCK_CANCEL / RESERVE_CANCEL | 고객 취소·환불 |
+| (그 외, 기업) | 배송 처리 → `*_DELIVERY` |
+| (그 외, 고객) | 구매 확정 → `*_COMPLETE` |
+
+- ✅ **code 6015**
+- ❌ 취소 **6008~6014** / 확정 **6017~6020**
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 고객 주문 상세</strong></summary>
+
+
+| URL | `/api/v1/orders/{ordersIdx}` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+- ✅ **code 6021** + `GetOrdersRes`
+
+`GetOrdersRes`: ordersIdx, impUid, name, email, address, phoneNumber, usedPoint, totalPrice, orderStatus, deliveryCost, getOrdersDetailResList
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 고객 주문 목록</strong></summary>
+
+
+| URL | `/api/v1/orders` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+| Query | page, size |
+| --- | --- |
+
+- ✅ **code 6025** + `Page<GetOrdersRes>`
+
+---
+
+</details>
+
+## 9 예약 / 대기열
+
+<details>
+<summary><strong>[POST] 예약 슬롯 등록</strong></summary>
+
+
+| URL | `/api/v1/reserves` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+
+```json
+{
+  "popupIdx": 1,
+  "reservePeople": 20,
+  "reserveStartDate": "2026-07-15",
+  "reserveStartTime": "2026-07-15T10:00:00",
+  "reserveEndTime": "2026-07-15T12:00:00"
+}
+```
+
+- ✅ **HTTP 201 / code 7000**
+
+```json
+{
+  "success": true,
+  "code": 7000,
+  "message": "예약 등록에 성공했습니다.",
+  "result": { "reserveIdx": 1 }
+}
+```
+
+---
+
+</details>
+
+<details>
+<summary><strong>[DELETE] 예약 슬롯 삭제</strong></summary>
+
+
+| URL | `/api/v1/reserves/{reserveIdx}` |
+| --- | --- |
+| Auth | ROLE_COMPANY |
+
+- ✅ **code 7014**
+
+---
+
+</details>
+
+<details>
+<summary><strong>[GET] 예약 신청 (대기열 등록)</strong></summary>
+
+
+| Description | working/waiting 큐 등록, 승격 시 WTOKEN 발급 |
+| --- | --- |
+| URL | `/api/v1/reserves/{reserveIdx}/enrollment` |
+| Auth | ROLE_CUSTOMER |
+
+- ✅ **code 7005** + Set-Cookie `WTOKEN` (working 진입 시)
+- ❌ **7006** / **7007** / Redis 900x
+
+---
+
+</details>
+
+<details>
+<summary><strong>[DELETE] 예약 취소 (대기열 이탈)</strong></summary>
+
+
+| URL | `/api/v1/reserves/{reserveIdx}/enrollment` |
+| --- | --- |
+| Auth | ROLE_CUSTOMER |
+
+- ✅ **code 7008**
+- Side effect: WTOKEN 삭제, waiting 승격 시 WebSocket 알림
+
+---
+
+</details>
+
+<details>
+<summary><strong>[STOMP] 예약 상태 조회</strong></summary>
+
+
+| Description | 대기열 상태 실시간 조회 |
+| --- | --- |
+| Endpoint | `/ws` (SockJS) |
+| Publish | `/pub/reserve/status` |
+| Subscribe | `/user/queue/reserve/status` |
+| Handshake | Cookie `ATOKEN` 필요 |
+
+**요청**
+
+```json
+{ "reserveIdx": 1 }
+```
+
+**응답 `GetReserveQueueRes`**
+
+```json
+{
+  "waitingTotal": "3",
+  "workingTotal": "10",
+  "statusMessage": "대기 중입니다.",
+  "access": 0,
+  "wtoken": null
+}
+```
+
+| access | 의미 |
+| --- | --- |
+| 0 | 대기 |
+| 1 | 접속(결제 가능) |
+| 2 | 종료 |
+| 3 | 마감 |
+
+---
+
+</details>
+
+## 10 권한 매트릭스
+
+| Pattern | Method | Authority |
+| --- | --- | --- |
+| `/api/v1/auth/**` | * | permitAll |
+| `/api/v1/accounts/**` | * | permitAll (principal 필요 API는 실질 인증) |
+| `/api/v1/carts/**` | * | ROLE_CUSTOMER |
+| `/api/v1/popups` | POST | ROLE_COMPANY |
+| `/api/v1/popups/*` | PATCH, DELETE | ROLE_COMPANY |
+| `/api/v1/popups`, `/api/v1/popups/*` | GET | permitAll |
+| `/api/v1/popups/*/likes` | POST | ROLE_CUSTOMER |
+| `/api/v1/popups/likes/me` | GET | ROLE_CUSTOMER |
+| `/api/v1/popups/*/reviews` | POST | ROLE_CUSTOMER |
+| `/api/v1/popups/reviews/me` | GET | ROLE_CUSTOMER |
+| `/api/v1/company/popups/**` | * | ROLE_COMPANY |
+| `/api/v1/goods` | POST | ROLE_COMPANY |
+| `/api/v1/goods/*` | PATCH, DELETE | ROLE_COMPANY |
+| `/api/v1/goods`, `/api/v1/goods/*` | GET | permitAll |
+| `/api/v1/orders` | POST, GET | ROLE_CUSTOMER |
+| `/api/v1/orders/*` | GET | ROLE_CUSTOMER |
+| `/api/v1/orders/*` | PATCH | ROLE_CUSTOMER \| ROLE_COMPANY |
+| `/api/v1/reserves` | POST | ROLE_COMPANY |
+| `/api/v1/reserves/*` | DELETE | ROLE_COMPANY |
+| `/api/v1/reserves/*/enrollment` | GET, DELETE | ROLE_CUSTOMER |
+| `/ws/**`, `/pub/**`, `/user/**` | * | permitAll |
+
+---
+
+## 11 주요 코드 대역
+
+| 대역 | 도메인 |
+| --- | --- |
+| 1000~ | 로그인/로그아웃 |
+| 2000~ | 회원/인증 |
+| 3000~ | 장바구니 |
+| 4000~ | 팝업/좋아요/리뷰 |
+| 5000~ | 굿즈 |
+| 6000~ | 주문/결제 |
+| 7000~ | 예약 |
+| 8000~ | 정산 |
+| 9000~ | Redis 대기열 |
+| 300~ | JWT/공통 보안 |
+
+---
+
+> 변환 메모: 원문에 있는 API 정보와 예시를 템플릿의 접기 블록 형식으로 재배치했습니다. 원문에 없는 Base URL·Source 구현 경로는 `확인 필요` 또는 입력 경로로 표시했습니다.
+
+
+
+
+
