@@ -10,25 +10,24 @@
 
     <!-- 굿즈 예약 페이지 용 -->
     <div v-if="showControl == true" class="ctn-listbuttons">
-      <button class="btn-tagaction" @click="openModal"><Icon icon="iconoir:eye" width="20px" height="20px"/>상세 보기</button>
-      <button class="btn-tagaction" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px"/>장바구니</button>
+      <button class="btn-tagaction" type="button" aria-label="상세보기" title="상세보기" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px"/></button>
+      <button class="btn-tagaction" type="button" aria-label="장바구니 담기" title="장바구니 담기" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px"/></button>
     </div>
 
     <!-- 팝업 상세 페이지 -->
     <div v-if="showControl == false" class="ctn-listbuttons">
-      <button class="btn-tagaction" @click="openModal"><Icon icon="iconoir:eye" width="20px" height="20px"/>상세 보기</button>
+      <button class="btn-tagaction" type="button" aria-label="상세보기" title="상세보기" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px"/></button>
     </div>
 
   </div>
-  <GoodsModal v-if="isModalOpen" :goods="goods" :isModalOpen="isModalOpen" :closeModal="closeModal" />
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits } from "vue";
+import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
 import { useCartStore } from "@/stores/cartStore";
-import GoodsModal from "@/components/GoodsModal.vue";
 import { Icon } from "@iconify/vue";
 
 const props = defineProps({
@@ -40,16 +39,12 @@ const props = defineProps({
 const emit = defineEmits(['cartUpdated']);
 
 const toast = useToast();
+const router = useRouter();
 const authStore = useAuthStore();
 const cartStore = useCartStore();
-const isModalOpen = ref(false);
 
-const openModal = () => {
-  isModalOpen.value = true;
-};
-
-const closeModal = () => {
-  isModalOpen.value = false;
+const goGoodsDetail = () => {
+  router.push(`/goods/${props.popupIdx}/${props.goods.goodsIdx}`);
 };
 
 const addToCart = async () => {

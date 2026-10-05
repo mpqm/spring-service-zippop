@@ -8,6 +8,7 @@ import com.fiiiiive.zippop.orders.application.OrdersFacade;
 import com.fiiiiive.zippop.orders.model.dto.*;
 import com.fiiiiive.zippop.orders.service.OrdersService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class OrdersController {
     @PostMapping
     public ResponseEntity<SuccessResponse<CreateOrdersRes>> createOrders(
         @AuthenticationPrincipal CustomUserDetails user,
-        @RequestBody CreateOrdersReq req
+        @Valid @RequestBody CreateOrdersReq req
     ) {
         CreateOrdersRes res = ordersFacade.createOrders(user, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(SuccessCode.ORDERS_PAY_SUCCESS, res));
@@ -40,7 +41,7 @@ public class OrdersController {
     public ResponseEntity<SuccessResponse<UpdateOrdersRes>> updateOrders(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long orderIdx,
-            @RequestBody UpdateOrdersReq req
+            @Valid @RequestBody UpdateOrdersReq req
     ) {
         UpdateOrdersRes res = ordersFacade.updateOrders(user, orderIdx, req);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.ORDERS_COMPLETE_SUCCESS, res));

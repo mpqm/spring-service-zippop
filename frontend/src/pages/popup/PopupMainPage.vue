@@ -20,16 +20,16 @@
         <div class="ctn-inputsearch">
           <input class="ipt-default" v-model="searchQuery" type="text" aria-label="팝업 검색" placeholder="브랜드, 지역, 카테고리로 검색" @keyup.enter="getPopups()" />
           <button class="btn-default" @click="getPopups()"><Icon icon="ic:search" width="20px" height="20px" /></button>
-          <button class="btn-normal btn-reset" aria-label="검색 초기화" @click="getPopups(true)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
         </div>
       </section>
       <div class="lyt-cardgrid" v-if="popupList && popupList.length">
-        <PopupCard v-for="popup in popupList" :key="popup.popupIdx" :popup="popup" />
+        <PopupCard v-for="popup in popupList" :key="popup.popupIdx" :popup="popup" :showReserveAction="true" />
       </div>
       <div class="ctn-empty" v-else>
         <Icon icon="iconoir:search-window" width="42px" height="42px" />
         <p>검색 결과에 해당하는 팝업 스토어가 없습니다.</p>
         <span>다른 키워드로 다시 찾아보세요.</span>
+        <button class="btn-tagaction" type="button" @click="getPopups(true)">검색 초기화</button>
       </div>
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </main>
@@ -44,11 +44,13 @@ import PopupCard from "@/components/PopupCard.vue";
 import AppPagination from "@/components/AppPagination.vue";
 import { usePopupStore } from "@/stores/popupStore";
 import { useAuthStore } from "@/stores/authStore";
+import { useAccountStore } from "@/stores/accountStore";
 import { onMounted, ref } from "vue";
 import { Icon } from "@iconify/vue";
 
 const popupStore = usePopupStore();
 const authStore = useAuthStore();
+const accountStore = useAccountStore();
 
 const searchQuery = ref("");
 const popupList = ref([]);
@@ -59,7 +61,7 @@ const totalPages = ref(0);
 const hideBtns = ref(false);
 
 onMounted(async () => {
-  if (authStore.isLoggedIn) {
+  if (authStore.isLoggedIn && accountStore.userInfo.role === "ROLE_CUSTOMER") {
     await popupStore.getMyLikedPopups(0, 100);
   }
   await getPopups();

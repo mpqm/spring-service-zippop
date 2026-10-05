@@ -7,9 +7,8 @@
           <img class="img-headerlogo" src="../assets/img/zippoicon-removebg.png" alt="ZIPPOP" />
           <span class="txt-brandmark">ZIP<span>POP</span></span>
         </router-link>
-        <router-link :class="{ 'lnk-header': true, active: activeMainTab === 'popup' }" to="/" >팝업찾기</router-link>
+        <router-link :class="{ 'lnk-header': true, active: activeMainTab === 'popup' }" to="/" >팝업 찾기</router-link>
         <router-link :class="{ 'lnk-header': true, active: activeMainTab === 'goods' }" to="/goods" >재고 마켓</router-link>
-        <router-link :class="{ 'lnk-header': true, active: activeMainTab === 'reserve' }" to="/reserve" >사전 예약</router-link>
       </div>
       <!-- 고객용 -->
       <div class="ctn-header" v-if="userStatus && userInfo.role === 'ROLE_CUSTOMER'">
@@ -50,8 +49,12 @@
       </div>
       <!-- 로그인/회원가입 -->
       <div class="ctn-header" v-if="!userStatus">
-        <router-link class="btn-default" to="/login">로그인</router-link>
-        <router-link class="btn-default" to="/signup">회원가입</router-link>
+        <router-link class="btn-default btn-headericon" to="/login" aria-label="로그인" title="로그인">
+          <Icon icon="iconoir:log-in" width="20px" height="20px" />
+        </router-link>
+        <router-link class="btn-default btn-headericon" to="/signup" aria-label="회원가입" title="회원가입">
+          <Icon icon="iconoir:user-plus" width="20px" height="20px" />
+        </router-link>
       </div>
     </div>
   </header>

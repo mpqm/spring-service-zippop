@@ -6,9 +6,6 @@
         <button class="btn-default" @click="getCompanyPopups()">
           <Icon icon="ic:search" width="20px" height="20px" />팝업 검색
         </button>
-        <button class="btn-normal" @click="getCompanyPopups(true)">
-          <Icon icon="ic:baseline-refresh" width="20px" height="20px" />
-        </button>
       </div>
       <router-link class="btn-default" to="/mypage/company/popup/register">
         <Icon icon="iconoir:add-square" width="20px" height="20px" class="ico-inverse" />팝업스토어 등록

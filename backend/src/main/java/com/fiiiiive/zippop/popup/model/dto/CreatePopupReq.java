@@ -37,10 +37,10 @@ public class CreatePopupReq {
     @Min(value = 1, message = "총 인원수는 최소 1명 이상이어야 합니다.")
     private Integer totalPeople;
 
-    @NotBlank(message = "팝업 시작 날짜는 필수 입력 항목입니다.")
+    @NotNull(message = "팝업 시작 날짜는 필수 입력 항목입니다.")
     private LocalDate popupStartDate;
 
-    @NotBlank(message = "팝업 종료 날짜는 필수 입력 항목입니다.")
+    @NotNull(message = "팝업 종료 날짜는 필수 입력 항목입니다.")
     private LocalDate popupEndDate;
 
 }

@@ -58,6 +58,13 @@ public class ReserveService {
 
         // 팝업 최대 예약자 수를 넘었는지 확인
         popup.validateTotalPeople();
+        if (req.getReservePeople() > popup.getTotalPeople()) {
+            throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED);
+        }
+        if (!req.getReserveStartDate().equals(req.getReserveStartTime().toLocalDate())
+                || !req.getReserveEndTime().isAfter(req.getReserveStartTime())) {
+            throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_TIME_CLOSED);
+        }
 
         // 예약 저장
         String workingUUID = UUID.randomUUID().toString();
@@ -128,6 +135,14 @@ public class ReserveService {
         Reserve reserve = reserveRepository.findById(reserveIdx).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.RESERVE_ENROLL_FAIL_NOT_FOUND)
         );
+
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(reserve.getStartTime())) {
+            throw new ServiceException(ServiceErrorCode.RESERVE_ENROLL_FAIL_NOT_OPEN);
+        }
+        if (!now.isBefore(reserve.getEndTime()) || reserve.getTotalPeople() <= 0) {
+            throw new ServiceException(ServiceErrorCode.RESERVE_ENROLL_FAIL_CLOSED);
+        }
 
         String email = user.getEmail();
         String response;
@@ -239,7 +254,7 @@ public class ReserveService {
                 // WebSocket으로 토큰과 함께 알림 전송
                 messagingTemplate.convertAndSendToUser(
                     firstWaitingUser,
-                    "/reserve/status",
+                    "/queue/reserve/status",
                     GetReserveQueueRes.toDataWithToken(workingTotal, waitingTotal, statusMessage, 1, wtoken)
                 );
 
@@ -264,6 +279,15 @@ public class ReserveService {
                 () -> new ServiceException(ServiceErrorCode.RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND)
         );
 
+        if (reserve.getEndTime().isBefore(LocalDateTime.now())) {
+            messagingTemplate.convertAndSendToUser(
+                    principal.getName(),
+                    "/queue/reserve/status",
+                    GetReserveQueueRes.toData("0", "0", "예약이 종료되었습니다.", 2)
+            );
+            return;
+        }
+
         // 접속자
         String workingTotal = redisQueueService.getSize(reserve.getWorkingUUID());
 
@@ -280,6 +304,9 @@ public class ReserveService {
         String statusMessage;
         if (currentWorkingOrder == null) {
             Long currentWaitingOrder = redisQueueService.getOrder(reserve.getWaitingUUID(), principal.getName());
+            if (currentWaitingOrder == null) {
+                throw new ServiceException(ServiceErrorCode.RESERVE_ACCESS_FAIL);
+            }
             statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 순번: " + (currentWaitingOrder + 1);
             access = 0; // 대기 큐에 있으면 access는 0
         } else {
@@ -300,7 +327,7 @@ public class ReserveService {
         // 특정 사용자에게만 상태 정보 전송
         messagingTemplate.convertAndSendToUser(
                 principal.getName(), // 사용자 이름으로 특정 사용자에게 전송
-                "/reserve/status",
+                "/queue/reserve/status",
                 GetReserveQueueRes.toData(workingTotal, waitingTotal, statusMessage, access)
         );
         log.info("Sending message to user: {}, {}", principal.getName(), access);
@@ -332,13 +359,13 @@ public class ReserveService {
             }
 
             // Working Queue 확인 및 생성 (큐가 없으면 생성)
-            if (redisQueueService.existQueue(reserve.getWorkingUUID())) {
+            if (!redisQueueService.existQueue(reserve.getWorkingUUID())) {
                 redisQueueService.createQueue(reserve.getWorkingUUID(), remainingMinutes);
                 log.debug("Working 큐 생성: {} (예약 ID: {})", reserve.getWorkingUUID(), reserve.getIdx());
             }
 
             // Waiting Queue 확인 및 생성 (큐가 없으면 생성)
-            if (redisQueueService.existQueue(reserve.getWaitingUUID())) {
+            if (!redisQueueService.existQueue(reserve.getWaitingUUID())) {
                 redisQueueService.createQueue(reserve.getWaitingUUID(), remainingMinutes);
                 log.debug("Waiting 큐 생성: {} (예약 ID: {})", reserve.getWaitingUUID(), reserve.getIdx());
             }

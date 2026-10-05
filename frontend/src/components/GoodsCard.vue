@@ -9,10 +9,8 @@
       <div class="ctn-goodscardmeta">
         <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" class="ico-accent" />{{ goods.goodsPrice }}원</button>
         <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" class="ico-accent" />{{ goods.goodsAmount }}개</button>
-      </div>
-      <div class="ctn-goodscardactions">
-        <button class="btn-tagaction" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px"/>상세보기</button>
-        <button class="btn-tagaction" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px"/>장바구니</button>
+        <button class="btn-tagaction" type="button" aria-label="상세보기" title="상세보기" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px" /></button>
+        <button class="btn-tagaction" type="button" aria-label="장바구니 담기" title="장바구니 담기" :disabled="!showCart" :aria-disabled="!showCart" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px" /></button>
       </div>
     </div>
   </div>
@@ -30,6 +28,7 @@ const props = defineProps({
   goods: Object,
   popupIdx: Number,
   showControl: Boolean,
+  showCart: { type: Boolean, default: true },
 });
 
 const router = useRouter();
@@ -42,6 +41,7 @@ const goGoodsDetail = async () => {
 };
 
 const addToCart = async () => {
+  if (!props.showCart) return;
   if (!authStore.isLoggedIn) {
     toast.error("로그인이 필요합니다.");
     return;

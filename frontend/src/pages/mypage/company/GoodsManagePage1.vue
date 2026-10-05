@@ -6,9 +6,6 @@
         <button class="btn-default" @click="getCompanyPopups()">
           <Icon icon="ic:search" width="20px" height="20px" />굿즈 검색
         </button>
-        <button class="btn-normal" @click="getCompanyPopups(true)">
-          <Icon icon="ic:baseline-refresh" width="20px" height="20px" />
-        </button>
       </div>
     </div>
     <div class="lyt-child">

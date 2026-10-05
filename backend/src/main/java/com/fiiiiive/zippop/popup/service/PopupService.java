@@ -145,6 +145,7 @@ public class PopupService {
         // else : 좋아요를 처음 누르면 좋아요 저장 / 팝업 좋아요 개수 증가(직접 쿼리 활용)
         Optional<PopupLike> popupLike = popupLikeRepository.findByCustomerIdxAndPopupIdx(user.getIdx(), popupIdx);
         if (popupLike.isPresent()) {
+            popupLikeRepository.delete(popupLike.get());
             popup.decreaseLike();
         } else {
             popupLikeRepository.save(PopupLike.create(popup, user.getIdx()));
@@ -169,9 +170,14 @@ public class PopupService {
     public void createPopupReview(CustomUserDetails user, Long popupIdx, CreatePopupReviewReq req) throws ServiceException {
 
         // 결제 조회(popupIdx, customerIdx, 결제 완료 상태) / 결제한 사람만 리뷰 작성 가능
-        ordersDetailRepository.existsReviewableOrder(user.getIdx(), popupIdx, List.of(OrdersStatus.STOCK_COMPLETE, OrdersStatus.RESERVE_COMPLETE)).orElseThrow(() ->
-                new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_INVALID_MEMBER)
+        boolean reviewable = ordersDetailRepository.existsReviewableOrder(
+                user.getIdx(),
+                popupIdx,
+                List.of(OrdersStatus.STOCK_COMPLETE, OrdersStatus.RESERVE_COMPLETE)
         );
+        if (!reviewable) {
+            throw new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_INVALID_MEMBER);
+        }
 
         // 팝업 조회 (popupIdx)
         Popup popup = popupRepository.findById(popupIdx).orElseThrow(

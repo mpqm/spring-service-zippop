@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,7 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
             CustomUserDetails userDetails = (CustomUserDetails) customUserDetailService.loadUserByUsername(userId);
             String newAccessToken = jwtService.createAccessToken(userDetails.getIdx(), userDetails.getEmail(), userDetails.getRole(), userDetails.getUserId());
             String newRefreshToken = jwtService.createRefreshToken(userDetails.getUserId());
-            redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken);
+            redisTemplate.opsForValue().set("refreshToken:" + userId, newRefreshToken, 5, TimeUnit.DAYS);
             setTokenCookie(response, "ATOKEN", newAccessToken);
             setTokenCookie(response, "RTOKEN", newRefreshToken);
             // 새로운 Access Token을 기반으로 인증 정보 설정
@@ -93,6 +94,7 @@ public class JwtFilter extends OncePerRequestFilter {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 

@@ -43,7 +43,7 @@
           </button>
           <div class="ctn-noticereward">
             <Icon icon="iconoir:coin" width="16px" height="16px" />
-            <span>포인트적립: 결제 금액의 10% 적립</span>
+            <span>보유 포인트가 3,000P 이상일 때 사용할 수 있습니다.</span>
           </div>
         </div>
       </div>

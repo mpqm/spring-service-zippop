@@ -2,12 +2,19 @@
   <div class="lyt-page">
     <AppHeader></AppHeader>
     <div class="lyt-root">
-      <h2 class="txt-maintitle txt-pagetitle">팝업 스토어 예약이 끝나고 남은 재고 굿즈를 구매해보세요!</h2>
-      <div class="ctn-inputsearch">
-        <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="getPopups()" />
-        <button class="btn-default" @click="getPopups()"><Icon icon="ic:search" width="20px" height="20px" /></button>
-        <button class="btn-normal" @click="getPopups(true)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
-      </div>
+      <section class="ctn-discover">
+        <div class="ctn-sectionheading">
+          <div>
+            <span class="txt-eyebrow">STOCK MARKET</span>
+            <h2>남은 재고 굿즈</h2>
+          </div>
+          <span class="txt-sectionhint">팝업 스토어 기간이 끝나고 남은 재고 굿즈를 구매해보세요!</span>
+        </div>
+        <div class="ctn-inputsearch">
+          <input class="ipt-default" v-model="searchQuery" type="text" aria-label="재고 마켓 검색" placeholder="브랜드, 지역, 카테고리로 검색" @keyup.enter="getPopups()" />
+          <button class="btn-default" type="button" aria-label="검색" @click="getPopups()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+        </div>
+      </section>
       <div class="lyt-cardgrid" v-if="popupList && popupList.length">
         <PopupCard v-for="popup in popupList" :key="popup.popupIdx" :popup="popup" :redirectToGoodsDetail="true" />
       </div>

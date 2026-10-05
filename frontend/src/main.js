@@ -20,11 +20,11 @@ app.component('AppEmptyState', AppEmptyState);
 app.use(pinia);
 app.use(Toast,
     {
-        timeout: 2000,
+        timeout: 1000,
         enter: "fade-enter-active",
         leave: "Vue-Toastification__bounce-leave-active",
         move: "fade-move",
-        position: "bottom-right"
+        position: "top-right"
     });
 app.use(router);
 

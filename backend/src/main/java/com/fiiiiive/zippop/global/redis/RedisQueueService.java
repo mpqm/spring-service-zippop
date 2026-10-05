@@ -125,7 +125,13 @@ public class RedisQueueService {
             return null;
         }
 
+        RLock lock = redissonClient.getLock("lock:" + key1);
         try {
+            boolean isLocked = lock.tryLock(5, 3, TimeUnit.SECONDS);
+            if (!isLocked) {
+                return null;
+            }
+
             ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
             Set<ZSetOperations.TypedTuple<Object>> waitingList = zSetOperations.rangeWithScores(key2, 0, 0);
 
@@ -140,8 +146,15 @@ public class RedisQueueService {
             zSetOperations.remove(key2, userId);
             zSetOperations.add(key1, userId, score);
             return userId;
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new ServerException(ServerErrorCode.REDIS_QUEUE_FIRST_USER_ERROR, exception);
         } catch (Exception exception) {
             throw new ServerException(ServerErrorCode.REDIS_QUEUE_FIRST_USER_ERROR, exception);
+        } finally {
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 

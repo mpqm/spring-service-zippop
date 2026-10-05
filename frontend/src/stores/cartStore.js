@@ -49,8 +49,12 @@ export const useCartStore = defineStore('cart', {
     // 장바구니 아이템 수량 조절
     async updateCartItemQuantity(cartIdx, cartItemIdx, operation) {
       try {
+        const requestedOperation = String(operation).toUpperCase();
+        const normalizedOperation = requestedOperation === "INCREASE" ? "INCREMENT"
+          : requestedOperation === "DECREASE" ? "DECREMENT"
+          : requestedOperation;
         const res = await axios.patch(
-          `${BACKEND_URL}/carts/${cartIdx}/items/${cartItemIdx}/quantity?operation=${operation}`,
+          `${BACKEND_URL}/carts/${cartIdx}/items/${cartItemIdx}/quantity?operation=${normalizedOperation}`,
           null,
           { withCredentials: true }
         );

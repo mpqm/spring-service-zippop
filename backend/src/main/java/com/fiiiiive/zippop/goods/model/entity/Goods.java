@@ -54,12 +54,15 @@ public class Goods extends BaseEntity {
 
     // OneToMany
     @OneToMany(mappedBy = "goods")
-    private List<CartItem> cartItemList;
+    @Builder.Default
+    private List<CartItem> cartItemList = new ArrayList<>();
 
     @OneToMany(mappedBy = "goods", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<GoodsImage> goodsImageList = new ArrayList<>();
 
     @OneToMany(mappedBy = "goods")
+    @Builder.Default
     private List<OrdersDetail> ordersDetailList = new ArrayList<>();
 
     // ManyToOne

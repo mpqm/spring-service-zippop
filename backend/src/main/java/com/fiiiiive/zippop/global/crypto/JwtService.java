@@ -52,7 +52,7 @@ public class JwtService {
                 .claim("reserveIdx", reserveIdx)
                 .claim("email", email)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 100000))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 10))
                 .signWith(secretKey)
                 .compact();
     }

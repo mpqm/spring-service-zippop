@@ -33,11 +33,10 @@
         <div class="ctn-inputsearch">
           <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="getGoodsList()" />
           <button class="btn-default" @click="getGoodsList()"><Icon icon="ic:search" width="20px" height="20px" /></button>
-          <button class="btn-normal" @click="getGoodsList(true)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
         </div>
         <br/>
-        <div class="wrp-list" v-if="goodsList && goodsList.length">
-          <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :showControl="false" :popupIdx="popup.popupIdx" />
+        <div class="lyt-cardgrid" v-if="goodsList && goodsList.length">
+          <GoodsCard v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="popup.popupIdx" :showCart="false" />
         </div>
         <AppEmptyState v-else title="등록된 굿즈가 없습니다" description="팝업 굿즈가 등록되면 이곳에서 확인할 수 있어요." />
         <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
@@ -47,24 +46,25 @@
         <form class="ctn-rootform ctn-reviewform" @submit.prevent="submitReview">
           <div class="ctn-reviewheading">
             <div>
-              <span class="txt-eyebrow">SHARE YOUR EXPERIENCE</span>
               <h2>리뷰 등록</h2>
-              <p>팝업에서 경험한 이야기를 다른 방문자에게 알려주세요.</p>
             </div>
-            <button type="submit" class="btn-default btn-reviewsubmit">등록</button>
+            <button type="submit" class="btn-default btn-reviewsubmit btn-reviewsubmit-icon" aria-label="리뷰 등록" title="리뷰 등록">
+              <Icon icon="iconoir:edit-pencil" width="20px" height="20px" />
+            </button>
           </div>
-          <div class="ctn-inputdefault">
-            <label class="ipt-default-label" for="review-title">제목</label>
-            <input id="review-title" class="ipt-default" v-model="reviewTitle" type="text" placeholder="후기의 제목을 남겨주세요" />
+          <div class="ctn-reviewmeta">
+            <div class="ctn-inputdefault">
+              <label class="ipt-default-label" for="review-title">제목</label>
+              <input id="review-title" class="ipt-default" v-model="reviewTitle" type="text" placeholder="후기의 제목을 남겨주세요" />
+            </div>
+            <div class="ctn-inputdefault ctn-reviewrating">
+              <label class="ipt-default-label" for="review-rating">평점</label>
+              <input id="review-rating" class="ipt-default" v-model="reviewRating" type="number" min="1" max="5" step="0.5" placeholder="1점부터 5점까지 입력할 수 있습니다." />
+            </div>
           </div>
           <div class="ctn-inputdefault">
             <label class="ipt-default-label" for="review-content">내용</label>
             <textarea id="review-content" class="ipt-default ipt-reviewcontent" v-model="reviewContent" rows="5" placeholder="팝업에서 좋았던 점과 방문 팁을 남겨주세요"></textarea>
-          </div>
-          <div class="ctn-inputdefault ctn-reviewrating">
-            <label class="ipt-default-label" for="review-rating">평점</label>
-            <input id="review-rating" class="ipt-default" v-model="reviewRating" type="number" min="1" max="5" step="0.5" placeholder="1점에서 5점 사이로 입력해주세요" />
-            <span>1점부터 5점까지 입력할 수 있습니다.</span>
           </div>
         </form>
         <br>
@@ -92,7 +92,7 @@ import ImageSlider from "@/components/ImageSlider.vue";
 import AppHeader from "@/components/AppHeader.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import CountDownTimer from "@/components/CountDownTimer.vue";
-import GoodsList from "@/components/GoodsList.vue";
+import GoodsCard from "@/components/GoodsCard.vue";
 import ReviewList from "@/components/ReviewList.vue";
 import ReserveList from "@/components/ReserveList.vue";
 import AppPagination from "@/components/AppPagination.vue";
@@ -137,9 +137,32 @@ const reviewRating = ref(0);
 const reserveList = ref([]);
 
 onMounted(async () => {
+  activeMenu.value = getInitialMenu();
   await getPopup();
-  await getGoodsList();
+  if (activeMenu.value === 'reserve') {
+    await getPopupReserves();
+  } else {
+    await getGoodsList();
+  }
 });
+
+const getInitialMenu = () => route.query.mainTab === 'reserve' ? 'reserve' : 'goods';
+
+watch(
+  () => [route.params.popupIdx, route.query.mainTab],
+  async ([popupIdx], [previousPopupIdx]) => {
+    if (popupIdx === previousPopupIdx) return;
+    activeMenu.value = getInitialMenu();
+    currentPage.value = 0;
+    searchQuery.value = "";
+    await getPopup();
+    if (activeMenu.value === 'reserve') {
+      await getPopupReserves();
+    } else {
+      await getGoodsList();
+    }
+  }
+);
 
 const getPopup = async () => {
   const res = await popupStore.getPopup(route.params.popupIdx);
@@ -259,7 +282,6 @@ watch(() => popup.value, (newPopup) => {
 
 const toggleLike = async () => {
   if (!authStore.isLoggedIn) {
-    router.push("/");
     toast.error("로그인이 필요합니다.");
     return;
   }

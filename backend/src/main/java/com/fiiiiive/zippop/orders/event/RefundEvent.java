@@ -8,4 +8,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class RefundEvent {
     private Payment payment;
+    private boolean rollbackOnly;
 }

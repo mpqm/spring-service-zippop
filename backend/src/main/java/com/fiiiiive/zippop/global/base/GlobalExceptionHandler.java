@@ -19,6 +19,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.Objects;
@@ -168,6 +169,17 @@ public class GlobalExceptionHandler {
                 ? ServerErrorCode.REDIS_CONNECTION_ERROR
                 : ServerErrorCode.DATABASE_ERROR;
         log.error("Data access exception on {}: {}", request.getRequestURI(), errorCode, exception);
+        return ResponseEntity.status(errorCode.getStatus()).body(new ErrorResponse(
+                errorCode, null, null, request.getRequestURI()
+        ));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(
+            NoResourceFoundException exception,
+            HttpServletRequest request
+    ) {
+        ServerErrorCode errorCode = ServerErrorCode.RESOURCE_NOT_FOUND;
         return ResponseEntity.status(errorCode.getStatus()).body(new ErrorResponse(
                 errorCode, null, null, request.getRequestURI()
         ));

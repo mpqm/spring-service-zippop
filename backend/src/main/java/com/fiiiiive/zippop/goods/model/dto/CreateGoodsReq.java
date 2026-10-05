@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class CreateGoodsReq {
 
-    @NotBlank(message = "팝업 아이디는 필수 입력 항목입니다.")
+    @NotNull(message = "팝업 아이디는 필수 입력 항목입니다.")
     private Long popupIdx;
 
     @NotBlank(message = "굿즈 이름은 필수 입력 항목입니다.")

@@ -28,6 +28,7 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -75,7 +76,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = jwtService.createRefreshToken(userId);
 
         // Redis에 리프레시 토큰 저장
-        redisTemplate.opsForValue().set("refreshToken:" + userId, refreshToken);
+        redisTemplate.opsForValue().set("refreshToken:" + userId, refreshToken, 5, TimeUnit.DAYS);
 
         // accessToken, refreshToken, userToken 쿠키 설정
         Cookie aToken = new Cookie("ATOKEN", accessToken);

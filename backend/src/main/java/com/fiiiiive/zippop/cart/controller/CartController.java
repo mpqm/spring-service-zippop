@@ -4,6 +4,7 @@ import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
 import com.fiiiiive.zippop.cart.model.dto.GetCartItemRes;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.cart.service.CartService;
+import com.fiiiiive.zippop.global.enums.Operation;
 import com.fiiiiive.zippop.global.base.SuccessCode;
 import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
@@ -75,7 +76,7 @@ public class CartController {
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long cartIdx,
             @PathVariable Long cartItemIdx,
-            @RequestParam String operation
+            @RequestParam Operation operation
     ) {
         cartService.updateCartItemQuantity(user, cartIdx, cartItemIdx, operation);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.CART_ITEM_COUNT_SUCCESS));

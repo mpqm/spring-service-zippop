@@ -97,6 +97,8 @@ public enum ServiceErrorCode {
     RESERVE_CANCEL_FAIL(7009, "예약 취소에 실패했습니다."),
     RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND(7011, "예약을 조회할 수 없습니다."),
     RESERVE_ACCESS_FAIL(7013, "유효하지 않은 사용자입니다."),
+    RESERVE_ENROLL_FAIL_NOT_OPEN(7019, "예약 입장 시간이 아직 시작되지 않았습니다."),
+    RESERVE_ENROLL_FAIL_CLOSED(7020, "예약 입장이 마감되었습니다."),
     RESERVE_DELETE_FAIL_NOT_FOUND_STORE(7015, "해당 팝업 스토어를 찾을 수 없습니다."),
     RESERVE_DELETE_FAIL_INVALID_MEMBER(7016, "해당 팝업 스토어의 소유자가 아닙니다."),
     RESERVE_DELETE_FAIL_NOT_FOUND(7017, "해당 예약을 찾을 수 없습니다."),

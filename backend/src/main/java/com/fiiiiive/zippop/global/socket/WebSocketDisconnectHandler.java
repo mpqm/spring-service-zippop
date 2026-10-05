@@ -49,11 +49,6 @@ public class WebSocketDisconnectHandler {
 
                     log.info("예약큐 연결 끊김 처리 - 예약 ID: {}, 사용자: {}", reserve.getIdx(), userEmail);
 
-                    // 토큰 재생성 및 블랙리스트 추가 (같은 방식으로 생성되므로 동일한 토큰)
-                    String revokedToken = jwtService.createReserveToken(reserve.getIdx(), userEmail);
-                    redisQueueService.blacklistReserveToken(revokedToken);
-                    log.info("연결 끊김으로 인한 토큰 블랙리스트 추가: {}", userEmail);
-
                     // 예약큐에서 제거
                     redisQueueService.remove(reserve.getWorkingUUID(), userEmail);
 
@@ -65,13 +60,13 @@ public class WebSocketDisconnectHandler {
                         String workingTotal = redisQueueService.getSize(reserve.getWorkingUUID());
                         String waitingTotal = redisQueueService.getSize(reserve.getWaitingUUID());
                         Long newWorkingOrder = redisQueueService.getOrder(reserve.getWorkingUUID(), firstWaitingUser);
-                        String wToken = jwtService.createReserveToken(reserve.getIdx(), firstWaitingUser); // 토큰 발급
+                        String wToken = jwtService.createReserveToken(reserve.getIdx(), firstWaitingUser);
                         String statusMessage = String.format("🎉 예약 승격! 다른 사용자가 나가서 자리가 났습니다. 예약접속자: %s, 예약대기자: %s, 현재 순번: %d", workingTotal, waitingTotal, (newWorkingOrder != null ? newWorkingOrder + 1 : 0));
 
                         // WebSocket으로 알림 전송 (토큰은 다음 상태 요청 시 발급)
                         messagingTemplate.convertAndSendToUser(
                                 firstWaitingUser,
-                                "/reserve/status",
+                                "/queue/reserve/status",
                                 GetReserveQueueRes.toDataWithToken(workingTotal, waitingTotal, statusMessage, 1, wToken)
                         );
                         log.info("승격 알림 전송 완료 - 사용자: {}", firstWaitingUser);

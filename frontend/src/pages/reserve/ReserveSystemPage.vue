@@ -21,7 +21,6 @@
         <div class="ctn-inputsearch">
           <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="fetchGoodsList()" />
           <button class="btn-default" @click="fetchGoodsList()"><Icon icon="ic:search" width="20px" height="20px" /></button>
-          <button class="btn-normal" @click="fetchGoodsList(true)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
         </div>
         <div class="wrp-list" v-if="goodsList && goodsList.length">
           <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="Number(popupIdx)" :showControl="true" @cartUpdated="handleCartUpdated" />
@@ -80,7 +79,7 @@
           <span>결제 요청 후 배송 확정 처리가 되면 환불이 불가능합니다.</span>
         </div>
         <div class="ctn-noticereward">
-          <Icon icon="iconoir:coin" class="img-iconior"/>&nbsp;<span>포인트적립: 결제 금액의 10% 적립</span>
+          <Icon icon="iconoir:coin" class="img-iconior"/>&nbsp;<span>포인트적립: 결제 금액의 5% 적립</span>
         </div>
         <button type="button" @click="payment" class="btn-default">
           <Icon icon="iconoir:hand-card" width="20px" height="20px"/>결제하기
@@ -191,9 +190,7 @@ const connectWebSocket = () => {
   stompClient.value = Stomp.over(socket);
 
   stompClient.value.connect({}, () => {
-    const userEmail = accountStore.userInfo.email;
-
-    stompClient.value.subscribe(`/user/${userEmail}/reserve/status`, (message) => {
+    stompClient.value.subscribe(`/user/queue/reserve/status`, (message) => {
       try {
         const data = JSON.parse(message.body);
         queueStatusMessage.value = data.statusMessage;

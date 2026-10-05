@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -50,10 +49,10 @@ public class CartService {
                     user.getIdx(),
                     goods.getPopup()
             );
-            cart.validateNoDuplicateGoods(goods);
-
             cartRepository.save(cart);
         }
+
+        cart.validateNoDuplicateGoods(goods);
 
         // 장바구니 아이템 저장
         CartItem cartItem = CartItem.create(cart, goods);
@@ -107,7 +106,7 @@ public class CartService {
 
     // 장바구니 아이템 수량 조절
     @Transactional
-    public void updateCartItemQuantity(CustomUserDetails user, Long cartIdx, Long cartItemIdx, String operation) throws ServiceException {
+    public void updateCartItemQuantity(CustomUserDetails user, Long cartIdx, Long cartItemIdx, Operation operation) throws ServiceException {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
         CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getIdx()).orElseThrow(
@@ -115,7 +114,7 @@ public class CartService {
         );
 
         // Dirty Checking
-        if (Objects.equals(operation, Operation.INCREMENT.getName())){
+        if (operation == Operation.INCREMENT){
             cartItem.increase();
         } else {
             cartItem.decrease();

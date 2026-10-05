@@ -24,7 +24,17 @@
     </div>
     
     <div v-if="showControl === 0" class="ctn-listbuttons">
-      <button class="btn-tagaction" @click="goReserve"><Icon icon="iconoir:bell" class="img-iconior"/>예약 참여</button>
+      <button
+        class="btn-tagaction"
+        type="button"
+        aria-label="예약 참여"
+        title="예약 참여"
+        :disabled="!isReserveActive(reserve)"
+        :aria-disabled="!isReserveActive(reserve)"
+        @click="goReserve"
+      >
+        <Icon icon="iconoir:bell" class="img-iconior"/>
+      </button>
     </div>
   </div>
 </template>
@@ -32,9 +42,13 @@
 <script setup>
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
+import { useAuthStore } from "@/stores/authStore";
 import CountDownTimer from "@/components/CountDownTimer.vue";
 
 const router = useRouter();
+const toast = useToast();
+const authStore = useAuthStore();
 
 // props 정의(reserve, showControl)
 const props = defineProps({
@@ -50,7 +64,22 @@ function formatTime(dateTimeString) {
 }
 
 const goReserve = () => {
+  if (!isReserveActive(props.reserve)) {
+    toast.info("현재 진행 중인 예약이 아닙니다.");
+    return;
+  }
+  if (!authStore.isLoggedIn) {
+    toast.error("로그인이 필요합니다.");
+    return;
+  }
   router.push(`/reserve/${props.reserve.popupIdx}/${props.reserve.reserveIdx}`);
 }
+
+const isReserveActive = (reserve) => {
+  const start = new Date(reserve?.reserveStartTime).getTime();
+  const end = new Date(reserve?.reserveEndTime).getTime();
+  const now = Date.now();
+  return Number.isFinite(start) && Number.isFinite(end) && now >= start && now < end;
+};
 
 </script>

@@ -17,7 +17,6 @@
               <Icon icon="iconoir:thumbs-up" width="20px" height="20px" />&nbsp;{{ currentLikeCount }}
             </button>
             <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px"/>&nbsp;{{ popup.totalPeople }}</button>
-            <button @click="goPopupDetail" class="btn-tagaction"><Icon icon="iconoir:eye" width="20px" height="20px"/>이전 팝업 정보 보기</button>
           </div>
         </div>
       </div>
@@ -26,7 +25,6 @@
         <div class="ctn-inputsearch">
           <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="getGoodsList()" />
           <button class="btn-default" @click="getGoodsList()"><Icon icon="ic:search" width="20px" height="20px" /></button>
-          <button class="btn-normal" @click="getGoodsList(true)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
         </div>
         <div class="lyt-cardgrid" v-if="goodsList && goodsList.length">
           <GoodsCard v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="popup.popupIdx" />
@@ -117,10 +115,6 @@ const getGoodsList = async (reset = false) => {
   }
 };
 
-const goPopupDetail = () => {
-  router.push({ path: `/popup/${route.params.popupIdx}`, query: { mainTab: 'goods' } });
-};
-
 watch(() => popupStore.likeList, () => {
   if (popup.value.popupIdx) {
     isLiked.value = popupStore.likeList.some(s => s.popupIdx === popup.value.popupIdx);
@@ -142,7 +136,6 @@ const changePage = async (newPage) => {
 
 const toggleLike = async () => {
   if (!authStore.isLoggedIn) {
-    router.push("/");
     toast.error("로그인이 필요합니다.");
     return;
   }

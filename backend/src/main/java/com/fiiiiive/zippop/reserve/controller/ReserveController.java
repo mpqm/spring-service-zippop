@@ -80,7 +80,7 @@ public class ReserveController {
     // (WebSocket) 예약 상태 업데이트
     @MessageMapping("/reserve/status")
     public void updateReserveStatus(
-        @AuthenticationPrincipal Principal principal,
+        Principal principal,
         @Payload GetReserveQueueReq getReserveQueueReq) throws ServiceException {
         reserveService.status(principal, getReserveQueueReq);
     }

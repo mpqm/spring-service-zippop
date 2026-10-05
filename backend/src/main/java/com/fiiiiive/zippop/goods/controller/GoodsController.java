@@ -34,7 +34,7 @@ public class GoodsController {
     @PostMapping
     public ResponseEntity<SuccessResponse<Void>> createGoods(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestPart("files") MultipartFile[] files,
+            @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart("req") CreateGoodsReq req
     ) {
         List<String> urls = fileUploadService.multipleUpload(files);
@@ -47,7 +47,7 @@ public class GoodsController {
     public ResponseEntity<SuccessResponse<Void>> updateGoods(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable Long goodsIdx,
-            @RequestPart(name = "files") MultipartFile[] files,
+            @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart(name = "req") UpdateGoodsReq req
     ) {
         List<String> urls = fileUploadService.multipleUpload(files);

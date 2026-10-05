@@ -18,8 +18,19 @@ public class RefundEventListener {
 
     private final IamportClient iamportClient;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK, condition = "#event.rollbackOnly")
     public void handleRefundAfterRollback(RefundEvent event) {
+        try {
+            var payment = event.getPayment();
+            CancelData cancelData = new CancelData(payment.getImpUid(), true, payment.getAmount());
+            iamportClient.cancelPaymentByImpUid(cancelData);
+        } catch (IamportResponseException | IOException exception) {
+            throw new ServerException(ServerErrorCode.PAYMENT_PROVIDER_ERROR, exception);
+        }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, condition = "!#event.rollbackOnly")
+    public void handleRefundAfterCommit(RefundEvent event) {
         try {
             var payment = event.getPayment();
             CancelData cancelData = new CancelData(payment.getImpUid(), true, payment.getAmount());

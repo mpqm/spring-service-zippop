@@ -21,9 +21,11 @@
                         <label><input type="checkbox" /> 자동 로그인 </label>
                     </div>
 
-                    <button class="btn-default" type="submit">로그인</button>
+                    <button class="btn-default" type="submit" :disabled="isSubmitting">
+                        {{ isSubmitting ? "로그인 중..." : "로그인" }}
+                    </button>
                     <a class="btn-default" href="/signup">회원가입</a>
-                    <button class="btn-default"><img src="../../assets/img/social-login-kakao.png" alt="카카오" />카카오로 시작하기 </button>
+                    <button class="btn-default" type="button"><img src="../../assets/img/social-login-kakao.png" alt="카카오" />카카오로 시작하기 </button>
 
                 </form>
             </div>
@@ -46,6 +48,7 @@ const toast = useToast();
 
 const userId = ref("");
 const password = ref("");
+const isSubmitting = ref(false);
 
 // onMounted 
 onMounted(async () => { 
@@ -55,30 +58,37 @@ onMounted(async () => {
 // 이메일 인증 링크 리다이렉션시 
 const emailVerify = async () => {
     const query = router.currentRoute.value.query;
-    if (query.success) {
+    if (query.success === "true") {
         toast.success("이메일 인증에 성공했습니다.");
-    }
-    if (query.error) {
+    } else if (query.error === "true") {
         toast.error("이메일 인증에 실패했습니다. 다시 시도해주세요.");
-    }
-    if (query.reason === 'auth') {
+    } else if (query.reason === 'auth') {
         toast.error('로그인이 필요합니다.');
     }
 }
 
 // 로그인 
 const login = async () => {
-    const req = {
-        userId: userId.value,
-        password: password.value,
+    if (isSubmitting.value) {
+        return;
     }
-    const res = await authStore.login(req);
-    if (res.success) {
-        const redirect = router.currentRoute.value.query.redirect;
-        router.push(typeof redirect === 'string' && redirect.startsWith('/') ? redirect : '/');
-        toast.success(res.message)
-    } else {
-        toast.error(res.message)
+
+    isSubmitting.value = true;
+    try {
+        const req = {
+            userId: userId.value,
+            password: password.value,
+        }
+        const res = await authStore.login(req);
+        if (res?.success === true) {
+            const redirect = router.currentRoute.value.query.redirect;
+            await router.push(typeof redirect === 'string' && redirect.startsWith('/') ? redirect : '/');
+            toast.success(res.message);
+        } else {
+            toast.error(res?.message || '로그인에 실패했습니다.');
+        }
+    } finally {
+        isSubmitting.value = false;
     }
 };
 

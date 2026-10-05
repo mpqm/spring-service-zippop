@@ -10,7 +10,7 @@
     <p class="txt-carddate">{{ popup.popupStartDate }} — {{ popup.popupEndDate }}</p>
     <div class="ctn-tagbutton">
 
-      <button class="btn-tagdefault btn-like" :class="{ active: isLiked }" @click="toggleLike" aria-label="좋아요">
+      <button class="btn-tagdefault btn-like" :class="{ active: authStore.isLoggedIn && isLiked }" @click="toggleLike" aria-label="좋아요">
         <Icon icon="iconoir:thumbs-up" width="20px" height="20px" />{{ currentLikeCount }}
       </button>
       
@@ -23,6 +23,20 @@
       <button v-else class="btn-tagaction" @click="goPopupDetail">
         <Icon icon="iconoir:eye" width="20px" height="20px" />상세보기
       </button>
+
+      <button
+        v-if="showReserveAction"
+        class="btn-tagaction btn-reserveaction"
+        :class="{ active: isReservationActive }"
+        type="button"
+        :disabled="!isReservationActive"
+        :aria-disabled="!isReservationActive"
+        aria-label="예약 확인"
+        title="예약 확인"
+        @click="goReserveTab"
+      >
+        <Icon icon="iconoir:bell" width="20px" height="20px" />
+      </button>
     
     </div>
     </div>
@@ -30,7 +44,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch } from "vue";
+import { computed, defineProps, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { usePopupStore } from "@/stores/popupStore";
 import { useToast } from "vue-toastification";
@@ -42,6 +56,7 @@ const props = defineProps({
   popup: Object,
   redirectToGoodsDetail: Boolean,
   mainTab: { type: String, default: '' },
+  showReserveAction: { type: Boolean, default: false },
 });
 
 const router = useRouter();
@@ -52,6 +67,16 @@ const toast = useToast();
 
 const isLiked = ref(popupStore.likeList.some(p => p.popupIdx === props.popup?.popupIdx));
 const currentLikeCount = ref(props.popup?.likeCount || 0);
+const isReservationActive = computed(() => {
+  if (!props.popup?.popupStartDate || !props.popup?.popupEndDate) return false;
+  const start = new Date(`${props.popup.popupStartDate}T00:00:00`).getTime();
+  const end = new Date(`${props.popup.popupEndDate}T23:59:59.999`).getTime();
+  const now = Date.now();
+  return Number.isFinite(start) && Number.isFinite(end)
+    && now >= start
+    && now <= end
+    && props.popup.popupStatus !== 'POPUP_END';
+});
 
 watch(() => props.popup, (newPopup) => {
   if (newPopup) {
@@ -75,9 +100,15 @@ const goGoodsDetail = () => {
   router.push(`/goods/${props.popup.popupIdx}`);
 };
 
+const goReserveTab = () => {
+  router.push({
+    path: `/popup/${props.popup.popupIdx}`,
+    query: { mainTab: 'reserve' },
+  });
+};
+
 const toggleLike = async () => {
   if (!authStore.isLoggedIn) {
-    router.push("/");
     toast.error("로그인이 필요합니다.");
     return;
   }

@@ -6,7 +6,6 @@
       <div class="ctn-inputsearch">
         <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="getPopups()" />
         <button class="btn-default" @click="getPopups()"><Icon icon="ic:search" width="20px" height="20px" /></button>
-        <button class="btn-normal" @click="getPopups(true)"><Icon icon="ic:baseline-refresh" width="20px" height="20px" /></button>
       </div>
       <div class="lyt-cardgrid" v-if="popupList && popupList.length">
         <PopupCard v-for="popup in popupList" :key="popup.popupIdx" :popup="popup" main-tab="reserve" />

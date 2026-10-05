@@ -20,6 +20,7 @@ public enum ServerErrorCode {
     VALIDATION_ERROR(315, HttpStatus.BAD_REQUEST, "입력값을 확인해주세요."),
     ACCOUNT_DISABLED(316, HttpStatus.UNAUTHORIZED, "비활성화된 계정입니다."),
     ACCESS_DENIED(403, HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    RESOURCE_NOT_FOUND(404, HttpStatus.NOT_FOUND, "요청한 경로를 찾을 수 없습니다."),
     INTERNAL_SERVER_ERROR(500, HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
 
     REDIS_CONNECTION_ERROR(9000, HttpStatus.SERVICE_UNAVAILABLE, "Redis 연결 중 오류가 발생했습니다."),

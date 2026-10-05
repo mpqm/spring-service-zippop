@@ -12,6 +12,8 @@ import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServerErrorCode;
 import com.fiiiiive.zippop.global.base.ServerException;
 import com.fiiiiive.zippop.global.enums.RoleType;
+import com.fiiiiive.zippop.global.enums.GoodsStatus;
+import com.fiiiiive.zippop.global.redis.RedisQueueService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.orders.model.entity.OrdersDetail;
@@ -19,6 +21,7 @@ import com.fiiiiive.zippop.orders.policy.OrdersPolicy;
 import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
+import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.google.gson.Gson;
@@ -37,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 
@@ -55,6 +59,7 @@ public class OrdersService {
     private final ReserveRepository reserveRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final OrdersPolicy ordersPolicy;
+    private final RedisQueueService redisQueueService;
 
     // 결제 검증(예약용)
     @Transactional
@@ -63,6 +68,17 @@ public class OrdersService {
         try {
             // 주문자 역할 검증
             ordersPolicy.validateOrderRole(user);
+
+            Reserve reserve = reserveRepository.findById(req.getReserveIdx()).orElseThrow(
+                    () -> new ServiceException(ServiceErrorCode.RESERVE_ENROLL_FAIL_NOT_FOUND)
+            );
+            if (!reserve.getPopup().getIdx().equals(req.getPopupIdx())
+                    || LocalDateTime.now().isBefore(reserve.getStartTime())
+                    || !LocalDateTime.now().isBefore(reserve.getEndTime())
+                    || reserve.getTotalPeople() <= 0
+                    || redisQueueService.getOrder(reserve.getWorkingUUID(), user.getEmail()) == null) {
+                throw new ServiceException(ServiceErrorCode.RESERVE_ACCESS_FAIL);
+            }
 
             // 결제 정보 확인
             payment = iamportClient.paymentByImpUid(req.getImpUid()).getResponse();
@@ -84,15 +100,22 @@ public class OrdersService {
 
                 // 결제 하려는 굿즈 수량 확인
                 int purchaseGoodsAmount = goodsMap.get(key).intValue();
+                Double purchaseGoodsValue = goodsMap.get(key);
+                if (purchaseGoodsValue == null || !Double.isFinite(purchaseGoodsValue)
+                        || purchaseGoodsValue <= 0 || purchaseGoodsValue % 1 != 0) {
+                    throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
+                }
 
                 // 굿즈 조회(goodsIdx)
                 Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
                         () -> new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
                 );
+                if (!goods.getPopup().getIdx().equals(req.getPopupIdx()) || goods.getStatus() != GoodsStatus.GOODS_RESERVED) {
+                    throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_NOT_FOUND_GOODS);
+                }
 
                 // 예약 굿즈 구매 수량 확인 / 구매 항목개수가 1개 이상이면 결제 실패 후 환불
                 if (purchaseGoodsAmount != 1) {
-                    eventPublisher.publishEvent(new RefundEvent(payment));
                     throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
                 }
 
@@ -106,14 +129,11 @@ public class OrdersService {
             // IamPort 결제 금액과 총 구매 금액 비교 불일치 시 환불
             Integer payedPrice = payment.getAmount().intValue();
             if (!payedPrice.equals(totalPurchasePrice)) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
                 throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE);
             }
 
             // 예약 굿즈 주문 생성: 배송비 0, 포인트 사용 x, 상태 RESERVE_READY
-            Popup popup = popupRepository.findByPopupIdx(req.getPopupIdx()).orElseThrow(
-                    () -> new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_NOT_FOUND_STORE)
-            );
+            Popup popup = reserve.getPopup();
 
             // 예약 굿즈 주문 저장
             Orders orders = Orders.createReserveOrders(
@@ -158,17 +178,17 @@ public class OrdersService {
 
         } catch (IamportResponseException | IOException exception) {
             if (payment != null) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
+                eventPublisher.publishEvent(new RefundEvent(payment, true));
             }
             throw new ServerException(ServerErrorCode.PAYMENT_PROVIDER_ERROR, exception);
         } catch (ServiceException exception) {
             if (payment != null) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
+                eventPublisher.publishEvent(new RefundEvent(payment, true));
             }
             throw exception;
         } catch (Exception e) {
             if (payment != null) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
+                eventPublisher.publishEvent(new RefundEvent(payment, true));
             }
             throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL);
         }
@@ -203,15 +223,22 @@ public class OrdersService {
 
                 // 결제 하려는 굿즈 수량 확인
                 int purchaseGoodsAmount = goodsMap.get(key).intValue();
+                Double purchaseGoodsValue = goodsMap.get(key);
+                if (purchaseGoodsValue == null || !Double.isFinite(purchaseGoodsValue)
+                        || purchaseGoodsValue <= 0 || purchaseGoodsValue % 1 != 0) {
+                    throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
+                }
 
                 // 굿즈 조회(goodsIdx)
                 Goods goods = goodsRepository.findByGoodsIdx(Long.parseLong(key)).orElseThrow(
                         () -> new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_NOT_FOUND_GOODS)
                 );
+                if (!goods.getPopup().getIdx().equals(req.getPopupIdx()) || goods.getStatus() != GoodsStatus.GOODS_STOCK) {
+                    throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_NOT_FOUND_GOODS);
+                }
 
                 // 재고 굿즈 구매 수량 확인 / 구매한 항목 수가 굿즈의 남은 수량보다 크면 예외
                 if (purchaseGoodsAmount > goods.getAmount()) {
-                    eventPublisher.publishEvent(new RefundEvent(payment));
                     throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_LIMIT_EXCEEDED);
                 }
 
@@ -225,10 +252,12 @@ public class OrdersService {
 
             // 포인트 적립 계산(총 구매 금액의 5%)
             usedPoint = (totalPurchasePrice + 2500) - payedPrice;
+            if (usedPoint < 0) {
+                throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE);
+            }
 
             // 포인트 유효성 검사 (3000포인트 이상부터 사용 가능)
             if (usedPoint != 0 && (customer.getPoint() < 3000 || customer.getPoint() < usedPoint || totalPurchasePrice < usedPoint)) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
                 throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_POINT_EXCEEDED);
             }
 
@@ -240,7 +269,6 @@ public class OrdersService {
 
             // IamPort 결제 금액과 총 구매 금액 비교 불일치 시 환불
             if (!payedPrice.equals(totalPurchasePrice)) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
                 throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL_INVALID_TOTAL_PRICE);
             }
 
@@ -283,17 +311,17 @@ public class OrdersService {
 
         } catch (IamportResponseException | IOException exception) {
             if (payment != null) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
+                eventPublisher.publishEvent(new RefundEvent(payment, true));
             }
             throw new ServerException(ServerErrorCode.PAYMENT_PROVIDER_ERROR, exception);
         } catch (ServiceException exception) {
             if (payment != null) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
+                eventPublisher.publishEvent(new RefundEvent(payment, true));
             }
             throw exception;
         } catch (Exception e) {
             if (payment != null) {
-                eventPublisher.publishEvent(new RefundEvent(payment));
+                eventPublisher.publishEvent(new RefundEvent(payment, true));
             }
             throw new ServiceException(ServiceErrorCode.ORDERS_PAY_FAIL);
         }
@@ -391,7 +419,7 @@ public class OrdersService {
         orders.updateOrderStatus();
 
         // 환불 처리 진행
-        eventPublisher.publishEvent(new RefundEvent(payment));
+        eventPublisher.publishEvent(new RefundEvent(payment, false));
 
         return UpdateOrdersRes.builder().ordersIdx(orders.getIdx()).build();
     }

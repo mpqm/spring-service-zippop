@@ -4,7 +4,6 @@ const LOGIN_REQUIRED_CODES = new Set([
   'INVALID_TOKEN',
   'UNSUPPORTED_TOKEN',
   'MALFORMED_TOKEN',
-  'ACCESS_DENIED',
 ]);
 
 let redirectPromise = null;
@@ -40,7 +39,7 @@ export const isSocketLoginRequiredError = (error) => {
     typeof error === 'string' ? error : '',
   ].filter(Boolean).join(' ');
 
-  return /AUTHENTICATION_REQUIRED|TOKEN_EXPIRED|INVALID_TOKEN|UNSUPPORTED_TOKEN|MALFORMED_TOKEN|ACCESS_DENIED|\b401\b|\b403\b/i.test(text);
+  return /AUTHENTICATION_REQUIRED|TOKEN_EXPIRED|INVALID_TOKEN|UNSUPPORTED_TOKEN|MALFORMED_TOKEN|\b401\b/i.test(text);
 };
 
 export const redirectToLogin = (router, authStore, redirectPath) => {

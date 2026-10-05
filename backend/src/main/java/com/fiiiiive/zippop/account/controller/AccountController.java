@@ -54,7 +54,7 @@ public class AccountController {
     @PatchMapping("/me")
     public ResponseEntity<SuccessResponse<Void>> updateAccount(
             @AuthenticationPrincipal CustomUserDetails user,
-            @RequestPart(name = "req") UpdateAccountReq req,
+            @Valid @RequestPart(name = "req") UpdateAccountReq req,
             @RequestPart(name = "file", required = false) MultipartFile file
     ) {
         accountFacade.updateAccount(user, req, fileUploadService.singleUpload(file));
