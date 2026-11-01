@@ -10,7 +10,7 @@
         </div>
         <div class="ctn-buttons">
           <router-link class="btn-normal" :to="`/mypage/company/goods`">
-            <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />
+            <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />뒤로가기
           </router-link>
           <router-link class="btn-default" :to="`/mypage/company/goods/${route.params.popupIdx}/register`">
             <Icon icon="iconoir:add-square" width="20px" height="20px" class="ico-inverse" />팝업 굿즈 등록

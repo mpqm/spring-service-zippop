@@ -3,14 +3,14 @@
     <AppHeader></AppHeader>
     <div class="lyt-root">
       <div class="wrp-split">
-        <div class="ctn-l50">
+        <div class="ctn-l50 ctn-detailmedia">
           <ImageSlider class="image-slider" :fileUrls="fileUrls" />
         </div>
         <div class="ctn-r50">
           <p class="txt-def1">{{ popup.popupName }}</p>
           <p class="txt-desc">{{ popup.popupContent }}</p>
           <div class="ctn-tagbutton">
-            <button class="btn-tagdefault">{{ popup.category }}</button>
+            <span class="btn-tagdefault">{{ popup.category }}</span>
             <button class="btn-tagdefault">{{ popup.popupAddress }}</button>
             <button class="btn-tagdefault">{{ popup.popupStartDate }}<span class="divider">~</span>{{ popup.popupEndDate }}</button>
             <button class="btn-tagdefault" :class="{ active: isLiked }" @click="toggleLike">
@@ -46,10 +46,12 @@
         <form class="ctn-rootform ctn-reviewform" @submit.prevent="submitReview">
           <div class="ctn-reviewheading">
             <div>
+              <span class="txt-eyebrow">REVIEW</span>
               <h2>리뷰 등록</h2>
+              <p>팝업 방문 후기를 작성하고 다른 방문자와 경험을 공유할 수 있습니다.</p>
             </div>
-            <button type="submit" class="btn-default btn-reviewsubmit btn-reviewsubmit-icon" aria-label="리뷰 등록" title="리뷰 등록">
-              <Icon icon="iconoir:edit-pencil" width="20px" height="20px" />
+            <button type="submit" class="btn-tagaction btn-reviewsubmit" aria-label="리뷰 등록" title="리뷰 등록">
+              <Icon icon="iconoir:edit-pencil" width="20px" height="20px" />리뷰 등록
             </button>
           </div>
           <div class="ctn-reviewmeta">

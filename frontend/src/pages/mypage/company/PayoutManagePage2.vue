@@ -5,7 +5,7 @@
           <button class="btn-tagdefault">총 판매 수익: {{ totalRevenueSum }}원</button>
           <div class="ctn-buttons">
             <button class="btn-normal" @click="router.back()">
-              <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />
+              <Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />뒤로가기
             </button>
           </div>
         </div>

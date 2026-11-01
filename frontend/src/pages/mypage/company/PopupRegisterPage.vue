@@ -1,11 +1,15 @@
 <template>
   <div class="lyt-child">
     <form class="ctn-rootform ctn-reviewform ctn-standardform" @submit.prevent="createPopup">
-      <div class="ctn-split">
-        <h1 class="txt-def0">팝업 스토어 등록</h1>
+      <div class="ctn-reviewheading">
+        <div>
+          <span class="txt-eyebrow">POPUP SETTINGS</span>
+          <h2>팝업 스토어 등록</h2>
+          <p>팝업의 기본 정보와 운영 일정, 대표 이미지를 등록할 수 있습니다.</p>
+        </div>
         <div class="ctn-buttons">
-          <button type="submit" class="btn-default">등록</button>
-          <button type="button" class="btn-normal" @click="router.back()">취소</button>
+          <button type="button" class="btn-normal btn-reviewsubmit" @click="router.back()">취소</button>
+          <button type="submit" class="btn-default btn-reviewsubmit">등록</button>
         </div>
       </div>
       <div class="ctn-inputdefault">
@@ -38,13 +42,17 @@
           <input class="ipt-default" v-model="addressDetail" type="text" placeholder="상세 주소" />
         </div>
       </div>
-      <label for="file">
-        <div class="btn-default">팝업 스토어 이미지 파일 업로드</div>
-      </label>
-      <input @change="handleFileUpload" type="file" name="file" id="file" multiple />
-      <div class="wrp-filepreview" v-if="fileUrls.length">
-        <div v-for="(fileUrl, index) in fileUrls" :key="index" class="ctn-filepreview">
-          <img :src="fileUrl" alt="file preview" />
+      <div class="ctn-inputdefault ctn-mediauploadfield">
+        <div class="ctn-mediauploadhead">
+          <label class="ipt-default-label" for="popup-register-files">대표 이미지</label>
+          <input id="popup-register-files" class="ipt-filehidden" @change="handleFileUpload" type="file" accept="image/*" name="files" multiple />
+          <label class="btn-normal btn-fileupload" for="popup-register-files">이미지 선택</label>
+        </div>
+        <span class="txt-formhelp">팝업에 표시할 대표 이미지를 선택해주세요.</span>
+        <div class="wrp-popuppreview" v-if="fileUrls.length">
+          <div v-for="(fileUrl, index) in fileUrls" :key="index" class="ctn-popuppreview">
+            <img :src="fileUrl" :alt="`팝업 이미지 ${index + 1}`" />
+          </div>
         </div>
       </div>
     </form>

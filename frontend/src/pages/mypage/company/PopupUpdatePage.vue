@@ -45,12 +45,12 @@
           <input class="ipt-default" v-model="addressDetail" type="text" placeholder="상세 주소" />
         </div>
       </div>
-      <div class="ctn-inputdefault">
-        <label class="ipt-default-label">대표 이미지</label>
-        <div class="ctn-popupupload">
+      <div class="ctn-inputdefault ctn-mediauploadfield">
+        <div class="ctn-mediauploadhead ctn-mediauploadhead--update">
+          <label class="ipt-default-label" for="popup-files">대표 이미지</label>
           <input id="popup-files" class="ipt-filehidden" @change="handleFileUpload" type="file" accept="image/*" name="files" multiple />
+          <span class="txt-formhelp">새 이미지를 선택하지 않으면 기존 이미지가 유지됩니다.</span>
           <label class="btn-normal btn-fileupload" for="popup-files">이미지 선택</label>
-          <span>새 이미지를 선택하지 않으면 기존 이미지가 유지됩니다.</span>
         </div>
         <div class="wrp-popuppreview" v-if="fileUrls.length">
           <div v-for="(fileUrl, index) in fileUrls" :key="`${fileUrl}-${index}`" class="ctn-popuppreview">

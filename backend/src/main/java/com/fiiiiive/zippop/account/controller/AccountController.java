@@ -8,6 +8,7 @@ import com.fiiiiive.zippop.global.base.SuccessCode;
 import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.upload.FileUploadService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import com.fiiiiive.zippop.global.web.RequestUrlService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class AccountController {
     private final FileUploadService fileUploadService;
     private final AccountFacade accountFacade;
     private final EmailAuthFacade emailAuthFacade;
+    private final RequestUrlService requestUrlService;
 
     // 회원가입
     @PostMapping
@@ -86,7 +88,8 @@ public class AccountController {
             @RequestParam String role,
             @RequestParam String uuid
     ) {
-        String redirectUrl = emailAuthFacade.verifyEmail(email, role, uuid);
+        boolean verified = emailAuthFacade.verifyEmail(email, role, uuid);
+        String redirectUrl = requestUrlService.loginResultUrl(verified);
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
     }
 

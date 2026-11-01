@@ -9,8 +9,10 @@
       <div class="ctn-goodscardmeta">
         <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" class="ico-accent" />{{ goods.goodsPrice }}원</button>
         <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" class="ico-accent" />{{ goods.goodsAmount }}개</button>
-        <button class="btn-tagaction" type="button" aria-label="상세보기" title="상세보기" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px" /></button>
-        <button class="btn-tagaction" type="button" aria-label="장바구니 담기" title="장바구니 담기" :disabled="!showCart" :aria-disabled="!showCart" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px" /></button>
+      </div>
+      <div class="ctn-cardactions">
+        <button class="btn-tagaction" type="button" aria-label="장바구니 담기" title="장바구니 담기" :disabled="!showCart" :aria-disabled="!showCart" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px" />장바구니</button>
+        <button class="btn-tagaction" type="button" aria-label="상세보기" title="상세보기" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px" />상세보기</button>
       </div>
     </div>
   </div>

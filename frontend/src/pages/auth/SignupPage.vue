@@ -6,9 +6,9 @@
                 <img class="img-mainlogo" src="../../assets/img/zippoicon-removebg.png" alt="ZIPPOP">
                 
                 <!-- 회원 유형 선택 탭 -->
-                <div class="ctn-buttons">
-                    <div class="btn-big" :class="{ active: userType === 'customer' }" @click="userType = 'customer'"> 고객 가입</div>
-                    <div class="btn-big" :class="{ active: userType === 'company' }" @click="userType = 'company'"> 기업 가입</div>
+                <div class="ctn-buttons ctn-accounttypes">
+                    <button type="button" class="btn-big" :class="{ active: userType === 'customer' }" :aria-pressed="userType === 'customer'" @click="userType = 'customer'"><Icon icon="iconoir:user-cart" width="22" height="22" />고객 회원</button>
+                    <button type="button" class="btn-big" :class="{ active: userType === 'company' }" :aria-pressed="userType === 'company'" @click="userType = 'company'"><Icon icon="iconoir:user-badge-check" width="22" height="22" />기업 회원</button>
                 </div>
                 
                 <form class="ctn-rootform ctn-formcard" @submit.prevent="createAccount">
@@ -62,19 +62,29 @@
                     </div>
 
                     <!-- 프로필 파일 업로드 -->
-                    <label for="file"><div class="btn-default">프로필 파일 업로드</div></label>
-                    <input @change="handleFileUpload" type="file" name="file" id="file">
-                    <div class="ctn-filepreview" v-if="fileUrl"><img :src="fileUrl" /></div>
+                    <div class="ctn-inputdefault">
+                        <label class="ipt-default-label" for="profile-file">프로필</label>
+                        <div class="ctn-profileupload">
+                            <div class="ctn-profileavatar">
+                                <img v-if="fileUrl" :src="fileUrl" alt="선택한 프로필 이미지 미리보기" />
+                                <Icon v-else icon="iconoir:user" width="44" height="44" aria-hidden="true" />
+                            </div>
+                            <label class="btn-profileupload" for="profile-file" aria-label="프로필 이미지 선택" title="프로필 이미지 선택">
+                                <Icon icon="iconoir:camera" width="18" height="18" />
+                            </label>
+                            <input id="profile-file" class="ipt-filehidden" @change="handleFileUpload" type="file" name="file" accept="image/*">
+                        </div>
+                    </div>
                     
+                    <!-- 제출 버튼 -->
+                    <button class="btn-default" type="submit"> {{ userType === 'customer' ? '고객 회원가입' : '기업 회원가입' }} </button>
+
                     <!-- 안내 -->
                     <p class="ctn-noticedefault">
                         타인 명의로 가입 시 계정이 정지되고 재가입이 불가능합니다.<br>
-                        가입 후 이메일 인증까지 완료하여야 계정이 활성화됩니다.(유효시간3분)
+                        가입 후 이메일 인증까지 완료하여야 계정이 활성화됩니다.<br>
+                        (유효시간 3분)
                     </p>
-
-                    <!-- 제출 버튼 -->
-                    <button class="btn-default" type="submit"> {{ userType === 'customer' ? '고객 회원가입' : '기업 회원가입' }} </button>
-                    <a class="btn-default" href="/login">로그인</a>
                 </form>
             </div>
         </div>
@@ -90,6 +100,7 @@ import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from "@/components/AppFooter.vue";
 import { useToast } from "vue-toastification";
 import { createMultipartRequest } from "@/utils/multipart";
+import { Icon } from "@iconify/vue";
 
 const accountStore = useAccountStore();
 const router = useRouter();
@@ -158,7 +169,7 @@ const createAccount = async () => {
     
     const res = await accountStore.createAccount(formData);
     if (res.success) {
-        router.push("/");
+        await router.push("/login");
         toast.success(res.message);
     } else {
         toast.error(res.message);

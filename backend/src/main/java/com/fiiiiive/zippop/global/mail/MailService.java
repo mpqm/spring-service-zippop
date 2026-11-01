@@ -1,6 +1,5 @@
 package com.fiiiiive.zippop.global.mail;
 
-import com.fiiiiive.zippop.global.base.BaseConstant;
 import com.fiiiiive.zippop.global.base.ServerErrorCode;
 import com.fiiiiive.zippop.global.base.ServerException;
 import com.fiiiiive.zippop.global.enums.RoleType;
@@ -21,7 +20,7 @@ public class MailService {
 
     // 회원가입 이메일 인증 전송(비동기)
     @Async
-    public void sendSignupEmail(String uuid, String email, RoleType role, Boolean recoveryTarget) {
+    public void sendSignupEmail(String verificationUrl, String email, RoleType role, Boolean recoveryTarget) {
 
         // 이메일 수신자 설정
         SimpleMailMessage message = new SimpleMailMessage();
@@ -45,7 +44,7 @@ public class MailService {
         }
 
         // 메시지 생성 및 전송
-        message.setText(BaseConstant.DEFAULT_SERVER_URL+"/api/v1/auth/verify?email="+email+"&role="+role+"&uuid="+uuid);
+        message.setText(verificationUrl);
         try {
             emailSender.send(message);
         } catch (MailException exception) {

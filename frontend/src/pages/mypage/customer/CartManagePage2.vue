@@ -23,7 +23,7 @@
         <div class="ctn-r40">
           <div class="ctn-split">
             <h3 class="txt-def0">주문</h3>
-            <button class="btn-small" @click="router.back()"><Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" /></button>
+            <button class="btn-small" @click="router.back()"><Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />뒤로가기</button>
           </div>
           <div class="ctn-split">
             <span class="txt-def1">총 상품 가격</span> {{ totalPrice }}원

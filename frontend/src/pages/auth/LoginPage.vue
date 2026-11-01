@@ -21,11 +21,29 @@
                         <label><input type="checkbox" /> 자동 로그인 </label>
                     </div>
 
-                    <button class="btn-default" type="submit" :disabled="isSubmitting">
-                        {{ isSubmitting ? "로그인 중..." : "로그인" }}
-                    </button>
-                    <a class="btn-default" href="/signup">회원가입</a>
-                    <button class="btn-default" type="button"><img src="../../assets/img/social-login-kakao.png" alt="카카오" />카카오로 시작하기 </button>
+                    <div class="ctn-loginactions">
+                        <button class="btn-default btn-loginicon" type="submit" :disabled="isSubmitting" aria-label="로그인" title="로그인">
+                            <Icon :icon="isSubmitting ? 'iconoir:refresh-double' : 'iconoir:log-in'" width="24" height="24" />{{ isSubmitting ? '로그인 중...' : '로그인' }}
+                        </button>
+                        <router-link class="btn-default btn-loginicon" to="/signup" aria-label="회원가입" title="회원가입">
+                            <Icon icon="iconoir:user-plus" width="24" height="24" />회원가입
+                        </router-link>
+                    </div>
+
+                    <div class="ctn-socialactions" aria-label="소셜 로그인">
+                        <button class="btn-sociallogin btn-kakao" type="button" aria-label="카카오 로그인" title="카카오 로그인">
+                            <span class="ico-socialbrand"><Icon icon="simple-icons:kakaotalk" width="21" height="21" /></span>
+                            <span class="txt-socialbrand">카카오</span>
+                        </button>
+                        <button class="btn-sociallogin btn-google" type="button" aria-label="구글 로그인" title="구글 로그인">
+                            <span class="ico-socialbrand"><Icon icon="logos:google-icon" width="21" height="21" /></span>
+                            <span class="txt-socialbrand">구글</span>
+                        </button>
+                        <button class="btn-sociallogin btn-naver" type="button" aria-label="네이버 로그인" title="네이버 로그인">
+                            <span class="ico-socialbrand"><Icon icon="simple-icons:naver" width="17" height="17" /></span>
+                            <span class="txt-socialbrand">네이버</span>
+                        </button>
+                    </div>
 
                 </form>
             </div>
@@ -41,6 +59,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from "vue-toastification";
+import { Icon } from "@iconify/vue";
 
 const authStore = useAuthStore();
 const router = useRouter();

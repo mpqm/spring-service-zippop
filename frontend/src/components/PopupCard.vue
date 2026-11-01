@@ -15,30 +15,30 @@
       </button>
       
       <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px"/>{{ popup.totalPeople }}</button>
-
-      <button v-if="redirectToGoodsDetail" class="btn-tagaction" @click="goGoodsDetail">
-        <Icon icon="iconoir:eye" width="20px" height="20px"/>상세보기
-      </button>
-
-      <button v-else class="btn-tagaction" @click="goPopupDetail">
-        <Icon icon="iconoir:eye" width="20px" height="20px" />상세보기
-      </button>
-
-      <button
-        v-if="showReserveAction"
-        class="btn-tagaction btn-reserveaction"
-        :class="{ active: isReservationActive }"
-        type="button"
-        :disabled="!isReservationActive"
-        :aria-disabled="!isReservationActive"
-        aria-label="예약 확인"
-        title="예약 확인"
-        @click="goReserveTab"
-      >
-        <Icon icon="iconoir:bell" width="20px" height="20px" />
-      </button>
-    
     </div>
+      <div class="ctn-cardactions">
+        <button
+          v-if="showReserveAction"
+          class="btn-tagaction btn-reserveaction"
+          :class="{ active: isReservationActive }"
+          type="button"
+          :disabled="!isReservationActive"
+          :aria-disabled="!isReservationActive"
+          aria-label="예약 확인"
+          title="예약 확인"
+          @click="goReserveTab"
+        >
+          <Icon icon="iconoir:bell" width="20px" height="20px" />예약 확인
+        </button>
+
+        <button v-if="redirectToGoodsDetail" class="btn-tagaction" type="button" aria-label="상세보기" title="상세보기" @click="goGoodsDetail">
+          <Icon icon="iconoir:eye" width="20px" height="20px" />상세보기
+        </button>
+
+        <button v-else class="btn-tagaction" type="button" aria-label="상세보기" title="상세보기" @click="goPopupDetail">
+          <Icon icon="iconoir:eye" width="20px" height="20px" />상세보기
+        </button>
+      </div>
     </div>
   </div>
 </template>

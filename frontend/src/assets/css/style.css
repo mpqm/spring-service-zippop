@@ -1515,7 +1515,8 @@ a {
     display: flex;
     align-items: center;
     width: 100%;
-    padding: 8px;
+    height: 46px;
+    padding: 4px 6px;
     gap: 8px;
     border: 1px solid var(--line);
     border-radius: 18px;
@@ -1531,7 +1532,9 @@ a {
 .ctn-inputsearch .ipt-default {
     flex: 1;
     min-width: 0;
-    padding: 12px 8px;
+    height: 36px;
+    min-height: 36px;
+    padding: 7px 8px;
     border: 0;
     background: transparent;
     box-shadow: none;
@@ -1649,7 +1652,7 @@ a {
 .txt-cardcategory {
     position: absolute;
     top: 14px;
-    left: 14px;
+    right: 14px;
     padding: 7px 10px;
     border-radius: 99px;
     color: white;
@@ -1657,6 +1660,14 @@ a {
     backdrop-filter: blur(8px);
     font-size: .72rem;
     font-weight: 700;
+}
+
+.ctn-detailmedia {
+    position: relative;
+}
+
+.ctn-detailmedia>.txt-cardcategory {
+    z-index: 2;
 }
 
 .ctn-cardbody {
@@ -1727,6 +1738,21 @@ a {
 }
 
 .ctn-card .ctn-tagbutton .btn-reserveaction {
+    margin-left: 0;
+}
+
+.ctn-cardactions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.ctn-card .ctn-cardactions .btn-tagaction {
+    width: 100%;
+    min-width: 0;
     margin-left: 0;
 }
 
@@ -2058,7 +2084,7 @@ a {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
 }
 
 
@@ -2068,15 +2094,36 @@ a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 46px;
-    width: 46px;
-    height: 46px;
-    min-width: 46px;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     padding: 0;
+    border-radius: 10px;
+    line-height: 0;
+}
+
+.ctn-inputsearch>.btn-default svg,
+.ctn-inputsearch>.btn-normal svg {
+    display: block;
+    margin: auto;
 }
 
 .ctn-inputsearch>.btn-default {
     font-size: 0;
+    color: var(--brand);
+    border: 1px solid transparent;
+    background: var(--surface);
+    box-shadow: none;
+    transform: none;
+}
+
+.ctn-inputsearch>.btn-default:hover {
+    color: var(--brand);
+    border-color: var(--brand);
+    background: var(--surface);
+    box-shadow: none;
+    transform: none;
 }
 
 .ctn-inputsearch>.btn-normal {
@@ -2109,6 +2156,180 @@ a {
     border-radius: var(--radius-md);
     background: var(--surface);
     box-shadow: var(--shadow-soft);
+}
+
+.ctn-loginactions,
+.ctn-socialactions {
+    display: grid;
+    width: 100%;
+    gap: 10px;
+}
+
+.ctn-loginactions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ctn-socialactions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.btn-loginicon,
+.btn-sociallogin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    height: 46px;
+    padding: 0;
+    border-radius: 12px;
+}
+
+.btn-sociallogin {
+    position: relative;
+    gap: 9px;
+    height: 52px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: .88rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
+}
+
+.btn-sociallogin:hover {
+    transform: translateY(-2px);
+    filter: brightness(.985);
+    box-shadow: 0 10px 24px rgba(28, 27, 22, .14);
+}
+
+.btn-sociallogin:focus-visible {
+    outline: 3px solid rgba(0, 199, 174, .2);
+    outline-offset: 2px;
+}
+
+.ico-socialbrand {
+    display: grid;
+    place-items: center;
+    width: 31px;
+    height: 31px;
+    flex: 0 0 31px;
+    border-radius: 10px;
+}
+
+.txt-socialbrand {
+    white-space: nowrap;
+}
+
+.btn-kakao {
+    color: #191919;
+    background: #fee500;
+}
+
+.btn-kakao .ico-socialbrand {
+    background: rgba(25, 25, 25, .08);
+}
+
+.btn-google {
+    color: #3c4043;
+    border-color: #dadce0;
+    background: #fff;
+}
+
+.btn-google:hover {
+    border-color: #c5c9ce;
+}
+
+.btn-google .ico-socialbrand {
+    border: 1px solid #eceff1;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(60, 64, 67, .1);
+}
+
+.btn-naver {
+    color: #fff;
+    background: #03c75a;
+}
+
+.btn-naver .ico-socialbrand {
+    background: rgba(0, 0, 0, .1);
+}
+
+.ctn-accounttypes .btn-big:not(.active) {
+    color: var(--muted);
+    border-color: var(--line);
+    background: #ebe9e2;
+    box-shadow: none;
+    opacity: .7;
+}
+
+.ctn-accounttypes .btn-big {
+    gap: 7px;
+}
+
+.ctn-accounttypes .btn-big:not(.active):hover {
+    color: var(--ink);
+    opacity: 1;
+    transform: none;
+}
+
+.ctn-profileupload {
+    position: relative;
+    width: 104px;
+    height: 104px;
+    margin: 4px auto 0;
+}
+
+.ctn-profileavatar {
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    overflow: hidden;
+    color: #aaa9a2;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: #f2f1eb;
+}
+
+.ctn-profileavatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-profileupload {
+    position: absolute;
+    right: 0;
+    bottom: 4px;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    color: #fff;
+    border: 3px solid var(--surface);
+    border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 5px 14px rgba(0, 199, 174, .28);
+    cursor: pointer;
+    transition: background .18s ease, transform .18s ease;
+}
+
+.btn-profileupload:hover {
+    background: var(--brand-dark);
+    transform: translateY(-1px);
+}
+
+.ipt-filehidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
 .ctn-standardform {
@@ -2237,21 +2458,50 @@ a {
 }
 
 .btn-reviewsubmit {
-    min-width: 88px;
-    min-height: 44px;
-}
-
-.btn-reviewsubmit-icon {
-    width: 44px;
-    min-width: 44px;
-    padding: 0;
+    width: auto;
+    min-width: 0;
+    min-height: var(--component-control-height);
+    padding: 7px 12px;
+    border-radius: 10px;
+    font-size: var(--component-action-size);
+    line-height: 1;
+    gap: 6px;
 }
 
 .btn-headericon {
-    width: 44px;
-    min-width: 44px;
+    width: auto;
+    min-width: 88px;
     height: 42px;
-    padding: 0;
+    padding: 0 14px;
+    gap: 6px;
+}
+
+.btn-headermypage,
+.btn-headerlogout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 7px 13px;
+    gap: 7px;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.btn-headermypage .img-headerprofile {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+}
+
+.btn-headermypage span {
+    font-size: .78rem;
+    font-weight: 500;
+    opacity: .82;
+}
+
+.btn-headermypage strong {
+    font-size: .84rem;
 }
 
 .ctn-accountforms {
@@ -2341,6 +2591,17 @@ a {
 .txt-formhelp {
     color: var(--muted);
     font-size: .78rem;
+}
+
+.ctn-labelwithhelp {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ctn-labelwithhelp .ipt-default-label {
+    margin: 0;
 }
 
 .wrp-popuppreview {
@@ -2472,7 +2733,58 @@ a {
     width: 100%;
 }
 
+.ctn-mediauploadfield {
+    gap: 10px;
+}
+
+.ctn-mediauploadhead {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.ctn-mediauploadhead .ipt-default-label {
+    margin: 0;
+}
+
+.ctn-mediauploadhead .btn-fileupload {
+    min-height: var(--component-control-height);
+    padding: 7px 12px;
+    border-radius: 10px;
+    font-size: var(--component-action-size);
+    line-height: 1;
+}
+
+.ctn-mediauploadhead .txt-formhelp {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--component-control-height);
+    text-align: right;
+}
+
+.ctn-mediauploadhead--update .btn-fileupload {
+    margin-left: auto;
+}
+
+.ctn-mediauploadfield>.txt-formhelp {
+    display: block;
+}
+
 @media (max-width: 720px) {
+    .ctn-mediauploadhead {
+        flex-wrap: wrap;
+    }
+
+    .ctn-mediauploadhead .txt-formhelp {
+        flex-basis: 100%;
+        min-height: auto;
+        text-align: left;
+    }
+
+    .ctn-mediauploadhead--update .btn-fileupload {
+        margin-left: 0;
+    }
+
     .ctn-reviewmeta {
         grid-template-columns: 1fr;
     }

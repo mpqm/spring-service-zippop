@@ -30,11 +30,16 @@
           </div>
         </div>
         <div class="ctn-inputdefault">
-          <label class="ipt-default-label">프로필 이미지</label>
+          <label class="ipt-default-label" for="account-profile-file">프로필</label>
           <div class="ctn-profileupload">
-            <div class="ctn-filepreview" v-if="fileUrl"><img :src="fileUrl" alt="프로필 미리보기" /></div>
-            <input class="ipt-filehidden" @change="handleFileUpload" type="file" accept="image/*" name="file" id="file">
-            <label class="btn-normal btn-fileupload" for="file">이미지 선택</label>
+            <div class="ctn-profileavatar">
+              <img v-if="fileUrl" :src="fileUrl" alt="선택한 프로필 이미지 미리보기" />
+              <Icon v-else icon="iconoir:user" width="44" height="44" aria-hidden="true" />
+            </div>
+            <label class="btn-profileupload" for="account-profile-file" aria-label="프로필 이미지 선택" title="프로필 이미지 선택">
+              <Icon icon="iconoir:camera" width="18" height="18" />
+            </label>
+            <input id="account-profile-file" class="ipt-filehidden" @change="handleFileUpload" type="file" accept="image/*" name="file">
           </div>
         </div>
       </form>
@@ -78,6 +83,7 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { createMultipartRequest } from '@/utils/multipart';
+import { Icon } from '@iconify/vue';
 
 const accountStore = useAccountStore();
 const toast = useToast();

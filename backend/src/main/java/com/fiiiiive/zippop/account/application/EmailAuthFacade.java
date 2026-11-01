@@ -3,7 +3,6 @@ package com.fiiiiive.zippop.account.application;
 import com.fiiiiive.zippop.account.service.AccountService;
 import com.fiiiiive.zippop.account.service.CompanyService;
 import com.fiiiiive.zippop.account.service.CustomerService;
-import com.fiiiiive.zippop.global.base.BaseConstant;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.enums.RoleType;
@@ -45,14 +44,14 @@ public class EmailAuthFacade {
 
     // 이메일 검증 및 계정 활성화
     @Transactional
-    public String verifyEmail(String email, String role, String uuid) throws ServiceException {
+    public boolean verifyEmail(String email, String role, String uuid) throws ServiceException {
 
         // 이메일에 해당하는 UUID 값 조회
         String storedUuid = redisEmailService.getEmailVerifyUuid(email);
 
-        // Redis에 저장된 값이 없거나 전달 받은 uuid와 다르면 이메일 인증 실패 리다이렉트 URL 반환
+        // URL 생성은 요청을 처리하는 컨트롤러에서 수행한다.
         if (storedUuid == null || !storedUuid.equals(uuid)) {
-            return BaseConstant.LOGIN_ERROR_REDIRECT_URL;
+            return false;
         }
 
         // Strategy 패턴을 통한 역할별 서비스 호출
@@ -61,8 +60,8 @@ public class EmailAuthFacade {
         // 인증 성공 후 Redis 에서 해당 이메일 관련 UUID 삭제
         redisEmailService.deleteEmailVerifyUuid(email);
 
-        // 성공 리다이렉트 URL 반환
-        return BaseConstant.LOGIN_SUCCESS_REDIRECT_URL;
+        // 인증 결과 반환
+        return true;
     }
 
 }

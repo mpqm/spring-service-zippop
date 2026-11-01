@@ -33,7 +33,7 @@
         :aria-disabled="!isReserveActive(reserve)"
         @click="goReserve"
       >
-        <Icon icon="iconoir:bell" class="img-iconior"/>
+        <Icon icon="iconoir:bell" class="img-iconior"/>예약 참여
       </button>
     </div>
   </div>
