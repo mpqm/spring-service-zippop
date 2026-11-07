@@ -4,7 +4,7 @@ import com.fiiiiive.zippop.global.base.SuccessCode;
 import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.model.dto.GetOrdersRes;
-import com.fiiiiive.zippop.payout.model.dto.GetPopupPayoutsRes;
+import com.fiiiiive.zippop.payout.model.dto.GetPayoutsRes;
 import com.fiiiiive.zippop.popup.model.dto.GetPopupRes;
 import com.fiiiiive.zippop.popup.service.CompanyPopupService;
 import com.fiiiiive.zippop.reserve.model.dto.GetReserveRes;
@@ -34,18 +34,6 @@ public class CompanyPopupController {
     ) {
         Page<GetPopupRes> res = companyPopupService.getCompanyPopups(user, keyword, page, size);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_SEARCH_ALL_SUCCESS, res));
-    }
-
-    // 팝업의 정산 목록 조회 (기업용)
-    @GetMapping("/{popupIdx}/payouts")
-    public ResponseEntity<SuccessResponse<Page<GetPopupPayoutsRes>>> getCompanyPopupPayouts(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @PathVariable Long popupIdx,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<GetPopupPayoutsRes> res = companyPopupService.getCompanyPopupPayouts(user, popupIdx, page, size);
-        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.PAYOUT_SEARCH_SUCCESS, res));
     }
 
     // 팝업 예약 목록 조회 (기업용)

@@ -14,7 +14,7 @@ export const usePayoutStore = defineStore("payout", {
     // 정산 내역 조회
     async getCompanyPopupPayouts(popupIdx, page, size) {
       try {
-        const res = await axios.get(`${BACKEND_URL}/company/popups/${popupIdx}/payouts?page=${page}&size=${size}`, { withCredentials: true },);
+        const res = await axios.get(`${BACKEND_URL}/payouts/${popupIdx}?page=${page}&size=${size}`, { withCredentials: true },);
         this.payout = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;

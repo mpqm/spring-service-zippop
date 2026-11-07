@@ -6,7 +6,7 @@ import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.model.dto.GetOrdersRes;
 import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
-import com.fiiiiive.zippop.payout.model.dto.GetPopupPayoutsRes;
+import com.fiiiiive.zippop.payout.model.dto.GetPayoutsRes;
 import com.fiiiiive.zippop.payout.model.entity.Payout;
 import com.fiiiiive.zippop.payout.repository.PayoutRepository;
 import com.fiiiiive.zippop.popup.model.dto.GetPopupRes;
@@ -46,23 +46,6 @@ public class CompanyPopupService {
                 : popupRepository.findAllByCompanyEmail(user.getEmail(), pageable);
 
         return Popup.toDtoPage(popupPage);
-
-    }
-
-    // 기업 정산 금액 조회
-    public Page<GetPopupPayoutsRes> getCompanyPopupPayouts(CustomUserDetails user, Long popupIdx, int page, int size) throws ServiceException {
-
-        // 팝업 조회(popupIdx)
-        Popup popup = popupRepository.findByPopupIdx(popupIdx)
-                .orElseThrow(() -> new ServiceException(ServiceErrorCode.PAYOUT_SEARCH_FAIL_NOT_FOUND_STORE));
-
-        popupPolicy.validateOwner(popup, user);
-
-        // 팝업 페이지 조회(popupIdx, pageable)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
-        Page<Payout> payoutPage = payoutRepository.findAllByPopupIdx(popupIdx, pageable);
-
-        return Payout.toDtoPage(payoutPage);
 
     }
 

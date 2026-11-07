@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.payout.model.entity;
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
+import com.fiiiiive.zippop.payout.model.dto.GetPayoutsRes;
 import com.fiiiiive.zippop.payout.model.enums.PayoutStatus;
-import com.fiiiiive.zippop.payout.model.dto.GetPopupPayoutsRes;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -52,14 +52,14 @@ public class Payout extends BaseEntity {
                 .build();
     }
 
-    public GetPopupPayoutsRes toDto() {
-        return GetPopupPayoutsRes.builder()
+    public GetPayoutsRes toDto() {
+        return GetPayoutsRes.builder()
                 .payoutDate(this.getPayoutDate())
                 .revenue(this.getRevenue())
                 .build();
     }
 
-    public static Page<GetPopupPayoutsRes> toDtoPage(Page<Payout> payoutPage) {
+    public static Page<GetPayoutsRes> toDtoPage(Page<Payout> payoutPage) {
         return payoutPage.map(Payout::toDto);
     }
 }

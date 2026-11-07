@@ -92,7 +92,6 @@ public class PopupService {
         );
 
         return popup.toDto();
-
     }
 
     // 팝업 목록 조회

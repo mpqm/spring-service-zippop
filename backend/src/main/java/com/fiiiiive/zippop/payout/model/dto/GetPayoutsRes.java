@@ -7,7 +7,9 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class GetPopupPayoutsRes {
+public class GetPayoutsRes {
+
     Integer revenue;
     LocalDate payoutDate;
+
 }

@@ -145,7 +145,7 @@ test("orders, reserve, and payout stores match customer and company endpoints", 
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/reserves`, { popupIdx: 7 }, { withCredentials: true });
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/reserves/8/enrollment`, { withCredentials: true });
   expect(axios.delete).toHaveBeenCalledWith(`${BACKEND_URL}/reserves/8/enrollment`, { withCredentials: true });
-  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/company/popups/7/payouts?page=0&size=10`, { withCredentials: true });
+  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/payouts/7?page=0&size=10`, { withCredentials: true });
 });
 
 test("authentication store confirms the account before marking login successful", async () => {
