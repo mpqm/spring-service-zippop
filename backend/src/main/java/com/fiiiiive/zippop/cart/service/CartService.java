@@ -37,17 +37,15 @@ public class CartService {
     public void createCart(CustomUserDetails user, CreateCartReq req) throws ServiceException {
 
         // 굿즈(goodsIdx, popupIdx) 조회
-        Goods goods = goodsRepository.findByGoodsIdxAndPopupIdx(req.getGoodsIdx(), req.getPopupIdx()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.CART_REGISTER_FAIL_GOODS_NOT_FOUND)
-        );
+        Goods goods = goodsRepository.findByGoodsIdxAndPopupIdx(req.getGoodsIdx(), req.getPopupIdx())
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.CART_REGISTER_FAIL_GOODS_NOT_FOUND));
 
         // 장바구니 조회 후 없으면 장바구니 생성
-        Cart cart = cartRepository.findByCustomerIdxAndPopupIdx(user.getCustomerId(), req.getPopupIdx()).orElse(null);
+        Cart cart = cartRepository.findByCustomerIdxAndPopupIdx(user.getCustomerId(), req.getPopupIdx())
+                .orElse(null);
+
         if(cart == null){
-            cart = Cart.create(
-                    user.getCustomerId(),
-                    goods.getPopup()
-            );
+            cart = Cart.create(user.getCustomerId(),goods.getPopup());
             cartRepository.save(cart);
         }
 
@@ -76,9 +74,8 @@ public class CartService {
     public void deleteCart(CustomUserDetails user, Long cartIdx) throws ServiceException {
 
         // 장바구니 조회(cartIdx)
-        Cart cart = cartRepository.findByCartIdx(cartIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_NOT_FOUND)
-        );
+        Cart cart = cartRepository.findByCartIdx(cartIdx)
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_NOT_FOUND));
 
         // 장바구니 소유권확인
         if (!Objects.equals(cart.getCustomer().getIdx(), user.getCustomerId())){
@@ -94,9 +91,8 @@ public class CartService {
     public List<GetCartItemRes> getCartItems(CustomUserDetails user, Long cartIdx) throws ServiceException {
 
         // 장바구니 조회(cartIdx)
-        Cart cart = cartRepository.findByCartIdx(cartIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_NOT_FOUND)
-        );
+        Cart cart = cartRepository.findByCartIdx(cartIdx)
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_NOT_FOUND));
 
         // 장바구니 소유권확인
         if (!Objects.equals(cart.getCustomer().getIdx(), user.getCustomerId())){
@@ -112,9 +108,8 @@ public class CartService {
     public void updateCartItemQuantity(CustomUserDetails user, Long cartIdx, Long cartItemIdx, Operation operation) throws ServiceException {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
-        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getCustomerId()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.CART_ITEM_COUNT_FAIL_NOT_FOUND)
-        );
+        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getCustomerId())
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.CART_ITEM_COUNT_FAIL_NOT_FOUND));
 
         // Dirty Checking
         if (operation == Operation.INCREMENT){
@@ -130,9 +125,8 @@ public class CartService {
     public void deleteCartItem(CustomUserDetails user, Long cartIdx, Long cartItemIdx) {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
-        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getCustomerId()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.CART_ITEM_COUNT_FAIL_NOT_FOUND)
-        );
+        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getCustomerId())
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.CART_ITEM_COUNT_FAIL_NOT_FOUND));
 
         // 장바구니 소유권확인
         if (!Objects.equals(cartItem.getCart().getCustomer().getIdx(), user.getCustomerId())){

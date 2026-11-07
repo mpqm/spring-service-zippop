@@ -87,7 +87,7 @@ test("popup store matches popup, like, and review endpoints", async () => {
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/popups`, request, { withCredentials: true });
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/popups/7`);
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/popups?status=POPUP_START&keyword=${encodeURIComponent('서울')}&page=0&size=8`);
-  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/company/popups?keyword=${encodeURIComponent('서울')}&page=0&size=8`, { withCredentials: true });
+  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/popups/co?keyword=${encodeURIComponent('서울')}&page=0&size=8`, { withCredentials: true });
   expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/popups/7`, request, { withCredentials: true });
   expect(axios.delete).toHaveBeenCalledWith(`${BACKEND_URL}/popups/7`, { withCredentials: true });
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/popups/7/likes`, {}, { withCredentials: true });
@@ -140,11 +140,12 @@ test("orders, reserve, and payout stores match customer and company endpoints", 
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/orders/merchant-id`, paymentIntent, { withCredentials: true });
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/orders`, { impUid: "imp", popupIdx: 7 }, { withCredentials: true });
   expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/orders/9`, { status: "STOCK_CANCEL" }, { withCredentials: true });
-  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/company/popups/7/orders/9`, { withCredentials: true });
-  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/company/popups/7/orders?page=0&size=10`, { withCredentials: true });
+  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/orders/9/co/7`, { withCredentials: true });
+  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/orders/co/7?page=0&size=10`, { withCredentials: true });
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/reserves`, { popupIdx: 7 }, { withCredentials: true });
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/reserves/8/enrollment`, { withCredentials: true });
   expect(axios.delete).toHaveBeenCalledWith(`${BACKEND_URL}/reserves/8/enrollment`, { withCredentials: true });
+  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/reserves/7?page=0&size=10`, { withCredentials: true });
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/payouts/7?page=0&size=10`, { withCredentials: true });
 });
 

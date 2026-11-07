@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreatePopupReq {
+
     @NotBlank(message = "팝업 이름은 필수 입력 항목입니다.")
     @Size(max = 100, message = "팝업 이름은 최대 100자까지 입력 가능합니다.")
     private String popupName;

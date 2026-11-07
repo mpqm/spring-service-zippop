@@ -6,6 +6,8 @@ import { usePopupStore } from "@/stores/popupStore";
 import { useCartStore } from "@/stores/cartStore";
 import { useOrdersStore } from "@/stores/ordersStore";
 import { useReserveStore } from "@/stores/reserveStore";
+import { useGoodsStore } from "@/stores/goodsStore";
+import { usePayoutStore } from "@/stores/payoutStore";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -15,14 +17,10 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     clearSession() {
       this.isLoggedIn = false;
-      const accountStore = useAccountStore();
-      accountStore.userInfo = {};
-      const popupStore = usePopupStore();
-      popupStore.likeList = [];
-      popupStore.likePageList = [];
-      popupStore.likeTotalPages = 0;
-      popupStore.likeTotalElements = 0;
-      popupStore.likesLoadedCompletely = false;
+      useAccountStore().$reset();
+      usePopupStore().$reset();
+      useGoodsStore().$reset();
+      usePayoutStore().$reset();
       useCartStore().$reset();
       useOrdersStore().$reset();
       useReserveStore().$reset();

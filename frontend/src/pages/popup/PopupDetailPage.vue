@@ -153,12 +153,12 @@ const getInitialMenu = () => route.query.mainTab === 'reserve' ? 'reserve' : 'go
 
 watch(
   () => [route.params.popupIdx, route.query.mainTab],
-  async ([popupIdx], [previousPopupIdx]) => {
-    if (popupIdx === previousPopupIdx) return;
+  async ([popupIdx, mainTab], [previousPopupIdx, previousMainTab]) => {
+    if (popupIdx === previousPopupIdx && mainTab === previousMainTab) return;
     activeMenu.value = getInitialMenu();
     currentPage.value = 0;
     searchQuery.value = "";
-    await getPopup();
+    if (popupIdx !== previousPopupIdx) await getPopup();
     if (activeMenu.value === 'reserve') {
       await getPopupReserves();
     } else {

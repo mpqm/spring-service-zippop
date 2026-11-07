@@ -73,10 +73,10 @@ export const useOrdersStore = defineStore('orders', {
             }
         },
 
-        // 기업 주문 단일 조회 - GET /api/v1/company/popups/{popupIdx}/orders/{ordersIdx}
+        // 기업 주문 단일 조회 - GET /api/v1/orders/{ordersIdx}/co/{popupIdx}
         async getPopupOrdersDetail(popupIdx, ordersIdx) {
             try {
-                const res = await axios.get(`${BACKEND_URL}/company/popups/${popupIdx}/orders/${ordersIdx}`, { withCredentials: true });
+                const res = await axios.get(`${BACKEND_URL}/orders/${ordersIdx}/co/${popupIdx}`, { withCredentials: true });
                 this.orders = res.data.result;
                 return res.data;
             } catch (error) {
@@ -84,10 +84,10 @@ export const useOrdersStore = defineStore('orders', {
             }
         },
 
-        // 기업 주문 목록 조회 - GET /api/v1/company/popups/{popupIdx}/orders
+        // 기업 주문 목록 조회 - GET /api/v1/orders/co/{popupIdx}
         async getCompanyPopupOrdersList(popupIdx, page, size) {
             try {
-                const res = await axios.get( `${BACKEND_URL}/company/popups/${popupIdx}/orders?page=${page}&size=${size}`, { withCredentials: true });
+                const res = await axios.get( `${BACKEND_URL}/orders/co/${popupIdx}?page=${page}&size=${size}`, { withCredentials: true });
                 this.ordersList = res.data.result.content;
                 this.totalElements = res.data.result.totalElements;
                 this.totalPages = res.data.result.totalPages;

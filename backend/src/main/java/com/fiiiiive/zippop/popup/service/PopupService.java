@@ -42,27 +42,13 @@ public class PopupService {
     private final PopupReviewRepository popupReviewRepository;
     private final ReserveRepository reserveRepository;
 
-    @Transactional
-    public void validateCreatePopup(CustomUserDetails user) {
-        companyRepository.findByCompanyIdx(user.getCompanyId()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_REGISTER_FAIL_UNAUTHORIZED));
-    }
-
-    @Transactional
-    public List<String> validateUpdatePopup(CustomUserDetails user, Long popupIdx) {
-        Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_UPDATE_FAIL_NOT_FOUND));
-        return popup.getPopupImageList().stream().map(com.fiiiiive.zippop.popup.model.entity.PopupImage::getUrl).toList();
-    }
-
     // 팝업 등록
     @Transactional
     public void createPopup(CustomUserDetails user, CreatePopupReq req, List<String> urls) throws ServiceException {
 
         // 기업 회원 조회(companyIdx)
-        Company company = companyRepository.findByCompanyIdx(user.getCompanyId()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_REGISTER_FAIL_UNAUTHORIZED)
-        );
+        Company company = companyRepository.findByCompanyIdx(user.getCompanyId())
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.STORE_REGISTER_FAIL_UNAUTHORIZED));
 
         // Popup 생성
         Popup popup = Popup.create(
@@ -87,9 +73,8 @@ public class PopupService {
     public GetPopupRes getPopup(Long popupIdx) throws ServiceException {
 
         // 팝업 조회(popupIdx)
-        Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_SEARCH_FAIL_NOT_FOUND)
-        );
+        Popup popup = popupRepository.findByPopupIdx(popupIdx)
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.STORE_SEARCH_FAIL_NOT_FOUND));
 
         return popup.toDto();
     }
@@ -110,14 +95,28 @@ public class PopupService {
 
     }
 
+    // 팝업 목록 조회(기업용)
+    public Page<GetPopupRes> getCompanyPopups(CustomUserDetails user, String keyword, int page, int size) throws ServiceException {
+
+        // 팝업 페이지 조회(keyword, email, pageable) 조회
+        // true : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
+        // false : 키워드(keyword)가 없는 경우, 등록된 기업회원의 이메일로 페이징 조회
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Page<Popup> popupPage = (keyword != null)
+                ? popupRepository.findAllByKeywordAndCompanyEmail(keyword, user.getEmail(), pageable)
+                : popupRepository.findAllByCompanyEmail(user.getEmail(), pageable);
+
+        return Popup.toDtoPage(popupPage);
+
+    }
+
     // 팝업 수정
     @Transactional
     public void updatePopup(CustomUserDetails user, Long popupIdx, UpdatePopupReq req, List<String> urls) throws ServiceException {
 
         // 팝업 조회(popupIdx, email)
-        Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_UPDATE_FAIL_NOT_FOUND)
-        );
+        Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail())
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.STORE_UPDATE_FAIL_NOT_FOUND));
 
         // 팝업 수정
         popup.update(req);
@@ -134,9 +133,8 @@ public class PopupService {
     public void deletePopup(CustomUserDetails user, Long popupIdx) throws ServiceException{
 
         // 팝업 조회(popupIdx, email)
-        Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_DELETE_FAIL_NOT_FOUND)
-        );
+        Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail())
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.STORE_DELETE_FAIL_NOT_FOUND));
 
         // 팝업 소프트 삭제
         popup.endPopup();
@@ -148,9 +146,8 @@ public class PopupService {
     public void togglePopupLike(CustomUserDetails user, Long popupIdx) throws ServiceException {
 
         // 팝업 인덱스로 조회 없으면 예외 반환
-        Popup popup = popupRepository.findForUpdate(popupIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_LIKE_FAIL_NOT_FOUND)
-        );
+        Popup popup = popupRepository.findForUpdate(popupIdx)
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.STORE_LIKE_FAIL_NOT_FOUND));
 
         // 좋아요 증감
         // if : 이미 좋아요를 누른 상태면 좋아요 삭제 / 팝업 좋아요 개수 감소(직접 쿼리 활용)
@@ -187,14 +184,14 @@ public class PopupService {
                 popupIdx,
                 List.of(OrdersStatus.STOCK_COMPLETE, OrdersStatus.RESERVE_COMPLETE)
         );
+
         if (!reviewable) {
             throw new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_INVALID_MEMBER);
         }
 
         // 팝업 조회 (popupIdx)
-        Popup popup = popupRepository.findById(popupIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_NOT_FOUND)
-        );
+        Popup popup = popupRepository.findById(popupIdx)
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_NOT_FOUND));
 
         // 팝업 리뷰 조회(popupIdx, customerIdx) / 팝업 하나당 한개의 리뷰 작성 가능
         Optional<PopupReview> popupReviewOpt = popupReviewRepository.findByPopupIdxAndCustomerIdx(popupIdx, user.getCustomerId());
@@ -251,7 +248,7 @@ public class PopupService {
 
         // 예약 조회(status, popupIdx, keyword)
         Page<Reserve> reservePage;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         if(popupIdx == null){
             if(keyword == null) reservePage = reserveRepository.findAllByStatus(PopupStatus.POPUP_START, pageable);
             else reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, PopupStatus.POPUP_START, pageable);

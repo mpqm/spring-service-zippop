@@ -33,9 +33,8 @@ public class GoodsService {
     public void createGoods(CustomUserDetails user, List<String> urls, CreateGoodsReq req) throws ServiceException {
 
         // 팝업 조회(popupIdx)
-        Popup popup = popupRepository.findByPopupIdx(req.getPopupIdx()).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.GOODS_REGISTER_FAIL_NOT_FOUND_STORE)
-        );
+        Popup popup = popupRepository.findByPopupIdx(req.getPopupIdx())
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.GOODS_REGISTER_FAIL_NOT_FOUND_STORE));
 
         // 팝업 소유권 확인
         if (!Objects.equals(popup.getCompanyEmail(), user.getEmail())) {
@@ -63,9 +62,8 @@ public class GoodsService {
     public GetGoodsRes getGoods(Long goodIdx) throws ServiceException {
 
         // 굿즈 조회(goodsIdx)
-        Goods goods = goodsRepository.findByGoodsIdx(goodIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.GOODS_SEARCH_FAIL_NOT_FOUND_STORE)
-        );
+        Goods goods = goodsRepository.findByGoodsIdx(goodIdx)
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.GOODS_SEARCH_FAIL_NOT_FOUND_STORE));
 
         return goods.toDto();
 
@@ -96,9 +94,8 @@ public class GoodsService {
     public void updateGoods(CustomUserDetails user, Long goodsIdx, List<String> urls, UpdateGoodsReq req) throws ServiceException {
 
         // 굿즈 조회(goodsIdx)
-        Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.GOODS_UPDATE_FAIL_NOT_FOUND)
-        );
+        Goods goods = goodsRepository.findByGoodsIdx(goodsIdx)
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.GOODS_UPDATE_FAIL_NOT_FOUND));
         
         // 팝업 소유 확인
         if (!Objects.equals(goods.getPopup().getCompanyEmail(), user.getEmail())) {
@@ -109,9 +106,7 @@ public class GoodsService {
         goods.update(req);
 
         // 굿즈 이미지가 재등록 되었다면 기존의 이미지는 삭제하고 입력받은 이미지를 저장
-        if (urls != null) {
-            goods.replaceImages(urls);
-        }
+        if (urls != null) goods.replaceImages(urls);
 
     }
 
@@ -120,9 +115,8 @@ public class GoodsService {
     public void deleteGoods(CustomUserDetails user, Long goodsIdx) throws ServiceException{
 
         // 굿즈 조회(goodsIdx)
-        Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.STORE_DELETE_FAIL_NOT_FOUND)
-        );
+        Goods goods = goodsRepository.findByGoodsIdx(goodsIdx)
+                .orElseThrow(() -> new ServiceException(ServiceErrorCode.STORE_DELETE_FAIL_NOT_FOUND));
 
         // 팝업 소유 확인
         if (!Objects.equals(goods.getPopup().getCompanyEmail(), user.getEmail())) {

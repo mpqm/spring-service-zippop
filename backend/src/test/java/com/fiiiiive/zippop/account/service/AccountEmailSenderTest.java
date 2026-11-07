@@ -18,7 +18,6 @@ class AccountEmailSenderTest {
     void sendsVerificationLinkWithoutRoleParameter() {
         AccountMailSender mail = mock(AccountMailSender.class);
         RedisAccountService redis = mock(RedisAccountService.class);
-        RequestUrlService urls = mock(RequestUrlService.class);
         when(redis.saveEmailVerifyUuid(eq(99L), anyString(), eq(3L))).thenReturn("verify-id");
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setScheme("https");
@@ -26,7 +25,7 @@ class AccountEmailSenderTest {
         request.setServerPort(443);
 
         AccountService service = new AccountService(
-                mock(AccountRepository.class), mock(PasswordEncoder.class), mail, redis, urls,
+                mock(AccountRepository.class), mock(PasswordEncoder.class), mail, redis,
                 mock(CustomerRepository.class), mock(CompanyRepository.class), request);
         Account account = Account.builder().idx(99L).email("member+tag@example.test")
                 .role(RoleType.ROLE_CUSTOMER).isEmailAuth(false).isInActive(true).build();

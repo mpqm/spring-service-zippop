@@ -663,7 +663,7 @@ public class OrdersService {
     public Page<GetOrdersRes> getOrders(CustomUserDetails user, int page, int size) throws ServiceException {
 
         // 주문 조회(customerIdx)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Orders> ordersPage = ordersRepository.findAllByCustomerIdx(user.getCustomerId(), pageable).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
         );
@@ -672,5 +672,45 @@ public class OrdersService {
 
     }
 
-}
+    // 기업 고객 주문 목록 조회
+    public Page<GetOrdersRes> getCompanyPopupOrders(CustomUserDetails user, Long popupIdx, int page, int size) throws ServiceException {
 
+        // 팝업(popupIdx) 조회
+        Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND_STORE)
+        );
+
+        // 팝업 소유 확인
+        if(!(popup.getCompanyEmail().equals(user.getEmail()))) {
+            throw new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER);
+        }
+        Pageable pageable =  PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Page<Orders> ordersPage = ordersRepository.findAllByPopupIdx(popupIdx, pageable).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+
+        return Orders.toDtoPage(ordersPage);
+
+    }
+
+    // 기업 고객 주문 상세 조회
+    public GetOrdersRes getCompanyPopupOrder(CustomUserDetails user, Long popupIdx, Long ordersIdx) throws ServiceException {
+
+        // 팝업(popupIdx) 조회
+        Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_FAIL_NOT_FOUND_STORE)
+        );
+
+        // 팝업 소유 확인
+        if(!(popup.getCompanyEmail().equals(user.getEmail()))) {
+            throw new ServiceException(ServiceErrorCode.ORDERS_SEARCH_FAIL_INVALID_MEMBER);
+        }
+
+        Orders orders = ordersRepository.findByOrdersIdxAndPopupIdx(ordersIdx, popupIdx).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_FAIL_NOT_FOUND)
+        );
+
+        return orders.toDto();
+    }
+
+}

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 @AllArgsConstructor
 @Entity
 public class PopupLike extends BaseEntity {
+
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -17,7 +17,7 @@ import java.util.Optional;
 @Repository
 public interface ReserveRepository extends JpaRepository<Reserve, Long> {
 
-    @Query("SELECT r FROM Reserve r JOIN FETCH r.popup WHERE r.startTime < :now OR r.popup.status = com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_END")
+    @Query("SELECT r FROM Reserve r JOIN FETCH r.popup WHERE r.startTime < :now OR r.popup.status = PopupStatus.POPUP_END")
     List<Reserve> findQueuesForMaintenance(@Param("now") java.time.LocalDateTime now);
 
     @Query("SELECT r FROM Reserve r WHERE DATE(r.startDate) = :startDate")

@@ -33,9 +33,8 @@ class AccountServiceTest {
     private final PasswordEncoder encoder = mock(PasswordEncoder.class);
     private final AccountMailSender mail = mock(AccountMailSender.class);
     private final RedisAccountService redis = mock(RedisAccountService.class);
-    private final RequestUrlService urls = mock(RequestUrlService.class);
     private final MockHttpServletRequest servletRequest = new MockHttpServletRequest();
-    private final AccountService service = new AccountService(accounts, encoder, mail, redis, urls, customers, companies, servletRequest);
+    private final AccountService service = new AccountService(accounts, encoder, mail, redis, customers, companies, servletRequest);
 
     @Test
     void existingRecoverableAccountOnlyResendsVerificationEmail() {
@@ -106,11 +105,10 @@ class AccountServiceTest {
     void findPasswordBuildsResetLinkFromTheCurrentRequest() {
         Account account = pendingAccount();
         when(accounts.findByUserId("member01")).thenReturn(Optional.of(account));
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setScheme("https");
-        request.setServerName("shop.example.test");
-        request.setServerPort(8443);
-        request.setContextPath("/zippop");
+        servletRequest.setScheme("https");
+        servletRequest.setServerName("shop.example.test");
+        servletRequest.setServerPort(8443);
+        servletRequest.setContextPath("/zippop");
 
         service.findPw(FindPwReq.builder().role(RoleType.ROLE_CUSTOMER.name())
                 .userId("member01").build());
@@ -125,6 +123,7 @@ class AccountServiceTest {
     void resetPasswordConsumesTheTokenAndChangesThePassword() {
         Account account = Account.builder().idx(99L).password("old-hash")
                 .isEmailAuth(true).isInActive(false).build();
+        when(redis.getPasswordResetAccountId("one-time-token")).thenReturn(99L);
         when(redis.consumePasswordResetToken("one-time-token")).thenReturn(99L);
         when(accounts.findById(99L)).thenReturn(Optional.of(account));
         when(encoder.encode("new-password")).thenReturn("new-hash");
@@ -133,6 +132,10 @@ class AccountServiceTest {
 
         assertThat(account.getPassword()).isEqualTo("new-hash");
         assertThat(account.getAuthVersion()).isEqualTo(1);
+        var order = inOrder(accounts, redis);
+        order.verify(redis).getPasswordResetAccountId("one-time-token");
+        order.verify(accounts).flush();
+        order.verify(redis).consumePasswordResetToken("one-time-token");
     }
 
     @Test

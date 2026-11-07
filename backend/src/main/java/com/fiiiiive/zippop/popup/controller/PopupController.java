@@ -37,15 +37,9 @@ public class PopupController {
             @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart(name = "req") CreatePopupReq req
     ) {
-        popupService.validateCreatePopup(user);
         List<String> urls = fileUploadService.multipleUpload(files);
-        try {
-            popupService.createPopup(user, req, urls);
-        } catch (RuntimeException exception) {
-            fileUploadService.deleteAll(urls);
-            throw exception;
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(SuccessCode.STORE_REGISTER_SUCCESS));
+        popupService.createPopup(user, req, urls);
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_REGISTER_SUCCESS));
     }
 
     // 팝업 수정
@@ -56,15 +50,8 @@ public class PopupController {
             @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart(name = "req") UpdatePopupReq req
     ) {
-        List<String> oldUrls = popupService.validateUpdatePopup(user, popupIdx);
         List<String> urls = fileUploadService.multipleUpload(files);
-        try {
-            popupService.updatePopup(user, popupIdx, req, urls);
-        } catch (RuntimeException exception) {
-            fileUploadService.deleteAll(urls);
-            throw exception;
-        }
-        if (urls != null) fileUploadService.deleteAll(oldUrls);
+        popupService.updatePopup(user, popupIdx, req, urls);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_UPDATE_SUCCESS));
     }
 
@@ -75,6 +62,18 @@ public class PopupController {
     ) {
         GetPopupRes getPopupRes = popupService.getPopup(popupIdx);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_SEARCH_SUCCESS, getPopupRes));
+    }
+
+    // 내 팝업 목록 조회 (기업용)
+    @GetMapping("/co")
+    public ResponseEntity<SuccessResponse<Page<GetPopupRes>>> getCompanyPopups(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<GetPopupRes> res = popupService.getCompanyPopups(user, keyword, page, size);
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.STORE_SEARCH_ALL_SUCCESS, res));
     }
 
     // 팝업 목록 조회

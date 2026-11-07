@@ -55,10 +55,10 @@ export const usePopupStore = defineStore("popup", {
       }
     },
 
-    // 팝업 목록 조회(기업 등록, 키워드 검색) - GET /api/v1/company/popups
+    // 기업 내 팝업 목록 조회 - GET /api/v1/popups/co
     async getCompanyPopups(keyword, page, size) {
       try {
-        const res = await axios.get(`${BACKEND_URL}/company/popups?keyword=${encodeURIComponent(keyword ?? "")}&page=${page}&size=${size}`, { withCredentials: true },);
+        const res = await axios.get(`${BACKEND_URL}/popups/co?keyword=${encodeURIComponent(keyword ?? "")}&page=${page}&size=${size}`, { withCredentials: true },);
         this.popupList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;

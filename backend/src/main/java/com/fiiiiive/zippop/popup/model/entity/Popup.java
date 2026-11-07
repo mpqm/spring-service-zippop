@@ -140,8 +140,7 @@ public class Popup extends BaseEntity {
     // Update
     public Popup update(UpdatePopupReq req){
         for (Reserve reserve : reserveList) {
-            if (reserve.getStartTime().toLocalDate().isBefore(req.getPopupStartDate())
-                    || reserve.getEndTime().isAfter(req.getPopupEndDate().plusDays(1).atStartOfDay())) {
+            if (reserve.getStartTime().toLocalDate().isBefore(req.getPopupStartDate()) || reserve.getEndTime().isAfter(req.getPopupEndDate().plusDays(1).atStartOfDay())) {
                 throw new InputValidationException("기존 예약을 포함하는 운영 기간을 설정해주세요.");
             }
         }

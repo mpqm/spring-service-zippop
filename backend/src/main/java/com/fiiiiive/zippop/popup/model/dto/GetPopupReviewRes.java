@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class GetPopupReviewRes {
+
     private Long reviewIdx;
     private String popupName;
     private String customerEmail;
@@ -18,4 +19,5 @@ public class GetPopupReviewRes {
     private Integer reviewRating;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
 }

@@ -199,14 +199,20 @@ public class AccountService {
         accountMailSender.sendPasswordResetLink(account.getEmail(), resetUrl);
     }
 
+    @Transactional
     public void resetPw(ResetPwReq req) {
-        Long accountId = redisAccountService.consumePasswordResetToken(req.getToken());
+        Long accountId = redisAccountService.getPasswordResetAccountId(req.getToken());
         if (accountId == null) {
             throw new ServiceException(ServiceErrorCode.AUTH_RESET_PW_FAIL);
         }
         accountRepository.findById(accountId)
                 .orElseThrow(() -> new ServiceException(ServiceErrorCode.USER_NOT_FOUND))
                 .resetPw(req.getNewPassword(), passwordEncoder);
+        accountRepository.flush();
+
+        if (!accountId.equals(redisAccountService.consumePasswordResetToken(req.getToken()))) {
+            throw new ServiceException(ServiceErrorCode.AUTH_RESET_PW_FAIL);
+        }
     }
 
     @Transactional

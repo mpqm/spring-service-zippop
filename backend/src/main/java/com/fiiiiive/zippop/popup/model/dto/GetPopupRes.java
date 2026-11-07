@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Builder
 public class GetPopupRes {
+
     private Long popupIdx;
     private String companyEmail;
     private String popupName;
@@ -28,4 +29,5 @@ public class GetPopupRes {
     private List<GetPopupReviewRes> getPopupReviewResList;
     private List<GetGoodsRes> getGoodsResList;
     private List<GetPopupImageRes> getPopupImageResList;
+
 }

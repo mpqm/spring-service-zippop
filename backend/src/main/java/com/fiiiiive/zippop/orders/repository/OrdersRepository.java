@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.orders.repository;
 
 import com.fiiiiive.zippop.orders.model.entity.Orders;
+import com.fiiiiive.zippop.orders.model.enums.OrdersStatus;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +46,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     // 주문 상태 및 업데이트일 기준 조회 (정산용, popup fetch)
     @Query("SELECT DISTINCT o FROM Orders o JOIN FETCH o.popup " +
             "WHERE (o.status = :status1 OR o.status = :status2) AND FUNCTION('DATE', o.updatedAt) = :updatedAt")
-    List<Orders> findByStatusAndUpdatedAt(@Param("status1") String status1, @Param("status2") String status2, @Param("updatedAt") LocalDate updatedAt);
+    List<Orders> findByStatusAndUpdatedAt(@Param("status1") OrdersStatus status1, @Param("status2") OrdersStatus status2, @Param("updatedAt") LocalDate updatedAt);
 
 
 }

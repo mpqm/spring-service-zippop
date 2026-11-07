@@ -9,8 +9,10 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class GetPopupImageRes {
+
     private Long popupImageIdx;
     private String popupImageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
 }

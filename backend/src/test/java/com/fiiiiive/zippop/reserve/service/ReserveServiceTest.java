@@ -7,7 +7,6 @@ import com.fiiiiive.zippop.global.redis.RedisQueueService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
-import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
 import com.fiiiiive.zippop.reserve.model.dto.GetReserveQueueRes;
@@ -22,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -43,7 +44,6 @@ class ReserveServiceTest {
 
     @Mock ReserveRepository reserveRepository;
     @Mock PopupRepository popupRepository;
-    @Mock PopupPolicy popupPolicy;
     @Mock JwtService jwtService;
     @Mock RedisQueueService redisQueueService;
     @Mock SimpMessagingTemplate messagingTemplate;
@@ -71,15 +71,25 @@ class ReserveServiceTest {
     }
 
     @Test void allRemainingCapacityCanBeAllocatedToOneReservation() {
-        Popup popup = Popup.builder().idx(7L).totalPeople(1).startDate(LocalDate.now())
+        Popup popup = Popup.builder().idx(7L).totalPeople(1).companyEmail("user@test.com").startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(2)).build();
         var start = LocalDateTime.now().plusDays(1);
         var request = CreateReserveReq.builder().popupIdx(7L).reservePeople(1)
                 .reserveStartDate(start.toLocalDate()).reserveStartTime(start).reserveEndTime(start.plusHours(1)).build();
         when(popupRepository.findForUpdate(7L)).thenReturn(Optional.of(popup));
-        reserveService.createReserve(user, request);
-        assertThat(popup.getTotalPeople()).isZero();
-        verify(reserveRepository).save(any());
+        TransactionSynchronizationManager.initSynchronization();
+        try {
+            reserveService.createReserve(user, request);
+            assertThat(popup.getTotalPeople()).isZero();
+            verify(reserveRepository).save(any());
+            verify(redisQueueService, never()).createQueueUntil(any(), any());
+            for (TransactionSynchronization synchronization : TransactionSynchronizationManager.getSynchronizations()) {
+                synchronization.afterCommit();
+            }
+            verify(redisQueueService, org.mockito.Mockito.times(2)).createQueueUntil(any(), eq(request.getReserveEndTime()));
+        } finally {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
     }
 
     @BeforeEach
@@ -87,7 +97,6 @@ class ReserveServiceTest {
         reserveService = new ReserveService(
                 reserveRepository,
                 popupRepository,
-                popupPolicy,
                 jwtService,
                 redisQueueService,
                 messagingTemplate
@@ -175,7 +184,7 @@ class ReserveServiceTest {
 
     @Test
     void reserveCreationCannotAllocateMorePeopleThanThePopupHas() {
-        Popup popup = Popup.builder().idx(7L).totalPeople(2).build();
+        Popup popup = Popup.builder().idx(7L).totalPeople(2).companyEmail("user@test.com").build();
         CreateReserveReq request = CreateReserveReq.builder()
                 .popupIdx(7L)
                 .reservePeople(3)

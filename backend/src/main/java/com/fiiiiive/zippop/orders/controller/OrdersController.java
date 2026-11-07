@@ -84,4 +84,28 @@ public class OrdersController {
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.ORDERS_SEARCH_ALL_SUCCESS, res));
     }
 
+    // 팝업의 주문 목록 조회 (기업용)
+    @GetMapping("/co/{popupIdx}")
+    public ResponseEntity<SuccessResponse<Page<GetOrdersRes>>> getCompanyPopupOrders(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long popupIdx,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<GetOrdersRes> res = ordersService.getCompanyPopupOrders(user, popupIdx, page, size);
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.ORDERS_SEARCH_ALL_SUCCESS, res));
+    }
+
+    // 팝업의 주문 상세 조회 (기업용)
+    @GetMapping("/{ordersIdx}/co/{popupIdx}")
+    public ResponseEntity<SuccessResponse<GetOrdersRes>> getCompanyPopupOrder(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long popupIdx,
+            @PathVariable Long ordersIdx
+    ) {
+        GetOrdersRes res = ordersService.getCompanyPopupOrder(user, popupIdx, ordersIdx);
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.ORDERS_SEARCH_SUCCESS, res));
+    }
+
+
 }

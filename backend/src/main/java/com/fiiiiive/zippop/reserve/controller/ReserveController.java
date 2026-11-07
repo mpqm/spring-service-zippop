@@ -5,10 +5,7 @@ import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.SuccessCode;
 import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
-import com.fiiiiive.zippop.reserve.model.dto.CreateReserveRes;
-import com.fiiiiive.zippop.reserve.model.dto.EnrollReserveRes;
-import com.fiiiiive.zippop.reserve.model.dto.GetReserveQueueReq;
+import com.fiiiiive.zippop.reserve.model.dto.*;
 import com.fiiiiive.zippop.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -42,6 +40,18 @@ public class ReserveController {
     ) {
         CreateReserveRes res = reserveService.createReserve(user, req);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.RESERVE_REGISTER_SUCCESS, res));
+    }
+
+    // 예약 목록 조회 (기업용)
+    @GetMapping("/{popupIdx}")
+    public ResponseEntity<SuccessResponse<Page<GetReserveRes>>> getCompanyPopupReserves(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @PathVariable Long popupIdx,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<GetReserveRes> response = reserveService.getReserves(user, popupIdx, page, size);
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.RESERVE_SEARCH_ALL_SUCCESS, response));
     }
 
     // 예약 삭제
@@ -84,5 +94,7 @@ public class ReserveController {
         @Payload GetReserveQueueReq getReserveQueueReq) throws ServiceException {
         reserveService.status(principal, getReserveQueueReq);
     }
+
+
 
 }

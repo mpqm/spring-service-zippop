@@ -58,6 +58,20 @@ public class RedisAccountService {
         }
     }
 
+    // 패스워드 리셋 토큰 조회(소비하지 않음)
+    public Long getPasswordResetAccountId(String token) {
+        try {
+            Object value = redisTemplate.opsForValue().get("passwordReset:" + token);
+            return value == null ? null : Long.valueOf(value.toString());
+        } catch (NumberFormatException e) {
+            log.warn("잘못된 비밀번호 재설정 토큰 값이 저장되어 있습니다.");
+            return null;
+        } catch (Exception e) {
+            log.error("비밀번호 재설정 토큰 조회 중 오류: {}", e.getMessage());
+            throw new ServerException(ServerErrorCode.REDIS_READ_ERROR, e);
+        }
+    }
+
     // 패스워드 리셋 토큰 소비
     public Long consumePasswordResetToken(String token) {
         try {

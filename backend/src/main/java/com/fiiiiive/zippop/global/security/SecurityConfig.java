@@ -77,8 +77,8 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/auth/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/accounts/me").authenticated()
                             .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/me").authenticated()
-                            .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/me").authenticated()
-                            .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/password/reset").authenticated()
+                            .requestMatchers(HttpMethod.DELETE, "/api/v1/accounts/de-activation").authenticated()
+                            .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/pw/replace").authenticated()
                             // 장바구니
                             .requestMatchers("/api/v1/carts/**").hasAuthority("ROLE_CUSTOMER")
                             // 굿즈
@@ -94,21 +94,24 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/*").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/api/v1/orders").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/api/v1/orders/*").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/orders/co/*").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/orders/*/co/*").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/payouts/*").hasAuthority("ROLE_COMPANY")
                             // 팝업
                             .requestMatchers(HttpMethod.POST, "/api/v1/popups").hasAuthority("ROLE_COMPANY")
                             .requestMatchers(HttpMethod.PATCH, "/api/v1/popups/*").hasAuthority("ROLE_COMPANY")
                             .requestMatchers(HttpMethod.DELETE, "/api/v1/popups/*").hasAuthority("ROLE_COMPANY")
                             .requestMatchers(HttpMethod.GET, "/api/v1/popups").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/popups/co").hasAuthority("ROLE_COMPANY")
                             .requestMatchers(HttpMethod.GET, "/api/v1/popups/*").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/v1/popups/*/likes").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/api/v1/popups/likes/me").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.POST, "/api/v1/popups/*/reviews").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/api/v1/popups/reviews/me").hasAuthority("ROLE_CUSTOMER")
-                            // 기업 팝업 관리
-                            .requestMatchers("/api/v1/company/popups/**").hasAuthority("ROLE_COMPANY")
                             // 예약
                             .requestMatchers(HttpMethod.POST, "/api/v1/reserves").hasAuthority("ROLE_COMPANY")
                             .requestMatchers(HttpMethod.DELETE, "/api/v1/reserves/*").hasAuthority("ROLE_COMPANY")
+                            .requestMatchers(HttpMethod.GET, "/api/v1/reserves/*").hasAuthority("ROLE_COMPANY")
                             .requestMatchers(HttpMethod.GET, "/api/v1/reserves/*/enrollment").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.DELETE, "/api/v1/reserves/*/enrollment").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/api/v1/popups/*/reserves").permitAll()

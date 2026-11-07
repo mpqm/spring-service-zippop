@@ -5,7 +5,6 @@ import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.reserve.model.dto.*;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
@@ -18,10 +17,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -34,7 +38,6 @@ public class ReserveService {
 
     private final ReserveRepository reserveRepository;
     private final PopupRepository popupRepository;
-    private final PopupPolicy popupPolicy;
     private final JwtService jwtService;
     private final RedisQueueService redisQueueService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -49,10 +52,14 @@ public class ReserveService {
         );
 
         // 팝업 상태 확인(종료 상태면 예약 생성 불가)
-        popupPolicy.validateReserveStatus(popup, PopupStatus.POPUP_END);
+        if(Objects.equals(popup.getStatus(), PopupStatus.POPUP_END)) {
+            throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_STORE_ENDED);
+        }
 
         // 팝업 소유 확인
-        popupPolicy.validateOwner(popup, user);
+        if (!Objects.equals(popup.getCompanyEmail(), user.getEmail())) {
+            throw new ServiceException(ServiceErrorCode.STORE_OWN_FAIL_INVALID_MEMBER);
+        }
 
         // 팝업 최대 예약자 수를 넘었는지 확인
         popup.validateTotalPeople();
@@ -86,9 +93,12 @@ public class ReserveService {
             throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_TIME_CLOSED);
         }
 
-        redisQueueService.createQueueUntil(workingUUID, req.getReserveEndTime());
-        redisQueueService.createQueueUntil(waitingUUID, req.getReserveEndTime());
-        log.info("Redis 큐 생성 완료 - workingUUID: {}, waitingUUID: {}, 만료시간: {}분", workingUUID, waitingUUID, expirationMinutes);
+        LocalDateTime reserveEndTime = req.getReserveEndTime();
+        afterCommit("예약 큐 생성", () -> {
+            redisQueueService.createQueueUntil(workingUUID, reserveEndTime);
+            redisQueueService.createQueueUntil(waitingUUID, reserveEndTime);
+            log.info("Redis 큐 생성 완료 - workingUUID: {}, waitingUUID: {}, 만료시간: {}분", workingUUID, waitingUUID, expirationMinutes);
+        });
 
         // 팝업 저장(총 예약자 수 - 남은 예약자 수)
         popup.setTotalPeople(popup.getTotalPeople() - req.getReservePeople());
@@ -98,6 +108,15 @@ public class ReserveService {
 
     }
 
+    // 예약 목록 조회(기업용)
+    public Page<GetReserveRes> getReserves(CustomUserDetails user, Long popupIdx, int page, int size) throws ServiceException {
+
+        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(popupIdx, user.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"))).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
+        );
+
+        return Reserve.toDtoPage(reservePage);
+    }
     // 예약삭제
     @Transactional
     public void deleteReserve(CustomUserDetails user, Long reserveIdx) throws ServiceException {
@@ -113,7 +132,9 @@ public class ReserveService {
         );
 
         // 팝업 소유 확인
-        popupPolicy.validateOwner(reserve.getPopup(), user);
+        if (!Objects.equals(popup.getCompanyEmail(), user.getEmail())) {
+            throw new ServiceException(ServiceErrorCode.STORE_OWN_FAIL_INVALID_MEMBER);
+        }
 
         // 예약 종료시간이 지나서 취소할때
         if(reserve.getEndTime().isBefore(LocalDateTime.now())) {
@@ -125,7 +146,9 @@ public class ReserveService {
 
         // 예약 삭제
         reserveRepository.delete(reserve);
-        redisQueueService.deleteQueue(reserve.getWorkingUUID(), reserve.getWaitingUUID());
+        String workingUUID = reserve.getWorkingUUID();
+        String waitingUUID = reserve.getWaitingUUID();
+        afterCommit("예약 큐 삭제", () -> redisQueueService.deleteQueue(workingUUID, waitingUUID));
 
     }
 
@@ -395,6 +418,18 @@ public class ReserveService {
         }
     }
 
+    private void afterCommit(String operation, Runnable action) {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                try {
+                    action.run();
+                } catch (RuntimeException exception) {
+                    log.error("{} 실패: DB 변경은 이미 커밋되었습니다.", operation, exception);
+                }
+            }
+        });
+    }
+
 
 }
-

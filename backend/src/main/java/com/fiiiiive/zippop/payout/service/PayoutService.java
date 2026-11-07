@@ -43,8 +43,8 @@ public class PayoutService {
 
         // 어제 날짜 기준으로 조회
         List<Orders> ordersList = ordersRepository.findByStatusAndUpdatedAt(
-                OrdersStatus.STOCK_DELIVERY.getName(),
-                OrdersStatus.RESERVE_DELIVERY.getName(),
+                OrdersStatus.STOCK_DELIVERY,
+                OrdersStatus.RESERVE_DELIVERY,
                 targetDate
         );
 

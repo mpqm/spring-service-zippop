@@ -24,7 +24,6 @@ class AccountEmailVerificationTest {
             mock(PasswordEncoder.class),
             mock(AccountMailSender.class),
             redis,
-            mock(RequestUrlService.class),
             mock(CustomerRepository.class),
             mock(CompanyRepository.class),
             request

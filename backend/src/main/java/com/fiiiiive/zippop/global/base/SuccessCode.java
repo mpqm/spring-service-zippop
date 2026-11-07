@@ -45,7 +45,7 @@ public enum SuccessCode {
     RESERVE_REGISTER_SUCCESS(7000, "예약 등록에 성공했습니다."),
     RESERVE_ENROLL_SUCCESS(7005, "예약에 성공했습니다."),
     RESERVE_SEARCH_ALL_SUCCESS(7008, "예약 목록을 불러왔습니다."),
-    RESERVE_CANCEL_SUCCESS(7008, "예약취소에 성공했습니다."),
+    RESERVE_CANCEL_SUCCESS(7009, "예약취소에 성공했습니다."),
     RESERVE_SEARCH_STATUS_SUCCESS(7010, "예약 대기자 및 Redis 상태를 불러왔습니다."),
     RESERVE_ACCESS_SUCCESS(7012, "유효 사용자입니다."),
     RESERVE_DELETE_SUCCESS(7014, "팝업스토어 예약 삭제에 서공했습니다."),

@@ -63,11 +63,11 @@ export const useReserveStore = defineStore("reserve", {
                 return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
             }
         },
-        // 팝업 예약 목록 조회(기업) - GET /api/v1/company/popups/{popupIdx}/reserves
+        // 팝업 예약 목록 조회(기업) - GET /api/v1/reserves/{popupIdx}
         async getCompanyPopupReserves(popupIdx, page, size) {
             try {
                 const res = await axios.get(
-                    `${BACKEND_URL}/company/popups/${popupIdx}/reserves?page=${page}&size=${size}`,
+                    `${BACKEND_URL}/reserves/${popupIdx}?page=${page}&size=${size}`,
                     { withCredentials: true }
                 );
                 this.reserveList = res.data.result.content;

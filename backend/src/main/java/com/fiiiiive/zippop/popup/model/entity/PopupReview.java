@@ -15,10 +15,12 @@ import org.springframework.data.domain.Page;
 @AllArgsConstructor
 @Entity
 public class PopupReview extends BaseEntity {
+
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
+
     // 고객 이메일 (필수, 최대 100자)
     @Column(nullable = false, length = 100)
     private String customerEmail;

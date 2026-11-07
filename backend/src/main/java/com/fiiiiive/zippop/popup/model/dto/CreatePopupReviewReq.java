@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CreatePopupReviewReq {
+
     @NotBlank(message = "리뷰 제목은 필수 입력 항목입니다.")
     @Size(max = 100, message = "리뷰 제목은 최대 100자까지 입력 가능합니다.")
     private String reviewTitle;
@@ -20,6 +21,5 @@ public class CreatePopupReviewReq {
     @Min(value = 1, message = "리뷰 평점은 최소 1 이상이어야 합니다.")
     @Max(value = 5, message = "리뷰 평점은 최대 5 이하여야 합니다.")
     private Integer reviewRating;
-
 
 }
