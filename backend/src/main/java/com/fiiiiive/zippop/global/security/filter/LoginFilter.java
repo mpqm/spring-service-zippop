@@ -66,17 +66,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         CustomUserDetails member = (CustomUserDetails)authResult.getPrincipal();
-        Long idx = member.getIdx();
-        String email = member.getEmail();
-        String role = member.getRole();
-        String userId = member.getUserId();
 
         // 새로운 accessToken, refreshToken 발급
-        String accessToken = jwtService.createAccessToken(idx, email, role, userId);
-        String refreshToken = jwtService.createRefreshToken(userId);
+        String accessToken = jwtService.createAccessToken(member);
+        String refreshToken = jwtService.createRefreshToken(member);
 
         // Redis에 리프레시 토큰 저장
-        redisTemplate.opsForValue().set("refreshToken:" + userId, refreshToken, 5, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set("refreshToken:" + member.getAccountId(), refreshToken, 5, TimeUnit.DAYS);
 
         // accessToken, refreshToken, userToken 쿠키 설정
         Cookie aToken = new Cookie("ATOKEN", accessToken);

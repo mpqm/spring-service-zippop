@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.1'
 	id 'io.spring.dependency-management' version '1.1.5'
-	id("com.palantir.docker") version "0.36.0"
 }
 
 group = 'com.fiiiiive'
@@ -83,46 +82,33 @@ test {
 	useJUnitPlatform()
 }
 
-// 변수 설정
-def platform = project.hasProperty('platform') ? project.property('platform') : "frontend"
+// Dockerfiles use the repository root as their build context.
+def dockerPlatform = project.findProperty('platform') ?: 'frontend'
+def composeFile = '../meta/infra/docker-compose.yml'
 
-docker {
-	if (platform == "frontend") {
-		name "okqkrwhdtjd/frontend:"+version
-		files "../frontend/dist"
-		buildArgs(['DIST_DIR': "../"])
-		dockerfile file("../cicd/Dockerfile_frontend")
-	} else {
-		name "okqkrwhdtjd/backend:"+version
-		files tasks.bootJar.outputs.files
-		buildArgs(['JAR_FILE':tasks.bootJar.outputs.files.singleFile.name])
-		dockerfile file("../cicd/Dockerfile_backend")
-	}
+tasks.register('buildFrontend', Exec) {
+    workingDir '../frontend'
+    commandLine (System.getProperty('os.name').toLowerCase().contains('windows') ? 'npm.cmd' : 'npm'), 'run', 'build'
 }
 
-task buildDockerBackend(type: Exec) {
-	workingDir project.rootDir
-	commandLine 'gradlew.bat', 'docker','-Pplatform=backend'
+tasks.register('buildDockerBackend', Exec) {
+    commandLine 'docker', 'compose', '-f', composeFile, 'build', 'backend'
 }
 
-task buildFrontend(type: Exec) {
-	workingDir '../frontend'
-	commandLine 'C:\\Program Files\\nodejs\\npm.cmd', 'run', 'build'
+tasks.register('buildDockerFrontend', Exec) {
+    commandLine 'docker', 'compose', '-f', composeFile, 'build', 'frontend'
 }
 
-task buildDockerFrontend(type: Exec, dependsOn: buildFrontend){
-	workingDir project.rootDir
-	commandLine 'cmd', '/c', 'gradlew.bat', 'docker'
+tasks.register('docker') {
+    dependsOn dockerPlatform == 'backend' ? 'buildDockerBackend' : 'buildDockerFrontend'
 }
 
-// bakcend start
-task dockerComposeUpBackend(type: Exec, dependsOn: buildDockerBackend) {
-	environment 'DOCKER_IMAGE_TAG', version
-	commandLine 'docker-compose', '-f', '../cicd/docker-compose.yml', 'up', '--build', '-d'
+tasks.register('dockerComposeUpBackend', Exec) {
+    dependsOn 'buildDockerBackend'
+    commandLine 'docker', 'compose', '-f', composeFile, 'up', '-d', 'backend'
 }
 
-// frontend start
-task dockerComposeUpFrontend(type: Exec, dependsOn: buildDockerFrontend) {
-	environment 'DOCKER_IMAGE_TAG', version
-	commandLine 'docker-compose', '-f', '../cicd/docker-compose.yml', 'up', '--build', '-d'
+tasks.register('dockerComposeUpFrontend', Exec) {
+    dependsOn 'buildDockerFrontend'
+    commandLine 'docker', 'compose', '-f', composeFile, 'up', '-d', 'frontend'
 }

@@ -78,7 +78,8 @@ public class Goods extends BaseEntity {
                 .price(price)
                 .content(content)
                 .popup(popup)
-                .status(GoodsStatus.GOODS_RESERVED)
+                .status(popup.getStatus() == com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_END
+                        ? GoodsStatus.GOODS_STOCK : GoodsStatus.GOODS_RESERVED)
                 .build();
     }
 

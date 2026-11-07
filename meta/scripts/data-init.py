@@ -1,15 +1,16 @@
 """ZIPPOP 포트폴리오용 시나리오 데이터 시더.
 
 사용법:
-    python meta/script/data-init.py --reset
+    python meta/scripts/data-init.py --reset
 
 `--reset`은 로컬 포트폴리오 DB의 기존 데이터를 비운 뒤 다시 채운다.
-DB 접속 정보는 환경 변수 또는 `cicd/.env`에서 읽는다.
+DB 접속 정보는 환경 변수 또는 `meta/infra/.env`에서 읽는다.
 """
 
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import os
 import uuid
 from datetime import date, datetime, time, timedelta
@@ -26,7 +27,7 @@ PASSWORD_HASH = "$2a$10$..wSUVQHJJpCTUY92pyId.H0fUicaJBvaL/F.ilESb.LwMRro.PLy"
 
 def load_env_file() -> dict[str, str]:
     values: dict[str, str] = {}
-    env_path = ROOT / "cicd" / ".env"
+    env_path = ROOT / "meta" / "infra" / ".env"
     if not env_path.exists():
         return values
     for raw_line in env_path.read_text(encoding="utf-8").splitlines():
@@ -38,20 +39,31 @@ def load_env_file() -> dict[str, str]:
     return values
 
 
-def db_connection():
-    file_env = load_env_file()
+def config_value(name: str, default: str = "") -> str:
+    return os.getenv(name, load_env_file().get(name, default))
 
-    def value(name: str, default: str = "") -> str:
-        return os.getenv(name, file_env.get(name, default))
+
+def db_connection():
+    host = os.getenv("ZIPPOP_DB_HOST", "127.0.0.1")
+    try:
+        if not ipaddress.ip_address(host).is_loopback:
+            raise ValueError("더미 데이터 초기화는 로컬 DB에만 허용됩니다. ZIPPOP_DB_HOST를 확인하세요.")
+    except ValueError as error:
+        if "로컬 DB에만" in str(error):
+            raise
+        raise ValueError("ZIPPOP_DB_HOST는 로컬 루프백 주소(127.0.0.1 또는 ::1)여야 합니다.") from error
 
     return pymysql.connect(
-        host=os.getenv("ZIPPOP_DB_HOST", "127.0.0.1"),
+        host=host,
         port=int(os.getenv("ZIPPOP_DB_PORT", "3306")),
         user=os.getenv("ZIPPOP_DB_USER", "root"),
-        password=value("MARIADB_ROOT_PASSWORD"),
-        database=value("MARIADB_DATABASE", "zippop"),
+        password=config_value("MARIADB_ROOT_PASSWORD"),
+        database=config_value("MARIADB_DATABASE", "zippop"),
         charset="utf8mb4",
         autocommit=False,
+        connect_timeout=5,
+        read_timeout=30,
+        write_timeout=30,
     )
 
 
@@ -125,11 +137,12 @@ def expand_popups(templates, count: int):
 def reset_database(cursor) -> None:
     cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
     for table in [
-        "payout", "orders_detail", "orders", "cart_item", "cart", "popup_like",
-        "popup_review", "reserve", "goods_image", "goods", "popup_image",
-        "popup", "customer", "company",
+        "payout", "orders_detail", "point_ledger", "refund_outbox", "payment_intent",
+        "orders", "cart_item", "cart", "popup_like", "popup_review", "reserve",
+        "goods_image", "goods", "popup_image", "popup", "oauth_identity",
+        "customer", "company", "account",
     ]:
-        cursor.execute(f"TRUNCATE TABLE `{table}`")
+        cursor.execute(f"DELETE FROM `{table}`")
     cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
 
 
@@ -137,26 +150,54 @@ def insert_account_data(cursor) -> tuple[list[int], list[int]]:
     company_ids = []
     for index, (name, email, user_id, crn, address) in enumerate(COMPANIES, start=1):
         cursor.execute(
-            """INSERT INTO company
-               (created_at, updated_at, address, crn, email, is_email_auth, is_in_active,
+            """INSERT INTO account
+               (created_at, updated_at, address, email, is_email_auth, is_in_active, auth_version,
                 name, password, phone_number, profile_image_url, role, user_id)
-               VALUES (%s,%s,%s,%s,%s,1,0,%s,%s,%s,%s,'ROLE_COMPANY',%s)""",
-            (NOW, NOW, address, crn, email, name, PASSWORD_HASH, f"0109000000{index}", None, user_id),
+               VALUES (%s,%s,%s,%s,1,0,0,%s,%s,%s,NULL,'ROLE_COMPANY',%s)""",
+            (NOW, NOW, address, email, name, PASSWORD_HASH, f"0109000000{index}", user_id),
+        )
+        account_id = cursor.lastrowid
+        cursor.execute(
+            """INSERT INTO company (created_at, updated_at, account_idx, crn)
+               VALUES (%s,%s,%s,%s)""",
+            (NOW, NOW, account_id, crn),
         )
         company_ids.append(cursor.lastrowid)
 
     customer_ids = []
     for index, (name, email, user_id, point) in enumerate(CUSTOMERS, start=1):
         cursor.execute(
-            """INSERT INTO customer
-               (created_at, updated_at, address, email, is_email_auth, is_in_active, name,
-                password, phone_number, point, profile_image_url, role, user_id)
-               VALUES (%s,%s,%s,%s,1,0,%s,%s,%s,%s,%s,'ROLE_CUSTOMER',%s)""",
+            """INSERT INTO account
+               (created_at, updated_at, address, email, is_email_auth, is_in_active, auth_version,
+                name, password, phone_number, profile_image_url, role, user_id)
+               VALUES (%s,%s,%s,%s,1,0,0,%s,%s,%s,NULL,'ROLE_CUSTOMER',%s)""",
             (NOW, NOW, "서울특별시 성동구 성수동", email, name, PASSWORD_HASH,
-             f"0108000000{index}", point, None, user_id),
+             f"0108000000{index}", user_id),
+        )
+        account_id = cursor.lastrowid
+        cursor.execute(
+            """INSERT INTO customer (created_at, updated_at, account_idx, point)
+               VALUES (%s,%s,%s,%s)""",
+            (NOW, NOW, account_id, point),
         )
         customer_ids.append(cursor.lastrowid)
     return company_ids, customer_ids
+
+
+def verify_schema(cursor) -> None:
+    required_tables = {
+        "account", "company", "customer", "popup", "popup_image", "goods", "goods_image",
+        "reserve", "popup_review", "popup_like", "cart", "cart_item", "orders", "orders_detail",
+        "payout", "oauth_identity", "payment_intent", "point_ledger", "refund_outbox",
+    }
+    cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE()")
+    actual_tables = {row[0] for row in cursor.fetchall()}
+    missing = sorted(required_tables - actual_tables)
+    if missing:
+        raise RuntimeError(
+            "현재 ZIPPOP 스키마와 맞지 않아 시드를 중단합니다. 먼저 DB migration을 적용하세요. "
+            f"누락 테이블: {', '.join(missing)}"
+        )
 
 
 def insert_popup(cursor, data, company_ids, status: str) -> int:
@@ -281,6 +322,7 @@ def main() -> None:
     connection = db_connection()
     try:
         with connection.cursor() as cursor:
+            verify_schema(cursor)
             reset_database(cursor)
             counts = seed(cursor)
         connection.commit()
@@ -291,6 +333,7 @@ def main() -> None:
         connection.close()
 
     print("ZIPPOP portfolio seed completed")
+    print(f"  database: {config_value('MARIADB_DATABASE', 'zippop')}")
     for name, count in counts.items():
         print(f"  {name}: {count}")
 

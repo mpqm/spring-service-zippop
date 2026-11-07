@@ -4,6 +4,7 @@ const LOGIN_REQUIRED_CODES = new Set([
   'INVALID_TOKEN',
   'UNSUPPORTED_TOKEN',
   'MALFORMED_TOKEN',
+  'ACCOUNT_DISABLED',
 ]);
 
 let redirectPromise = null;

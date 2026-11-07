@@ -1,82 +1,43 @@
 package com.fiiiiive.zippop.global.security.normal;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fiiiiive.zippop.account.model.entity.Account;
 import lombok.*;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-@Getter
-@Builder
-@AllArgsConstructor
+@Getter @Builder @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
-
-    @Getter
-    private final Long idx;
-    @Getter
+    private final Long accountId;
+    private final Long customerId;
+    private final Long companyId;
     private final String userId;
-    @Getter
     private final String email;
-    private String role;
-    @Getter
+    private final String role;
     private final String name;
     private final String password;
-    private final Boolean isEmailAuth;
+    private final boolean enabled;
+    private final long authVersion;
 
-    // 직렬화/역직렬화 시 사용될 생성자
-    @JsonCreator
-    public CustomUserDetails(
-            @JsonProperty("idx") Long idx,
-            @JsonProperty("email") String email,
-            @JsonProperty("role") String role,
-            @JsonProperty("userId") String userId) {
-        this.idx = idx;
-        this.userId = userId;
-        this.email = email;
-        this.role = role;
-        this.name = null;
-        this.password = null;
-        this.isEmailAuth = null;
+    public static CustomUserDetails from(Account account, Long customerId, Long companyId) {
+        return CustomUserDetails.builder().accountId(account.getIdx()).customerId(customerId).companyId(companyId)
+                .userId(account.getUserId()).email(account.getEmail()).role(account.getRole().name())
+                .name(account.getName()).password(account.getPassword()).enabled(account.isEnabled())
+                .authVersion(account.getAuthVersion()).build();
     }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities  = new ArrayList<>();
-        authorities.add((GrantedAuthority) () -> role);
-        return authorities;
+    public Long getCustomerId() {
+        if (!"ROLE_CUSTOMER".equals(role) || customerId == null) throw new AccessDeniedException("고객 계정이 필요합니다.");
+        return customerId;
     }
-
-    @Override
-    public String getPassword() {
-        return password;
+    public Long getCompanyId() {
+        if (!"ROLE_COMPANY".equals(role) || companyId == null) throw new AccessDeniedException("기업 계정이 필요합니다.");
+        return companyId;
     }
-
-    @Override
-    public String getUsername() {
-        return email;
+    @Override public String getUsername() { return email; }
+    @Override public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of((GrantedAuthority) () -> role);
     }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return Boolean.TRUE.equals(isEmailAuth);
-    }
-
+    @Override public boolean isEnabled() { return enabled; }
 }

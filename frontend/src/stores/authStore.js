@@ -3,6 +3,9 @@ import axios from "axios";
 import { BACKEND_URL } from "@/config";
 import { useAccountStore } from "@/stores/accountStore";
 import { usePopupStore } from "@/stores/popupStore";
+import { useCartStore } from "@/stores/cartStore";
+import { useOrdersStore } from "@/stores/ordersStore";
+import { useReserveStore } from "@/stores/reserveStore";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -16,11 +19,21 @@ export const useAuthStore = defineStore("auth", {
       accountStore.userInfo = {};
       const popupStore = usePopupStore();
       popupStore.likeList = [];
+      popupStore.likePageList = [];
+      popupStore.likeTotalPages = 0;
+      popupStore.likeTotalElements = 0;
+      popupStore.likesLoadedCompletely = false;
+      useCartStore().$reset();
+      useOrdersStore().$reset();
+      useReserveStore().$reset();
     },
     // 로그인
     async login(req) {
       try {
         const res = await axios.post(`${BACKEND_URL}/auth/login`, req, {withCredentials: true,});
+
+        // 동일 브라우저에서 계정을 전환할 때 이전 사용자의 상태를 먼저 제거한다.
+        this.clearSession();
 
         // 로그인 후 계정 정보 불러오기
         const accountStore = useAccountStore();
@@ -31,6 +44,9 @@ export const useAuthStore = defineStore("auth", {
         }
 
         this.isLoggedIn = true;
+        if (accountStore.userInfo.role === "ROLE_CUSTOMER") {
+          await usePopupStore().refreshAllLikedPopups();
+        }
 
         return res.data;
       } catch (error) {

@@ -83,7 +83,6 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { createMultipartRequest } from '@/utils/multipart';
-import { Icon } from '@iconify/vue';
 
 const accountStore = useAccountStore();
 const toast = useToast();
@@ -106,10 +105,11 @@ onMounted(async () => {
 const getAccount = async () => {
   const res = await accountStore.getAccount();
   if (res.success) {
-    userInfo.value = accountStore.userInfo;
+    userInfo.value = { ...accountStore.userInfo };
     const info = accountStore.userInfo;
-    address.value = info.address?.split(',')[0] || '';
-    addressDetail.value = info.address?.split(',')[1] || '';
+    const [baseAddress = '', ...detailParts] = (info.address || '').split(',');
+    address.value = baseAddress;
+    addressDetail.value = detailParts.join(',');
     fileUrl.value = info.profileImageUrl || null;
     showCrn.value = info.role === "ROLE_COMPANY";
   } else {

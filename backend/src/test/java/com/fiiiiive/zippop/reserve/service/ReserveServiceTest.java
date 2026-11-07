@@ -50,6 +50,37 @@ class ReserveServiceTest {
     private ReserveService reserveService;
     private CustomUserDetails user;
 
+    @Test void maintenanceCleansAnOvernightReservationAfterItEnds() {
+        Reserve reserve = Reserve.builder().idx(9L).workingUUID("working").waitingUUID("waiting")
+                .startDate(LocalDate.now().minusDays(1)).startTime(LocalDateTime.now().minusDays(1))
+                .endTime(LocalDateTime.now().minusMinutes(1)).popup(Popup.builder().name("Popup").build()).build();
+        when(reserveRepository.findQueuesForMaintenance(any(LocalDateTime.class))).thenReturn(List.of(reserve));
+        reserveService.managementReserveQueue();
+        verify(redisQueueService).deleteQueue("working", "waiting");
+    }
+
+    @Test void closedPopupCannotBeEnteredEvenWhileItsReservationIsActive() {
+        Reserve reserve = activeReserve();
+        reserve.getPopup().setStatus(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_END);
+        when(reserveRepository.findById(9L)).thenReturn(Optional.of(reserve));
+        assertThatThrownBy(() -> reserveService.enrollReserve(new MockHttpServletResponse(), user, 9L))
+                .isInstanceOfSatisfying(ServiceException.class, ex ->
+                        assertThat(ex.getErrorCode()).isEqualTo(ServiceErrorCode.RESERVE_ENROLL_FAIL_CLOSED));
+        verify(redisQueueService, never()).expireWorkingMembers(any());
+    }
+
+    @Test void allRemainingCapacityCanBeAllocatedToOneReservation() {
+        Popup popup = Popup.builder().idx(7L).totalPeople(1).startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(2)).build();
+        var start = LocalDateTime.now().plusDays(1);
+        var request = CreateReserveReq.builder().popupIdx(7L).reservePeople(1)
+                .reserveStartDate(start.toLocalDate()).reserveStartTime(start).reserveEndTime(start.plusHours(1)).build();
+        when(popupRepository.findForUpdate(7L)).thenReturn(Optional.of(popup));
+        reserveService.createReserve(user, request);
+        assertThat(popup.getTotalPeople()).isZero();
+        verify(reserveRepository).save(any());
+    }
+
     @BeforeEach
     void setUp() {
         reserveService = new ReserveService(
@@ -60,20 +91,20 @@ class ReserveServiceTest {
                 redisQueueService,
                 messagingTemplate
         );
-        user = CustomUserDetails.builder().idx(3L).email("user@test.com").role("ROLE_CUSTOMER").build();
+        user = CustomUserDetails.builder().accountId(99L).customerId(3L).email("user@test.com").role("ROLE_CUSTOMER").build();
     }
 
     @Test
     void queueManagementRecreatesOnlyMissingQueues() {
         Reserve reserve = activeReserve();
-        when(reserveRepository.findAllByStartDate(LocalDate.now())).thenReturn(List.of(reserve));
+        when(reserveRepository.findQueuesForMaintenance(any(LocalDateTime.class))).thenReturn(List.of(reserve));
         when(redisQueueService.existQueue("working")).thenReturn(false);
         when(redisQueueService.existQueue("waiting")).thenReturn(true);
 
         reserveService.managementReserveQueue();
 
-        verify(redisQueueService).createQueue(org.mockito.ArgumentMatchers.eq("working"), anyLong());
-        verify(redisQueueService, never()).createQueue(org.mockito.ArgumentMatchers.eq("waiting"), anyLong());
+        verify(redisQueueService).createQueueUntil("working", reserve.getEndTime());
+        verify(redisQueueService, never()).createQueueUntil("waiting", reserve.getEndTime());
     }
 
     @Test
@@ -88,9 +119,10 @@ class ReserveServiceTest {
         when(redisQueueService.getOrder("working", "user@test.com")).thenReturn(null);
         when(redisQueueService.getOrder("waiting", "user@test.com")).thenReturn(null);
 
-        assertThatThrownBy(() -> reserveService.status(principal, request))
-                .isInstanceOfSatisfying(ServiceException.class, exception ->
-                        assertThat(exception.getErrorCode()).isEqualTo(ServiceErrorCode.RESERVE_ACCESS_FAIL));
+        reserveService.status(principal, request);
+        org.mockito.ArgumentCaptor<GetReserveQueueRes> response = org.mockito.ArgumentCaptor.forClass(GetReserveQueueRes.class);
+        verify(messagingTemplate).convertAndSendToUser(eq("user@test.com"), eq("/queue/reserve/status"), response.capture());
+        assertThat(response.getValue().getAccess()).isEqualTo(4);
     }
 
     @Test
@@ -150,7 +182,7 @@ class ReserveServiceTest {
                 .reserveStartTime(LocalDateTime.now().plusDays(1))
                 .reserveEndTime(LocalDateTime.now().plusDays(1).plusHours(1))
                 .build();
-        when(popupRepository.findById(7L)).thenReturn(Optional.of(popup));
+        when(popupRepository.findForUpdate(7L)).thenReturn(Optional.of(popup));
 
         assertThatThrownBy(() -> reserveService.createReserve(user, request))
                 .isInstanceOfSatisfying(ServiceException.class, exception ->
@@ -167,7 +199,7 @@ class ReserveServiceTest {
                 .startDate(LocalDate.now())
                 .startTime(LocalDateTime.now().minusMinutes(5))
                 .endTime(LocalDateTime.now().plusHours(1))
-                .popup(Popup.builder().idx(7L).name("팝업").build())
+                .popup(Popup.builder().idx(7L).name("팝업").status(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START).build())
                 .build();
     }
 }

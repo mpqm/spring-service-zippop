@@ -86,6 +86,25 @@ describe("backend response DTO contract", () => {
 });
 
 describe("request endpoint contract", () => {
+  it("sends the complete payment intent when issuing a merchant id", async () => {
+    const intent = {
+      popupIdx: 7,
+      reserveIdx: 13,
+      goods: [{ goodsIdx: 11, count: 2 }],
+      usedPoint: 0,
+    };
+    axios.post.mockResolvedValue(success({ merchantUid: "zippop_test", amount: 20000 }));
+
+    const response = await useOrdersStore().issueMerchantUid(intent);
+
+    expect(axios.post).toHaveBeenCalledWith(
+      `${BACKEND_URL}/orders/merchant-id`,
+      intent,
+      { withCredentials: true },
+    );
+    expect(response.result).toEqual({ merchantUid: "zippop_test", amount: 20000 });
+  });
+
   it("uses the cart quantity endpoint and operation query", async () => {
     axios.patch.mockResolvedValue(success());
     await useCartStore().updateCartItemQuantity(2, 4, "increase");

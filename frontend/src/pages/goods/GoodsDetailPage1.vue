@@ -23,8 +23,8 @@
 
       <div>
         <div class="ctn-inputsearch">
-          <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="getGoodsList()" />
-          <button class="btn-default" @click="getGoodsList()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+          <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="submitSearch()" />
+          <button class="btn-default" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
         </div>
         <div class="lyt-cardgrid" v-if="goodsList && goodsList.length">
           <GoodsCard v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="popup.popupIdx" />
@@ -44,12 +44,13 @@
 </template>
 
 <script setup>
+import { useAccountStore } from "@/stores/accountStore";
+const accountStore = useAccountStore();
 import GoodsCard from "@/components/GoodsCard.vue";
 import ImageSlider from "@/components/ImageSlider.vue";
 import AppHeader from "@/components/AppHeader.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import AppPagination from "@/components/AppPagination.vue";
-import { Icon } from "@iconify/vue";
 import { ref, onMounted, watch } from "vue";
 import { usePopupStore } from "@/stores/popupStore";
 import { useRoute, useRouter } from "vue-router";
@@ -96,6 +97,11 @@ const getPopup = async () => {
   }
 };
 
+const submitSearch = () => {
+  currentPage.value = 0;
+  return getGoodsList();
+};
+
 const getGoodsList = async (reset = false) => {
   if (reset) {
     currentPage.value = 0;
@@ -139,7 +145,7 @@ const toggleLike = async () => {
     toast.error("로그인이 필요합니다.");
     return;
   }
-  if (authStore.userInfo?.role === "ROLE_COMPANY") {
+  if (accountStore.userInfo?.role === "ROLE_COMPANY") {
     toast.error("고객 회원만 좋아요를 누를 수 있습니다.");
     return;
   }

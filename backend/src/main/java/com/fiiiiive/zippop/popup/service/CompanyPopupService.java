@@ -18,7 +18,7 @@ import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.fiiiiive.zippop.global.web.RequestValidation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class CompanyPopupService {
         // 팝업 페이지 조회(keyword, email, pageable) 조회
         // true : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
         // false : 키워드(keyword)가 없는 경우, 등록된 기업회원의 이메일로 페이징 조회
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Popup> popupPage = (keyword != null)
                 ? popupRepository.findAllByKeywordAndCompanyEmail(keyword, user.getEmail(), pageable)
                 : popupRepository.findAllByCompanyEmail(user.getEmail(), pageable);
@@ -59,7 +59,7 @@ public class CompanyPopupService {
         popupPolicy.validateOwner(popup, user);
 
         // 팝업 페이지 조회(popupIdx, pageable)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Payout> payoutPage = payoutRepository.findAllByPopupIdx(popupIdx, pageable);
 
         return Payout.toDtoPage(payoutPage);
@@ -69,7 +69,7 @@ public class CompanyPopupService {
     // 예약 목록 조회(기업용)
     public Page<GetReserveRes> getCompanyPopupReserves(CustomUserDetails user, Long popupIdx, int page, int size) throws ServiceException {
 
-        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(popupIdx, user.getEmail(), PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
+        Page<Reserve> reservePage = reserveRepository.findAllByCompanyEmail(popupIdx, user.getEmail(), RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "id"))).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.RESERVE_SEARCH_ALL_FAIL_NOT_FOUND)
         );
 
@@ -88,7 +88,7 @@ public class CompanyPopupService {
         if(!(popup.getCompanyEmail().equals(user.getEmail()))) {
             throw new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_INVALID_MEMBER);
         }
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Orders> ordersPage = ordersRepository.findAllByPopupIdx(popupIdx, pageable).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
         );

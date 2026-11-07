@@ -14,6 +14,13 @@ import java.util.Optional;
 
 @Repository
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT o FROM Orders o WHERE o.idx = :ordersIdx AND o.customer.idx = :customerIdx")
+    Optional<Orders> findForUpdate(@Param("ordersIdx") Long ordersIdx, @Param("customerIdx") Long customerIdx);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT o FROM Orders o WHERE o.idx = :ordersIdx AND o.popup.idx = :popupIdx")
+    Optional<Orders> findForUpdateByPopup(@Param("ordersIdx") Long ordersIdx, @Param("popupIdx") Long popupIdx);
     // 고객 인덱스로 목록 조회
     @Query("SELECT o FROM Orders o " +
             "JOIN FETCH o.customer oc " +

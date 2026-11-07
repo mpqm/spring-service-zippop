@@ -17,12 +17,30 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@lombok.RequiredArgsConstructor
 public class CustomAuthenticationInterceptor implements ChannelInterceptor {
+
+    private final ReserveSocketSessions sessions;
 
     @Override
     public Message<?> preSend(@NotNull Message<?> message, @NotNull MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         if (accessor.getCommand() != StompCommand.CONNECT) {
+            if (accessor.getCommand() == StompCommand.SEND) {
+                if (!"/pub/reserve/status".equals(accessor.getDestination()) || accessor.getUser() == null) {
+                    throw new MessageDeliveryException(message, "ACCESS_DENIED");
+                }
+                try {
+                    String json = new String((byte[]) message.getPayload(), java.nio.charset.StandardCharsets.UTF_8);
+                    Long reserveId = com.google.gson.JsonParser.parseString(json).getAsJsonObject().get("reserveIdx").getAsLong();
+                    sessions.bind(accessor.getSessionId(), accessor.getUser().getName(), reserveId);
+                } catch (RuntimeException ex) {
+                    throw new MessageDeliveryException(message, "INVALID_RESERVATION_SESSION");
+                }
+            } else if (accessor.getCommand() == StompCommand.SUBSCRIBE
+                    && !"/user/queue/reserve/status".equals(accessor.getDestination())) {
+                throw new MessageDeliveryException(message, "ACCESS_DENIED");
+            }
             return message;
         }
 

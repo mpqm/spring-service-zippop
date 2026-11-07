@@ -25,6 +25,14 @@ public class OrdersController {
 
     private final OrdersService ordersService;
     private final OrdersFacade ordersFacade;
+
+    @PostMapping("/merchant-id")
+    public ResponseEntity<SuccessResponse<CreatePaymentIntentRes>> issueMerchantUid(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @Valid @RequestBody CreatePaymentIntentReq req) {
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.ORDERS_PAY_SUCCESS,
+                ordersService.issueMerchantUid(user, req)));
+    }
     
     // 주문 생성
     @PostMapping
@@ -34,6 +42,13 @@ public class OrdersController {
     ) {
         CreateOrdersRes res = ordersFacade.createOrders(user, req);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(SuccessCode.ORDERS_PAY_SUCCESS, res));
+    }
+
+    // PG webhook: 응답 유실 시에도 서버 결제 의도를 이용해 주문을 복구하거나 환불 보상을 등록한다.
+    @PostMapping("/payments/webhook")
+    public ResponseEntity<SuccessResponse<CreateOrdersRes>> paymentWebhook(@Valid @RequestBody PaymentWebhookReq req) {
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.ORDERS_PAY_SUCCESS,
+                ordersService.reconcilePayment(req)));
     }
 
     // 주문 상태 변경

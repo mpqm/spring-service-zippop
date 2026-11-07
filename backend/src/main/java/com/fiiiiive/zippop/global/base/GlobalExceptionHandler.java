@@ -28,6 +28,12 @@ import java.util.Objects;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(InputValidationException.class)
+    public ResponseEntity<ErrorResponse> handleInputValidation(InputValidationException exception, HttpServletRequest request) {
+        ServerErrorCode code = ServerErrorCode.VALIDATION_ERROR;
+        return ResponseEntity.status(code.getStatus()).body(new ErrorResponse(code, null, List.of(exception.getMessage()), request.getRequestURI()));
+    }
+
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ErrorResponse> handleServiceException(ServiceException exception, HttpServletRequest request) {
         return ResponseEntity.badRequest().body(new ErrorResponse(

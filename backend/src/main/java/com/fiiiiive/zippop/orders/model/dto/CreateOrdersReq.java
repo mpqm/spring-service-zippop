@@ -12,6 +12,9 @@ public class CreateOrdersReq {
     @NotBlank(message = "결제 식별자는 필수 입력 항목입니다.")
     String impUid;
 
+    @NotBlank(message = "가맹점 주문 식별자는 필수 입력 항목입니다.")
+    String merchantUid;
+
     @NotNull(message = "팝업 ID는 필수 입력 항목입니다.")
     Long popupIdx;
 

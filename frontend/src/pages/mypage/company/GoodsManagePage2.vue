@@ -3,8 +3,8 @@
     <div class="lyt-child">
       <div class="ctn-split">
         <div class="ctn-inputsearch">
-          <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="getGoodsList()" />
-          <button class="btn-default" @click="getGoodsList()">
+          <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="submitSearch()" />
+          <button class="btn-default" @click="submitSearch()">
             <Icon icon="ic:search" width="20px" height="20px" />굿즈 검색
           </button>
         </div>
@@ -34,7 +34,6 @@ import AppPagination from "@/components/AppPagination.vue";
 import { useGoodsStore } from "@/stores/goodsStore";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { Icon } from '@iconify/vue';
 
 const goodsStore = useGoodsStore();
 const route = useRoute();
@@ -51,6 +50,11 @@ const hideBtns = ref(false);
 onMounted(async () => {
   await getGoodsList();
 });
+
+const submitSearch = () => {
+  currentPage.value = 0;
+  return getGoodsList();
+};
 
 const getGoodsList = async (reset = false) => {
   if (reset) {

@@ -36,7 +36,7 @@ export const useGoodsStore = defineStore("goods", {
     // 굿즈 목록 조회 - GET /api/v1/goods (전체/검색)
     async getGoodsList(popupIdx, keyword, page, size) {
       try {
-        const res = await axios.get(`${BACKEND_URL}/goods?popupIdx=${popupIdx ?? ""}&keyword=${keyword ?? ""}&page=${page}&size=${size}`,);
+        const res = await axios.get(`${BACKEND_URL}/goods?popupIdx=${popupIdx ?? ""}&keyword=${encodeURIComponent(keyword ?? "")}&page=${page}&size=${size}`,);
         this.goodsList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;

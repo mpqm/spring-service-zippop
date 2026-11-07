@@ -53,7 +53,7 @@ export const useReserveStore = defineStore("reserve", {
         async getPopupReserves(popupIdx, page, size, keyword) {
             try {
                 const res = await axios.get(
-                    `${BACKEND_URL}/popups/${popupIdx}/reserves?keyword=${keyword ?? ""}&page=${page}&size=${size}`,
+                    `${BACKEND_URL}/popups/${popupIdx}/reserves?keyword=${encodeURIComponent(keyword ?? "")}&page=${page}&size=${size}`,
                 );
                 this.reserveList = res.data.result.content;
                 this.totalElements = res.data.result.totalElements;

@@ -12,6 +12,14 @@ export const useOrdersStore = defineStore('orders', {
     }),
     persist: { storage: sessionStorage },
     actions: {
+        async issueMerchantUid(payload) {
+            try {
+                const res = await axios.post(`${BACKEND_URL}/orders/merchant-id`, payload, { withCredentials: true });
+                return res.data;
+            } catch (error) {
+                return error.response?.data ?? { success: false, message: '주문번호를 발급하지 못했습니다.' };
+            }
+        },
 
         // 결제 정보 설정
         async setPaymentData(paymentData) {

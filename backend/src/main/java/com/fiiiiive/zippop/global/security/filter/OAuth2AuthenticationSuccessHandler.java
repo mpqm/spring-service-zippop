@@ -2,41 +2,33 @@ package com.fiiiiive.zippop.global.security.filter;
 
 import com.fiiiiive.zippop.global.crypto.JwtService;
 import com.fiiiiive.zippop.global.security.oauth2.CustomOauth2UserDetails;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
-@Slf4j
-@Component
-@RequiredArgsConstructor
+@Component @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-
     private final JwtService jwtService;
-
-    @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        CustomOauth2UserDetails oAuth2Member = (CustomOauth2UserDetails) authentication.getPrincipal();
-        Long idx = oAuth2Member.getIdx();
-        String username = oAuth2Member.getUsername();
-        String role = oAuth2Member.getCustomer().getRole().name();
-        String token = jwtService.createAccessToken(idx, username, role, username);
-        log.info(idx + " " + role + " " + username);
-        Cookie aToken = new Cookie("ATOKEN", token);
-        aToken.setHttpOnly(true);
-        aToken.setSecure(true);
-        aToken.setPath("/");
-        aToken.setMaxAge(60 * 60 * 1);
-        response.addCookie(aToken);
-        super.onAuthenticationSuccess(request, response, authentication);
+    private final RedisTemplate<String, Object> redis;
+    @Override public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException {
+        var user = ((CustomOauth2UserDetails) authentication.getPrincipal()).getAccount();
+        String refresh = jwtService.createRefreshToken(user);
+        redis.opsForValue().set("refreshToken:" + user.getAccountId(), refresh, 5, TimeUnit.DAYS);
+        addCookie(response, "ATOKEN", jwtService.createAccessToken(user));
+        addCookie(response, "RTOKEN", refresh);
+        getRedirectStrategy().sendRedirect(request, response,
+                ServletUriComponentsBuilder.fromContextPath(request).path("/").build().toUriString());
     }
-
+    private void addCookie(HttpServletResponse response, String name, String token) {
+        Cookie cookie = new Cookie(name, token);
+        cookie.setHttpOnly(true); cookie.setSecure(true); cookie.setPath("/");
+        cookie.setAttribute("SameSite", "None"); response.addCookie(cookie);
+    }
 }
-

@@ -16,7 +16,7 @@ import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.fiiiiive.zippop.global.web.RequestValidation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -43,10 +43,10 @@ public class CartService {
         );
 
         // 장바구니 조회 후 없으면 장바구니 생성
-        Cart cart = cartRepository.findByCustomerIdxAndPopupIdx(user.getIdx(), req.getPopupIdx()).orElse(null);
+        Cart cart = cartRepository.findByCustomerIdxAndPopupIdx(user.getCustomerId(), req.getPopupIdx()).orElse(null);
         if(cart == null){
             cart = Cart.create(
-                    user.getIdx(),
+                    user.getCustomerId(),
                     goods.getPopup()
             );
             cartRepository.save(cart);
@@ -65,8 +65,8 @@ public class CartService {
     public Page<GetCartRes> getCarts(CustomUserDetails user, Integer page, Integer size) throws ServiceException {
 
         // 장바구니 조회(customerIdx, pageable)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
-        Page<Cart> cartPage = cartRepository.findAllByCustomerIdx(user.getIdx(), pageable);
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Page<Cart> cartPage = cartRepository.findAllByCustomerIdx(user.getCustomerId(), pageable);
 
         return Cart.toDtoPage(cartPage);
 
@@ -109,7 +109,7 @@ public class CartService {
     public void updateCartItemQuantity(CustomUserDetails user, Long cartIdx, Long cartItemIdx, Operation operation) throws ServiceException {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
-        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getIdx()).orElseThrow(
+        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getCustomerId()).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.CART_ITEM_COUNT_FAIL_NOT_FOUND)
         );
 
@@ -127,7 +127,7 @@ public class CartService {
     public void deleteCartItem(CustomUserDetails user, Long cartIdx, Long cartItemIdx) {
 
         // 장바구니 아이템 조회 (소유자 확인 포함 - 한 번의 쿼리로 처리)
-        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getIdx()).orElseThrow(
+        CartItem cartItem = cartItemRepository.findByCartIdxAndCartItemIdxAndCustomerIdx(cartIdx, cartItemIdx, user.getCustomerId()).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.CART_ITEM_COUNT_FAIL_NOT_FOUND)
         );
 

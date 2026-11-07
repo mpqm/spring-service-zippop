@@ -40,6 +40,19 @@ class PopupServiceTest {
     private PopupService popupService;
     private CustomUserDetails user;
 
+    @Test void overdueActivePopupsAreEndedAndTheirGoodsBecomeStock() {
+        var goods = com.fiiiiive.zippop.goods.model.entity.Goods.builder()
+                .status(com.fiiiiive.zippop.global.enums.GoodsStatus.GOODS_RESERVED).build();
+        Popup popup = Popup.builder().status(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START)
+                .goodsList(java.util.List.of(goods)).build();
+        when(popupRepository.findAllByStatusAndEndDateBefore(
+                com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START, java.time.LocalDate.now()))
+                .thenReturn(java.util.List.of(popup));
+        popupService.updatePopupStatus();
+        assertThat(popup.getStatus()).isEqualTo(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_END);
+        assertThat(goods.getStatus()).isEqualTo(com.fiiiiive.zippop.global.enums.GoodsStatus.GOODS_STOCK);
+    }
+
     @BeforeEach
     void setUp() {
         popupService = new PopupService(
@@ -51,7 +64,7 @@ class PopupServiceTest {
                 reserveRepository
         );
         user = CustomUserDetails.builder()
-                .idx(3L)
+                .accountId(99L).customerId(3L)
                 .email("user@test.com")
                 .name("사용자")
                 .role("ROLE_CUSTOMER")
@@ -62,7 +75,7 @@ class PopupServiceTest {
     void togglingAnExistingLikeDeletesTheRelationAndDecrementsOnce() {
         Popup popup = Popup.builder().idx(7L).likeCount(1).build();
         PopupLike popupLike = PopupLike.builder().idx(8L).popup(popup).build();
-        when(popupRepository.findByPopupIdx(7L)).thenReturn(Optional.of(popup));
+        when(popupRepository.findForUpdate(7L)).thenReturn(Optional.of(popup));
         when(popupLikeRepository.findByCustomerIdxAndPopupIdx(3L, 7L)).thenReturn(Optional.of(popupLike));
 
         popupService.togglePopupLike(user, 7L);

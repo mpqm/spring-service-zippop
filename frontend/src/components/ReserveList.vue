@@ -40,6 +40,8 @@
 </template>
 
 <script setup>
+import { useNow } from "@/composables/useNow";
+const currentTime = useNow();
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
@@ -53,7 +55,7 @@ const authStore = useAuthStore();
 // props 정의(reserve, showControl)
 const props = defineProps({
   reserve: Object,
-  showControl: Boolean,
+  showControl: { type: Number, default: 0 },
 });
 
 // 문자열을 자르기: 'T' 이후 부분 가져오기
@@ -78,7 +80,7 @@ const goReserve = () => {
 const isReserveActive = (reserve) => {
   const start = new Date(reserve?.reserveStartTime).getTime();
   const end = new Date(reserve?.reserveEndTime).getTime();
-  const now = Date.now();
+  const now = currentTime.value;
   return Number.isFinite(start) && Number.isFinite(end) && now >= start && now < end;
 };
 

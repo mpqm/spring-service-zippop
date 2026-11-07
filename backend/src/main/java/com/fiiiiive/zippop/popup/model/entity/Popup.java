@@ -2,6 +2,7 @@ package com.fiiiiive.zippop.popup.model.entity;
 
 import com.fiiiiive.zippop.account.model.entity.Company;
 import com.fiiiiive.zippop.cart.model.entity.Cart;
+import com.fiiiiive.zippop.global.base.InputValidationException;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.enums.PopupStatus;
@@ -12,7 +13,6 @@ import com.fiiiiive.zippop.popup.model.dto.GetPopupRes;
 import com.fiiiiive.zippop.popup.model.dto.UpdatePopupReq;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -68,7 +68,7 @@ public class Popup extends BaseEntity {
     // Setter
     @Setter
     @Column(nullable = false)
-    @Positive(message = "총 인원수는 1명 이상이어야 합니다.")
+    @PositiveOrZero(message = "잔여 인원수는 0 이상이어야 합니다.")
     private Integer totalPeople;
 
     @Setter
@@ -121,6 +121,7 @@ public class Popup extends BaseEntity {
             LocalDate endDate,
             Company company
     ) {
+        com.fiiiiive.zippop.global.web.RequestValidation.dates(startDate, endDate);
         return Popup.builder()
                 .companyEmail(companyEmail)
                 .name(name)
@@ -139,6 +140,13 @@ public class Popup extends BaseEntity {
 
     // Update
     public Popup update(UpdatePopupReq req){
+        com.fiiiiive.zippop.global.web.RequestValidation.dates(req.getPopupStartDate(), req.getPopupEndDate());
+        for (Reserve reserve : reserveList) {
+            if (reserve.getStartTime().toLocalDate().isBefore(req.getPopupStartDate())
+                    || reserve.getEndTime().isAfter(req.getPopupEndDate().plusDays(1).atStartOfDay())) {
+                throw new InputValidationException("기존 예약을 포함하는 운영 기간을 설정해주세요.");
+            }
+        }
         this.name = req.getPopupName();
         this.content = req.getPopupContent();
         this.address = req.getPopupAddress();

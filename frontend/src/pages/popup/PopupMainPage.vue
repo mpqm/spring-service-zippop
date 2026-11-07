@@ -4,7 +4,7 @@
     <main class="lyt-root lyt-home">
       <section class="ctn-hero">
         <div class="ctn-herocopy">
-          <span class="txt-eyebrow">POP-UP, WITHOUT THE WAIT</span>
+          <span class="txt-eyebrow">팝업 방문을 한곳에서</span>
           <h1 class="txt-maintitle">기다림은 줄이고,<br>팝업의 기회는 <em>더 길게.</em></h1>
           <p class="txt-herodesc">진행 중인 팝업은 사전 예약과 굿즈 선구매로 편하게 방문하고, 종료된 팝업의 남은 재고는 온라인에서 다시 만나보세요.</p>
         </div>
@@ -14,12 +14,12 @@
       </section>
       <section class="ctn-discover">
         <div class="ctn-sectionheading">
-          <div><span class="txt-eyebrow">OPEN NOW</span><h2>지금 열려 있는 팝업</h2></div>
+          <div><span class="txt-eyebrow">진행 중</span><h2>지금 열려 있는 팝업</h2></div>
           <span class="txt-sectionhint">예약부터 굿즈 구매까지 한 번에</span>
         </div>
         <div class="ctn-inputsearch">
-          <input class="ipt-default" v-model="searchQuery" type="text" aria-label="팝업 검색" placeholder="브랜드, 지역, 카테고리로 검색" @keyup.enter="getPopups()" />
-          <button class="btn-default" @click="getPopups()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+          <input class="ipt-default" v-model="searchQuery" type="text" aria-label="팝업 검색" placeholder="브랜드, 지역, 카테고리로 검색" @keyup.enter="submitSearch()" />
+          <button class="btn-default" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
         </div>
       </section>
       <div class="lyt-cardgrid" v-if="popupList && popupList.length">
@@ -46,7 +46,6 @@ import { usePopupStore } from "@/stores/popupStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useAccountStore } from "@/stores/accountStore";
 import { onMounted, ref } from "vue";
-import { Icon } from "@iconify/vue";
 
 const popupStore = usePopupStore();
 const authStore = useAuthStore();
@@ -62,10 +61,15 @@ const hideBtns = ref(false);
 
 onMounted(async () => {
   if (authStore.isLoggedIn && accountStore.userInfo.role === "ROLE_CUSTOMER") {
-    await popupStore.getMyLikedPopups(0, 100);
+    await popupStore.refreshAllLikedPopups();
   }
   await getPopups();
 });
+
+const submitSearch = () => {
+  currentPage.value = 0;
+  return getPopups();
+};
 
 const getPopups = async (reset = false) => {
   if (reset) {

@@ -13,7 +13,7 @@ import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.fiiiiive.zippop.global.web.RequestValidation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,21 @@ public class GoodsService {
     private final GoodsRepository goodsRepository;
     private final PopupRepository popupRepository;
     private final PopupPolicy popupPolicy;
+
+    @Transactional(readOnly = true)
+    public void validateCreateGoods(CustomUserDetails user, Long popupIdx) {
+        Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.GOODS_REGISTER_FAIL_NOT_FOUND_STORE));
+        popupPolicy.validateOwner(popup, user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> validateUpdateGoods(CustomUserDetails user, Long goodsIdx) {
+        Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.GOODS_UPDATE_FAIL_NOT_FOUND));
+        popupPolicy.validateOwner(goods.getPopup(), user);
+        return goods.getGoodsImageList().stream().map(com.fiiiiive.zippop.goods.model.entity.GoodsImage::getUrl).toList();
+    }
 
     // 굿즈 등록
     @Transactional
@@ -77,7 +92,7 @@ public class GoodsService {
         // 굿즈 페이지(popupIdx, keyword, pageable) 조회
         // if: 굿즈 검색 조회
         // else: 굿즈 목록 조회
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Goods> goodsPage;
         if(keyword != null) {
             goodsPage = goodsRepository.findAllByPopupIdxAndKeyword(popupIdx, keyword, pageable);
@@ -123,6 +138,10 @@ public class GoodsService {
 
         // 팝업 소유 확인
         popupPolicy.validateOwner(goods.getPopup(), user);
+
+        if (!goods.getCartItemList().isEmpty() || !goods.getOrdersDetailList().isEmpty()) {
+            throw new ServiceException(ServiceErrorCode.GOODS_DELETE_FAIL_REFERENCED);
+        }
         
         // 굿즈 삭제
         goodsRepository.delete(goods);

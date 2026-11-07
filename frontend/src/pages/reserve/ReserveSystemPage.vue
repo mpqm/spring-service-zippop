@@ -19,8 +19,8 @@
     <div class="wrp-split">
       <div class="ctn-l50">
         <div class="ctn-inputsearch">
-          <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="fetchGoodsList()" />
-          <button class="btn-default" @click="fetchGoodsList()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+          <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="submitSearch()" />
+          <button class="btn-default" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
         </div>
         <div class="wrp-list" v-if="goodsList && goodsList.length">
           <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="Number(popupIdx)" :showControl="true" @cartUpdated="handleCartUpdated" />
@@ -105,7 +105,6 @@ import { useAuthStore } from '@/stores/authStore';
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { IAMPORT_NAME, IAMPORT_PG, IAMPORT_UID, BACKEND_URL, BACKEND_SOCKET_URL } from '@/config';
-import { Icon } from '@iconify/vue';
 import { isSocketLoginRequiredError, redirectToLogin } from '@/utils/errorHandling';
 
 const goodsStore = useGoodsStore();
@@ -141,6 +140,7 @@ const showQueueOverlay = ref(true);
 const queueStatusMessage = ref("대기열 연결 중...");
 let statusInterval = null;
 let reconnectTimer = null;
+let accessExpiryTimer = null;
 let leavingForAuthentication = false;
 
 onMounted(async () => {
@@ -156,7 +156,7 @@ onMounted(async () => {
   window.addEventListener('beforeunload', handleBeforeUnload);
 
   statusInterval = setInterval(() => {
-    if (showQueueOverlay.value && stompClient.value?.connected && reserveIdx.value) {
+    if (stompClient.value?.connected && reserveIdx.value) {
       stompClient.value.send("/pub/reserve/status", {}, JSON.stringify({ reserveIdx: reserveIdx.value }));
     }
   }, 10000);
@@ -171,6 +171,7 @@ onBeforeUnmount(() => {
   }
   clearInterval(statusInterval);
   clearTimeout(reconnectTimer);
+  clearTimeout(accessExpiryTimer);
 });
 
 const handleBeforeUnload = () => {
@@ -193,6 +194,7 @@ const connectWebSocket = () => {
     stompClient.value.subscribe(`/user/queue/reserve/status`, (message) => {
       try {
         const data = JSON.parse(message.body);
+        if (String(data.reserveIdx) !== String(reserveIdx.value)) return;
         queueStatusMessage.value = data.statusMessage;
 
         if (data.access === 1) {
@@ -204,8 +206,23 @@ const connectWebSocket = () => {
           }
           showQueueOverlay.value = false;
           reserveStore.access = true;
+          clearTimeout(accessExpiryTimer);
+          const remaining = Number(data.accessExpiresAt) - Date.now();
+          if (Number.isFinite(remaining)) {
+            accessExpiryTimer = setTimeout(() => {
+              reserveStore.access = false;
+              showQueueOverlay.value = true;
+              queueStatusMessage.value = '예약 입장 유효시간이 만료되었습니다.';
+              toast.error(queueStatusMessage.value);
+            }, Math.max(0, remaining));
+          }
         } else if (data.access === 0) {
           showQueueOverlay.value = true;
+        } else if (data.access === 4) {
+          clearTimeout(accessExpiryTimer);
+          reserveStore.access = false;
+          showQueueOverlay.value = true;
+          toast.error(data.statusMessage);
         } else if (data.access === 2 || data.access === 3) {
           toast.error(data.statusMessage);
           router.push("/");
@@ -250,6 +267,7 @@ const cancelReserve = async () => {
   }
   clearInterval(statusInterval);
   clearTimeout(reconnectTimer);
+  clearTimeout(accessExpiryTimer);
   const res = await reserveStore.cancelReserve(reserveIdx.value);
   reserveStore.access = false;
   if (res.success) {
@@ -269,6 +287,11 @@ const getPopup = async () => {
     router.push("/");
     toast.error(res.message);
   }
+};
+
+const submitSearch = () => {
+  currentPage.value = 0;
+  return fetchGoodsList();
 };
 
 const fetchGoodsList = async (reset = false) => {
@@ -327,7 +350,11 @@ const updateTotalPrice = () => {
 
 const removeCartItem = async (cartItemIdx) => {
   if (currentCartIdx.value) {
-    await cartStore.deleteCartItem(currentCartIdx.value, cartItemIdx);
+    const res = await cartStore.deleteCartItem(currentCartIdx.value, cartItemIdx);
+    if (!res.success) {
+      toast.error(res.message || '장바구니 상품을 삭제하지 못했습니다.');
+      return;
+    }
     cartItemList.value = cartItemList.value.filter(i => i.cartItemIdx !== cartItemIdx);
     cartStore.cartItemList = cartItemList.value;
     updateTotalPrice();
@@ -342,8 +369,28 @@ const transformGoodsList = (customData) => {
   }, {});
 };
 
-const payment = () => {
+const payment = async () => {
+  if (!reserveStore.access) {
+    toast.error('예약 입장 유효시간을 확인해 주세요.');
+    return;
+  }
   if (typeof window.IMP === 'undefined') { return; }
+  const goods = cartItemList.value.map(item => ({
+    goodsIdx: Number(item.getGoodsRes.goodsIdx),
+    count: Number(item.count),
+  }));
+  const issued = await ordersStore.issueMerchantUid({
+    popupIdx: Number(route.params.popupIdx),
+    reserveIdx: Number(route.params.reserveIdx),
+    goods,
+    usedPoint: 0,
+  });
+  if (!issued.success) { toast.error(issued.message); return; }
+  const paymentIntent = issued.result;
+  if (!paymentIntent?.merchantUid || !Number.isFinite(Number(paymentIntent.amount))) {
+    toast.error('결제 정보를 발급하지 못했습니다.');
+    return;
+  }
   const IMP = window.IMP;
   IMP.init(IAMPORT_UID);
 
@@ -351,9 +398,9 @@ const payment = () => {
 
   IMP.request_pay({
     pg: IAMPORT_PG,
-    merchant_uid: "order_no_" + new Date().getMilliseconds(),
+    merchant_uid: paymentIntent.merchantUid,
     name: IAMPORT_NAME,
-    amount: totalPrice.value,
+    amount: Number(paymentIntent.amount),
     buyer_email: userInfo.value.email,
     buyer_name: userInfo.value.name,
     custom_data: transformGoodsList(customData),
@@ -361,6 +408,7 @@ const payment = () => {
     if (rsp.success) {
       const res = await ordersStore.createOrder({
         impUid: rsp.imp_uid,
+        merchantUid: paymentIntent.merchantUid,
         popupIdx: Number(route.params.popupIdx),
         reserveIdx: Number(route.params.reserveIdx),
       });

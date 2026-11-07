@@ -21,7 +21,7 @@ import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.fiiiiive.zippop.global.web.RequestValidation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -42,12 +42,25 @@ public class PopupService {
     private final PopupReviewRepository popupReviewRepository;
     private final ReserveRepository reserveRepository;
 
+    @Transactional
+    public void validateCreatePopup(CustomUserDetails user) {
+        companyRepository.findByCompanyIdx(user.getCompanyId()).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.STORE_REGISTER_FAIL_UNAUTHORIZED));
+    }
+
+    @Transactional
+    public List<String> validateUpdatePopup(CustomUserDetails user, Long popupIdx) {
+        Popup popup = popupRepository.findByPopupIdxAndCompanyEmail(popupIdx, user.getEmail()).orElseThrow(
+                () -> new ServiceException(ServiceErrorCode.STORE_UPDATE_FAIL_NOT_FOUND));
+        return popup.getPopupImageList().stream().map(com.fiiiiive.zippop.popup.model.entity.PopupImage::getUrl).toList();
+    }
+
     // 팝업 등록
     @Transactional
     public void createPopup(CustomUserDetails user, CreatePopupReq req, List<String> urls) throws ServiceException {
 
         // 기업 회원 조회(companyIdx)
-        Company company = companyRepository.findByCompanyIdx(user.getIdx()).orElseThrow(
+        Company company = companyRepository.findByCompanyIdx(user.getCompanyId()).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.STORE_REGISTER_FAIL_UNAUTHORIZED)
         );
 
@@ -88,10 +101,10 @@ public class PopupService {
         // 팝업 페이지 조회(keyword, status, pageable) 조회
         // true : 검색어가 있는 경우, 상태에 따라 활성화된 또는 종료된 팝업을 검색어로 페이징 조회
         // false : 검색어가 없는 경우, 상태에 따라 활성화 또는 종료된 팝업을 페이징 조회
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Popup> popupPage = (keyword != null)
-                ? popupRepository.findAllByKeywordAndStatus(keyword, PopupStatus.valueOf(status), pageable)
-                : popupRepository.findAllByStatus(PopupStatus.valueOf(status), pageable);
+                ? popupRepository.findAllByKeywordAndStatus(keyword, RequestValidation.enumValue(PopupStatus.class, status), pageable)
+                : popupRepository.findAllByStatus(RequestValidation.enumValue(PopupStatus.class, status), pageable);
 
         // DTO 반환 (데이터가 없어도 빈 페이지 반환)
         return Popup.toDtoPage(popupPage);
@@ -136,19 +149,19 @@ public class PopupService {
     public void togglePopupLike(CustomUserDetails user, Long popupIdx) throws ServiceException {
 
         // 팝업 인덱스로 조회 없으면 예외 반환
-        Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
+        Popup popup = popupRepository.findForUpdate(popupIdx).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.STORE_LIKE_FAIL_NOT_FOUND)
         );
 
         // 좋아요 증감
         // if : 이미 좋아요를 누른 상태면 좋아요 삭제 / 팝업 좋아요 개수 감소(직접 쿼리 활용)
         // else : 좋아요를 처음 누르면 좋아요 저장 / 팝업 좋아요 개수 증가(직접 쿼리 활용)
-        Optional<PopupLike> popupLike = popupLikeRepository.findByCustomerIdxAndPopupIdx(user.getIdx(), popupIdx);
+        Optional<PopupLike> popupLike = popupLikeRepository.findByCustomerIdxAndPopupIdx(user.getCustomerId(), popupIdx);
         if (popupLike.isPresent()) {
             popupLikeRepository.delete(popupLike.get());
             popup.decreaseLike();
         } else {
-            popupLikeRepository.save(PopupLike.create(popup, user.getIdx()));
+            popupLikeRepository.save(PopupLike.create(popup, user.getCustomerId()));
             popup.increaseLike();
         }
 
@@ -158,8 +171,8 @@ public class PopupService {
     public Page<GetPopupRes> getMyLikedPopups(CustomUserDetails user, int page, int size) throws ServiceException {
 
         // 팝업 페이지 조회(customerIdx)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
-        Page<PopupLike> popupLikePage = popupLikeRepository.findAllByCustomerIdx(user.getIdx(), pageable);
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Page<PopupLike> popupLikePage = popupLikeRepository.findAllByCustomerIdx(user.getCustomerId(), pageable);
 
         return PopupLike.toDtoPage(popupLikePage);
 
@@ -171,7 +184,7 @@ public class PopupService {
 
         // 결제 조회(popupIdx, customerIdx, 결제 완료 상태) / 결제한 사람만 리뷰 작성 가능
         boolean reviewable = ordersDetailRepository.existsReviewableOrder(
-                user.getIdx(),
+                user.getCustomerId(),
                 popupIdx,
                 List.of(OrdersStatus.STOCK_COMPLETE, OrdersStatus.RESERVE_COMPLETE)
         );
@@ -185,15 +198,15 @@ public class PopupService {
         );
 
         // 팝업 리뷰 조회(popupIdx, customerIdx) / 팝업 하나당 한개의 리뷰 작성 가능
-        Optional<PopupReview> popupReviewOpt = popupReviewRepository.findByPopupIdxAndCustomerIdx(popupIdx, user.getIdx());
+        Optional<PopupReview> popupReviewOpt = popupReviewRepository.findByPopupIdxAndCustomerIdx(popupIdx, user.getCustomerId());
         if(popupReviewOpt.isPresent()) {
             throw new ServiceException(ServiceErrorCode.STORE_REVIEW_FAIL_DUPLICATED);
         }
 
         PopupReview popupReview = PopupReview.create(
-                user.getIdx(),
-                user.getName(),
+                user.getCustomerId(),
                 user.getEmail(),
+                user.getName(),
                 popup,
                 req.getReviewTitle(),
                 req.getReviewContent(),
@@ -208,7 +221,7 @@ public class PopupService {
     public Page<GetPopupReviewRes> getPopupReviews(Long popupIdx, int page, int size) throws ServiceException {
 
         // 리뷰 조회(popupIdx, pageable)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<PopupReview> popupReviewPage = popupReviewRepository.findAllByPopupIdx(popupIdx, pageable);
         return PopupReview.toDtoPage(popupReviewPage);
 
@@ -218,15 +231,16 @@ public class PopupService {
     public Page<GetPopupReviewRes> getMyReviews(CustomUserDetails user, int page, int size) throws ServiceException {
 
         // 리뷰 목록 조회(customerIdx, pageable)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
-        Page<PopupReview> popupReviewPage = popupReviewRepository.findAllByCustomerIdx(user.getIdx(), pageable);
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Page<PopupReview> popupReviewPage = popupReviewRepository.findAllByCustomerIdx(user.getCustomerId(), pageable);
 
         return PopupReview.toDtoPage(popupReviewPage);
 
     }
 
+    @Transactional
     public void updatePopupStatus(){
-        List<Popup> popupList = popupRepository.findAllByEndDate(LocalDate.now());
+        List<Popup> popupList = popupRepository.findAllByStatusAndEndDateBefore(PopupStatus.POPUP_START, LocalDate.now());
 
         for (Popup popup : popupList) {
             popup.endPopup();
@@ -238,12 +252,14 @@ public class PopupService {
 
         // 예약 조회(status, popupIdx, keyword)
         Page<Reserve> reservePage;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if(popupIdx == null){
             if(keyword == null) reservePage = reserveRepository.findAllByStatus(PopupStatus.POPUP_START, pageable);
             else reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, PopupStatus.POPUP_START, pageable);
         } else {
-            reservePage = reserveRepository.findAllByPopupIdx(popupIdx, PopupStatus.POPUP_START, pageable);
+            reservePage = keyword == null
+                    ? reserveRepository.findAllByPopupIdx(popupIdx, PopupStatus.POPUP_START, pageable)
+                    : reserveRepository.findAllByPopupIdxAndKeyword(popupIdx, keyword, PopupStatus.POPUP_START, pageable);
         }
 
         return Reserve.toDtoPage(reservePage);

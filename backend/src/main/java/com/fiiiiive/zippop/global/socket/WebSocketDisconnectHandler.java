@@ -22,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSocketDisconnectHandler {
 
+    private final ReserveSocketSessions sessions;
     private final RedisQueueService redisQueueService;
     private final JwtService jwtService;
     private final ReserveRepository reserveRepository;
@@ -37,7 +38,9 @@ public class WebSocketDisconnectHandler {
             log.info("WebSocket 연결 끊김 감지 - 사용자: {}", userEmail);
 
             // 오늘 날짜의 모든 예약 조회 (진행 중인 예약만)
-            List<Reserve> activeReserves = reserveRepository.findAllByStartDate(java.time.LocalDate.now());
+            ReserveSocketSessions.Membership member = sessions.disconnectLast(headerAccessor.getSessionId());
+            if (member == null || !member.email().equals(userEmail)) return;
+            List<Reserve> activeReserves = reserveRepository.findById(member.reserveId()).stream().toList();
 
             for (Reserve reserve : activeReserves) {
                 // 예약 종료 시간이 지났으면 스킵
@@ -67,7 +70,9 @@ public class WebSocketDisconnectHandler {
                         messagingTemplate.convertAndSendToUser(
                                 firstWaitingUser,
                                 "/queue/reserve/status",
-                                GetReserveQueueRes.toDataWithToken(workingTotal, waitingTotal, statusMessage, 1, wToken)
+                                GetReserveQueueRes.toDataWithToken(reserve.getIdx(), workingTotal, waitingTotal,
+                                        statusMessage, 1, wToken,
+                                        redisQueueService.getWorkingAccessExpiresAt(reserve.getWorkingUUID(), firstWaitingUser))
                         );
                         log.info("승격 알림 전송 완료 - 사용자: {}", firstWaitingUser);
                     }

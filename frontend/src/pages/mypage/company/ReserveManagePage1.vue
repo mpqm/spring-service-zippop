@@ -2,8 +2,8 @@
   <div>
     <div class="ctn-split">
       <div class="ctn-inputsearch">
-        <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="getCompanyPopups()" />
-        <button class="btn-default" @click="getCompanyPopups()">
+        <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="submitSearch()" />
+        <button class="btn-default" @click="submitSearch()">
           <Icon icon="ic:search" width="20px" height="20px" />팝업 검색
         </button>
       </div>
@@ -12,9 +12,27 @@
       <div v-if="popupList && popupList.length">
         <PopupTable :popups="popupList" :showControl="showControl" />
       </div>
-      <div class="txt-null" v-else>
-        <p>등록된 팝업 스토어가 없습니다.</p>
-      </div>
+      <AppEmptyState
+        v-else-if="loadError"
+        title="팝업 목록을 불러오지 못했습니다"
+        description="잠시 후 다시 시도해 주세요."
+        action-label="다시 시도"
+        @action="getCompanyPopups()"
+      />
+      <AppEmptyState
+        v-else-if="searchQuery.trim()"
+        title="검색 결과가 없습니다"
+        description="검색어를 바꾸거나 전체 팝업 목록으로 돌아가세요."
+        action-label="검색 초기화"
+        @action="getCompanyPopups(true)"
+      />
+      <AppEmptyState
+        v-else
+        title="예약을 관리할 팝업이 없습니다"
+        description="팝업을 등록한 뒤 예약 일정을 만들면 이곳에서 예약 현황을 볼 수 있어요."
+        to="/mypage/company/popup/register"
+        action-label="팝업 등록하기"
+      />
       <AppPagination :currentPage="currentPage" :totalPages="totalPages" :hideBtns="hideBtns" @page-changed="changePage" />
     </div>
   </div>
@@ -22,10 +40,10 @@
 
 <script setup>
 import PopupTable from "@/components/PopupTable.vue";
+import AppEmptyState from "@/components/AppEmptyState.vue";
 import AppPagination from "@/components/AppPagination.vue";
 import { usePopupStore } from "@/stores/popupStore";
 import { onMounted, ref } from "vue";
-import { Icon } from '@iconify/vue';
 
 const popupStore = usePopupStore();
 
@@ -37,10 +55,16 @@ const pageSize = ref(8);
 const totalElements = ref(0);
 const totalPages = ref(0);
 const hideBtns = ref(false);
+const loadError = ref(false);
 
 onMounted(async () => {
   await getCompanyPopups();
 });
+
+const submitSearch = () => {
+  currentPage.value = 0;
+  return getCompanyPopups();
+};
 
 const getCompanyPopups = async (reset = false) => {
   if (reset) {
@@ -49,11 +73,13 @@ const getCompanyPopups = async (reset = false) => {
   }
   const res = await popupStore.getCompanyPopups(searchQuery.value, currentPage.value, pageSize.value);
   if (res.success) {
+    loadError.value = false;
     totalElements.value = popupStore.totalElements;
     totalPages.value = popupStore.totalPages;
     popupList.value = popupStore.popupList;
     hideBtns.value = false;
   } else {
+    loadError.value = true;
     popupList.value = [];
     totalElements.value = 0;
     totalPages.value = 0;

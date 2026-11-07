@@ -1,53 +1,49 @@
 package com.fiiiiive.zippop.global.security.oauth2;
 
-import com.fiiiiive.zippop.account.model.entity.Customer;
-import com.fiiiiive.zippop.account.repository.CustomerRepository;
-import com.fiiiiive.zippop.global.enums.RoleType;
+import com.fiiiiive.zippop.account.model.entity.*;
+import com.fiiiiive.zippop.account.repository.*;
+import com.fiiiiive.zippop.account.model.enums.RoleType;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.*;
+import org.springframework.security.oauth2.core.*;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.UUID;
 
-import java.util.Objects;
-import java.util.Optional;
-
-@Slf4j
-@Service
-@RequiredArgsConstructor
+@Service @RequiredArgsConstructor
 public class CustomOAuth2Service extends DefaultOAuth2UserService {
+    private final AccountRepository accounts;
+    private final CustomerRepository customers;
+    private final OAuthIdentityRepository identities;
+    private final CustomUserDetailService users;
+    private final PasswordEncoder encoder;
 
-    private final CustomerRepository customerRepository;
-
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("getAttributes : {}",oAuth2User.getAttributes());
-        String provider = userRequest.getClientRegistration().getRegistrationId();
-        OAuth2UserInfo oAuth2UserInfo = null;
-        if(provider.equals("kakao")){
-            log.info("카카오 로그인");
-            oAuth2UserInfo = new KakaoUserDetails(oAuth2User.getAttributes());
+    @Override @Transactional
+    public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
+        OAuth2User remote = super.loadUser(request);
+        String provider = request.getClientRegistration().getRegistrationId();
+        if (!"kakao".equals(provider)) throw failure("지원하지 않는 소셜 로그인입니다.");
+        OAuth2UserInfo info = new KakaoUserDetails(remote.getAttributes());
+        Account account = identities.findByProviderAndProviderSubject(provider, info.getProviderId())
+                .map(OAuthIdentity::getAccount).orElse(null);
+        if (account == null) {
+            if (info.getEmail() == null || info.getEmail().isBlank()) throw failure("이메일 제공 동의가 필요합니다.");
+            if (accounts.findByEmail(info.getEmail()).isPresent())
+                throw failure("이미 가입된 이메일입니다. 기존 계정으로 로그인해주세요.");
+            account = accounts.save(Account.builder().userId("oauth_" + UUID.randomUUID().toString().replace("-", "").substring(0,14))
+                    .email(info.getEmail()).password(encoder.encode(UUID.randomUUID().toString()))
+                    .role(RoleType.ROLE_CUSTOMER).name(info.getName() == null ? "고객" : info.getName())
+                    .phoneNumber("").address("").isEmailAuth(true).isInActive(false).build());
+            customers.saveAndFlush(Customer.builder().account(account).point(3000).build());
+            identities.save(OAuthIdentity.builder().provider(provider).providerSubject(info.getProviderId()).account(account).build());
         }
-        String email = Objects.requireNonNull(oAuth2UserInfo).getEmail();
-        String name = oAuth2UserInfo.getName();
-        Optional<Customer> result = customerRepository.findByCustomerEmail(email);
-        Customer customer;
-        if(result.isEmpty()){
-            customer = Customer.builder()
-                    .role(RoleType.ROLE_CUSTOMER)
-                    .name(name)
-                    .email(email)
-                    .point(3000)
-                    .isEmailAuth(true)
-                    .build();
-            customerRepository.save(customer);
-        } else {
-            customer = result.get();
-        }
-        return new CustomOauth2UserDetails(customer, oAuth2User.getAttributes());
+        if (!account.isEnabled()) throw failure("비활성화된 계정입니다.");
+        return new CustomOauth2UserDetails(users.loadByAccountId(account.getIdx()), remote.getAttributes());
     }
-
+    private OAuth2AuthenticationException failure(String message) {
+        return new OAuth2AuthenticationException(new OAuth2Error("invalid_account"), message);
+    }
 }

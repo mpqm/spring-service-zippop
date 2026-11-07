@@ -32,7 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     "http://localhost:8081",
                     "http://localhost:8480"
                 )
-                .addInterceptors(new CustomHandshakeInterceptor(jwtService))
+                .addInterceptors(new CustomHandshakeInterceptor())
                 .withSockJS();
     }
 

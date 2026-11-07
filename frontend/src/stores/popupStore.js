@@ -9,6 +9,10 @@ export const usePopupStore = defineStore("popup", {
     popupList: [],
     popup: {},
     likeList: [],
+    likePageList: [],
+    likeTotalElements: 0,
+    likeTotalPages: 0,
+    likesLoadedCompletely: false,
     reviewList: [],
     totalElements: null,
     totalPages: null,
@@ -41,7 +45,7 @@ export const usePopupStore = defineStore("popup", {
     // 팝업 목록 조회(flag = 팝업 마감 여부, 키워드 검색)
     async getPopups(status, keyword, page, size) {
       try {
-        const res = await axios.get(`${BACKEND_URL}/popups?status=${status}&keyword=${keyword ?? ""}&page=${page}&size=${size}`);
+        const res = await axios.get(`${BACKEND_URL}/popups?status=${status}&keyword=${encodeURIComponent(keyword ?? "")}&page=${page}&size=${size}`);
         this.popupList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;
@@ -54,7 +58,7 @@ export const usePopupStore = defineStore("popup", {
     // 팝업 목록 조회(기업 등록, 키워드 검색) - GET /api/v1/company/popups
     async getCompanyPopups(keyword, page, size) {
       try {
-        const res = await axios.get(`${BACKEND_URL}/company/popups?keyword=${keyword ?? ""}&page=${page}&size=${size}`, { withCredentials: true },);
+        const res = await axios.get(`${BACKEND_URL}/company/popups?keyword=${encodeURIComponent(keyword ?? "")}&page=${page}&size=${size}`, { withCredentials: true },);
         this.popupList = res.data.result.content;
         this.totalElements = res.data.result.totalElements;
         this.totalPages = res.data.result.totalPages;
@@ -91,6 +95,7 @@ export const usePopupStore = defineStore("popup", {
         const index = this.likeList.findIndex(popup => popup.popupIdx === popupIdx);
         if (index > -1) {
           this.likeList.splice(index, 1);
+          this.likePageList = this.likePageList.filter(popup => popup.popupIdx !== popupIdx);
         } else {
           const currentPopup = this.popupList.find(popup => popup.popupIdx === popupIdx) || this.popup;
           if (currentPopup && currentPopup.popupIdx === popupIdx) {
@@ -107,11 +112,38 @@ export const usePopupStore = defineStore("popup", {
     async getMyLikedPopups(page, size) {
       try {
         const res = await axios.get(`${BACKEND_URL}/popups/likes/me?page=${page}&size=${size}`, {withCredentials: true,} );
-        this.likeList = res.data.result.content || [];
+        const result = res.data.result;
+        this.likePageList = result.content || [];
+        this.likeTotalElements = result.totalElements;
+        this.likeTotalPages = result.totalPages;
+        const cached = new Map(this.likeList.map(popup => [popup.popupIdx, popup]));
+        this.likePageList.forEach(popup => cached.set(popup.popupIdx, popup));
+        this.likeList = [...cached.values()];
         return res.data;
       } catch (error) {
-        this.likeList = [];
+        this.likePageList = [];
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
+      }
+    },
+
+    async refreshAllLikedPopups(size = 100) {
+      const allLikes = [];
+      let page = 0;
+      let totalPages = 1;
+      try {
+        while (page < totalPages) {
+          const res = await axios.get(`${BACKEND_URL}/popups/likes/me?page=${page}&size=${size}`, { withCredentials: true });
+          const result = res.data.result;
+          allLikes.push(...(result.content || []));
+          totalPages = result.totalPages || 0;
+          page += 1;
+        }
+        this.likeList = allLikes;
+        this.likesLoadedCompletely = true;
+        return { success: true, result: allLikes };
+      } catch (error) {
+        this.likesLoadedCompletely = false;
+        return error.response?.data ?? { success: false, message: '좋아요 목록을 불러오지 못했습니다.' };
       }
     },
 

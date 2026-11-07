@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 		"spring.datasource.password=",
 		"spring.datasource.driver-class-name=org.h2.Driver",
 		"spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
+		"spring.jpa.hibernate.ddl-auto=create-drop",
 		"spring.security.jwt.secret=01234567890123456789012345678901",
 		"redis.host=127.0.0.1",
 		"redis.port=6379",

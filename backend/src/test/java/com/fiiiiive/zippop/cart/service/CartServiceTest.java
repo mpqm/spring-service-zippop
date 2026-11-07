@@ -43,7 +43,7 @@ class CartServiceTest {
     @BeforeEach
     void setUp() {
         cartService = new CartService(cartRepository, goodsRepository, cartItemRepository, cartPolicy);
-        user = CustomUserDetails.builder().idx(3L).email("user@test.com").role("ROLE_CUSTOMER").build();
+        user = CustomUserDetails.builder().accountId(99L).customerId(3L).email("user@test.com").role("ROLE_CUSTOMER").build();
         popup = Popup.builder().idx(7L).build();
         goods = Goods.builder().idx(11L).popup(popup).name("굿즈").price(1000).amount(10).build();
     }

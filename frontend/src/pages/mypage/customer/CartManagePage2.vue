@@ -58,7 +58,6 @@ import { useOrdersStore } from '@/stores/ordersStore';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import { Icon } from '@iconify/vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -105,6 +104,11 @@ const getCartItems = async () => {
 };
 
 const updateCartItemQuantity = async (cartItemIdx, direction) => {
+  const current = cartItemList.value.find(item => item.cartItemIdx === cartItemIdx);
+  if (direction === -1 && current?.count <= 1) {
+    await removeCartItem(cartItemIdx);
+    return;
+  }
   const operation = direction === -1 ? "DECREMENT" : "INCREMENT";
   const res = await cartStore.updateCartItemQuantity(route.params.cartIdx, cartItemIdx, operation);
   if (res.success) {
@@ -126,7 +130,8 @@ const updateCartItemQuantity = async (cartItemIdx, direction) => {
 };
 
 const removeCartItem = async (cartItemIdx) => {
-  await cartStore.deleteCartItem(route.params.cartIdx, cartItemIdx);
+  const res = await cartStore.deleteCartItem(route.params.cartIdx, cartItemIdx);
+  if (!res.success) { toast.error(res.message); return; }
   cartItemList.value = cartItemList.value.filter(i => i.cartItemIdx !== cartItemIdx);
   cartStore.cartItemList = cartItemList.value;
   usePoints.value = false;

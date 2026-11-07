@@ -13,6 +13,12 @@ import java.util.*;
 
 public interface PopupRepository extends JpaRepository<Popup, Long> {
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Popup p WHERE p.idx = :popupIdx")
+    Optional<Popup> findForUpdate(@Param("popupIdx") Long popupIdx);
+
+    List<Popup> findAllByStatusAndEndDateBefore(PopupStatus status, LocalDate date);
+
     // 팝업 인덱스로 조회
     @Query("SELECT p FROM Popup p " +
             "WHERE p.idx = :popupIdx")

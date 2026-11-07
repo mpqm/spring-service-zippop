@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CustomAuthenticationInterceptorTest {
 
-    private final CustomAuthenticationInterceptor interceptor = new CustomAuthenticationInterceptor();
+    private final CustomAuthenticationInterceptor interceptor = new CustomAuthenticationInterceptor(new ReserveSocketSessions());
     private final ExecutorSubscribableChannel channel = new ExecutorSubscribableChannel();
 
     @Test

@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -46,7 +44,7 @@ public class ReserveService {
     public CreateReserveRes createReserve(CustomUserDetails user, CreateReserveReq req) throws ServiceException {
 
         // 팝업 조회(popupIdx)
-        Popup popup = popupRepository.findById(req.getPopupIdx()).orElseThrow(
+        Popup popup = popupRepository.findForUpdate(req.getPopupIdx()).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_NOT_FOUND_STORE)
         );
 
@@ -62,7 +60,9 @@ public class ReserveService {
             throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED);
         }
         if (!req.getReserveStartDate().equals(req.getReserveStartTime().toLocalDate())
-                || !req.getReserveEndTime().isAfter(req.getReserveStartTime())) {
+                || !req.getReserveEndTime().isAfter(req.getReserveStartTime())
+                || req.getReserveStartTime().toLocalDate().isBefore(popup.getStartDate())
+                || req.getReserveEndTime().isAfter(popup.getEndDate().plusDays(1).atStartOfDay())) {
             throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_TIME_CLOSED);
         }
 
@@ -82,12 +82,12 @@ public class ReserveService {
 
         // Redis 큐 초기화 (예약 종료 시간까지 유효)
         long expirationMinutes = java.time.Duration.between(java.time.LocalDateTime.now(), req.getReserveEndTime()).toMinutes();
-        if (expirationMinutes <= 0) {
+        if (!req.getReserveEndTime().isAfter(LocalDateTime.now())) {
             throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_TIME_CLOSED);
         }
 
-        redisQueueService.createQueue(workingUUID, expirationMinutes);
-        redisQueueService.createQueue(waitingUUID, expirationMinutes);
+        redisQueueService.createQueueUntil(workingUUID, req.getReserveEndTime());
+        redisQueueService.createQueueUntil(waitingUUID, req.getReserveEndTime());
         log.info("Redis 큐 생성 완료 - workingUUID: {}, waitingUUID: {}, 만료시간: {}분", workingUUID, waitingUUID, expirationMinutes);
 
         // 팝업 저장(총 예약자 수 - 남은 예약자 수)
@@ -108,7 +108,7 @@ public class ReserveService {
         );
 
         // 스토어 조회(storeIdx)
-        Popup popup = popupRepository.findById(reserve.getPopup().getIdx()).orElseThrow(
+        Popup popup = popupRepository.findForUpdate(reserve.getPopup().getIdx()).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.RESERVE_DELETE_FAIL_NOT_FOUND_STORE)
         );
 
@@ -144,8 +144,13 @@ public class ReserveService {
             throw new ServiceException(ServiceErrorCode.RESERVE_ENROLL_FAIL_CLOSED);
         }
 
+        if (reserve.getPopup().getStatus() != PopupStatus.POPUP_START) {
+            throw new ServiceException(ServiceErrorCode.RESERVE_ENROLL_FAIL_CLOSED);
+        }
         String email = user.getEmail();
         String response;
+
+        redisQueueService.expireWorkingMembers(reserve.getWorkingUUID());
 
         // 예약 접속 큐에 사용자가 이미 있는지 확인 (재접속)
         Long currentWorkingOrder = redisQueueService.getOrder(reserve.getWorkingUUID(), user.getEmail());
@@ -172,7 +177,8 @@ public class ReserveService {
 
         // 신규 사용자 - Redisson 분산 락으로 원자적 등록
         long timestamp = System.currentTimeMillis();
-        boolean enrolledToWorking = redisQueueService.enrollQueueWithLock(reserve.getWorkingUUID(),email,timestamp,reserve.getTotalPeople());
+        boolean enrolledToWorking = redisQueueService.enrollFairQueueWithLock(
+                reserve.getWorkingUUID(), reserve.getWaitingUUID(), email, timestamp, reserve.getTotalPeople());
         
         if (enrolledToWorking) {
             // 예약큐에 등록 성공시 토큰 발급
@@ -189,7 +195,6 @@ public class ReserveService {
             log.info("[Redisson Lock] 예약큐 등록 성공: {}, 순번: {}", email, workingOrder != null ? workingOrder + 1 : 1);
         } else {
             // 예약큐가 가득 참 -> 대기큐에 등록
-            redisQueueService.enrollQueue(reserve.getWaitingUUID(), email, timestamp);
             Long waitingOrder = redisQueueService.getOrder(reserve.getWaitingUUID(), email);
             response = "예약 대기 등록 -> 대기 순번: " + (waitingOrder != null ? waitingOrder + 1 : 1);
             log.info("[Redisson Lock] 대기큐 등록: {}, 순번: {}", email, waitingOrder != null ? waitingOrder + 1 : 1);
@@ -255,7 +260,8 @@ public class ReserveService {
                 messagingTemplate.convertAndSendToUser(
                     firstWaitingUser,
                     "/queue/reserve/status",
-                    GetReserveQueueRes.toDataWithToken(workingTotal, waitingTotal, statusMessage, 1, wtoken)
+                    GetReserveQueueRes.toDataWithToken(reserveIdx, workingTotal, waitingTotal, statusMessage, 1, wtoken,
+                            redisQueueService.getWorkingAccessExpiresAt(reserve.getWorkingUUID(), firstWaitingUser))
                 );
 
                 log.info("승격 알림 전송 완료: {}, 토큰 포함", firstWaitingUser);
@@ -279,15 +285,16 @@ public class ReserveService {
                 () -> new ServiceException(ServiceErrorCode.RESERVE_SEARCH_STATUS_FAIL_NOT_FOUND)
         );
 
-        if (reserve.getEndTime().isBefore(LocalDateTime.now())) {
+        if (!reserve.getEndTime().isAfter(LocalDateTime.now()) || reserve.getPopup().getStatus() == PopupStatus.POPUP_END) {
             messagingTemplate.convertAndSendToUser(
                     principal.getName(),
                     "/queue/reserve/status",
-                    GetReserveQueueRes.toData("0", "0", "예약이 종료되었습니다.", 2)
+                    GetReserveQueueRes.toData(reserve.getIdx(), "0", "0", "예약이 종료되었습니다.", 2)
             );
             return;
         }
 
+        redisQueueService.expireWorkingMembers(reserve.getWorkingUUID());
         // 접속자
         String workingTotal = redisQueueService.getSize(reserve.getWorkingUUID());
 
@@ -305,7 +312,13 @@ public class ReserveService {
         if (currentWorkingOrder == null) {
             Long currentWaitingOrder = redisQueueService.getOrder(reserve.getWaitingUUID(), principal.getName());
             if (currentWaitingOrder == null) {
-                throw new ServiceException(ServiceErrorCode.RESERVE_ACCESS_FAIL);
+                messagingTemplate.convertAndSendToUser(
+                        principal.getName(),
+                        "/queue/reserve/status",
+                        GetReserveQueueRes.toData(reserve.getIdx(), workingTotal, waitingTotal,
+                                "예약 입장 유효시간이 만료되었습니다.", 4)
+                );
+                return;
             }
             statusMessage = "예약접속자: " + workingTotal + " 예약대기자: " + waitingTotal + " 현재 순번: " + (currentWaitingOrder + 1);
             access = 0; // 대기 큐에 있으면 access는 0
@@ -325,17 +338,24 @@ public class ReserveService {
         }
 
         // 특정 사용자에게만 상태 정보 전송
+        String wtoken = access == 1 ? jwtService.createReserveToken(reserve.getIdx(), principal.getName()) : null;
+        Long accessExpiresAt = access == 1
+                ? redisQueueService.getWorkingAccessExpiresAt(reserve.getWorkingUUID(), principal.getName())
+                : null;
         messagingTemplate.convertAndSendToUser(
                 principal.getName(), // 사용자 이름으로 특정 사용자에게 전송
                 "/queue/reserve/status",
-                GetReserveQueueRes.toData(workingTotal, waitingTotal, statusMessage, access)
+                access == 1
+                        ? GetReserveQueueRes.toDataWithToken(reserve.getIdx(), workingTotal, waitingTotal,
+                                statusMessage, access, wtoken, accessExpiresAt)
+                        : GetReserveQueueRes.toData(reserve.getIdx(), workingTotal, waitingTotal, statusMessage, access)
         );
         log.info("Sending message to user: {}, {}", principal.getName(), access);
     }
 
     // Redis 큐 관리 (만료 큐 정리 + 복구)
     public void managementReserveQueue() {
-        List<Reserve> reserveList = reserveRepository.findAllByStartDate(LocalDate.now());
+        List<Reserve> reserveList = reserveRepository.findQueuesForMaintenance(LocalDateTime.now());
         if (reserveList.isEmpty()) {
             return;
         }
@@ -344,29 +364,32 @@ public class ReserveService {
 
         for (Reserve reserve : reserveList) {
             // 종료 시간이 지난 예약: Redis 큐 삭제 (정리)
-            if (reserve.getEndTime().isBefore(now)) {
+            if (!reserve.getEndTime().isAfter(now) || reserve.getPopup().getStatus() == PopupStatus.POPUP_END) {
                 redisQueueService.deleteQueue(reserve.getWorkingUUID(), reserve.getWaitingUUID());
                 log.debug("만료 큐 삭제 - 예약 ID: {}, 스토어: {}", reserve.getIdx(), reserve.getPopup().getName());
                 continue;
             }
 
-            // 진행 중인 예약: 큐가 없으면 생성 (복구)
-            // 현재 시간부터 종료 시간까지의 남은 시간 계산 (분 단위)
-            long remainingMinutes = Duration.between(now, reserve.getEndTime()).toMinutes();
-
-            if (remainingMinutes <= 0) {
-                continue;
+            redisQueueService.expireWorkingMembers(reserve.getWorkingUUID());
+            String promoted;
+            while ((promoted = redisQueueService.firstWaitingUserToWorking(
+                    reserve.getWorkingUUID(), reserve.getWaitingUUID(), reserve.getTotalPeople())) != null) {
+                messagingTemplate.convertAndSendToUser(promoted, "/queue/reserve/status",
+                        GetReserveQueueRes.toDataWithToken(reserve.getIdx(), redisQueueService.getSize(reserve.getWorkingUUID()),
+                                redisQueueService.getSize(reserve.getWaitingUUID()), "예약 승격", 1,
+                                jwtService.createReserveToken(reserve.getIdx(), promoted),
+                                redisQueueService.getWorkingAccessExpiresAt(reserve.getWorkingUUID(), promoted)));
             }
 
             // Working Queue 확인 및 생성 (큐가 없으면 생성)
             if (!redisQueueService.existQueue(reserve.getWorkingUUID())) {
-                redisQueueService.createQueue(reserve.getWorkingUUID(), remainingMinutes);
+                redisQueueService.createQueueUntil(reserve.getWorkingUUID(), reserve.getEndTime());
                 log.debug("Working 큐 생성: {} (예약 ID: {})", reserve.getWorkingUUID(), reserve.getIdx());
             }
 
             // Waiting Queue 확인 및 생성 (큐가 없으면 생성)
             if (!redisQueueService.existQueue(reserve.getWaitingUUID())) {
-                redisQueueService.createQueue(reserve.getWaitingUUID(), remainingMinutes);
+                redisQueueService.createQueueUntil(reserve.getWaitingUUID(), reserve.getEndTime());
                 log.debug("Waiting 큐 생성: {} (예약 ID: {})", reserve.getWaitingUUID(), reserve.getIdx());
             }
         }

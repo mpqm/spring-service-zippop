@@ -89,6 +89,8 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.GET, "/api/v1/goods/*").permitAll()
                             // 주문
                             .requestMatchers(HttpMethod.POST, "/api/v1/orders").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.POST, "/api/v1/orders/merchant-id").hasAuthority("ROLE_CUSTOMER")
+                            .requestMatchers(HttpMethod.POST, "/api/v1/orders/payments/webhook").permitAll()
                             .requestMatchers(HttpMethod.PATCH, "/api/v1/orders/*").hasAnyAuthority("ROLE_COMPANY", "ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/api/v1/orders").hasAuthority("ROLE_CUSTOMER")
                             .requestMatchers(HttpMethod.GET, "/api/v1/orders/*").hasAuthority("ROLE_CUSTOMER")
@@ -128,11 +130,6 @@ public class SecurityConfig {
         loginFilter.setAuthenticationFailureHandler(customLoginFailureHandler);
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-    }
-
-    @Bean
-    BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean

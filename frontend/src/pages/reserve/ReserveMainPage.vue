@@ -4,8 +4,8 @@
     <div class="lyt-root">
       <h2 class="txt-maintitle txt-pagetitle">팝업 스토어 예약 일정을 확인하세요</h2>
       <div class="ctn-inputsearch">
-        <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="getPopups()" />
-        <button class="btn-default" @click="getPopups()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+        <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="submitSearch()" />
+        <button class="btn-default" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
       </div>
       <div class="lyt-cardgrid" v-if="popupList && popupList.length">
         <PopupCard v-for="popup in popupList" :key="popup.popupIdx" :popup="popup" main-tab="reserve" />
@@ -30,7 +30,6 @@ import PopupCard from "@/components/PopupCard.vue";
 import AppPagination from "@/components/AppPagination.vue";
 import { usePopupStore } from "@/stores/popupStore";
 import { onMounted, ref } from "vue";
-import { Icon } from "@iconify/vue";
 
 const popupStore = usePopupStore();
 
@@ -45,6 +44,11 @@ const searchQuery = ref("");
 onMounted(async () => {
   await getPopups();
 });
+
+const submitSearch = () => {
+  currentPage.value = 0;
+  return getPopups();
+};
 
 const getPopups = async (reset = false) => {
   if (reset) {

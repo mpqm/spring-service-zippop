@@ -1,94 +1,47 @@
 package com.fiiiiive.zippop.global.crypto;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtService {
-
     private final SecretKey secretKey;
-
-    // JwtService 생성자
     public JwtService(@Value("${spring.security.jwt.secret}") String secret) {
-        this.secretKey = new SecretKeySpec(
-                secret.getBytes(StandardCharsets.UTF_8),
-                Jwts.SIG.HS256.key().build().getAlgorithm()
-        );
+        secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     }
-
-    // 엑세스 토큰 생성
-    public String createAccessToken(Long id, String username, String role, String userId) {
-        return Jwts.builder()
-                .claim("idx", id)
-                .claim("username", username)
-                .claim("role", role)
-                .claim("userId", userId)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1)) // 1시간 1000 * 60 * 60 * 1
-                .signWith(secretKey)
-                .compact();
+    public String createAccessToken(CustomUserDetails user) { return accountToken(user, "access", 3600000L); }
+    public String createRefreshToken(CustomUserDetails user) { return accountToken(user, "refresh", 432000000L); }
+    private String accountToken(CustomUserDetails user, String type, long lifetime) {
+        return Jwts.builder().subject(user.getAccountId().toString()).id(UUID.randomUUID().toString())
+                .claim("version", 2).claim("tokenType", type).claim("authVersion", user.getAuthVersion())
+                .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + lifetime))
+                .signWith(secretKey).compact();
     }
-
-    // 리프레시 토큰 생성
-    public String createRefreshToken(String userId) {
-        return Jwts.builder()
-                .claim("userId", userId)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 5 )) // 5일 1000 * 60 * 60 * 24 * 5
-                .signWith(secretKey)
-                .compact();
-    }
-
-    // 예약 토큰 생성
     public String createReserveToken(Long reserveIdx, String email) {
-        return Jwts.builder()
-                .claim("reserveIdx", reserveIdx)
-                .claim("email", email)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 10))
-                .signWith(secretKey)
-                .compact();
+        return Jwts.builder().claim("reserveIdx", reserveIdx).claim("email", email)
+                .issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 600000L))
+                .signWith(secretKey).compact();
     }
-
-    // 토큰 만료 시간 확인
+    private Claims claims(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+    }
+    public Long getAccountId(String token, String type) {
+        Claims claims = claims(token);
+        if (!Integer.valueOf(2).equals(claims.get("version", Integer.class))
+                || !type.equals(claims.get("tokenType", String.class)) || claims.getSubject() == null)
+            throw new UnsupportedJwtException("다시 로그인해주세요.");
+        return Long.valueOf(claims.getSubject());
+    }
+    public long getAuthVersion(String token) { return claims(token).get("authVersion", Long.class); }
     public Boolean isExpired(String token) {
-        try{
-            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
-        } catch (ExpiredJwtException expiredJwtException){
-            return true;
-        }
+        try { return claims(token).getExpiration().before(new Date()); }
+        catch (ExpiredJwtException exception) { return true; }
     }
-
-    // 멤버 인덱스 조회
-    public Long getIdx(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("idx", Long.class);
-    }
-
-    // 멤버 Id 조회
-    public String getUserId(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", String.class);
-    }
-
-    // 멤버 이름 조회
-    public String getUsername(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
-    }
-
-    // 멤버 역할 조회
-    public String getRole(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
-    }
-
-    // 멤버 이메일 조회
-    public String getEmail(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
-    }
-
 }

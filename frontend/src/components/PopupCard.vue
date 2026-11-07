@@ -44,13 +44,14 @@
 </template>
 
 <script setup>
+import { useNow } from "@/composables/useNow";
+const currentTime = useNow();
 import { computed, defineProps, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { usePopupStore } from "@/stores/popupStore";
 import { useToast } from "vue-toastification";
 import { useAuthStore } from "@/stores/authStore";
 import { useAccountStore } from "@/stores/accountStore";
-import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   popup: Object,
@@ -71,7 +72,7 @@ const isReservationActive = computed(() => {
   if (!props.popup?.popupStartDate || !props.popup?.popupEndDate) return false;
   const start = new Date(`${props.popup.popupStartDate}T00:00:00`).getTime();
   const end = new Date(`${props.popup.popupEndDate}T23:59:59.999`).getTime();
-  const now = Date.now();
+  const now = currentTime.value;
   return Number.isFinite(start) && Number.isFinite(end)
     && now >= start
     && now <= end

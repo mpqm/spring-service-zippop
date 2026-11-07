@@ -31,7 +31,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             for (Cookie cookie : cookies) {
                 if ("RTOKEN".equals(cookie.getName()) && cookie.getValue() != null) {
                     try {
-                        redisTemplate.delete("refreshToken:" + jwtService.getUserId(cookie.getValue()));
+                        redisTemplate.delete("refreshToken:" + jwtService.getAccountId(cookie.getValue(), "refresh"));
                     } catch (JwtException | IllegalArgumentException ignored) {
                         // Invalid refresh tokens are treated as already logged out.
                     }

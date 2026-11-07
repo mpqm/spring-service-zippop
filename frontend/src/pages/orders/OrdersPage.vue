@@ -62,7 +62,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import { Icon } from '@iconify/vue';
 import { IAMPORT_NAME, IAMPORT_PG, IAMPORT_UID } from '@/config';
 import { useAccountStore } from '@/stores/accountStore';
 import { useCartStore } from '@/stores/cartStore';
@@ -85,7 +84,8 @@ onMounted(async () => {
 const formatPrice = value => Number(value || 0).toLocaleString('ko-KR');
 const transformGoodsList = list => Object.assign({}, ...list);
 
-const payment = () => {
+const payment = async () => {
+  if (paying.value) return;
   if (!paymentData.value.popupIdx) {
     toast.error('팝업 정보를 찾을 수 없습니다. 장바구니에서 다시 시도해 주세요.');
     return;
@@ -96,12 +96,28 @@ const payment = () => {
   }
 
   paying.value = true;
+  const issued = await ordersStore.issueMerchantUid({
+    popupIdx: Number(paymentData.value.popupIdx),
+    reserveIdx: null,
+    goods: goodsList.value.map(item => ({
+      goodsIdx: Number(item.getGoodsRes.goodsIdx),
+      count: Number(item.count),
+    })),
+    usedPoint: Number(paymentData.value.totalDiscount || 0),
+  });
+  if (!issued.success) { paying.value = false; toast.error(issued.message); return; }
+  const paymentIntent = issued.result;
+  if (!paymentIntent?.merchantUid || !Number.isFinite(Number(paymentIntent.amount))) {
+    paying.value = false;
+    toast.error('결제 정보를 발급하지 못했습니다.');
+    return;
+  }
   window.IMP.init(IAMPORT_UID);
   window.IMP.request_pay({
     pg: IAMPORT_PG,
-    merchant_uid: `zippop_${Date.now()}`,
+    merchant_uid: paymentIntent.merchantUid,
     name: IAMPORT_NAME,
-    amount: paymentData.value.finalOrderPrice,
+    amount: Number(paymentIntent.amount),
     buyer_email: userInfo.value.email,
     buyer_name: userInfo.value.name,
     buyer_tel: userInfo.value.phoneNumber,
@@ -115,6 +131,7 @@ const payment = () => {
 
     const res = await ordersStore.createOrder({
       impUid: rsp.imp_uid,
+      merchantUid: paymentIntent.merchantUid,
       popupIdx: Number(paymentData.value.popupIdx),
     });
     if (!res.success) {

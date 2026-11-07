@@ -16,14 +16,14 @@ public class CartPolicy {
 
     // 장바구니 소유자 확인
     public void validateCartOwner(Cart cart, CustomUserDetails user) {
-        if (!Objects.equals(cart.getCustomer().getIdx(), user.getIdx())){
+        if (!Objects.equals(cart.getCustomer().getIdx(), user.getCustomerId())){
             throw new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
         }
     }
 
     // 장바구니아이템 소유자 확인
     public void validateCartItemOwner(CartItem cartItem, CustomUserDetails user) {
-        if (!Objects.equals(cartItem.getCart().getCustomer().getIdx(), user.getIdx())){
+        if (!Objects.equals(cartItem.getCart().getCustomer().getIdx(), user.getCustomerId())){
             throw new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
         }
     }

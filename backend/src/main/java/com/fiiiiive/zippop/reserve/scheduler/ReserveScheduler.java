@@ -13,8 +13,8 @@ public class ReserveScheduler {
 
     private final ReserveService reserveService;
 
-    // 매 10분마다 실행: Redis 큐 관리 (만료 큐 정리 + 복구)
-    @Scheduled(cron = "0 */10 * * * *")
+    // 만료 입장자 정리, 대기자 승격 및 종료 큐 정리
+    @Scheduled(cron = "*/10 * * * * *", zone = "Asia/Seoul")
     public void manageReserveQueue() {
         try {
             log.info("[예약 큐 관리 스케줄러]");

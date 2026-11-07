@@ -36,6 +36,7 @@ test("account store matches every account controller endpoint", async () => {
   await store.getAccount();
   await store.updateAccount(request);
   await store.resetPassword(request);
+  await store.completePasswordReset(request);
   await store.findUserId(request);
   await store.findUserPassword(request);
   await store.activateAccount(request);
@@ -43,10 +44,11 @@ test("account store matches every account controller endpoint", async () => {
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/accounts`, request);
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/me`, { withCredentials: true });
   expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/me`, request, { withCredentials: true });
-  expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/password/reset`, request, { withCredentials: true });
+  expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/pw/replace`, request, { withCredentials: true });
+  expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/pw/reset`, request);
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/id/find`, request);
-  expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/password/find`, request);
-  expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/me/activation`, request, { withCredentials: true });
+  expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/pw/find`, request);
+  expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/accounts/activation`, request, { withCredentials: true });
 });
 
 test("goods store matches goods CRUD endpoints", async () => {
@@ -61,7 +63,7 @@ test("goods store matches goods CRUD endpoints", async () => {
 
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/goods`, request, { withCredentials: true });
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/goods/5`);
-  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/goods?popupIdx=7&keyword=키링&page=0&size=8`);
+  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/goods?popupIdx=7&keyword=${encodeURIComponent('키링')}&page=0&size=8`);
   expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/goods/5`, request, { withCredentials: true });
   expect(axios.delete).toHaveBeenCalledWith(`${BACKEND_URL}/goods/5`, { withCredentials: true });
 });
@@ -84,8 +86,8 @@ test("popup store matches popup, like, and review endpoints", async () => {
 
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/popups`, request, { withCredentials: true });
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/popups/7`);
-  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/popups?status=POPUP_START&keyword=서울&page=0&size=8`);
-  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/company/popups?keyword=서울&page=0&size=8`, { withCredentials: true });
+  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/popups?status=POPUP_START&keyword=${encodeURIComponent('서울')}&page=0&size=8`);
+  expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/company/popups?keyword=${encodeURIComponent('서울')}&page=0&size=8`, { withCredentials: true });
   expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/popups/7`, request, { withCredentials: true });
   expect(axios.delete).toHaveBeenCalledWith(`${BACKEND_URL}/popups/7`, { withCredentials: true });
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/popups/7/likes`, {}, { withCredentials: true });
@@ -113,7 +115,14 @@ test("orders, reserve, and payout stores match customer and company endpoints", 
   const orders = useOrdersStore();
   const reserve = useReserveStore();
   const payout = usePayoutStore();
+  const paymentIntent = {
+    popupIdx: 7,
+    reserveIdx: null,
+    goods: [{ goodsIdx: 5, count: 2 }],
+    usedPoint: 1000,
+  };
   axios.get.mockResolvedValue(ok(page));
+  await orders.issueMerchantUid(paymentIntent);
   await orders.createOrder({ impUid: "imp", popupIdx: 7 });
   await orders.updateOrders(9, { status: "STOCK_CANCEL" });
   await orders.getOrder(9);
@@ -128,6 +137,7 @@ test("orders, reserve, and payout stores match customer and company endpoints", 
   await reserve.getCompanyPopupReserves(7, 0, 10);
   await payout.getCompanyPopupPayouts(7, 0, 10);
 
+  expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/orders/merchant-id`, paymentIntent, { withCredentials: true });
   expect(axios.post).toHaveBeenCalledWith(`${BACKEND_URL}/orders`, { impUid: "imp", popupIdx: 7 }, { withCredentials: true });
   expect(axios.patch).toHaveBeenCalledWith(`${BACKEND_URL}/orders/9`, { status: "STOCK_CANCEL" }, { withCredentials: true });
   expect(axios.get).toHaveBeenCalledWith(`${BACKEND_URL}/company/popups/7/orders/9`, { withCredentials: true });

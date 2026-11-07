@@ -3,6 +3,7 @@ package com.fiiiiive.zippop.global.security.filter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiiiiive.zippop.global.crypto.JwtService;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,12 +29,13 @@ class CustomLogoutSuccessHandlerTest {
         JwtService jwtService = new JwtService(SECRET);
         CustomLogoutSuccessHandler handler = new CustomLogoutSuccessHandler(redisTemplate, jwtService, objectMapper);
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setCookies(new Cookie("RTOKEN", jwtService.createRefreshToken("customer01")));
+        request.setCookies(new Cookie("RTOKEN", jwtService.createRefreshToken(
+                CustomUserDetails.builder().accountId(99L).userId("customer01").build())));
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         handler.onLogoutSuccess(request, response, null);
 
-        verify(redisTemplate).delete("refreshToken:customer01");
+        verify(redisTemplate).delete("refreshToken:99");
         JsonNode body = objectMapper.readTree(response.getContentAsString(StandardCharsets.UTF_8));
         assertThat(body.get("success").asBoolean()).isTrue();
         assertThat(body.get("code").asInt()).isEqualTo(1006);
