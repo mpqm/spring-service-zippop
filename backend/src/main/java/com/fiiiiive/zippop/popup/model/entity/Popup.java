@@ -121,7 +121,6 @@ public class Popup extends BaseEntity {
             LocalDate endDate,
             Company company
     ) {
-        com.fiiiiive.zippop.global.web.RequestValidation.dates(startDate, endDate);
         return Popup.builder()
                 .companyEmail(companyEmail)
                 .name(name)
@@ -140,7 +139,6 @@ public class Popup extends BaseEntity {
 
     // Update
     public Popup update(UpdatePopupReq req){
-        com.fiiiiive.zippop.global.web.RequestValidation.dates(req.getPopupStartDate(), req.getPopupEndDate());
         for (Reserve reserve : reserveList) {
             if (reserve.getStartTime().toLocalDate().isBefore(req.getPopupStartDate())
                     || reserve.getEndTime().isAfter(req.getPopupEndDate().plusDays(1).atStartOfDay())) {

@@ -3,6 +3,7 @@
     <AppHeader></AppHeader>
     <div class="lyt-root">
       <div class="wrp-split">
+        <button class="btn-tagaction btn-goodsback" type="button" aria-label="뒤로가기" title="뒤로가기" @click="router.back()"><Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />뒤로가기</button>
         <div class="ctn-l50">
           <ImageSlider class="image-slider" :fileUrls="fileUrls"></ImageSlider>
         </div>
@@ -14,7 +15,6 @@
             <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" class="ico-accent" />{{ goods.goodsPrice }}원</button>
             <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" class="ico-accent" />{{ goods.goodsAmount }}개</button>
             <button class="btn-tagaction" type="button" aria-label="장바구니 담기" title="장바구니 담기" :disabled="!showCart" :aria-disabled="!showCart" @click="createCart"><Icon icon="iconoir:cart" width="20px" height="20px" />장바구니</button>
-            <button class="btn-tagaction" type="button" aria-label="뒤로가기" title="뒤로가기" @click="router.back()"><Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />뒤로가기</button>
           </div>
         </div>
       </div>
@@ -27,7 +27,6 @@
 import AppHeader from "@/components/AppHeader.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import ImageSlider from "@/components/ImageSlider.vue";
-import { Icon } from "@iconify/vue";
 import { ref, onMounted } from "vue";
 import { useGoodsStore } from "@/stores/goodsStore";
 import { usePopupStore } from "@/stores/popupStore";

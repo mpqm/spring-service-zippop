@@ -61,6 +61,7 @@ public enum ServiceErrorCode {
     GOODS_DELETE_FAIL_NOT_FOUND(5011, "팝업 스토어를 찾을 수 없어 삭제에 실패했습니다."),
     GOODS_DELETE_FAIL_INVALID_MEMBER(5012, "해당 팝업 스토어를 등록한 기업 회원이 아닙니다."),
     GOODS_REGISTER_FAIL_INVALID_STATUS(5013, "유효하지 않은 상태값 입니다."),
+    GOODS_DELETE_FAIL_REFERENCED(5014, "장바구니 또는 주문 이력이 있는 굿즈는 삭제할 수 없습니다."),
     ORDERS_PAY_FAIL(6001, "결제에 실패했습니다."),
     ORDERS_PAY_FAIL_INVALID_ROLE(6002, "기업회원은 결제를 진행할 수 없습니다."),
     ORDERS_PAY_FAIL_NOT_FOUND_MEMBER(6003, "결제 정보에 해당하는 유저가 없습니다."),

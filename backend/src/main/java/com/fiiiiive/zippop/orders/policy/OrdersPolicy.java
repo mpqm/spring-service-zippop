@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.orders.policy;
 
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.enums.RoleType;
+import com.fiiiiive.zippop.account.model.enums.RoleType;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

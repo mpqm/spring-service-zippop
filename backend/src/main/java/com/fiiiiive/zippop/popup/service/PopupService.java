@@ -21,7 +21,7 @@ import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import com.fiiiiive.zippop.global.web.RequestValidation;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -96,15 +96,15 @@ public class PopupService {
     }
 
     // 팝업 목록 조회
-    public Page<GetPopupRes> getPopups(String status, String keyword, int page, int size) throws ServiceException {
+    public Page<GetPopupRes> getPopups(PopupStatus status, String keyword, int page, int size) throws ServiceException {
 
         // 팝업 페이지 조회(keyword, status, pageable) 조회
         // true : 검색어가 있는 경우, 상태에 따라 활성화된 또는 종료된 팝업을 검색어로 페이징 조회
         // false : 검색어가 없는 경우, 상태에 따라 활성화 또는 종료된 팝업을 페이징 조회
-        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Popup> popupPage = (keyword != null)
-                ? popupRepository.findAllByKeywordAndStatus(keyword, RequestValidation.enumValue(PopupStatus.class, status), pageable)
-                : popupRepository.findAllByStatus(RequestValidation.enumValue(PopupStatus.class, status), pageable);
+                ? popupRepository.findAllByKeywordAndStatus(keyword, status, pageable)
+                : popupRepository.findAllByStatus(status, pageable);
 
         // DTO 반환 (데이터가 없어도 빈 페이지 반환)
         return Popup.toDtoPage(popupPage);
@@ -171,7 +171,7 @@ public class PopupService {
     public Page<GetPopupRes> getMyLikedPopups(CustomUserDetails user, int page, int size) throws ServiceException {
 
         // 팝업 페이지 조회(customerIdx)
-        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<PopupLike> popupLikePage = popupLikeRepository.findAllByCustomerIdx(user.getCustomerId(), pageable);
 
         return PopupLike.toDtoPage(popupLikePage);
@@ -221,7 +221,7 @@ public class PopupService {
     public Page<GetPopupReviewRes> getPopupReviews(Long popupIdx, int page, int size) throws ServiceException {
 
         // 리뷰 조회(popupIdx, pageable)
-        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<PopupReview> popupReviewPage = popupReviewRepository.findAllByPopupIdx(popupIdx, pageable);
         return PopupReview.toDtoPage(popupReviewPage);
 
@@ -231,7 +231,7 @@ public class PopupService {
     public Page<GetPopupReviewRes> getMyReviews(CustomUserDetails user, int page, int size) throws ServiceException {
 
         // 리뷰 목록 조회(customerIdx, pageable)
-        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<PopupReview> popupReviewPage = popupReviewRepository.findAllByCustomerIdx(user.getCustomerId(), pageable);
 
         return PopupReview.toDtoPage(popupReviewPage);
@@ -252,7 +252,7 @@ public class PopupService {
 
         // 예약 조회(status, popupIdx, keyword)
         Page<Reserve> reservePage;
-        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if(popupIdx == null){
             if(keyword == null) reservePage = reserveRepository.findAllByStatus(PopupStatus.POPUP_START, pageable);
             else reservePage = reserveRepository.findAllByKeywordAndStatus(keyword, PopupStatus.POPUP_START, pageable);

@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Builder
 public class GetCartRes {
+
     private Long cartIdx;
     private Long popupIdx;
     private String companyEmail;
@@ -27,4 +28,5 @@ public class GetCartRes {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<GetPopupImageRes> getPopupImageResList;
+
 }

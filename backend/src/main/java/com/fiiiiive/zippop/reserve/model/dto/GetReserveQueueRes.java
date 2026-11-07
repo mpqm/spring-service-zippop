@@ -7,14 +7,17 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GetReserveQueueRes {
+    private Long reserveIdx;
     private String waitingTotal;
     private String workingTotal;
     private String statusMessage;
     private Integer access;
     private String wtoken; // 토큰 추가
+    private Long accessExpiresAt;
 
-    public static GetReserveQueueRes toData(String workingTotal, String waitingTotal, String statusMessage, Integer access) {
+    public static GetReserveQueueRes toData(Long reserveIdx, String workingTotal, String waitingTotal, String statusMessage, Integer access) {
         return GetReserveQueueRes.builder()
+                .reserveIdx(reserveIdx)
                 .workingTotal(workingTotal)
                 .waitingTotal(waitingTotal)
                 .statusMessage(statusMessage)
@@ -22,13 +25,17 @@ public class GetReserveQueueRes {
                 .build();
     }
 
-    public static GetReserveQueueRes toDataWithToken(String workingTotal, String waitingTotal, String statusMessage, Integer access, String wtoken) {
+    public static GetReserveQueueRes toDataWithToken(Long reserveIdx, String workingTotal, String waitingTotal,
+                                                     String statusMessage, Integer access, String wtoken,
+                                                     Long accessExpiresAt) {
         return GetReserveQueueRes.builder()
+                .reserveIdx(reserveIdx)
                 .workingTotal(workingTotal)
                 .waitingTotal(waitingTotal)
                 .statusMessage(statusMessage)
                 .access(access)
                 .wtoken(wtoken)
+                .accessExpiresAt(accessExpiresAt)
                 .build();
     }
 }

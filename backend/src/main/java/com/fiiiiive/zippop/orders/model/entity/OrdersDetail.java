@@ -27,6 +27,16 @@ public class OrdersDetail extends BaseEntity {
     @PositiveOrZero(message = "각 상품의 가격은 0 이상이어야 합니다.")
     private Integer eachPrice;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer quantity = 1;
+
+    @Column(nullable = false)
+    private Integer unitPrice;
+
+    @Column(nullable = false, length = 1000)
+    private String goodsName;
+
     // ManyToOne
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orders_idx")
@@ -37,9 +47,16 @@ public class OrdersDetail extends BaseEntity {
     private Goods goods;
 
 
-    public static OrdersDetail create(Orders orders, Goods goods, Integer eachPrice) {
+    public static OrdersDetail create(Orders orders, Goods goods, Integer quantity) {
+        return create(orders, goods, quantity, goods.getPrice(), goods.getName());
+    }
+
+    public static OrdersDetail create(Orders orders, Goods goods, Integer quantity, Integer unitPrice, String goodsName) {
         return OrdersDetail.builder()
-                .eachPrice(eachPrice)
+                .eachPrice(Math.multiplyExact(unitPrice, quantity))
+                .quantity(quantity)
+                .unitPrice(unitPrice)
+                .goodsName(goodsName)
                 .orders(orders)
                 .goods(goods)
                 .build();
@@ -49,6 +66,9 @@ public class OrdersDetail extends BaseEntity {
         return GetOrdersDetailRes.builder()
                 .ordersDetailIdx(this.getIdx())
                 .eachPrice(this.getEachPrice())
+                .quantity(this.getQuantity())
+                .unitPrice(this.getUnitPrice())
+                .goodsName(this.getGoodsName())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .getGoodsRes(goods.toDto())

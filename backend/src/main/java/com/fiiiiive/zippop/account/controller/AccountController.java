@@ -1,14 +1,11 @@
 package com.fiiiiive.zippop.account.controller;
 
-import com.fiiiiive.zippop.account.application.AccountFacade;
-import com.fiiiiive.zippop.account.application.EmailAuthFacade;
 import com.fiiiiive.zippop.account.model.dto.*;
-import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
+import com.fiiiiive.zippop.account.service.AccountService;
 import com.fiiiiive.zippop.global.base.SuccessCode;
 import com.fiiiiive.zippop.global.base.SuccessResponse;
-import com.fiiiiive.zippop.global.upload.FileUploadService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.global.web.RequestUrlService;
+import com.fiiiiive.zippop.global.upload.FileUploadService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +26,7 @@ import java.net.URI;
 public class AccountController {
 
     private final FileUploadService fileUploadService;
-    private final AccountFacade accountFacade;
-    private final EmailAuthFacade emailAuthFacade;
-    private final RequestUrlService requestUrlService;
+    private final AccountService accountService;
 
     // 회원가입
     @PostMapping
@@ -39,8 +34,8 @@ public class AccountController {
             @Valid @RequestPart(name = "req") CreateAccountReq req,
             @RequestPart(name = "file", required = false) MultipartFile file
     ) {
-        Boolean res = accountFacade.createAccount(req, fileUploadService.singleUpload(file));
-        return ResponseEntity.ok(new SuccessResponse<>(res ? SuccessCode.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : SuccessCode.AUTH_SIGNUP_SUCCESS));
+        CreateAccountRes res = accountService.createAccount(req, fileUploadService.singleUpload(file));
+        return ResponseEntity.ok(new SuccessResponse<>(res.getIsExistUser() ? SuccessCode.AUTH_SIGNUP_SUCCESS_IS_INACTIVE : SuccessCode.AUTH_SIGNUP_SUCCESS));
     }
 
     // 회원 정보 조회
@@ -48,7 +43,7 @@ public class AccountController {
     public ResponseEntity<SuccessResponse<GetAccountRes>> getAccount(
             @AuthenticationPrincipal CustomUserDetails user
     ) {
-        GetAccountRes res = accountFacade.getAccount(user);
+        GetAccountRes res = accountService.getAccount(user.getAccountId());
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.AUTH_GET_PROFILE_SUCCESS, res));
     }
 
@@ -59,25 +54,26 @@ public class AccountController {
             @Valid @RequestPart(name = "req") UpdateAccountReq req,
             @RequestPart(name = "file", required = false) MultipartFile file
     ) {
-        accountFacade.updateAccount(user, req, fileUploadService.singleUpload(file));
+        String image = fileUploadService.singleUpload(file);
+        accountService.updateAccount(user.getAccountId(), req, image);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.AUTH_EDIT_INFO_SUCCESS));
     }
 
     // 계정 비활성화
-    @DeleteMapping("/me")
+    @DeleteMapping("/de-activation")
     public ResponseEntity<SuccessResponse<Void>> deactivateAccount(
             @AuthenticationPrincipal CustomUserDetails user
     ) {
-        accountFacade.deactivateAccount(user);
+        accountService.deactivateAccount(user.getAccountId());
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.AUTH_INACTIVE_SUCCESS));
     }
 
     // 계정 활성화 요청
-    @PostMapping("/me/activation")
-    public ResponseEntity<SuccessResponse<Void>> requestActivation(
-            @Valid @RequestBody ActivationReq req
+    @PostMapping("/activation")
+    public ResponseEntity<SuccessResponse<Void>> activateAccount(
+            @Valid @RequestBody ActivateAccountReq req
     ) {
-        accountFacade.requestActivation(req);
+        accountService.activateAccount(req);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.AUTH_ACTIVE_SUCCESS));
     }
 
@@ -85,12 +81,10 @@ public class AccountController {
     @GetMapping("/verification")
     public ResponseEntity<Void> verifyEmail(
             @RequestParam String email,
-            @RequestParam String role,
             @RequestParam String uuid
     ) {
-        boolean verified = emailAuthFacade.verifyEmail(email, role, uuid);
-        String redirectUrl = requestUrlService.loginResultUrl(verified);
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
+        String url = accountService.verifyAccount(email, uuid);
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(url)).build();
     }
 
     // 아이디 찾기
@@ -98,26 +92,35 @@ public class AccountController {
     public ResponseEntity<SuccessResponse<Void>> findId(
             @Valid @RequestBody FindIdReq req
     ) {
-        accountFacade.findId(req);
+        accountService.findId(req);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.AUTH_FIND_ID_SUCCESS));
     }
 
     // 비밀번호 찾기
-    @PostMapping("/password/find")
-    public ResponseEntity<SuccessResponse<Void>> findPassword(
-            @Valid @RequestBody FindPasswordReq req
+    @PostMapping("/pw/find")
+    public ResponseEntity<SuccessResponse<Void>> findPw(
+            @Valid @RequestBody FindPwReq req
     ) {
-        accountFacade.findPassword(req);
+        accountService.findPw(req);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.AUTH_FIND_PW_SUCCESS));
     }
 
-    // 비밀번호 변경
-    @PatchMapping("/password/reset")
-    public ResponseEntity<SuccessResponse<Void>> resetPassword(
-            @AuthenticationPrincipal CustomUserDetails user,
-            @Valid @RequestBody ResetPasswordReq req
+    // 비밀번호 찾기 후 패스워드 리셋
+    @PatchMapping("/pw/reset")
+    public ResponseEntity<SuccessResponse<Void>> resetPw(
+            @Valid @RequestBody ResetPwReq req
     ) {
-        accountFacade.resetPassword(user, req);
+        accountService.resetPw(req);
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.AUTH_RESET_PW_SUCCESS));
+    }
+
+    // 인증 상태에서 비밀번호 변경
+    @PatchMapping("/pw/replace")
+    public ResponseEntity<SuccessResponse<Void>> replacePw(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @Valid @RequestBody ReplacePwReq req
+    ) {
+        accountService.replacePw(user, req);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.AUTH_RESET_PW_SUCCESS));
     }
 

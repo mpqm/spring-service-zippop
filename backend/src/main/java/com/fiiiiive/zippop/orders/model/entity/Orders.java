@@ -43,6 +43,30 @@ public class Orders extends BaseEntity {
     @PositiveOrZero(message = "배송비는 0 이상이어야 합니다.")
     private Integer deliveryCost;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer earnedPoint = 0;
+
+    @Column(length = 50)
+    private String recipientName;
+
+    @Column(length = 100)
+    private String recipientEmail;
+
+    @Column(length = 15)
+    private String recipientPhoneNumber;
+
+    @Column(length = 200)
+    private String shippingAddress;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private RefundStatus refundStatus = RefundStatus.NONE;
+
+    @Version
+    private Long version;
+
     // 주문 상태 (필수, 최대 50자)
     @Setter
     @Enumerated(EnumType.STRING)
@@ -64,13 +88,18 @@ public class Orders extends BaseEntity {
 
 
     // 예약 굿즈 주문 저장
-    public static Orders createReserveOrders(String impUid, Integer totalPurchasePrice, Customer customer, Popup popup) {
+    public static Orders createReserveOrders(String impUid, Integer totalPurchasePrice, Integer earnedPoint, Customer customer, Popup popup) {
         return Orders.builder()
                 .impUid(impUid)
                 .totalPrice(totalPurchasePrice)
                 .status(OrdersStatus.RESERVE_READY)
                 .deliveryCost(0)
                 .usedPoint(0)
+                .earnedPoint(earnedPoint)
+                .recipientName(customer.getName())
+                .recipientEmail(customer.getEmail())
+                .recipientPhoneNumber(customer.getPhoneNumber())
+                .shippingAddress(customer.getAddress())
                 .customer(customer)
                 .popup(popup)
                 .build();
@@ -83,6 +112,11 @@ public class Orders extends BaseEntity {
                 .status(OrdersStatus.STOCK_READY)
                 .deliveryCost(2500)
                 .usedPoint(usedPoint)
+                .earnedPoint(0)
+                .recipientName(customer.getName())
+                .recipientEmail(customer.getEmail())
+                .recipientPhoneNumber(customer.getPhoneNumber())
+                .shippingAddress(customer.getAddress())
                 .customer(customer)
                 .popup(popup)
                 .build();
@@ -94,14 +128,16 @@ public class Orders extends BaseEntity {
         return GetOrdersRes.builder()
                 .ordersIdx(this.getIdx())
                 .impUid(this.getImpUid())
-                .name(this.getCustomer().getName())
-                .email(this.getCustomer().getEmail())
-                .address(this.getCustomer().getAddress())
-                .phoneNumber(this.getCustomer().getPhoneNumber())
+                .name(this.getRecipientName())
+                .email(this.getRecipientEmail())
+                .address(this.getShippingAddress())
+                .phoneNumber(this.getRecipientPhoneNumber())
                 .usedPoint(this.getUsedPoint())
                 .totalPrice(this.getTotalPrice())
                 .orderStatus(this.getStatus().getName())
                 .deliveryCost(this.getDeliveryCost())
+                .earnedPoint(this.getEarnedPoint())
+                .refundStatus(this.getRefundStatus().name())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .getOrdersDetailResList(OrdersDetail.toDtoList(this.getOrdersDetailList()))
@@ -121,6 +157,10 @@ public class Orders extends BaseEntity {
             throw new ServiceException(ServiceErrorCode.ORDERS_CANCEL_FAIL_IS_DELIVERY);
         }
     }
+
+    public void markRefundPending() { this.refundStatus = RefundStatus.PENDING; }
+    public void markRefundCompleted() { this.refundStatus = RefundStatus.COMPLETED; }
+    public void markRefundFailed() { this.refundStatus = RefundStatus.FAILED; }
 
     public void validateOrders(){
         if(Objects.equals(this.status, OrdersStatus.STOCK_DELIVERY) || Objects.equals(this.status, OrdersStatus.RESERVE_DELIVERY)) {

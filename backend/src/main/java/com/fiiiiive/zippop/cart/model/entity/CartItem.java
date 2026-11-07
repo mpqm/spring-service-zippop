@@ -45,10 +45,7 @@ public class CartItem extends BaseEntity {
     private Goods goods;
 
     // Create
-    public static CartItem create(
-            Cart cart,
-            Goods goods
-    ) {
+    public static CartItem create(Cart cart, Goods goods) {
         return CartItem.builder()
                 .cart(cart)
                 .goods(goods)

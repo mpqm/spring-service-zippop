@@ -12,7 +12,6 @@ import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.redis.RedisAccountService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
-import com.fiiiiive.zippop.global.web.RequestUrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +31,6 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountMailSender accountMailSender;
     private final RedisAccountService redisAccountService;
-    private final RequestUrlService requestUrlService;
     private final CustomerRepository customerRepository;
     private final CompanyRepository companyRepository;
     private final HttpServletRequest request;

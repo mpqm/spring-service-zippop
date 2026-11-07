@@ -101,7 +101,6 @@ import 'vue3-easy-data-table/dist/style.css'
 import { usePopupStore } from '@/stores/popupStore'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
-import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   popups: {

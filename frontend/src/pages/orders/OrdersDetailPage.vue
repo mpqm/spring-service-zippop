@@ -72,7 +72,6 @@
 <script setup>
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from "@/components/AppFooter.vue";
-import { Icon } from "@iconify/vue";
 import { useOrdersStore } from '@/stores/ordersStore';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';

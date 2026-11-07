@@ -8,17 +8,12 @@
                     
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">아이디</label>
-                        <input class="ipt-default" v-model="userId" type="id" placeholder="아이디를 입력해 주세요." />
+                        <input class="ipt-default" v-model="userId" type="text" name="username" autocomplete="username" required placeholder="아이디를 입력해 주세요." />
                     </div>
 
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">비밀번호</label>
-                        <input class="ipt-default" v-model="password" type="password" placeholder="비밀번호를 입력해 주세요." />
-                    </div>
-
-                    <div class="ctn-split">
-                        <a class="lnk-default" href="/support">계정지원</a>
-                        <label><input type="checkbox" /> 자동 로그인 </label>
+                        <input class="ipt-default" v-model="password" type="password" name="password" autocomplete="current-password" required placeholder="비밀번호를 입력해 주세요." />
                     </div>
 
                     <div class="ctn-loginactions">
@@ -28,18 +23,21 @@
                         <router-link class="btn-default btn-loginicon" to="/signup" aria-label="회원가입" title="회원가입">
                             <Icon icon="iconoir:user-plus" width="24" height="24" />회원가입
                         </router-link>
+                        <router-link class="btn-default btn-loginicon" to="/support" aria-label="계정지원" title="계정지원">
+                            <Icon icon="iconoir:help-circle" width="24" height="24" />계정지원
+                        </router-link>
                     </div>
 
                     <div class="ctn-socialactions" aria-label="소셜 로그인">
-                        <button class="btn-sociallogin btn-kakao" type="button" aria-label="카카오 로그인" title="카카오 로그인">
+                        <button class="btn-sociallogin btn-kakao" type="button" aria-label="카카오 로그인" title="카카오 로그인" disabled aria-disabled="true">
                             <span class="ico-socialbrand"><Icon icon="simple-icons:kakaotalk" width="21" height="21" /></span>
                             <span class="txt-socialbrand">카카오</span>
                         </button>
-                        <button class="btn-sociallogin btn-google" type="button" aria-label="구글 로그인" title="구글 로그인">
+                        <button class="btn-sociallogin btn-google" type="button" aria-label="구글 로그인" title="구글 로그인" disabled aria-disabled="true">
                             <span class="ico-socialbrand"><Icon icon="logos:google-icon" width="21" height="21" /></span>
                             <span class="txt-socialbrand">구글</span>
                         </button>
-                        <button class="btn-sociallogin btn-naver" type="button" aria-label="네이버 로그인" title="네이버 로그인">
+                        <button class="btn-sociallogin btn-naver" type="button" aria-label="네이버 로그인" title="네이버 로그인" disabled aria-disabled="true">
                             <span class="ico-socialbrand"><Icon icon="simple-icons:naver" width="17" height="17" /></span>
                             <span class="txt-socialbrand">네이버</span>
                         </button>
@@ -59,7 +57,6 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from "vue-toastification";
-import { Icon } from "@iconify/vue";
 
 const authStore = useAuthStore();
 const router = useRouter();

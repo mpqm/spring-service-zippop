@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.global.validation;
 
 import com.fiiiiive.zippop.goods.model.dto.CreateGoodsReq;
+import com.fiiiiive.zippop.account.model.dto.CreateAccountReq;
 import com.fiiiiive.zippop.orders.model.dto.CreateOrdersReq;
 import com.fiiiiive.zippop.popup.model.dto.CreatePopupReq;
 import com.fiiiiive.zippop.popup.model.dto.UpdatePopupReq;
@@ -71,9 +72,26 @@ class RequestValidationContractTest {
 
         assertThat(VALIDATOR.validate(invalidOrder))
                 .extracting(violation -> violation.getPropertyPath().toString())
-                .containsExactlyInAnyOrder("impUid", "popupIdx");
+                .containsExactlyInAnyOrder("impUid", "merchantUid", "popupIdx");
         assertThat(VALIDATOR.validate(invalidReserve))
                 .extracting(violation -> violation.getPropertyPath().toString())
                 .contains("reservePeople");
+    }
+
+    @Test
+    void signupPasswordMatchesTheEightToSeventyTwoCharacterPolicy() {
+        CreateAccountReq shortPassword = CreateAccountReq.builder()
+                .role("ROLE_CUSTOMER").userId("member01").email("member@example.test")
+                .password("1234567").name("Member").phoneNumber("01012345678").address("Seoul")
+                .build();
+        CreateAccountReq validPassword = CreateAccountReq.builder()
+                .role("ROLE_CUSTOMER").userId("member01").email("member@example.test")
+                .password("12345678").name("Member").phoneNumber("01012345678").address("Seoul")
+                .build();
+
+        assertThat(VALIDATOR.validate(shortPassword))
+                .extracting(violation -> violation.getPropertyPath().toString())
+                .contains("password");
+        assertThat(VALIDATOR.validate(validPassword)).isEmpty();
     }
 }

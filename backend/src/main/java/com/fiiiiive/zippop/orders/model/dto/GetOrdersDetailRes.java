@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 public class GetOrdersDetailRes {
     private Long ordersDetailIdx;
     private Integer eachPrice;
+    private Integer quantity;
+    private Integer unitPrice;
+    private String goodsName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private GetGoodsRes getGoodsRes;

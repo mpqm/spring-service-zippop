@@ -35,6 +35,7 @@ import ReserveSystemPage from "@/pages/reserve/ReserveSystemPage.vue";
 import PayoutManagePage1 from "@/pages/mypage/company/PayoutManagePage1.vue";
 import PayoutManagePage2 from "@/pages/mypage/company/PayoutManagePage2.vue";
 import SupportPage from "@/pages/auth/SupportPage.vue";
+import PasswordResetPage from "@/pages/auth/PasswordResetPage.vue";
 import { useReserveStore } from "@/stores/reserveStore";
 import { useAuthStore } from "@/stores/authStore";
 import { useAccountStore } from "@/stores/accountStore";
@@ -48,6 +49,7 @@ const router = createRouter({
     { path: "/login", component: LoginPage },
     { path: "/signup", component: SignupPage },
     { path: "/support", component: SupportPage },
+    { path: "/password-reset", component: PasswordResetPage },
     { path: "/", component: PopupMainPage },
     { path: '/popup/:popupIdx', component: PopupDetailPage },
     { path: "/goods", component: GoodsMainPage },

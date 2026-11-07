@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.account.model.dto;
 
+import com.fiiiiive.zippop.account.model.enums.RoleType;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,8 +9,9 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CreateAccountReq {
+
     @NotNull(message = "역할은 필수 입력 항목입니다.")
-    private String role;
+    private RoleType role;
 
     @NotBlank(message = "아이디는 필수 입력 항목입니다.")
     @Size(min = 5, max = 20, message = "아이디는 5자 이상, 20자 이하여야 합니다.")
@@ -20,7 +22,7 @@ public class CreateAccountReq {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-    @Size(min = 4, message = "비밀번호는 최소 8자 이상이어야 합니다.")
+    @Size(min = 8, max = 72, message = "비밀번호는 8자 이상, 72자 이하여야 합니다.")
     private String password;
 
     @NotBlank(message = "이름은 필수 입력 항목입니다.")
@@ -36,5 +38,7 @@ public class CreateAccountReq {
     private String address;
 
     private String crn; // 기업 회원일 경우 사용
+
+    private String image;
 
 }

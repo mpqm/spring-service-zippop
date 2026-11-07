@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GetAccountRes {
+
     private String name;
     private String email;
     private String role;
@@ -15,4 +16,5 @@ public class GetAccountRes {
     private String address;
     private String crn;
     private String profileImageUrl;
+
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CreateCartReq {
+
     @NotNull(message = "상품 ID는 필수 입력 항목입니다.")
     private Long goodsIdx;
 

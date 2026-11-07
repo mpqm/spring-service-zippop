@@ -1,12 +1,12 @@
 <template>
   <div v-if="props.totalPages > 0" class="wrp-pagination">
     <!-- 그룹 이동 버튼 -->
-    <button v-if="!hideBtns && props.totalPages > pageGroupSize && currentGroup > 0" class="btn-paginationgroup" @click="prevGroup"> 
+    <button v-if="!hideBtns && props.totalPages > pageGroupSize && currentGroup > 0" type="button" class="btn-paginationgroup" aria-label="이전 페이지 묶음" @click="prevGroup"> 
       <Icon icon="ic:outline-first-page" width="16px" height="16px" />
     </button>
 
     <!-- 이전 페이지 버튼 -->
-    <button v-if="!hideBtns" class="btn-paginationmove" @click="changePage(currentPage - 1)" :disabled="currentPage === 0"> 
+    <button v-if="!hideBtns" type="button" class="btn-paginationmove" aria-label="이전 페이지" @click="changePage(currentPage - 1)" :disabled="currentPage === 0"> 
       <Icon icon="ic:round-navigate-before" width="16px" height="16px" />
     </button>
 
@@ -16,7 +16,10 @@
     <button 
       v-for="page in groupPages" 
       :key="page" 
-      :class="['btn-paginationpage', { active: page === currentPage + 1 }]" 
+      :class="['btn-paginationpage', { active: page === currentPage + 1 }]"
+      type="button"
+      :aria-label="`${page}페이지`"
+      :aria-current="page === currentPage + 1 ? 'page' : undefined"
       @click="changePage(page - 1)"
     >
       {{ page }}
@@ -24,12 +27,12 @@
   </div>
 
     <!-- 다음 페이지 버튼 -->
-    <button v-if="!hideBtns" class="btn-paginationmove" @click="changePage(currentPage + 1)" :disabled="currentPage === props.totalPages - 1">
+    <button v-if="!hideBtns" type="button" class="btn-paginationmove" aria-label="다음 페이지" @click="changePage(currentPage + 1)" :disabled="currentPage === props.totalPages - 1">
       <Icon icon="ic:round-navigate-next" width="16px" height="16px" />
     </button>
 
     <!-- 그룹 이동 버튼 -->
-    <button v-if="!hideBtns && props.totalPages > pageGroupSize && (currentGroup + 1) * pageGroupSize < props.totalPages" class="btn-paginationgroup" @click="nextGroup">
+    <button v-if="!hideBtns && props.totalPages > pageGroupSize && (currentGroup + 1) * pageGroupSize < props.totalPages" type="button" class="btn-paginationgroup" aria-label="다음 페이지 묶음" @click="nextGroup">
       <Icon icon="ic:outline-last-page" width="16px" height="16px" />
     </button>
   </div>
@@ -61,6 +64,7 @@ watch(() => props.currentPage, (newPage) => {
 
 // 페이지 변경 시 이벤트 발생
 const changePage = (newPage) => {
+  if (newPage < 0 || newPage >= props.totalPages || newPage === props.currentPage) return;
   emit('page-changed', newPage);
 };
 

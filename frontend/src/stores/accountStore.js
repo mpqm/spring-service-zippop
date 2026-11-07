@@ -53,7 +53,7 @@ export const useAccountStore = defineStore("account", {
     // 비밀번호 수정
     async resetPassword(req) {
       try {
-        const res = await axios.patch(`${BACKEND_URL}/accounts/password/reset`, req, { withCredentials: true });
+        const res = await axios.patch(`${BACKEND_URL}/accounts/pw/replace`, req, { withCredentials: true });
         return res.data;
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
@@ -73,7 +73,16 @@ export const useAccountStore = defineStore("account", {
     // 비밀번호 찾기
     async findUserPassword(req) {
       try {
-        const res = await axios.post(`${BACKEND_URL}/accounts/password/find`, req );
+        const res = await axios.post(`${BACKEND_URL}/accounts/pw/find`, req );
+        return res.data;
+      } catch (error) {
+        return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
+      }
+    },
+
+    async completePasswordReset(req) {
+      try {
+        const res = await axios.patch(`${BACKEND_URL}/accounts/pw/reset`, req);
         return res.data;
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };
@@ -83,7 +92,7 @@ export const useAccountStore = defineStore("account", {
     // 계정 비활성화
     async deactivateAccount() {
       try {
-        const res = await axios.delete(`${BACKEND_URL}/accounts/me`, { withCredentials: true, });
+        const res = await axios.delete(`${BACKEND_URL}/accounts/de-activation`, { withCredentials: true, });
         const authStore = useAuthStore();
         await authStore.logout();
         return res.data;
@@ -95,7 +104,7 @@ export const useAccountStore = defineStore("account", {
     // 계정 활성화
     async activateAccount(req) {
       try {
-        const res = await axios.post( `${BACKEND_URL}/accounts/me/activation`, req, { withCredentials: true });
+        const res = await axios.post( `${BACKEND_URL}/accounts/activation`, req, { withCredentials: true });
         return res.data;
       } catch (error) {
         return error.response?.data ?? { success: false, message: '서버에 연결할 수 없습니다.' };

@@ -8,7 +8,6 @@ import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
 import com.fiiiiive.zippop.global.redis.RedisAccountService;
 import com.fiiiiive.zippop.global.security.PasswordConfig;
-import com.fiiiiive.zippop.global.web.RequestUrlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

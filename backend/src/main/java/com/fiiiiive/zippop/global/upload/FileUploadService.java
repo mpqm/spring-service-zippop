@@ -13,4 +13,10 @@ public interface FileUploadService {
     // 복수 파일 업로드
     List<String> multipleUpload(MultipartFile[] files) throws ServiceException;
 
+    void delete(String fileUrl);
+
+    default void deleteAll(List<String> fileUrls) {
+        if (fileUrls != null) fileUrls.forEach(this::delete);
+    }
+
 }

@@ -13,7 +13,7 @@ import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import com.fiiiiive.zippop.global.web.RequestValidation;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -92,7 +92,7 @@ public class GoodsService {
         // 굿즈 페이지(popupIdx, keyword, pageable) 조회
         // if: 굿즈 검색 조회
         // else: 굿즈 목록 조회
-        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
         Page<Goods> goodsPage;
         if(keyword != null) {
             goodsPage = goodsRepository.findAllByPopupIdxAndKeyword(popupIdx, keyword, pageable);

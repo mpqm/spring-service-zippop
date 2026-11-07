@@ -30,7 +30,7 @@ public class UpdatePopupReq {
     private String category;
 
     @NotNull(message = "총 인원수는 필수 입력 항목입니다.")
-    @Min(value = 1, message = "총 인원수는 최소 1명 이상이어야 합니다.")
+    @Min(value = 0, message = "총 인원수는 0명 이상이어야 합니다.")
     private Integer totalPeople;
 
     @NotNull(message = "팝업 시작 날짜는 필수 입력 항목입니다.")

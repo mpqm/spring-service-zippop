@@ -94,7 +94,6 @@ import 'vue3-easy-data-table/dist/style.css'
 import { useOrdersStore } from '@/stores/ordersStore'
 import { useToast } from 'vue-toastification'
 import { useRouter, useRoute } from 'vue-router'
-import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   orders: {

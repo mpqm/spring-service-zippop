@@ -48,17 +48,6 @@
                 
                 <form class="ctn-chidform ctn-formcard" @submit.prevent="activateAccount">
                     <h1 class="txt-def0">계정 활성화</h1>
-                    
-                    <div class="ctn-checkbox">
-                        <label class="lbl-checkbox">
-                            <input type="radio" value="ROLE_COMPANY" v-model="role" />
-                            기업회원
-                        </label>
-                        <label class="lbl-checkbox">
-                            <input type="radio" value="ROLE_CUSTOMER" v-model="role" />
-                            고객회원
-                        </label>
-                    </div>
 
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">이메일</label>
@@ -122,7 +111,7 @@ const findUserPassword = async () => {
     }
     const res = await accountStore.findUserPassword(req)
     if (res.success) {
-        toast.success(res.message)
+        toast.success("가입 이메일로 비밀번호 재설정 링크를 보냈습니다.")
     } else {
         toast.error(res.message)
     }
@@ -130,12 +119,7 @@ const findUserPassword = async () => {
 
 // 계정 활성화
 const activateAccount = async () => {
-    if (!role.value) {
-        toast.error("회원 유형을 선택해주세요.");
-        return;
-    }
     const req = {
-        role: role.value,
         email: userEmail.value
     }
     const res = await accountStore.activateAccount(req)

@@ -71,7 +71,6 @@ import CountDownTimer from '@/components/CountDownTimer.vue'
 import { useReserveStore } from '@/stores/reserveStore'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
-import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   reserves: {

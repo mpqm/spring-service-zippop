@@ -1,6 +1,6 @@
-package com.fiiiiive.zippop.global.mail;
+package com.fiiiiive.zippop.account.service;
 
-import com.fiiiiive.zippop.global.enums.RoleType;
+import com.fiiiiive.zippop.account.model.enums.RoleType;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.mail.SimpleMailMessage;
@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-class MailServiceTest {
+class AccountMailSenderTest {
 
     @Test
     void sendsTheResolvedVerificationUrlWithoutAccessingTheServletInTheMailWorker() {
@@ -18,7 +18,7 @@ class MailServiceTest {
         String link = "https://shop.example.test/api/v1/accounts/verification"
                 + "?email=member%40example.test&role=ROLE_CUSTOMER&uuid=verify-id";
 
-        new MailService(sender).sendSignupEmail(link, "member@example.test", RoleType.ROLE_CUSTOMER, false);
+        new AccountMailSender(sender).sendSignupEmail(link, "member@example.test", RoleType.ROLE_CUSTOMER, false);
 
         ArgumentCaptor<SimpleMailMessage> message = ArgumentCaptor.forClass(SimpleMailMessage.class);
         verify(sender).send(message.capture());

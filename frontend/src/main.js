@@ -7,7 +7,7 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore';
-import { Icon } from '@iconify/vue'
+import AppIcon from '@/components/AppIcon.vue';
 import AppEmptyState from '@/components/AppEmptyState.vue';
 import { isLoginRequiredError, redirectToLogin } from '@/utils/errorHandling';
 
@@ -15,7 +15,7 @@ const pinia = createPinia();
 pinia.use(piniaPersistedstate);
 const app = createApp(App);
 // eslint-disable-next-line vue/multi-word-component-names
-app.component('Icon', Icon);
+app.component('Icon', AppIcon);
 app.component('AppEmptyState', AppEmptyState);
 app.use(pinia);
 app.use(Toast,

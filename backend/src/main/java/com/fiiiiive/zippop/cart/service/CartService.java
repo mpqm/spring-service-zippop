@@ -5,10 +5,9 @@ import com.fiiiiive.zippop.cart.model.dto.GetCartItemRes;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.cart.model.entity.CartItem;
-import com.fiiiiive.zippop.cart.policy.CartPolicy;
 import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
-import com.fiiiiive.zippop.global.enums.Operation;
+import com.fiiiiive.zippop.cart.model.enums.Operation;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
@@ -16,13 +15,14 @@ import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import com.fiiiiive.zippop.global.web.RequestValidation;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,6 @@ public class CartService {
     private final CartRepository cartRepository;
     private final GoodsRepository goodsRepository;
     private final CartItemRepository cartItemRepository;
-    private final CartPolicy cartPolicy;
 
     // 장바구니 등록
     @Transactional
@@ -65,7 +64,7 @@ public class CartService {
     public Page<GetCartRes> getCarts(CustomUserDetails user, Integer page, Integer size) throws ServiceException {
 
         // 장바구니 조회(customerIdx, pageable)
-        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = PageRequest.of(page, size,Sort.by(Sort.Direction.DESC, "idx"));
         Page<Cart> cartPage = cartRepository.findAllByCustomerIdx(user.getCustomerId(), pageable);
 
         return Cart.toDtoPage(cartPage);
@@ -82,7 +81,9 @@ public class CartService {
         );
 
         // 장바구니 소유권확인
-        cartPolicy.validateCartOwner(cart, user);
+        if (!Objects.equals(cart.getCustomer().getIdx(), user.getCustomerId())){
+            throw new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
+        }
 
         cartRepository.delete(cart);
 
@@ -98,7 +99,9 @@ public class CartService {
         );
 
         // 장바구니 소유권확인
-        cartPolicy.validateCartOwner(cart, user);
+        if (!Objects.equals(cart.getCustomer().getIdx(), user.getCustomerId())){
+            throw new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
+        }
 
         return CartItem.toDtoList(cart.getCartItemList());
 
@@ -132,7 +135,9 @@ public class CartService {
         );
 
         // 장바구니 소유권확인
-        cartPolicy.validateCartItemOwner(cartItem, user);
+        if (!Objects.equals(cartItem.getCart().getCustomer().getIdx(), user.getCustomerId())){
+            throw new ServiceException(ServiceErrorCode.CART_DELETE_ALL_FAIL_UNAUTHORIZED);
+        }
 
         // 장바구니 아이템 삭제
         cartItemRepository.delete(cartItem);

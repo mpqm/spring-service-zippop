@@ -20,6 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class LocalFileUploadService implements FileUploadService {
+    private final ImageUploadValidator imageUploadValidator;
     
     @Value("${upload.local.path}")
     private String uploadPath;
@@ -34,8 +35,8 @@ public class LocalFileUploadService implements FileUploadService {
             if (!Files.exists(uploadDir)) Files.createDirectories(uploadDir);
 
             // 파일명 생성 (UUID + 원본파일명)
-            String originalFilename = file.getOriginalFilename();
-            String saveFileName = UUID.randomUUID() + "_" + originalFilename;
+            ImageUploadValidator.ValidatedImage image = imageUploadValidator.validate(file);
+            String saveFileName = UUID.randomUUID() + "." + image.extension();
             
             // 파일 저장 경로
             Path filePath = Paths.get(uploadPath, saveFileName);
@@ -74,8 +75,8 @@ public class LocalFileUploadService implements FileUploadService {
             for (MultipartFile file : files) {
                 if (file != null && !file.isEmpty()) {
                     // 파일명 생성 (UUID + 원본파일명)
-                    String originalFilename = file.getOriginalFilename();
-                    String saveFileName = UUID.randomUUID() + "_" + originalFilename;
+                    ImageUploadValidator.ValidatedImage image = imageUploadValidator.validate(file);
+                    String saveFileName = UUID.randomUUID() + "." + image.extension();
                     
                     // 파일 저장 경로
                     Path filePath = Paths.get(uploadPath, saveFileName);
@@ -91,11 +92,27 @@ public class LocalFileUploadService implements FileUploadService {
                 }
             }
             
-            return fileUrls;
+            return fileUrls.isEmpty() ? null : fileUrls;
             
-        } catch (IOException e) {
+        } catch (RuntimeException | IOException e) {
+            deleteAll(fileUrls);
             log.error("파일 업로드 실패: {}", e.getMessage());
+            if (e instanceof ServerException serverException) throw serverException;
             throw new ServerException(ServerErrorCode.FILE_UPLOAD_ERROR, e);
+        }
+    }
+
+    @Override
+    public void delete(String fileUrl) {
+        if (fileUrl == null || !fileUrl.startsWith("/uploads/")) return;
+        String fileName = fileUrl.substring("/uploads/".length());
+        if (fileName.isBlank() || fileName.contains("/") || fileName.contains("\\")) return;
+        try {
+            Path root = Paths.get(uploadPath).toAbsolutePath().normalize();
+            Path target = root.resolve(fileName).normalize();
+            if (target.getParent() != null && target.getParent().equals(root)) Files.deleteIfExists(target);
+        } catch (IOException e) {
+            log.warn("업로드 파일 삭제 실패: {}", fileUrl, e);
         }
     }
     

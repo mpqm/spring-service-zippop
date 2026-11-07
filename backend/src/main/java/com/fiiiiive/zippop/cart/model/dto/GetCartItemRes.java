@@ -8,8 +8,10 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GetCartItemRes {
+
     private Long cartItemIdx;
     private Integer count;
     private Integer price;
     private GetGoodsRes getGoodsRes;
+
 }

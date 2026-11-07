@@ -1,6 +1,5 @@
-package com.fiiiiive.zippop.global.enums;
+package com.fiiiiive.zippop.account.model.enums;
 
-import com.fiiiiive.zippop.global.base.ServiceException;
 import lombok.Getter;
 
 // 역할 타입 Enum

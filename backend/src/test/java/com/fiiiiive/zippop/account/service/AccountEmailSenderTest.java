@@ -6,7 +6,6 @@ import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
 import com.fiiiiive.zippop.global.redis.RedisAccountService;
-import com.fiiiiive.zippop.global.web.RequestUrlService;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.mock.web.MockHttpServletRequest;

@@ -28,7 +28,7 @@
         </div>
         <div class="ctn-inputdefault">
           <label class="ipt-default-label" for="popup-people">일일 총 인원</label>
-          <input id="popup-people" class="ipt-default" v-model="totalPeople" type="number" min="1" placeholder="총 인원을 입력해주세요." required />
+          <input id="popup-people" class="ipt-default" v-model="totalPeople" type="number" min="0" placeholder="총 인원을 입력해주세요." required />
         </div>
       </div>
       <div class="ctn-inputdefault">

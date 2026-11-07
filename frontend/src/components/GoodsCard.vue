@@ -24,7 +24,6 @@ import { useCartStore } from "@/stores/cartStore";
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
-import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   goods: Object,

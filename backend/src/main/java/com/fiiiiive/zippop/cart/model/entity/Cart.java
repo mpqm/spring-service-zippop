@@ -41,13 +41,8 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "popup_idx")
     private Popup popup;
 
-    public static Cart create(
-            Long customerIdx,
-            Popup popup
-    ) {
-        Customer customerRef = Customer.builder()
-                .idx(customerIdx)
-                .build();
+    public static Cart create(Long customerIdx, Popup popup) {
+        Customer customerRef = Customer.builder().idx(customerIdx).build();
         return Cart.builder()
                 .customer(customerRef)
                 .popup(popup)
@@ -84,12 +79,8 @@ public class Cart extends BaseEntity {
         if (this.cartItemList == null) {
             this.cartItemList = new ArrayList<>();
         }
-        boolean exists = this.cartItemList.stream()
-                .anyMatch(item -> item.getGoods().equals(goods));
-
-        if (exists) {
-            throw new ServiceException(ServiceErrorCode.CART_REGISTER_FAIL_ITEM_EXIST);
-        }
+        boolean exists = this.cartItemList.stream().anyMatch(item -> item.getGoods().equals(goods));
+        if (exists) throw new ServiceException(ServiceErrorCode.CART_REGISTER_FAIL_ITEM_EXIST);
     }
 
 }

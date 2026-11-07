@@ -29,7 +29,6 @@ import AppPagination from "@/components/AppPagination.vue";
 import { useRouter, useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
 import { useReserveStore } from "@/stores/reserveStore";
-import { Icon } from '@iconify/vue';
 
 const reserveStore = useReserveStore();
 const router = useRouter();

@@ -4,7 +4,7 @@ import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
 import com.fiiiiive.zippop.cart.model.dto.GetCartItemRes;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.cart.service.CartService;
-import com.fiiiiive.zippop.global.enums.Operation;
+import com.fiiiiive.zippop.cart.model.enums.Operation;
 import com.fiiiiive.zippop.global.base.SuccessCode;
 import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;

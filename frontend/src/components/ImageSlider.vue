@@ -29,7 +29,6 @@
 
 <script setup>
 import { ref, defineProps } from 'vue';
-import { Icon } from '@iconify/vue';
 
 const props = defineProps({
   fileUrls: {

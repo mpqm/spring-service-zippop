@@ -21,7 +21,7 @@
                     <!-- 비밀번호 -->
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">비밀번호</label>
-                        <input class="ipt-default" v-model="password" type="password" placeholder="비밀번호를 입력해 주세요." />
+                        <input class="ipt-default" v-model="password" type="password" minlength="8" maxlength="72" placeholder="비밀번호를 8자 이상 입력해 주세요." />
                     </div>
 
                     <!-- 이름 (고객) / 회사명 (기업) -->
@@ -100,7 +100,6 @@ import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from "@/components/AppFooter.vue";
 import { useToast } from "vue-toastification";
 import { createMultipartRequest } from "@/utils/multipart";
-import { Icon } from "@iconify/vue";
 
 const accountStore = useAccountStore();
 const router = useRouter();

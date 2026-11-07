@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
-import com.fiiiiive.zippop.global.web.RequestValidation;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -662,7 +662,7 @@ public class OrdersService {
     public Page<GetOrdersRes> getOrders(CustomUserDetails user, int page, int size) throws ServiceException {
 
         // 주문 조회(customerIdx)
-        Pageable pageable = RequestValidation.page(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Orders> ordersPage = ordersRepository.findAllByCustomerIdx(user.getCustomerId(), pageable).orElseThrow(
                 () -> new ServiceException(ServiceErrorCode.ORDERS_SEARCH_ALL_FAIL_NOT_FOUND)
         );

@@ -13,6 +13,7 @@ public enum ServerErrorCode {
     MALFORMED_TOKEN(305, HttpStatus.UNAUTHORIZED, "인증 정보가 손상되었습니다."),
     BAD_CREDENTIALS(307, HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호를 확인해주세요."),
     FILE_UPLOAD_ERROR(309, HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다."),
+    INVALID_IMAGE_FILE(313, HttpStatus.BAD_REQUEST, "지원하지 않거나 손상된 이미지 파일입니다."),
     AUTHENTICATION_REQUIRED(310, HttpStatus.UNAUTHORIZED, "로그인이 필요합니다."),
     EMAIL_SEND_ERROR(311, HttpStatus.BAD_GATEWAY, "이메일 전송에 실패했습니다."),
     MALFORMED_JSON(312, HttpStatus.BAD_REQUEST, "요청 본문 형식이 올바르지 않습니다."),

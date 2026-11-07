@@ -37,8 +37,14 @@ public class GoodsController {
             @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart("req") CreateGoodsReq req
     ) {
+        goodsService.validateCreateGoods(customUserDetails, req.getPopupIdx());
         List<String> urls = fileUploadService.multipleUpload(files);
-        goodsService.createGoods(customUserDetails, urls, req);
+        try {
+            goodsService.createGoods(customUserDetails, urls, req);
+        } catch (RuntimeException exception) {
+            fileUploadService.deleteAll(urls);
+            throw exception;
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(SuccessCode.GOODS_REGISTER_SUCCESS));
     }
 
@@ -50,8 +56,15 @@ public class GoodsController {
             @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart(name = "req") UpdateGoodsReq req
     ) {
+        List<String> oldUrls = goodsService.validateUpdateGoods(customUserDetails, goodsIdx);
         List<String> urls = fileUploadService.multipleUpload(files);
-        goodsService.updateGoods(customUserDetails, goodsIdx, urls, req);
+        try {
+            goodsService.updateGoods(customUserDetails, goodsIdx, urls, req);
+        } catch (RuntimeException exception) {
+            fileUploadService.deleteAll(urls);
+            throw exception;
+        }
+        if (urls != null) fileUploadService.deleteAll(oldUrls);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.GOODS_UPDATE_SUCCESS));
     }
 

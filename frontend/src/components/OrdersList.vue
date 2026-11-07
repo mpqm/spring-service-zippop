@@ -47,7 +47,6 @@ import { computed, defineProps, onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter, useRoute } from "vue-router";
 import { useOrdersStore } from "@/stores/ordersStore";
-import { Icon } from "@iconify/vue";
 
 const props = defineProps({
     orders: Object,

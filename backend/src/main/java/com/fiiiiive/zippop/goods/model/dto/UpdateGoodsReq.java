@@ -17,8 +17,8 @@ public class UpdateGoodsReq {
     private Integer goodsPrice;
 
     @NotNull(message = "굿즈 수량은 필수 입력 항목입니다.")
-    @Positive(message = "굿즈 수량은 양수여야 합니다.")
-    @Min(value = 1, message = "수량은 최소 1개 이상이어야 합니다.")
+    @PositiveOrZero(message = "굿즈 수량은 0 이상이어야 합니다.")
+    @Min(value = 0, message = "수량은 0개 이상이어야 합니다.")
     @Max(value = 10000, message = "수량은 최대 10000개 이하여야 합니다.")
     private Integer goodsAmount;
 

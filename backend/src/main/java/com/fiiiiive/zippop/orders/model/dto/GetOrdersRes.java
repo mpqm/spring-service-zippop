@@ -20,6 +20,8 @@ public class GetOrdersRes {
     private Integer totalPrice;
     private String orderStatus;
     private Integer deliveryCost;
+    private Integer earnedPoint;
+    private String refundStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<GetOrdersDetailRes> getOrdersDetailResList;

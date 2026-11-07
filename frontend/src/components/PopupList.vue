@@ -37,7 +37,6 @@ import { usePopupStore } from "@/stores/popupStore";
 import { useCartStore } from "@/stores/cartStore";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
-import { Icon } from "@iconify/vue";
 
 const props = defineProps({
   popup: Object,

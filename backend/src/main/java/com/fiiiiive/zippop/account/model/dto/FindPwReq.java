@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FindPasswordReq {
+public class FindPwReq {
 
     @NotNull(message = "역할은 필수 입력 항목입니다.")
     private String role;
