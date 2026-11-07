@@ -9,8 +9,10 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class GetGoodsImageRes {
+
     private Long goodsImageIdx;
     private String goodsImageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
 }

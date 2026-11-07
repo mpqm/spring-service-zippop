@@ -2,8 +2,8 @@ package com.fiiiiive.zippop.orders.service;
 
 import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
-import com.fiiiiive.zippop.global.enums.GoodsStatus;
-import com.fiiiiive.zippop.global.enums.OrdersStatus;
+import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
+import com.fiiiiive.zippop.orders.model.enums.OrdersStatus;
 import com.fiiiiive.zippop.global.redis.RedisQueueService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
@@ -21,6 +21,7 @@ import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.orders.repository.PaymentIntentRepository;
 import com.fiiiiive.zippop.orders.repository.PointLedgerRepository;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
+import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
@@ -38,7 +39,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -260,7 +260,7 @@ class OrdersServiceTest {
 
     @Test
     void failedReservePaymentPublishesExactlyOneRollbackRefund() throws Exception {
-        Popup popup = Popup.builder().idx(7L).status(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START).build();
+        Popup popup = Popup.builder().idx(7L).status(PopupStatus.POPUP_START).build();
         Reserve reserve = Reserve.builder()
                 .idx(9L)
                 .workingUUID("working")

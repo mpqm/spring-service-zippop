@@ -3,7 +3,6 @@ package com.fiiiiive.zippop.cart.service;
 import com.fiiiiive.zippop.cart.model.dto.CreateCartReq;
 import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.cart.model.entity.CartItem;
-import com.fiiiiive.zippop.cart.policy.CartPolicy;
 import com.fiiiiive.zippop.cart.repository.CartItemRepository;
 import com.fiiiiive.zippop.cart.repository.CartRepository;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
@@ -33,8 +32,6 @@ class CartServiceTest {
     @Mock CartRepository cartRepository;
     @Mock GoodsRepository goodsRepository;
     @Mock CartItemRepository cartItemRepository;
-    @Mock CartPolicy cartPolicy;
-
     private CartService cartService;
     private CustomUserDetails user;
     private Popup popup;
@@ -42,7 +39,7 @@ class CartServiceTest {
 
     @BeforeEach
     void setUp() {
-        cartService = new CartService(cartRepository, goodsRepository, cartItemRepository, cartPolicy);
+        cartService = new CartService(cartRepository, goodsRepository, cartItemRepository);
         user = CustomUserDetails.builder().accountId(99L).customerId(3L).email("user@test.com").role("ROLE_CUSTOMER").build();
         popup = Popup.builder().idx(7L).build();
         goods = Goods.builder().idx(11L).popup(popup).name("굿즈").price(1000).amount(10).build();

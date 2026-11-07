@@ -4,10 +4,12 @@ import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
+import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
 import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
 import com.fiiiiive.zippop.popup.model.dto.CreatePopupReviewReq;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.model.entity.PopupLike;
+import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.popup.repository.PopupLikeRepository;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.fiiiiive.zippop.popup.repository.PopupReviewRepository;
@@ -42,15 +44,15 @@ class PopupServiceTest {
 
     @Test void overdueActivePopupsAreEndedAndTheirGoodsBecomeStock() {
         var goods = com.fiiiiive.zippop.goods.model.entity.Goods.builder()
-                .status(com.fiiiiive.zippop.global.enums.GoodsStatus.GOODS_RESERVED).build();
-        Popup popup = Popup.builder().status(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START)
+                .status(GoodsStatus.GOODS_RESERVED).build();
+        Popup popup = Popup.builder().status(PopupStatus.POPUP_START)
                 .goodsList(java.util.List.of(goods)).build();
         when(popupRepository.findAllByStatusAndEndDateBefore(
-                com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START, java.time.LocalDate.now()))
+                PopupStatus.POPUP_START, java.time.LocalDate.now()))
                 .thenReturn(java.util.List.of(popup));
         popupService.updatePopupStatus();
-        assertThat(popup.getStatus()).isEqualTo(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_END);
-        assertThat(goods.getStatus()).isEqualTo(com.fiiiiive.zippop.global.enums.GoodsStatus.GOODS_STOCK);
+        assertThat(popup.getStatus()).isEqualTo(PopupStatus.POPUP_END);
+        assertThat(goods.getStatus()).isEqualTo(GoodsStatus.GOODS_STOCK);
     }
 
     @BeforeEach

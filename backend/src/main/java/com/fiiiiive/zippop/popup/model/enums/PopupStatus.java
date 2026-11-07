@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.enums;
+package com.fiiiiive.zippop.popup.model.enums;
 
 import lombok.Getter;
 

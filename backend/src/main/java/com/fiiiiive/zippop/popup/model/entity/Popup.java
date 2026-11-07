@@ -5,7 +5,7 @@ import com.fiiiiive.zippop.cart.model.entity.Cart;
 import com.fiiiiive.zippop.global.base.InputValidationException;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.enums.PopupStatus;
+import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.payout.model.entity.Payout;

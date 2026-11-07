@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.payout.service;
 
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.enums.OrdersStatus;
+import com.fiiiiive.zippop.orders.model.enums.OrdersStatus;
 import com.fiiiiive.zippop.orders.model.entity.Orders;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.payout.model.entity.Payout;

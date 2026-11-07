@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @Builder
 public class GetGoodsRes {
+
     private String popupName;
     private Long goodsIdx;
     private String goodsName;
@@ -20,4 +21,5 @@ public class GetGoodsRes {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<GetGoodsImageRes> getGoodsImageResList;
+
 }

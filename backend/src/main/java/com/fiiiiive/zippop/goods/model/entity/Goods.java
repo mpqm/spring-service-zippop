@@ -2,11 +2,12 @@ package com.fiiiiive.zippop.goods.model.entity;
 
 import com.fiiiiive.zippop.cart.model.entity.CartItem;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.enums.GoodsStatus;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
 import com.fiiiiive.zippop.goods.model.dto.UpdateGoodsReq;
+import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
 import com.fiiiiive.zippop.orders.model.entity.OrdersDetail;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
+import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
@@ -22,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 public class Goods extends BaseEntity {
+
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,7 +80,7 @@ public class Goods extends BaseEntity {
                 .price(price)
                 .content(content)
                 .popup(popup)
-                .status(popup.getStatus() == com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_END
+                .status(popup.getStatus() == PopupStatus.POPUP_END
                         ? GoodsStatus.GOODS_STOCK : GoodsStatus.GOODS_RESERVED)
                 .build();
     }

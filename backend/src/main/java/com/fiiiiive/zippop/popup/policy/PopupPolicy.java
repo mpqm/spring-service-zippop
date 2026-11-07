@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.popup.policy;
 
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.enums.PopupStatus;
+import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import lombok.RequiredArgsConstructor;

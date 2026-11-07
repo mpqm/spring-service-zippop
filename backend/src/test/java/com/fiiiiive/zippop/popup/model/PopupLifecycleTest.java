@@ -1,10 +1,11 @@
 package com.fiiiiive.zippop.popup.model;
 
-import com.fiiiiive.zippop.global.enums.*;
 import com.fiiiiive.zippop.global.base.InputValidationException;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
+import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.model.dto.UpdatePopupReq;
+import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import jakarta.validation.Validation;
 import org.junit.jupiter.api.Test;

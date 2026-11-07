@@ -4,7 +4,7 @@ import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.enums.OrdersStatus;
+import com.fiiiiive.zippop.orders.model.enums.OrdersStatus;
 import com.fiiiiive.zippop.orders.model.dto.GetOrdersRes;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import jakarta.persistence.*;

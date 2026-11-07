@@ -1,15 +1,14 @@
 package com.fiiiiive.zippop.goods.service;
 
+import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.dto.CreateGoodsReq;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
 import com.fiiiiive.zippop.goods.model.dto.UpdateGoodsReq;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
-import com.fiiiiive.zippop.global.base.ServiceException;
-import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
-import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -27,22 +27,6 @@ public class GoodsService {
 
     private final GoodsRepository goodsRepository;
     private final PopupRepository popupRepository;
-    private final PopupPolicy popupPolicy;
-
-    @Transactional(readOnly = true)
-    public void validateCreateGoods(CustomUserDetails user, Long popupIdx) {
-        Popup popup = popupRepository.findByPopupIdx(popupIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.GOODS_REGISTER_FAIL_NOT_FOUND_STORE));
-        popupPolicy.validateOwner(popup, user);
-    }
-
-    @Transactional(readOnly = true)
-    public List<String> validateUpdateGoods(CustomUserDetails user, Long goodsIdx) {
-        Goods goods = goodsRepository.findByGoodsIdx(goodsIdx).orElseThrow(
-                () -> new ServiceException(ServiceErrorCode.GOODS_UPDATE_FAIL_NOT_FOUND));
-        popupPolicy.validateOwner(goods.getPopup(), user);
-        return goods.getGoodsImageList().stream().map(com.fiiiiive.zippop.goods.model.entity.GoodsImage::getUrl).toList();
-    }
 
     // 굿즈 등록
     @Transactional
@@ -54,7 +38,9 @@ public class GoodsService {
         );
 
         // 팝업 소유권 확인
-        popupPolicy.validateOwner(popup, user);
+        if (!Objects.equals(popup.getCompanyEmail(), user.getEmail())) {
+            throw new ServiceException(ServiceErrorCode.STORE_OWN_FAIL_INVALID_MEMBER);
+        }
 
         // 굿즈 생성
         Goods goods = Goods.create(
@@ -115,7 +101,9 @@ public class GoodsService {
         );
         
         // 팝업 소유 확인
-        popupPolicy.validateOwner(goods.getPopup(), user);
+        if (!Objects.equals(goods.getPopup().getCompanyEmail(), user.getEmail())) {
+            throw new ServiceException(ServiceErrorCode.STORE_OWN_FAIL_INVALID_MEMBER);
+        }
 
         // 굿즈 수정
         goods.update(req);
@@ -137,7 +125,9 @@ public class GoodsService {
         );
 
         // 팝업 소유 확인
-        popupPolicy.validateOwner(goods.getPopup(), user);
+        if (!Objects.equals(goods.getPopup().getCompanyEmail(), user.getEmail())) {
+            throw new ServiceException(ServiceErrorCode.STORE_OWN_FAIL_INVALID_MEMBER);
+        }
 
         if (!goods.getCartItemList().isEmpty() || !goods.getOrdersDetailList().isEmpty()) {
             throw new ServiceException(ServiceErrorCode.GOODS_DELETE_FAIL_REFERENCED);

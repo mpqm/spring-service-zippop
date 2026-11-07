@@ -6,6 +6,7 @@ import com.fiiiiive.zippop.global.crypto.JwtService;
 import com.fiiiiive.zippop.global.redis.RedisQueueService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
+import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.popup.policy.PopupPolicy;
 import com.fiiiiive.zippop.popup.repository.PopupRepository;
 import com.fiiiiive.zippop.reserve.model.dto.CreateReserveReq;
@@ -61,7 +62,7 @@ class ReserveServiceTest {
 
     @Test void closedPopupCannotBeEnteredEvenWhileItsReservationIsActive() {
         Reserve reserve = activeReserve();
-        reserve.getPopup().setStatus(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_END);
+        reserve.getPopup().setStatus(PopupStatus.POPUP_END);
         when(reserveRepository.findById(9L)).thenReturn(Optional.of(reserve));
         assertThatThrownBy(() -> reserveService.enrollReserve(new MockHttpServletResponse(), user, 9L))
                 .isInstanceOfSatisfying(ServiceException.class, ex ->
@@ -199,7 +200,7 @@ class ReserveServiceTest {
                 .startDate(LocalDate.now())
                 .startTime(LocalDateTime.now().minusMinutes(5))
                 .endTime(LocalDateTime.now().plusHours(1))
-                .popup(Popup.builder().idx(7L).name("팝업").status(com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START).build())
+                .popup(Popup.builder().idx(7L).name("팝업").status(PopupStatus.POPUP_START).build())
                 .build();
     }
 }

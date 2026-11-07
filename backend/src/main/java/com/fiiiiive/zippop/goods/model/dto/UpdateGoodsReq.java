@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UpdateGoodsReq {
+
     @NotBlank(message = "굿즈 이름은 필수 입력 항목입니다.")
     private String goodsName;
 
@@ -23,4 +24,5 @@ public class UpdateGoodsReq {
     private Integer goodsAmount;
 
     private String goodsContent;
+
 }

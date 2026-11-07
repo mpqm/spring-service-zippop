@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.payout.model.entity;
 
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.enums.PayoutStatus;
+import com.fiiiiive.zippop.payout.model.enums.PayoutStatus;
 import com.fiiiiive.zippop.payout.model.dto.GetPopupPayoutsRes;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import jakarta.persistence.*;

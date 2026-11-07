@@ -3,17 +3,20 @@ package com.fiiiiive.zippop.cart.model.entity;
 import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.model.entity.PopupImage;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder

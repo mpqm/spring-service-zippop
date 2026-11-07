@@ -17,7 +17,7 @@ import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServerErrorCode;
 import com.fiiiiive.zippop.global.base.ServerException;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
-import com.fiiiiive.zippop.global.enums.GoodsStatus;
+import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
 import com.fiiiiive.zippop.global.redis.RedisQueueService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
@@ -27,6 +27,7 @@ import com.fiiiiive.zippop.orders.repository.OrdersDetailRepository;
 import com.fiiiiive.zippop.orders.repository.OrdersRepository;
 import com.fiiiiive.zippop.orders.repository.PaymentIntentRepository;
 import com.fiiiiive.zippop.orders.repository.PointLedgerRepository;
+import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.reserve.repository.ReserveRepository;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
@@ -88,7 +89,7 @@ public class OrdersService {
                     || LocalDateTime.now().isBefore(reserve.getStartTime())
                     || !LocalDateTime.now().isBefore(reserve.getEndTime())
                     || reserve.getTotalPeople() <= 0
-                    || reserve.getPopup().getStatus() != com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START
+                    || reserve.getPopup().getStatus() != PopupStatus.POPUP_START
                     || !redisQueueService.hasWorkingAccess(reserve.getWorkingUUID(), user.getEmail())) {
                 throw new ServiceException(ServiceErrorCode.RESERVE_ACCESS_FAIL);
             }
@@ -182,7 +183,7 @@ public class OrdersService {
                     || LocalDateTime.now().isBefore(reserve.getStartTime())
                     || !LocalDateTime.now().isBefore(reserve.getEndTime())
                     || reserve.getTotalPeople() <= 0
-                    || reserve.getPopup().getStatus() != com.fiiiiive.zippop.global.enums.PopupStatus.POPUP_START
+                    || reserve.getPopup().getStatus() != PopupStatus.POPUP_START
                     || !redisQueueService.hasWorkingAccess(reserve.getWorkingUUID(), user.getEmail())) {
                 throw new ServiceException(ServiceErrorCode.RESERVE_ACCESS_FAIL);
             }

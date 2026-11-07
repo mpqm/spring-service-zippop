@@ -2,13 +2,16 @@ package com.fiiiiive.zippop.cart.model.entity;
 
 import com.fiiiiive.zippop.cart.model.dto.GetCartItemRes;
 import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;

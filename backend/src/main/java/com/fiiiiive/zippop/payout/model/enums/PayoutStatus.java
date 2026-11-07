@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.enums;
+package com.fiiiiive.zippop.payout.model.enums;
 
 import lombok.Getter;
 

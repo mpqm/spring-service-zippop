@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -37,15 +36,9 @@ public class GoodsController {
             @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart("req") CreateGoodsReq req
     ) {
-        goodsService.validateCreateGoods(customUserDetails, req.getPopupIdx());
         List<String> urls = fileUploadService.multipleUpload(files);
-        try {
-            goodsService.createGoods(customUserDetails, urls, req);
-        } catch (RuntimeException exception) {
-            fileUploadService.deleteAll(urls);
-            throw exception;
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessResponse<>(SuccessCode.GOODS_REGISTER_SUCCESS));
+        goodsService.createGoods(customUserDetails, urls, req);
+        return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.GOODS_REGISTER_SUCCESS));
     }
 
     // 굿즈 수정
@@ -56,15 +49,8 @@ public class GoodsController {
             @RequestPart(name = "files", required = false) MultipartFile[] files,
             @Valid @RequestPart(name = "req") UpdateGoodsReq req
     ) {
-        List<String> oldUrls = goodsService.validateUpdateGoods(customUserDetails, goodsIdx);
         List<String> urls = fileUploadService.multipleUpload(files);
-        try {
-            goodsService.updateGoods(customUserDetails, goodsIdx, urls, req);
-        } catch (RuntimeException exception) {
-            fileUploadService.deleteAll(urls);
-            throw exception;
-        }
-        if (urls != null) fileUploadService.deleteAll(oldUrls);
+        goodsService.updateGoods(customUserDetails, goodsIdx, urls, req);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.GOODS_UPDATE_SUCCESS));
     }
 
