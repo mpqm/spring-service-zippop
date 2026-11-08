@@ -1,5 +1,6 @@
 package com.fiiiiive.zippop.global.socket;
 
+import com.fiiiiive.zippop.global.security.socket.CustomAuthenticationInterceptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class CustomAuthenticationInterceptorTest {
 
-    private final CustomAuthenticationInterceptor interceptor = new CustomAuthenticationInterceptor(new ReserveSocketSessions());
+    private final CustomAuthenticationInterceptor interceptor = new CustomAuthenticationInterceptor();
     private final ExecutorSubscribableChannel channel = new ExecutorSubscribableChannel();
 
     @Test
@@ -33,7 +34,7 @@ class CustomAuthenticationInterceptorTest {
     void attachesHandshakeAuthenticationToStompPrincipal() {
         var authentication = UsernamePasswordAuthenticationToken.authenticated("user", null, java.util.List.of());
         var attributes = new HashMap<String, Object>();
-        attributes.put(CustomHandshakeInterceptor.SESSION_AUTHENTICATION, authentication);
+        attributes.put("AUTHENTICATION", authentication);
         StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
         accessor.setSessionAttributes(attributes);
         var message = MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders());

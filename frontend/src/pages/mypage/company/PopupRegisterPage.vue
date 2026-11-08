@@ -64,7 +64,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { usePopupStore } from "@/stores/popupStore";
 import { useToast } from "vue-toastification";
-import { createMultipartRequest } from "@/utils/multipart";
+import { createMultipartRequest } from "@/common";
 
 const popupStore = usePopupStore();
 const router = useRouter();

@@ -3,7 +3,11 @@
         <AppHeader></AppHeader>
         <div class="lyt-centertop">
             <div class="wrp-centertop">
-                <img class="img-mainlogo" src="../../assets/img/zippoicon-removebg.png" alt="ZIPPOP">
+                <button class="btn-authback" type="button" aria-label="뒤로가기" title="뒤로가기" @click="router.back()">
+                    <Icon icon="iconoir:nav-arrow-left" width="20" height="20" />
+                    <span>뒤로가기</span>
+                </button>
+                <span class="img-mainlogo" role="img" aria-label="ZIPPOP"></span>
                 
                 <!-- 회원 유형 선택 탭 -->
                 <div class="ctn-buttons ctn-accounttypes">
@@ -99,7 +103,7 @@ import { useAccountStore } from '@/stores/accountStore';
 import AppHeader from '@/components/AppHeader.vue';
 import AppFooter from "@/components/AppFooter.vue";
 import { useToast } from "vue-toastification";
-import { createMultipartRequest } from "@/utils/multipart";
+import { createMultipartRequest } from "@/common";
 
 const accountStore = useAccountStore();
 const router = useRouter();

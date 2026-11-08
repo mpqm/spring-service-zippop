@@ -1,0 +1,1 @@
+ALTER TABLE reserve DROP COLUMN IF EXISTS start_date;

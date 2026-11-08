@@ -11,10 +11,10 @@
     <div class="ctn-tagbutton">
 
       <button class="btn-tagdefault btn-like" :class="{ active: authStore.isLoggedIn && isLiked }" @click="toggleLike" aria-label="좋아요">
-        <Icon icon="iconoir:thumbs-up" width="20px" height="20px" />{{ currentLikeCount }}
+        <Icon :icon="authStore.isLoggedIn && isLiked ? 'heart-solid' : 'heart'" width="20px" height="20px" />{{ currentLikeCount }}
       </button>
       
-      <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px"/>{{ popup.totalPeople }}</button>
+      <span class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px"/>{{ popup.totalPeople }}</span>
     </div>
       <div class="ctn-cardactions">
         <button
@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { useNow } from "@/composables/useNow";
+import { useNow } from "@/common";
 const currentTime = useNow();
 import { computed, defineProps, ref, watch } from "vue";
 import { useRouter } from "vue-router";

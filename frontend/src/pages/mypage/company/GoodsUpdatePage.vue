@@ -50,7 +50,7 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useGoodsStore } from "@/stores/goodsStore";
-import { createMultipartRequest } from "@/utils/multipart";
+import { createMultipartRequest } from "@/common";
 
 const goodsStore = useGoodsStore();
 const router = useRouter();
@@ -100,10 +100,6 @@ const updateGoods = async () => {
     goodsPrice: goodsPrice.value,
     goodsContent: goodsContent.value,
   };
-  if (files.value.length === 0) {
-    toast.error("수정할 상품 이미지를 선택해주세요.");
-    return;
-  }
   const formData = createMultipartRequest(req, files.value);
   const res = await goodsStore.updateGoods(route.params.goodsIdx, formData);
   if (res.success) {

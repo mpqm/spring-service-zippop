@@ -7,5 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CreateReserveRes {
+
     private Long reserveIdx;
+
 }

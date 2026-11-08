@@ -3,6 +3,7 @@
     <AppHeader></AppHeader>
     <div class="lyt-root">
       <div class="wrp-split">
+        <button class="btn-tagaction btn-goodsback" type="button" aria-label="뒤로가기" title="뒤로가기" @click="router.back()"><Icon icon="iconoir:nav-arrow-left" width="20px" height="20px" />뒤로가기</button>
         <div class="ctn-l50">
           <ImageSlider class="image-slider" :fileUrls="fileUrls" />
         </div>
@@ -14,7 +15,7 @@
             <button class="btn-tagdefault">{{ popup.popupStartDate }}<span class="divider">~</span>{{ popup.popupEndDate }}</button>
             <button class="btn-tagdefault">{{ popup.popupAddress }}</button>
             <button class="btn-tagdefault" :class="{ active: isLiked }" @click="toggleLike">
-              <Icon icon="iconoir:thumbs-up" width="20px" height="20px" />&nbsp;{{ currentLikeCount }}
+              <Icon :icon="isLiked ? 'heart-solid' : 'heart'" width="20px" height="20px" />&nbsp;{{ currentLikeCount }}
             </button>
             <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px"/>&nbsp;{{ popup.totalPeople }}</button>
           </div>
@@ -24,7 +25,7 @@
       <div>
         <div class="ctn-inputsearch">
           <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="submitSearch()" />
-          <button class="btn-default" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+          <button class="btn-default" type="button" aria-label="굿즈 검색" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
         </div>
         <div class="lyt-cardgrid" v-if="goodsList && goodsList.length">
           <GoodsCard v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="popup.popupIdx" />

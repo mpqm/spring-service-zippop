@@ -30,7 +30,7 @@
 import AppHeader from "@/components/AppHeader.vue";
 import AppFooter from "@/components/AppFooter.vue";
 import { useRoute } from "vue-router";
-import { isPathWithin } from "@/utils/navigation";
+import { isPathWithin } from "@/common";
 
 const route = useRoute();
 const isActive = path => isPathWithin(route.path, path);

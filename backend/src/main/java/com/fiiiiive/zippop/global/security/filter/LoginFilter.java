@@ -7,11 +7,11 @@ import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.base.SuccessResponse;
 import com.fiiiiive.zippop.global.base.ServerErrorCode;
 import com.fiiiiive.zippop.global.base.ServerException;
-import com.fiiiiive.zippop.global.crypto.JwtService;
+import com.fiiiiive.zippop.global.security.crypto.JwtService;
+import com.fiiiiive.zippop.global.security.AuthCookie;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -75,20 +75,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         redisTemplate.opsForValue().set("refreshToken:" + member.getAccountId(), refreshToken, 5, TimeUnit.DAYS);
 
         // accessToken, refreshToken, userToken 쿠키 설정
-        Cookie aToken = new Cookie("ATOKEN", accessToken);
-
-        aToken.setHttpOnly(true);
-        aToken.setSecure(true);
-        aToken.setPath("/");
-        aToken.setAttribute("SameSite", "None");
-        response.addCookie(aToken);
-
-        Cookie rToken = new Cookie("RTOKEN", refreshToken);
-        rToken.setHttpOnly(true);
-        rToken.setSecure(true);
-        rToken.setPath("/");
-        rToken.setAttribute("SameSite", "None");
-        response.addCookie(rToken);
+        AuthCookie.add(request, response, "ATOKEN", accessToken);
+        AuthCookie.add(request, response, "RTOKEN", refreshToken);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");

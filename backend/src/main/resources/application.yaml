@@ -21,7 +21,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
@@ -121,6 +121,7 @@ upload:
 imp:
   imp_key: ${IMP_KEY}
   imp_secret: ${IMP_SECRET}
+  include_sandbox: ${IMP_INCLUDE_SANDBOX:false}
 
 logging:
   level:

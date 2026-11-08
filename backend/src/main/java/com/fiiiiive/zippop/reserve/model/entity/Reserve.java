@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 public class Reserve extends BaseEntity {
+
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +34,6 @@ public class Reserve extends BaseEntity {
     // 총 인원수 (필수, 최소값 1)
     @Column(nullable = false)
     private Integer totalPeople;
-
-    // 예약 시작 날짜 (필수)
-    @Column(nullable = false)
-    private LocalDate startDate;
 
     // 예약 시작 시간 (필수)
     @Column(nullable = false)
@@ -58,7 +54,6 @@ public class Reserve extends BaseEntity {
             String workingUUID,
             String waitingUUID,
             Integer totalPeople,
-            LocalDate startDate,
             LocalDateTime startTime,
             LocalDateTime endTime
     ) {
@@ -67,7 +62,6 @@ public class Reserve extends BaseEntity {
                 .workingUUID(workingUUID)
                 .waitingUUID(waitingUUID)
                 .totalPeople(totalPeople)
-                .startDate(startDate)
                 .startTime(startTime)
                 .endTime(endTime)
                 .build();
@@ -78,13 +72,11 @@ public class Reserve extends BaseEntity {
                 .popupIdx(this.getPopup().getIdx())
                 .reserveIdx(this.getIdx())
                 .reservePeople(this.getTotalPeople())
-                .reserveStartDate(this.getStartDate())
                 .reserveStartTime(this.getStartTime())
                 .reserveEndTime(this.getEndTime())
                 .getPopupRes(popup.toDto())
                 .build();
     }
-
 
     public static Page<GetReserveRes> toDtoPage(Page<Reserve> reservePage) {
         return reservePage.map(Reserve::toDto);

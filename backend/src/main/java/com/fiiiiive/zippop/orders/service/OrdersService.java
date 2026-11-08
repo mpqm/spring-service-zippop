@@ -18,7 +18,7 @@ import com.fiiiiive.zippop.global.base.ServerErrorCode;
 import com.fiiiiive.zippop.global.base.ServerException;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
 import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
-import com.fiiiiive.zippop.global.redis.RedisQueueService;
+import com.fiiiiive.zippop.reserve.infrastructure.redis.ReserveRedisService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
 import com.fiiiiive.zippop.orders.model.entity.OrdersDetail;
@@ -68,7 +68,7 @@ public class OrdersService {
     private final ReserveRepository reserveRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final OrdersPolicy ordersPolicy;
-    private final RedisQueueService redisQueueService;
+    private final ReserveRedisService reserveRedisService;
     private final PaymentIntentRepository paymentIntentRepository;
     private final PointLedgerRepository pointLedgerRepository;
     private final RefundOutboxService refundOutboxService;
@@ -90,7 +90,7 @@ public class OrdersService {
                     || !LocalDateTime.now().isBefore(reserve.getEndTime())
                     || reserve.getTotalPeople() <= 0
                     || reserve.getPopup().getStatus() != PopupStatus.POPUP_START
-                    || !redisQueueService.hasWorkingAccess(reserve.getWorkingUUID(), user.getEmail())) {
+                    || !reserveRedisService.hasWorkingAccess(reserve.getWorkingUUID(), user.getEmail())) {
                 throw new ServiceException(ServiceErrorCode.RESERVE_ACCESS_FAIL);
             }
             if (req.getUsedPoint() != 0) {
@@ -184,7 +184,7 @@ public class OrdersService {
                     || !LocalDateTime.now().isBefore(reserve.getEndTime())
                     || reserve.getTotalPeople() <= 0
                     || reserve.getPopup().getStatus() != PopupStatus.POPUP_START
-                    || !redisQueueService.hasWorkingAccess(reserve.getWorkingUUID(), user.getEmail())) {
+                    || !reserveRedisService.hasWorkingAccess(reserve.getWorkingUUID(), user.getEmail())) {
                 throw new ServiceException(ServiceErrorCode.RESERVE_ACCESS_FAIL);
             }
 

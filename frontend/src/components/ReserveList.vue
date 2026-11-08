@@ -9,7 +9,7 @@
 
       <button class="btn-tagdefault">
         <Icon icon="iconoir:calendar-plus" class="img-iconior"/>
-        <span>{{ reserve.reserveStartDate }} </span>
+        <span>{{ formatDate(reserve.reserveStartTime) }} ~ {{ formatDate(reserve.reserveEndTime) }}</span>
       </button>
 
       <button class="btn-tagdefault">
@@ -18,7 +18,7 @@
       </button>
 
       <button class="btn-tagdefault">
-        <CountDownTimer :targetTime="reserve.reserveStartTime" :flag="false"></CountDownTimer>
+        <CountDownTimer :startTime="reserve.reserveStartTime" :endTime="reserve.reserveEndTime" :flag="false" />
       </button>
         
     </div>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { useNow } from "@/composables/useNow";
+import { useNow } from "@/common";
 const currentTime = useNow();
 import { defineProps } from "vue";
 import { useRouter } from "vue-router";
@@ -63,6 +63,10 @@ function formatTime(dateTimeString) {
   if (!dateTimeString) return "";
   const timePart = dateTimeString.split("T")[1];
   return timePart ? timePart.slice(0, 5) : "";
+}
+
+function formatDate(dateTimeString) {
+  return dateTimeString?.split('T')[0] || '';
 }
 
 const goReserve = () => {

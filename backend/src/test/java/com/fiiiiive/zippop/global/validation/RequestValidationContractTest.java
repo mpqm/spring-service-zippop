@@ -65,7 +65,6 @@ class RequestValidationContractTest {
         CreateReserveReq invalidReserve = CreateReserveReq.builder()
                 .popupIdx(1L)
                 .reservePeople(0)
-                .reserveStartDate(LocalDate.now().plusDays(1))
                 .reserveStartTime(LocalDateTime.now().plusDays(1))
                 .reserveEndTime(LocalDateTime.now().plusDays(1).plusHours(1))
                 .build();
@@ -81,11 +80,11 @@ class RequestValidationContractTest {
     @Test
     void signupPasswordMatchesTheEightToSeventyTwoCharacterPolicy() {
         CreateAccountReq shortPassword = CreateAccountReq.builder()
-                .role("ROLE_CUSTOMER").userId("member01").email("member@example.test")
+                .role(com.fiiiiive.zippop.account.model.enums.RoleType.ROLE_CUSTOMER).userId("member01").email("member@example.test")
                 .password("1234567").name("Member").phoneNumber("01012345678").address("Seoul")
                 .build();
         CreateAccountReq validPassword = CreateAccountReq.builder()
-                .role("ROLE_CUSTOMER").userId("member01").email("member@example.test")
+                .role(com.fiiiiive.zippop.account.model.enums.RoleType.ROLE_CUSTOMER).userId("member01").email("member@example.test")
                 .password("12345678").name("Member").phoneNumber("01012345678").address("Seoul")
                 .build();
 

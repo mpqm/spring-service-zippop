@@ -1,6 +1,7 @@
 package com.fiiiiive.zippop.global.security.filter;
 
-import com.fiiiiive.zippop.global.crypto.JwtService;
+import com.fiiiiive.zippop.global.security.crypto.JwtService;
+import com.fiiiiive.zippop.global.security.AuthCookie;
 import com.fiiiiive.zippop.global.security.normal.*;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.*;
@@ -10,7 +11,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -34,8 +34,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     throw new JwtException("다시 로그인해주세요.");
                 String newRefresh = jwtService.createRefreshToken(user);
                 redisTemplate.opsForValue().set(key, newRefresh, 5, TimeUnit.DAYS);
-                tokenCookie(response, "ATOKEN", jwtService.createAccessToken(user));
-                tokenCookie(response, "RTOKEN", newRefresh);
+                AuthCookie.add(request, response, "ATOKEN", jwtService.createAccessToken(user));
+                AuthCookie.add(request, response, "RTOKEN", newRefresh);
                 authenticate(user);
             }
         } catch (JwtException | IllegalArgumentException | AuthenticationException exception) {
@@ -59,10 +59,5 @@ public class JwtFilter extends OncePerRequestFilter {
         if (request.getCookies() != null)
             for (Cookie cookie : request.getCookies()) if (name.equals(cookie.getName())) return cookie.getValue();
         return null;
-    }
-    private void tokenCookie(HttpServletResponse response, String name, String value) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true); cookie.setSecure(true); cookie.setPath("/");
-        cookie.setAttribute("SameSite", "None"); response.addCookie(cookie);
     }
 }

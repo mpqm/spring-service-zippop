@@ -1,5 +1,7 @@
 package com.fiiiiive.zippop.account.service;
 
+import com.fiiiiive.zippop.account.infrastructure.mail.AccountMailService;
+import com.fiiiiive.zippop.account.infrastructure.redis.AccountRedisService;
 import com.fiiiiive.zippop.account.model.dto.*;
 import com.fiiiiive.zippop.account.model.entity.Account;
 import com.fiiiiive.zippop.account.model.entity.Company;
@@ -10,7 +12,6 @@ import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.ServiceErrorCode;
 import com.fiiiiive.zippop.global.base.ServiceException;
-import com.fiiiiive.zippop.global.redis.RedisAccountService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,8 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AccountMailSender accountMailSender;
-    private final RedisAccountService redisAccountService;
+    private final AccountMailService accountMailService;
+    private final AccountRedisService accountRedisService;
     private final CustomerRepository customerRepository;
     private final CompanyRepository companyRepository;
     private final HttpServletRequest request;
@@ -39,7 +40,7 @@ public class AccountService {
     public void sendEmailAuth(Account account) {
 
         // Redis에 랜덤 UUID와 이메일 저장, 유효 기간 3분으로 설정
-        String uuid = redisAccountService.saveEmailVerifyUuid(account.getIdx(), UUID.randomUUID().toString(), 3);
+        String uuid = accountRedisService.saveEmailVerifyUuid(account.getIdx(), UUID.randomUUID().toString(), 3);
 
         // 회원가입 인증 이메일 전송
         String verificationUrl = ServletUriComponentsBuilder.fromContextPath(request)
@@ -49,7 +50,7 @@ public class AccountService {
                 .encode()
                 .buildAndExpand(Map.of("email", account.getEmail(), "uuid", uuid))
                 .toUriString();
-        accountMailSender.sendSignupEmail(verificationUrl, account.getEmail(), account.getRole(), account.isRecoveryTarget());
+        accountMailService.sendSignupEmail(verificationUrl, account.getEmail(), account.getRole(), account.isRecoveryTarget());
     }
 
     @Transactional
@@ -160,11 +161,11 @@ public class AccountService {
         boolean success = false;
 
         if (account != null) {
-            String stored = redisAccountService.getEmailVerifyUuid(account.getIdx());
+            String stored = accountRedisService.getEmailVerifyUuid(account.getIdx());
 
             if (stored != null && stored.equals(uuid)) {
                 account.activate();
-                redisAccountService.deleteEmailVerifyUuid(account.getIdx());
+                accountRedisService.deleteEmailVerifyUuid(account.getIdx());
                 success = true;
             }
         }
@@ -180,7 +181,7 @@ public class AccountService {
         Account account = accountRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new ServiceException(ServiceErrorCode.USER_NOT_FOUND));
 
-        accountMailSender.sendFindUserId(account.getEmail(), account.getUserId(), account.isRecoveryTarget());
+        accountMailService.sendFindUserId(account.getEmail(), account.getUserId(), account.isRecoveryTarget());
     }
 
     public void findPw(FindPwReq req) {
@@ -188,7 +189,7 @@ public class AccountService {
                 .orElseThrow(() -> new ServiceException(ServiceErrorCode.USER_NOT_FOUND));
 
         String token = java.util.UUID.randomUUID().toString();
-        redisAccountService.savePasswordResetToken(token, account.getIdx(), 10);
+        accountRedisService.savePasswordResetToken(token, account.getIdx(), 10);
 
         String resetUrl = ServletUriComponentsBuilder.fromContextPath(request)
                 .path("/password-reset")
@@ -196,12 +197,12 @@ public class AccountService {
                 .encode()
                 .buildAndExpand(Map.of("token", token))
                 .toUriString();
-        accountMailSender.sendPasswordResetLink(account.getEmail(), resetUrl);
+        accountMailService.sendPasswordResetLink(account.getEmail(), resetUrl);
     }
 
     @Transactional
     public void resetPw(ResetPwReq req) {
-        Long accountId = redisAccountService.getPasswordResetAccountId(req.getToken());
+        Long accountId = accountRedisService.getPasswordResetAccountId(req.getToken());
         if (accountId == null) {
             throw new ServiceException(ServiceErrorCode.AUTH_RESET_PW_FAIL);
         }
@@ -210,7 +211,7 @@ public class AccountService {
                 .resetPw(req.getNewPassword(), passwordEncoder);
         accountRepository.flush();
 
-        if (!accountId.equals(redisAccountService.consumePasswordResetToken(req.getToken()))) {
+        if (!accountId.equals(accountRedisService.consumePasswordResetToken(req.getToken()))) {
             throw new ServiceException(ServiceErrorCode.AUTH_RESET_PW_FAIL);
         }
     }

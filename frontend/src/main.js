@@ -9,7 +9,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore';
 import AppIcon from '@/components/AppIcon.vue';
 import AppEmptyState from '@/components/AppEmptyState.vue';
-import { isLoginRequiredError, redirectToLogin } from '@/utils/errorHandling';
+import { isLoginRequiredError, redirectToLogin } from '@/common';
 
 const pinia = createPinia();
 pinia.use(piniaPersistedstate);
@@ -20,11 +20,12 @@ app.component('AppEmptyState', AppEmptyState);
 app.use(pinia);
 app.use(Toast,
     {
-        timeout: 1000,
+        timeout: 2000,
+        pauseOnHover: true,
         enter: "fade-enter-active",
         leave: "Vue-Toastification__bounce-leave-active",
         move: "fade-move",
-        position: "top-right"
+        position: "top-center"
     });
 app.use(router);
 

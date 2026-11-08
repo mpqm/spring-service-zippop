@@ -21,19 +21,19 @@
         </button>
       </template>
 
-      <!-- 예약 시작 날짜 -->
-      <template #item-reserveStartDate="item">
-        <span>{{ formatDate(item.reserveStartDate) }}</span>
+      <!-- 예약 시작 -->
+      <template #item-reserveStartTime="item">
+        <span>{{ formatDate(item.reserveStartTime) }} {{ formatTime(item.reserveStartTime) }}</span>
       </template>
 
-      <!-- 예약 시간 -->
-      <template #item-reserveTime="item">
-        <span>{{ formatTime(item.reserveStartTime) }} ~ {{ formatTime(item.reserveEndTime) }}</span>
+      <!-- 예약 종료 -->
+      <template #item-reserveEndTime="item">
+        <span>{{ formatDate(item.reserveEndTime) }} {{ formatTime(item.reserveEndTime) }}</span>
       </template>
 
       <!-- 카운트다운 타이머 -->
       <template #item-countdown="item">
-        <CountDownTimer :targetTime="item.reserveStartTime" :flag="false" />
+        <CountDownTimer :startTime="item.reserveStartTime" :endTime="item.reserveEndTime" :flag="false" />
       </template>
 
       <!-- 예약 상태 -->
@@ -83,7 +83,7 @@ const props = defineProps({
   }
 })
 
-const sortBy = ref('reserveStartDate')
+const sortBy = ref('reserveStartTime')
 const sortType = ref('asc')
 
 const toast = useToast()
@@ -92,8 +92,8 @@ const reserveStore = useReserveStore()
 
 const headers = ref([
   { text: '예약인원', value: 'reservePeople', sortable: true },
-  { text: '예약날짜', value: 'reserveStartDate', sortable: true },
-  { text: '예약시간', value: 'reserveTime', sortable: false },
+  { text: '예약 시작', value: 'reserveStartTime', sortable: true },
+  { text: '예약 종료', value: 'reserveEndTime', sortable: true },
   { text: '남은시간', value: 'countdown', sortable: false },
   { text: '상태', value: 'status', sortable: false },
   { text: '', value: 'actions', sortable: false }

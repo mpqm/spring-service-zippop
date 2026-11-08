@@ -1,5 +1,7 @@
 package com.fiiiiive.zippop.account.service;
 
+import com.fiiiiive.zippop.account.infrastructure.mail.AccountMailService;
+import com.fiiiiive.zippop.account.infrastructure.redis.AccountRedisService;
 import com.fiiiiive.zippop.account.model.dto.CreateAccountReq;
 import com.fiiiiive.zippop.account.model.dto.FindPwReq;
 import com.fiiiiive.zippop.account.model.dto.ResetPwReq;
@@ -12,7 +14,6 @@ import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.global.base.ServiceException;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
-import com.fiiiiive.zippop.global.redis.RedisAccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -31,8 +32,8 @@ class AccountServiceTest {
     private final CustomerRepository customers = mock(CustomerRepository.class);
     private final CompanyRepository companies = mock(CompanyRepository.class);
     private final PasswordEncoder encoder = mock(PasswordEncoder.class);
-    private final AccountMailSender mail = mock(AccountMailSender.class);
-    private final RedisAccountService redis = mock(RedisAccountService.class);
+    private final AccountMailService mail = mock(AccountMailService.class);
+    private final AccountRedisService redis = mock(AccountRedisService.class);
     private final MockHttpServletRequest servletRequest = new MockHttpServletRequest();
     private final AccountService service = new AccountService(accounts, encoder, mail, redis, customers, companies, servletRequest);
 
@@ -110,8 +111,7 @@ class AccountServiceTest {
         servletRequest.setServerPort(8443);
         servletRequest.setContextPath("/zippop");
 
-        service.findPw(FindPwReq.builder().role(RoleType.ROLE_CUSTOMER.name())
-                .userId("member01").build());
+        service.findPw(FindPwReq.builder().userId("member01").build());
 
         var token = org.mockito.ArgumentCaptor.forClass(String.class);
         verify(redis).savePasswordResetToken(token.capture(), eq(99L), eq(10L));

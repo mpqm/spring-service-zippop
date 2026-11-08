@@ -29,7 +29,7 @@
 
       <template #item-likeCount="item">
         <button class="btn-tagdefault">
-          <Icon icon="iconoir:thumbs-up" width="16px" height="16px" class="ico-accent" />
+          <Icon icon="heart" width="16px" height="16px" class="ico-accent" />
           <span>{{ item.likeCount }}</span>
         </button>
       </template>
@@ -116,8 +116,8 @@ const props = defineProps({
 const toast = useToast()
 const router = useRouter()
 const popupStore = usePopupStore()
-const sortBy = ref('popupName')
-const sortType = ref('asc')
+const sortBy = ref('popupStartDate')
+const sortType = ref('desc')
 const headers = ref([
   { text: '이미지', value: 'image', sortable: false },
   { text: '팝업명', value: 'popupName', sortable: true },

@@ -1,11 +1,12 @@
 package com.fiiiiive.zippop.account.service;
 
+import com.fiiiiive.zippop.account.infrastructure.mail.AccountMailService;
+import com.fiiiiive.zippop.account.infrastructure.redis.AccountRedisService;
 import com.fiiiiive.zippop.account.model.entity.Account;
 import com.fiiiiive.zippop.account.repository.AccountRepository;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
-import com.fiiiiive.zippop.global.redis.RedisAccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -16,8 +17,8 @@ import static org.mockito.Mockito.*;
 class AccountEmailSenderTest {
     @Test
     void sendsVerificationLinkWithoutRoleParameter() {
-        AccountMailSender mail = mock(AccountMailSender.class);
-        RedisAccountService redis = mock(RedisAccountService.class);
+        AccountMailService mail = mock(AccountMailService.class);
+        AccountRedisService redis = mock(AccountRedisService.class);
         when(redis.saveEmailVerifyUuid(eq(99L), anyString(), eq(3L))).thenReturn("verify-id");
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setScheme("https");

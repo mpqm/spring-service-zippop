@@ -4,7 +4,7 @@ import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
 import com.fiiiiive.zippop.orders.model.enums.OrdersStatus;
-import com.fiiiiive.zippop.global.redis.RedisQueueService;
+import com.fiiiiive.zippop.reserve.infrastructure.redis.ReserveRedisService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.goods.repository.GoodsRepository;
@@ -36,7 +36,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -59,7 +58,8 @@ class OrdersServiceTest {
     @Mock ReserveRepository reserveRepository;
     @Mock ApplicationEventPublisher eventPublisher;
     @Mock OrdersPolicy ordersPolicy;
-    @Mock RedisQueueService redisQueueService;
+    @Mock
+    ReserveRedisService reserveRedisService;
     @Mock PaymentIntentRepository paymentIntentRepository;
     @Mock PointLedgerRepository pointLedgerRepository;
     @Mock RefundOutboxService refundOutboxService;
@@ -250,7 +250,7 @@ class OrdersServiceTest {
                 reserveRepository,
                 eventPublisher,
                 ordersPolicy,
-                redisQueueService,
+                reserveRedisService,
                 paymentIntentRepository,
                 pointLedgerRepository,
                 refundOutboxService
@@ -266,7 +266,6 @@ class OrdersServiceTest {
                 .workingUUID("working")
                 .waitingUUID("waiting")
                 .totalPeople(3)
-                .startDate(LocalDate.now())
                 .startTime(LocalDateTime.now().minusMinutes(5))
                 .endTime(LocalDateTime.now().plusHours(1))
                 .popup(popup)
@@ -284,7 +283,7 @@ class OrdersServiceTest {
         @SuppressWarnings("unchecked")
         IamportResponse<Payment> providerResponse = mock(IamportResponse.class);
         when(reserveRepository.findById(9L)).thenReturn(Optional.of(reserve));
-        when(redisQueueService.hasWorkingAccess("working", "user@test.com")).thenReturn(true);
+        when(reserveRedisService.hasWorkingAccess("working", "user@test.com")).thenReturn(true);
         when(iamportClient.paymentByImpUid("imp-reserve")).thenReturn(providerResponse);
         when(providerResponse.getResponse()).thenReturn(payment);
         when(payment.getCustomData()).thenReturn("{\"11\":2}");

@@ -1,5 +1,7 @@
 package com.fiiiiive.zippop.global.redis;
 
+import com.fiiiiive.zippop.reserve.infrastructure.redis.ReserveRedisService;
+import com.fiiiiive.zippop.reserve.model.enums.EnrollResult;
 import org.junit.jupiter.api.*;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -9,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.util.UUID;
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -16,7 +19,7 @@ import static org.mockito.Mockito.*;
 class RedisQueueExpiryTest {
     private LettuceConnectionFactory connection;
     private RedisTemplate<String, Object> redis;
-    private RedisQueueService service;
+    private ReserveRedisService service;
     private String working;
     private String waiting;
 
@@ -37,11 +40,11 @@ class RedisQueueExpiryTest {
         when(redisson.getLock(anyString())).thenReturn(lock);
         when(lock.tryLock(5, 3, TimeUnit.SECONDS)).thenReturn(true);
         when(lock.isHeldByCurrentThread()).thenReturn(true);
-        service = new RedisQueueService(redis, redisson);
+        service = new ReserveRedisService(redis, redisson);
         working = "test:fix:" + UUID.randomUUID();
         waiting = working + ":waiting";
-        service.createQueue(working, 1);
-        service.createQueue(waiting, 1);
+        service.createQueue(working, LocalDateTime.now().plusMinutes(1));
+        service.createQueue(waiting, LocalDateTime.now().plusMinutes(1));
     }
 
     @AfterEach void clean() {
@@ -52,37 +55,54 @@ class RedisQueueExpiryTest {
     @Test void firstRealMemberGetsATtlAndRecreatedSetKeepsItsDeadline() {
         assertThat(redis.hasKey(working)).isFalse();
         assertThat(service.existQueue(working)).isTrue();
-        service.enrollQueue(working, "one@example.test", System.currentTimeMillis());
+        assertThat(service.enrollWithLock(working, waiting, "one@example.test",
+                System.currentTimeMillis(), 1)).isEqualTo(EnrollResult.WORKING);
         assertThat(redis.getExpire(working, TimeUnit.SECONDS)).isBetween(1L, 60L);
         service.remove(working, "one@example.test");
         assertThat(redis.hasKey(working)).isFalse();
-        service.enrollQueue(working, "two@example.test", System.currentTimeMillis());
+        assertThat(service.enrollWithLock(working, waiting, "two@example.test",
+                System.currentTimeMillis(), 1)).isEqualTo(EnrollResult.WORKING);
         assertThat(redis.getExpire(working, TimeUnit.SECONDS)).isBetween(1L, 60L);
     }
 
     @Test void promotionStartsANewTenMinuteLeaseInsteadOfUsingWaitingTime() {
-        service.enrollQueue(waiting, "waiting@example.test", System.currentTimeMillis() - 900000);
-        assertThat(service.firstWaitingUserToWorking(working, waiting, 1)).isEqualTo("waiting@example.test");
+        seedMember(waiting, "waiting@example.test", System.currentTimeMillis() - 900000);
+        assertThat(service.promoteFirstMember(working, waiting, 1)).isEqualTo("waiting@example.test");
         assertThat(service.hasWorkingAccess(working, "waiting@example.test")).isTrue();
         assertThat(redis.getExpire(working, TimeUnit.SECONDS)).isBetween(1L, 60L);
         assertThat(service.getOrder(waiting, "waiting@example.test")).isNull();
     }
 
     @Test void expiredMemberIsDeniedAndRemovedBeforeCapacityIsChecked() {
-        service.enrollQueue(working, "old@example.test", System.currentTimeMillis() - 600001);
+        seedMember(working, "old@example.test", System.currentTimeMillis() - 600001);
         assertThat(service.hasWorkingAccess(working, "old@example.test")).isFalse();
-        assertThat(service.enrollQueueWithLock(working, "new@example.test", System.currentTimeMillis(), 1)).isTrue();
+        assertThat(service.enrollWithLock(working, waiting, "new@example.test",
+                System.currentTimeMillis(), 1)).isEqualTo(EnrollResult.WORKING);
         assertThat(service.getOrder(working, "old@example.test")).isNull();
     }
 
     @Test void existingWaiterIsPromotedBeforeANewArrival() {
-        service.enrollQueue(waiting, "first@example.test", System.currentTimeMillis() - 1000);
+        seedMember(waiting, "first@example.test", System.currentTimeMillis() - 1000);
 
-        boolean newcomerAdmitted = service.enrollFairQueueWithLock(
+        EnrollResult newcomerResult = service.enrollWithLock(
                 working, waiting, "new@example.test", System.currentTimeMillis(), 1);
 
-        assertThat(newcomerAdmitted).isFalse();
+        assertThat(newcomerResult).isEqualTo(EnrollResult.WAITING);
         assertThat(service.getOrder(working, "first@example.test")).isZero();
         assertThat(service.getOrder(waiting, "new@example.test")).isZero();
+    }
+
+    @Test void existingWaiterTakesAnAvailableWorkingSlot() {
+        seedMember(waiting, "first@example.test", System.currentTimeMillis() - 1000);
+
+        assertThat(service.enrollWithLock(working, waiting, "first@example.test",
+                System.currentTimeMillis(), 1)).isEqualTo(EnrollResult.WORKING);
+        assertThat(service.getOrder(working, "first@example.test")).isZero();
+        assertThat(service.getOrder(waiting, "first@example.test")).isNull();
+    }
+
+    private void seedMember(String key, String email, long score) {
+        redis.opsForZSet().add(key, email, score);
+        redis.expire(key, 1, TimeUnit.MINUTES);
     }
 }

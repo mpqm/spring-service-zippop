@@ -1,56 +1,50 @@
 <template>
-  <button class="countdown-timer" v-if="flag">
-    종료까지 {{ days }}일 {{ hours }}시간 {{ minutes }}분 {{ seconds }}초
-  </button>
-  <div class="countdown-timer2" v-if="flag==false">
-    {{ days }}일 {{ hours }}시간 {{ minutes }}분 {{ seconds }}초
-  </div>
+  <span :class="flag ? 'countdown-timer' : 'countdown-timer2'">{{ countdownText }}</span>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { defineProps } from "vue";
+import { computed, defineProps } from 'vue';
+import { useNow } from '@/common';
 
 const props = defineProps({
-  targetTime: String,
-  flag: Boolean,
+  targetTime: { type: String, default: '' },
+  startTime: { type: String, default: '' },
+  endTime: { type: String, default: '' },
+  flag: { type: Boolean, default: false },
 });
-const days = ref(0);
-const hours = ref(0);
-const minutes = ref(0);
-const seconds = ref(0);
-const intervalId = ref(null);
 
-// 시간 차이 계산
-const calculateTimeDifference = () => {
-  const targetDate = new Date(props.targetTime); // 문자열을 Date 객체로 변환
-  const currentTime = Date.now(); // 현재 시간 (밀리초)
-  const diff = targetDate - currentTime; // 시간 차이 계산
+const now = useNow();
 
-  if (diff > 0) {
-    days.value = Math.floor(diff / (1000 * 60 * 60 * 24));
-    hours.value = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    minutes.value = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    seconds.value = Math.floor((diff % (1000 * 60)) / 1000);
+const countdownText = computed(() => {
+  let label = '종료까지';
+  let target;
+
+  if (props.startTime && props.endTime) {
+    const start = new Date(props.startTime).getTime();
+    const end = new Date(props.endTime).getTime();
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) return '예약 시간 정보 오류';
+    if (now.value < start) {
+      label = '시작까지';
+      target = start;
+    } else if (now.value < end) {
+      target = end;
+    } else {
+      return '예약 종료';
+    }
   } else {
-    // 남은 시간이 없으면 모두 0으로 설정
-    days.value = 0;
-    hours.value = 0;
-    minutes.value = 0;
-    seconds.value = 0;
-    clearInterval(intervalId.value); // 타이머 중지
+    const value = /^\d{4}-\d{2}-\d{2}$/.test(props.targetTime)
+      ? `${props.targetTime}T23:59:59.999`
+      : props.targetTime;
+    target = new Date(value).getTime();
+    if (!Number.isFinite(target)) return '시간 정보 없음';
+    if (now.value >= target) return '종료';
   }
-};
 
-// 컴포넌트가 마운트되면 1초마다 시간을 업데이트
-onMounted(() => {
-  calculateTimeDifference();
-  intervalId.value = setInterval(calculateTimeDifference, 1000);
+  const totalSeconds = Math.ceil((target - now.value) / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${label} ${days}일 ${hours}시간 ${minutes}분 ${seconds}초`;
 });
-
-// 컴포넌트가 언마운트될 때 타이머 정리
-onUnmounted(() => {
-  clearInterval(intervalId.value);
-});
-
 </script>

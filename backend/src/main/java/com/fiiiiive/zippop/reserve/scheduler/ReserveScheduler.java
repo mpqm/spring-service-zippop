@@ -13,7 +13,7 @@ public class ReserveScheduler {
 
     private final ReserveService reserveService;
 
-    // 만료 입장자 정리, 대기자 승격 및 종료 큐 정리
+    // 만료 입장자·종료 큐 정리 및 누락 큐 복구
     @Scheduled(cron = "*/10 * * * * *", zone = "Asia/Seoul")
     public void manageReserveQueue() {
         try {
@@ -21,6 +21,15 @@ public class ReserveScheduler {
             reserveService.managementReserveQueue();
         } catch (Exception e) {
             log.error("예약 큐 관리 중 오류 발생: {}", e.getMessage());
+        }
+    }
+
+    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
+    public void promoteWaitingMembers() {
+        try {
+            reserveService.promoteWaitingMembers();
+        } catch (Exception exception) {
+            log.error("예약 대기자 승격 중 오류 발생", exception);
         }
     }
 }

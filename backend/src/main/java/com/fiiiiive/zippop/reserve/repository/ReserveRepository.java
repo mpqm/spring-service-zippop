@@ -2,15 +2,14 @@ package com.fiiiiive.zippop.reserve.repository;
 
 import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +19,8 @@ public interface ReserveRepository extends JpaRepository<Reserve, Long> {
     @Query("SELECT r FROM Reserve r JOIN FETCH r.popup WHERE r.startTime < :now OR r.popup.status = PopupStatus.POPUP_END")
     List<Reserve> findQueuesForMaintenance(@Param("now") java.time.LocalDateTime now);
 
-    @Query("SELECT r FROM Reserve r WHERE DATE(r.startDate) = :startDate")
-    List<Reserve> findAllByStartDate(@Param("startDate") LocalDate startDate);
+    @Query("SELECT r FROM Reserve r JOIN FETCH r.popup WHERE r.startTime <= :now AND r.endTime > :now AND r.popup.status = PopupStatus.POPUP_START")
+    List<Reserve> findActiveQueuesForPromotion(@Param("now") java.time.LocalDateTime now);
 
     @Query("SELECT r FROM Reserve r " +
             "JOIN FETCH r.popup rp " +

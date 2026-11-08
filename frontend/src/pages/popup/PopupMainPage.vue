@@ -19,14 +19,13 @@
         </div>
         <div class="ctn-inputsearch">
           <input class="ipt-default" v-model="searchQuery" type="text" aria-label="팝업 검색" placeholder="브랜드, 지역, 카테고리로 검색" @keyup.enter="submitSearch()" />
-          <button class="btn-default" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+          <button class="btn-default" type="button" aria-label="팝업 검색" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
         </div>
       </section>
       <div class="lyt-cardgrid" v-if="popupList && popupList.length">
         <PopupCard v-for="popup in popupList" :key="popup.popupIdx" :popup="popup" :showReserveAction="true" />
       </div>
       <div class="ctn-empty" v-else>
-        <Icon icon="iconoir:search-window" width="42px" height="42px" />
         <p>검색 결과에 해당하는 팝업 스토어가 없습니다.</p>
         <span>다른 키워드로 다시 찾아보세요.</span>
         <button class="btn-tagaction" type="button" @click="getPopups(true)">검색 초기화</button>

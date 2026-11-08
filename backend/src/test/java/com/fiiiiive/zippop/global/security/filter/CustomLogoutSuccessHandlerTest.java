@@ -2,7 +2,7 @@ package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiiiiive.zippop.global.crypto.JwtService;
+import com.fiiiiive.zippop.global.security.crypto.JwtService;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;

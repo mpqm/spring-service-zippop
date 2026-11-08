@@ -5,7 +5,7 @@
       <h2 class="txt-maintitle txt-pagetitle">팝업 스토어 예약 일정을 확인하세요</h2>
       <div class="ctn-inputsearch">
         <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="submitSearch()" />
-        <button class="btn-default" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+        <button class="btn-default" type="button" aria-label="예약 검색" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
       </div>
       <div class="lyt-cardgrid" v-if="popupList && popupList.length">
         <PopupCard v-for="popup in popupList" :key="popup.popupIdx" :popup="popup" main-tab="reserve" />

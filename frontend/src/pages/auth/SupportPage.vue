@@ -3,20 +3,13 @@
         <AppHeader></AppHeader>
         <div class="lyt-centertop">
             <div class="wrp-centertop">
+                <button class="btn-authback" type="button" aria-label="뒤로가기" title="뒤로가기" @click="router.back()">
+                    <Icon icon="iconoir:nav-arrow-left" width="20" height="20" />
+                    <span>뒤로가기</span>
+                </button>
 
                 <form class="ctn-chidform ctn-formcard" @submit.prevent="findUserId">
                     <h1 class="txt-def0">아이디 찾기</h1>
-
-                    <div class="ctn-checkbox">
-                        <label class="lbl-checkbox">
-                            <input type="radio" value="ROLE_COMPANY" v-model="role" />
-                            기업회원
-                        </label>
-                        <label class="lbl-checkbox">
-                            <input type="radio" value="ROLE_CUSTOMER" v-model="role" />
-                            고객회원
-                        </label>
-                    </div>
 
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">이메일</label>
@@ -27,17 +20,6 @@
                 
                 <form class="ctn-chidform ctn-formcard" @submit.prevent="findUserPassword">
                     <h1 class="txt-def0">비밀번호 찾기</h1>
-
-                    <div class="ctn-checkbox">
-                        <label class="lbl-checkbox">
-                            <input type="radio" value="ROLE_COMPANY" v-model="role" />
-                            기업회원
-                        </label>
-                        <label class="lbl-checkbox">
-                            <input type="radio" value="ROLE_CUSTOMER" v-model="role" />
-                            고객회원
-                        </label>
-                    </div>
 
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">아이디</label>
@@ -57,8 +39,6 @@
                     <button class="btn-default" type="submit">계정 활성화</button>
                 </form>
                 
-                <button class="btn-default" type="button" @click="router.back()">뒤로가기</button>
-
             </div>
         </div>
         <AppFooter></AppFooter>
@@ -77,18 +57,12 @@ const router = useRouter();
 const accountStore = useAccountStore();
 const toast = useToast();
 
-const role = ref("");
 const userEmail = ref("");
 const userId = ref("");
 
 // 아이디 찾기 
 const findUserId = async () => {
-    if (!role.value) {
-        toast.error("회원 유형을 선택해주세요.");
-        return;
-    }
     const req = {
-        role: role.value,
         email: userEmail.value
     }
     const res = await accountStore.findUserId(req)
@@ -101,12 +75,7 @@ const findUserId = async () => {
 
 // 비밀번호 찾기 
 const findUserPassword = async () => {
-    if (!role.value) {
-        toast.error("회원 유형을 선택해주세요.");
-        return;
-    }
     const req = {
-        role: role.value,
         userId: userId.value
     }
     const res = await accountStore.findUserPassword(req)

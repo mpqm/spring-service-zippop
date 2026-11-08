@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GetReserveQueueRes {
+
     private Long reserveIdx;
     private String waitingTotal;
     private String workingTotal;
@@ -25,9 +26,7 @@ public class GetReserveQueueRes {
                 .build();
     }
 
-    public static GetReserveQueueRes toDataWithToken(Long reserveIdx, String workingTotal, String waitingTotal,
-                                                     String statusMessage, Integer access, String wtoken,
-                                                     Long accessExpiresAt) {
+    public static GetReserveQueueRes toDataWithToken(Long reserveIdx, String workingTotal, String waitingTotal, String statusMessage, Integer access, String wtoken, Long accessExpiresAt) {
         return GetReserveQueueRes.builder()
                 .reserveIdx(reserveIdx)
                 .workingTotal(workingTotal)
@@ -38,4 +37,5 @@ public class GetReserveQueueRes {
                 .accessExpiresAt(accessExpiresAt)
                 .build();
     }
+
 }

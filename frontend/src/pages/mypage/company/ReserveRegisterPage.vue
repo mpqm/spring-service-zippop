@@ -65,7 +65,6 @@ const createReserve = async () => {
   const req = {
     popupIdx: Number(route.params.popupIdx),
     reservePeople: Number(reservePeople.value),
-    reserveStartDate: reserveStartDateTime.value.split('T')[0],
     reserveStartTime: `${reserveStartDateTime.value}:00`,
     reserveEndTime: `${reserveEndDateTime.value}:00`,
   };

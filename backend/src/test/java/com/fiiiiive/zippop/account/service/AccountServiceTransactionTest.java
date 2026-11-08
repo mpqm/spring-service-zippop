@@ -1,12 +1,13 @@
 package com.fiiiiive.zippop.account.service;
 
+import com.fiiiiive.zippop.account.infrastructure.mail.AccountMailService;
+import com.fiiiiive.zippop.account.infrastructure.redis.AccountRedisService;
 import com.fiiiiive.zippop.account.model.dto.CreateAccountReq;
 import com.fiiiiive.zippop.account.model.dto.UpdateAccountReq;
 import com.fiiiiive.zippop.account.model.entity.Account;
 import com.fiiiiive.zippop.account.repository.AccountRepository;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
-import com.fiiiiive.zippop.global.redis.RedisAccountService;
 import com.fiiiiive.zippop.global.security.PasswordConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,9 @@ class AccountServiceTransactionTest {
     @Autowired CustomerRepository customers;
     @Autowired jakarta.persistence.EntityManager entityManager;
     @MockBean
-    AccountMailSender mail;
+    AccountMailService mail;
     @MockBean
-    RedisAccountService redis;
-    @MockBean RequestUrlService urls;
+    AccountRedisService redis;
     @MockBean jakarta.servlet.http.HttpServletRequest request;
 
     @Test

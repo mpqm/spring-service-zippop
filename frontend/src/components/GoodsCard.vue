@@ -7,11 +7,11 @@
     <div class="ctn-cardbody ctn-goodscardbody">
       <p class="txt-def1 txt-goodscardname">{{ goods.goodsName }}</p>
       <div class="ctn-goodscardmeta">
-        <button class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" class="ico-accent" />{{ goods.goodsPrice }}원</button>
-        <button class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" class="ico-accent" />{{ goods.goodsAmount }}개</button>
+        <span class="btn-tagdefault"><Icon icon="iconoir:coin" width="20px" height="20px" class="ico-accent" />{{ goods.goodsPrice }}원</span>
+        <span class="btn-tagdefault"><Icon icon="iconoir:box-iso" width="20px" height="20px" class="ico-accent" />{{ goods.goodsAmount }}개</span>
       </div>
       <div class="ctn-cardactions">
-        <button class="btn-tagaction" type="button" aria-label="장바구니 담기" title="장바구니 담기" :disabled="!showCart" :aria-disabled="!showCart" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px" />장바구니</button>
+        <button class="btn-tagaction" type="button" aria-label="장바구니 담기" title="장바구니 담기" :disabled="!canAddToCart" :aria-disabled="!canAddToCart" @click="addToCart"><Icon icon="iconoir:cart" width="20px" height="20px" />장바구니</button>
         <button class="btn-tagaction" type="button" aria-label="상세보기" title="상세보기" @click="goGoodsDetail"><Icon icon="iconoir:eye" width="20px" height="20px" />상세보기</button>
       </div>
     </div>
@@ -20,8 +20,9 @@
 
 <script setup>
 import { useAuthStore } from "@/stores/authStore";
+import { useAccountStore } from "@/stores/accountStore";
 import { useCartStore } from "@/stores/cartStore";
-import { defineProps } from "vue";
+import { computed, defineProps } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
@@ -36,13 +37,16 @@ const router = useRouter();
 const toast = useToast();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+const accountStore = useAccountStore();
+const canAddToCart = computed(() => props.showCart &&
+  (!authStore.isLoggedIn || accountStore.userInfo?.role === "ROLE_CUSTOMER"));
 
 const goGoodsDetail = async () => {
   router.push(`/goods/${props.popupIdx}/${props.goods.goodsIdx}`);
 };
 
 const addToCart = async () => {
-  if (!props.showCart) return;
+  if (!canAddToCart.value) return;
   if (!authStore.isLoggedIn) {
     toast.error("로그인이 필요합니다.");
     return;

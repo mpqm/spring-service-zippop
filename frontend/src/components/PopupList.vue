@@ -7,7 +7,7 @@
       <h4 class="txt-def1">{{ popup.popupName }}</h4>
       <button class="btn-tagdefault">{{ popup.category }}</button>
       <button class="btn-tagdefault">{{ popup.popupStartDate }}<span class="divider">~</span>{{ popup.popupEndDate }}</button>
-      <button class="btn-tagdefault"><Icon icon="iconoir:thumbs-up" width="20px" height="20px" class="ico-accent" /> {{ popup.likeCount }}</button>
+      <button class="btn-tagdefault"><Icon icon="heart" width="20px" height="20px" class="ico-accent" /> {{ popup.likeCount }}</button>
       <button class="btn-tagdefault"><Icon icon="iconoir:user" width="20px" height="20px" class="ico-accent" /> {{ popup.totalPeople }}</button>
     </div>
 
@@ -26,7 +26,7 @@
     <!-- LikeManagePage 용 -->
     <div v-if="showControl === 6" class="ctn-listbuttons">
       <button class="btn-tagaction" @click="goPopup"><Icon icon="iconoir:eye" width="20px" height="20px"/>팝업 보기</button>
-      <button class="btn-tagaction" @click="toggleLike"><Icon icon="iconoir:thumbs-up" width="20px" height="20px"/>좋아요 취소</button>
+      <button class="btn-tagaction" @click="toggleLike"><Icon icon="heart-solid" width="20px" height="20px"/>좋아요 취소</button>
     </div>
   </div>
 </template>

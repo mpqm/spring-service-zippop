@@ -8,13 +8,11 @@ import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.reserve.model.dto.*;
 import com.fiiiiive.zippop.reserve.service.ReserveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -79,19 +77,19 @@ public class ReserveController {
     @DeleteMapping("/{reserveIdx}/enrollment")
     public ResponseEntity<SuccessResponse<String>> cancelReserve(
             @AuthenticationPrincipal CustomUserDetails user,
-            HttpServletRequest req,
             HttpServletResponse res,
             @PathVariable Long reserveIdx
     ) throws ServiceException {
-        String response = reserveService.cancelReserve(req, res, user, reserveIdx);
+        String response = reserveService.cancelReserve(res, user, reserveIdx);
         return ResponseEntity.ok(new SuccessResponse<>(SuccessCode.RESERVE_CANCEL_SUCCESS, response));
     }
 
     // (WebSocket) 예약 상태 업데이트
     @MessageMapping("/reserve/status")
     public void updateReserveStatus(
-        Principal principal,
-        @Payload GetReserveQueueReq getReserveQueueReq) throws ServiceException {
+            Principal principal,
+            @Payload GetReserveQueueReq getReserveQueueReq
+    ) throws ServiceException {
         reserveService.status(principal, getReserveQueueReq);
     }
 

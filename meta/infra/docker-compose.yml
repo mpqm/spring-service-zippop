@@ -15,6 +15,7 @@ services:
       REDIS_URL: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-qwer1234}
+      IMP_INCLUDE_SANDBOX: "true"
       NAVER_CLIENT_SECRET: ${NAVER_CILENT_SECRET:-local-secret}
       FILE_UPLOAD_TYPE: local
       LOCAL_UPLOAD_PATH: /app/uploads

@@ -1,11 +1,12 @@
 package com.fiiiiive.zippop.account.service;
 
+import com.fiiiiive.zippop.account.infrastructure.mail.AccountMailService;
+import com.fiiiiive.zippop.account.infrastructure.redis.AccountRedisService;
 import com.fiiiiive.zippop.account.model.entity.Account;
 import com.fiiiiive.zippop.account.repository.AccountRepository;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
-import com.fiiiiive.zippop.global.redis.RedisAccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -18,11 +19,11 @@ import static org.mockito.Mockito.*;
 class AccountEmailVerificationTest {
     private final MockHttpServletRequest request = new MockHttpServletRequest();
     private final AccountRepository accounts = mock(AccountRepository.class);
-    private final RedisAccountService redis = mock(RedisAccountService.class);
+    private final AccountRedisService redis = mock(AccountRedisService.class);
     private final AccountService service = new AccountService(
         accounts,
             mock(PasswordEncoder.class),
-            mock(AccountMailSender.class),
+            mock(AccountMailService.class),
             redis,
             mock(CustomerRepository.class),
             mock(CompanyRepository.class),

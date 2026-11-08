@@ -20,7 +20,7 @@
       <div class="ctn-l50">
         <div class="ctn-inputsearch">
           <input class="ipt-default" v-model="searchQuery" type="text" placeholder="검색어를 입력하세요" @keyup.enter="submitSearch()" />
-          <button class="btn-default" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
+          <button class="btn-default" type="button" aria-label="굿즈 검색" @click="submitSearch()"><Icon icon="ic:search" width="20px" height="20px" /></button>
         </div>
         <div class="wrp-list" v-if="goodsList && goodsList.length">
           <GoodsList v-for="goods in goodsList" :key="goods.goodsIdx" :goods="goods" :popupIdx="Number(popupIdx)" :showControl="true" @cartUpdated="handleCartUpdated" />
@@ -105,7 +105,7 @@ import { useAuthStore } from '@/stores/authStore';
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { IAMPORT_NAME, IAMPORT_PG, IAMPORT_UID, BACKEND_URL, BACKEND_SOCKET_URL } from '@/config';
-import { isSocketLoginRequiredError, redirectToLogin } from '@/utils/errorHandling';
+import { isSocketLoginRequiredError, redirectToLogin } from '@/common';
 
 const goodsStore = useGoodsStore();
 const popupStore = usePopupStore();
@@ -142,6 +142,9 @@ let statusInterval = null;
 let reconnectTimer = null;
 let accessExpiryTimer = null;
 let leavingForAuthentication = false;
+let lastQueueAccess = null;
+let hasShownEntryToast = false;
+let hasShownExpiryToast = false;
 
 onMounted(async () => {
   const enrolled = await enrollReserve();
@@ -196,36 +199,58 @@ const connectWebSocket = () => {
         const data = JSON.parse(message.body);
         if (String(data.reserveIdx) !== String(reserveIdx.value)) return;
         queueStatusMessage.value = data.statusMessage;
+        const accessChanged = data.access !== lastQueueAccess;
+        lastQueueAccess = data.access;
 
         if (data.access === 1) {
           if (data.wtoken) {
             document.cookie = `WTOKEN=${data.wtoken}; path=/; max-age=600; secure; samesite=strict`;
-            toast.success("예약 승격! 상품을 선택하실 수 있습니다.");
-          } else {
-            toast.success("예약 접속 성공! 상품을 선택하실 수 있습니다.");
+          }
+          const expiresAt = data.accessExpiresAt == null ? NaN : Number(data.accessExpiresAt);
+          const remaining = expiresAt - Date.now();
+          if (Number.isFinite(remaining) && remaining <= 0) {
+            reserveStore.access = false;
+            showQueueOverlay.value = true;
+            queueStatusMessage.value = '예약 입장 유효시간이 만료되었습니다.';
+            if (!hasShownExpiryToast) toast.error(queueStatusMessage.value);
+            hasShownExpiryToast = true;
+            lastQueueAccess = 4;
+            return;
+          }
+          if (!hasShownEntryToast) {
+            toast.success(data.wtoken
+              ? "예약 승격! 상품을 선택하실 수 있습니다."
+              : "예약 접속 성공! 상품을 선택하실 수 있습니다.");
+            hasShownEntryToast = true;
           }
           showQueueOverlay.value = false;
           reserveStore.access = true;
           clearTimeout(accessExpiryTimer);
-          const remaining = Number(data.accessExpiresAt) - Date.now();
-          if (Number.isFinite(remaining)) {
+          if (Number.isFinite(remaining) && remaining > 0) {
             accessExpiryTimer = setTimeout(() => {
               reserveStore.access = false;
               showQueueOverlay.value = true;
               queueStatusMessage.value = '예약 입장 유효시간이 만료되었습니다.';
-              toast.error(queueStatusMessage.value);
+              if (!hasShownExpiryToast) toast.error(queueStatusMessage.value);
+              hasShownExpiryToast = true;
+              lastQueueAccess = 4;
             }, Math.max(0, remaining));
           }
         } else if (data.access === 0) {
           showQueueOverlay.value = true;
+          reserveStore.access = false;
+          clearTimeout(accessExpiryTimer);
         } else if (data.access === 4) {
           clearTimeout(accessExpiryTimer);
           reserveStore.access = false;
           showQueueOverlay.value = true;
-          toast.error(data.statusMessage);
+          if (!hasShownExpiryToast) toast.error(data.statusMessage);
+          hasShownExpiryToast = true;
         } else if (data.access === 2 || data.access === 3) {
-          toast.error(data.statusMessage);
-          router.push("/");
+          if (accessChanged) {
+            toast.error(data.statusMessage);
+            router.push("/");
+          }
         }
       } catch (error) {
         console.error("메시지 파싱 실패:", error);
@@ -421,7 +446,7 @@ const payment = async () => {
         toast.success("결제를 처리했습니다.");
         router.push({ path: `/orders/${res.result.ordersIdx}`, query: { mainTab: 'reserve' } });
       } else {
-        toast.error("결제를 처리하지 못했습니다.");
+        toast.error(res.message || "주문 검증에 실패했습니다. 결제 내역을 확인해 주세요.");
       }
     } else {
       toast.error("결제를 처리하지 못했습니다.");

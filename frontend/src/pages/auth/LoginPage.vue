@@ -4,7 +4,7 @@
         <div class="lyt-centertop">
             <div class="wrp-centertop">
                 <form class="ctn-rootform ctn-formcard" @submit.prevent="login">
-                    <img class="img-mainlogo" src="../../assets/img/zippoicon-removebg.png" alt="ZIPPOP">
+                    <span class="img-mainlogo" role="img" aria-label="ZIPPOP"></span>
                     
                     <div class="ctn-inputdefault">
                         <label class="ipt-default-label">아이디</label>

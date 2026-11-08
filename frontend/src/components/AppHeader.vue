@@ -4,7 +4,7 @@
     <div class="wrp-header">
       <div class="ctn-header">
         <router-link class="lnk-brand" to="/" aria-label="ZIPPOP 홈">
-          <img class="img-headerlogo" src="../assets/img/zippoicon-removebg.png" alt="ZIPPOP" />
+          <span class="img-headerlogo" role="img" aria-label="ZIPPOP"></span>
           <span class="txt-brandmark">ZIP<span>POP</span></span>
         </router-link>
         <router-link :class="{ 'lnk-header': true, active: activeMainTab === 'popup' }" to="/" >팝업 찾기</router-link>
@@ -52,7 +52,7 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { resolveMainTab } from '@/utils/navigation';
+import { resolveMainTab } from '@/common';
 const route = useRoute();
 
 const authStore = useAuthStore();

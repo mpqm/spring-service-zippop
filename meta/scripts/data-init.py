@@ -256,10 +256,10 @@ def seed(cursor) -> dict[str, int]:
             start_at = datetime.combine(slot_date, time(11 + slot * 2, 0))
             cursor.execute(
                 """INSERT INTO reserve
-                   (created_at, updated_at, end_time, start_date, start_time, total_people,
+                   (created_at, updated_at, end_time, start_time, total_people,
                     waitinguuid, workinguuid, popup_idx)
-                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-                (NOW, NOW, start_at + timedelta(hours=1, minutes=30), slot_date, start_at,
+                   VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
+                (NOW, NOW, start_at + timedelta(hours=1, minutes=30), start_at,
                  20 + slot * 10, str(uuid.uuid4()), str(uuid.uuid4()), popup_id),
             )
 

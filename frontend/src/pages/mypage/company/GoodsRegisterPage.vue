@@ -50,7 +50,7 @@ import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useGoodsStore } from "@/stores/goodsStore";
-import { createMultipartRequest } from "@/utils/multipart";
+import { createMultipartRequest } from "@/common";
 
 const goodsStore = useGoodsStore();
 const router = useRouter();

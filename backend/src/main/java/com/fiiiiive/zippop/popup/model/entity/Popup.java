@@ -211,10 +211,4 @@ public class Popup extends BaseEntity {
         this.likeCount--;
     }
 
-    public void validateTotalPeople() {
-        // 팝업 최대 예약자 수를 넘었는지 확인
-        if(this.totalPeople <= 0) {
-            throw new ServiceException(ServiceErrorCode.RESERVE_REGISTER_FAIL_LIMIT_EXCEEDED);
-        }
-    }
 }

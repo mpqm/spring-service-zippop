@@ -82,7 +82,7 @@ import { useAccountStore } from '@/stores/accountStore';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
-import { createMultipartRequest } from '@/utils/multipart';
+import { createMultipartRequest } from '@/common';
 
 const accountStore = useAccountStore();
 const toast = useToast();

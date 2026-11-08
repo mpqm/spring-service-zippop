@@ -2,6 +2,7 @@ package com.fiiiiive.zippop.popup.repository;
 
 import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ import java.util.*;
 
 public interface PopupRepository extends JpaRepository<Popup, Long> {
 
-    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Popup p WHERE p.idx = :popupIdx")
     Optional<Popup> findForUpdate(@Param("popupIdx") Long popupIdx);
 

@@ -101,7 +101,8 @@ public class PopupService {
         // 팝업 페이지 조회(keyword, email, pageable) 조회
         // true : 키워드(keyword)가 있는 경우, 등록된 기업회원의 이메일과 키워드로 페이징 조회
         // false : 키워드(keyword)가 없는 경우, 등록된 기업회원의 이메일로 페이징 조회
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "idx"));
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Direction.DESC, "startDate").and(Sort.by(Sort.Direction.DESC, "idx")));
         Page<Popup> popupPage = (keyword != null)
                 ? popupRepository.findAllByKeywordAndCompanyEmail(keyword, user.getEmail(), pageable)
                 : popupRepository.findAllByCompanyEmail(user.getEmail(), pageable);

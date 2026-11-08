@@ -7,5 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class EnrollReserveRes {
+
     private String response;
+
 }
