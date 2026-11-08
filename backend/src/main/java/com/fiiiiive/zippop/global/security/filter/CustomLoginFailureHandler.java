@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.global.security.filter;
 
-import com.fiiiiive.zippop.global.base.ServerException;
+import com.fiiiiive.zippop.global.api.ServerException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

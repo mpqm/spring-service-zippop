@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.goods.service;
 
-import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceErrorCode;
+import com.fiiiiive.zippop.global.api.ServiceException;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.goods.model.dto.CreateGoodsReq;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;

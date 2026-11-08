@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.orders.application;
 
-import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceException;
 import com.fiiiiive.zippop.orders.model.enums.OrdersStatus;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.orders.model.dto.CreateOrdersReq;

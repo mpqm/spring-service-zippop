@@ -2,11 +2,11 @@ package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fiiiiive.zippop.account.model.dto.LoginReq;
-import com.fiiiiive.zippop.global.base.SuccessCode;
-import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.base.SuccessResponse;
-import com.fiiiiive.zippop.global.base.ServerErrorCode;
-import com.fiiiiive.zippop.global.base.ServerException;
+import com.fiiiiive.zippop.global.api.SuccessCode;
+import com.fiiiiive.zippop.global.api.ServiceErrorCode;
+import com.fiiiiive.zippop.global.api.SuccessResponse;
+import com.fiiiiive.zippop.global.api.ServerErrorCode;
+import com.fiiiiive.zippop.global.api.ServerException;
 import com.fiiiiive.zippop.global.security.crypto.JwtService;
 import com.fiiiiive.zippop.global.security.AuthCookie;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;

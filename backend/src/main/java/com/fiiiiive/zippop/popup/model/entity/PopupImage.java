@@ -1,10 +1,12 @@
 package com.fiiiiive.zippop.popup.model.entity;
 
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.popup.model.dto.GetPopupImageRes;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class PopupImage extends BaseEntity {
+public class PopupImage {
 
     // Column
     @Id
@@ -26,6 +28,14 @@ public class PopupImage extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="popup_idx")
     private Popup popup;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     // ToDto
     public GetPopupImageRes toDto() {

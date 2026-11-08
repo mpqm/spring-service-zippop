@@ -2,12 +2,10 @@ package com.fiiiiive.zippop.popup.model.entity;
 
 import com.fiiiiive.zippop.account.model.entity.Company;
 import com.fiiiiive.zippop.cart.model.entity.Cart;
-import com.fiiiiive.zippop.global.base.InputValidationException;
-import com.fiiiiive.zippop.global.base.ServiceException;
-import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.api.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceErrorCode;
 import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.payout.model.entity.Payout;
 import com.fiiiiive.zippop.popup.model.dto.GetPopupRes;
 import com.fiiiiive.zippop.popup.model.dto.UpdatePopupReq;
@@ -15,9 +13,12 @@ import com.fiiiiive.zippop.reserve.model.entity.Reserve;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Popup extends BaseEntity {
+public class Popup {
     // id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -110,6 +111,14 @@ public class Popup extends BaseEntity {
     @JoinColumn(name = "company_idx")
     private Company company;
 
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
+
     public static Popup create(
             String companyEmail,
             String name,
@@ -141,7 +150,7 @@ public class Popup extends BaseEntity {
     public Popup update(UpdatePopupReq req){
         for (Reserve reserve : reserveList) {
             if (reserve.getStartTime().toLocalDate().isBefore(req.getPopupStartDate()) || reserve.getEndTime().isAfter(req.getPopupEndDate().plusDays(1).atStartOfDay())) {
-                throw new InputValidationException("기존 예약을 포함하는 운영 기간을 설정해주세요.");
+                throw new ServiceException(ServiceErrorCode.STORE_UPDATE_FAIL_INVALID_PERIOD);
             }
         }
         this.name = req.getPopupName();

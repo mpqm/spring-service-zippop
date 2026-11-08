@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.global.upload;
 
-import com.fiiiiive.zippop.global.base.ServerException;
+import com.fiiiiive.zippop.global.api.ServerException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.web.MockMultipartFile;

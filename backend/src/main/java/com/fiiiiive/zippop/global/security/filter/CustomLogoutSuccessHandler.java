@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fiiiiive.zippop.global.base.SuccessCode;
-import com.fiiiiive.zippop.global.base.SuccessResponse;
+import com.fiiiiive.zippop.global.api.SuccessCode;
+import com.fiiiiive.zippop.global.api.SuccessResponse;
 import com.fiiiiive.zippop.global.security.crypto.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;

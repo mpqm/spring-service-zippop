@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.reserve.infrastructure.redis;
 
-import com.fiiiiive.zippop.global.base.ServerErrorCode;
-import com.fiiiiive.zippop.global.base.ServerException;
+import com.fiiiiive.zippop.global.api.ServerErrorCode;
+import com.fiiiiive.zippop.global.api.ServerException;
 import com.fiiiiive.zippop.reserve.model.enums.EnrollResult;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

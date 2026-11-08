@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.base;
+package com.fiiiiive.zippop.global.api;
 
 import lombok.Getter;
 
@@ -42,6 +42,7 @@ public enum ServiceErrorCode {
     STORE_SEARCH_FAIL_NOT_FOUND(4003, "해당 팝업 스토어가 존재하지 않습니다."),
     STORE_SEARCH_ALL_FAIL_NOT_FOUND(4005, "해당 팝업 스토어가 조재하지 않습니다."),
     STORE_UPDATE_FAIL_NOT_FOUND(4007, "팝업 스토어를 찾을 수 없습니다."),
+    STORE_UPDATE_FAIL_INVALID_PERIOD(4025, "기존 예약을 포함하는 운영 기간을 설정해주세요."),
     STORE_DELETE_FAIL_NOT_FOUND(4010, "팝업 스토어를 찾을 수 없어 삭제에 실패했습니다."),
     STORE_OWN_FAIL_INVALID_MEMBER(4008, "해당 팝업스토어를 등록한 기업회원이 아닙니다."),
     STORE_LIKE_FAIL_NOT_FOUND(4013, "해당 팝업 스토어를 찾을 수 없습니다."),

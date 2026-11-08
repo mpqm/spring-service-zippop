@@ -1,7 +1,6 @@
 package com.fiiiiive.zippop.goods.model.entity;
 
 import com.fiiiiive.zippop.cart.model.entity.CartItem;
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.goods.model.dto.GetGoodsRes;
 import com.fiiiiive.zippop.goods.model.dto.UpdateGoodsReq;
 import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
@@ -12,8 +11,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Goods extends BaseEntity {
+public class Goods {
 
     // Column
     @Id
@@ -71,6 +73,14 @@ public class Goods extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "popup_idx")
     private Popup popup;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     // Create
     public static Goods create(String name, Integer amount, Integer price, String content, Popup popup) {

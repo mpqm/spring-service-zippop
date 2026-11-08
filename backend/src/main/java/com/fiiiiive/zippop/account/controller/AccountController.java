@@ -2,8 +2,8 @@ package com.fiiiiive.zippop.account.controller;
 
 import com.fiiiiive.zippop.account.model.dto.*;
 import com.fiiiiive.zippop.account.service.AccountService;
-import com.fiiiiive.zippop.global.base.SuccessCode;
-import com.fiiiiive.zippop.global.base.SuccessResponse;
+import com.fiiiiive.zippop.global.api.SuccessCode;
+import com.fiiiiive.zippop.global.api.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.upload.FileUploadService;
 import io.swagger.v3.oas.annotations.tags.Tag;

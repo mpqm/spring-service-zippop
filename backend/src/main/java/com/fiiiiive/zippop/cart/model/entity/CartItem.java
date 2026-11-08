@@ -1,9 +1,8 @@
 package com.fiiiiive.zippop.cart.model.entity;
 
 import com.fiiiiive.zippop.cart.model.dto.GetCartItemRes;
-import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceErrorCode;
+import com.fiiiiive.zippop.global.api.ServiceException;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -12,7 +11,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class CartItem extends BaseEntity {
+public class CartItem {
 
     // Column
     @Id
@@ -46,6 +48,14 @@ public class CartItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_idx")
     private Goods goods;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     // Create
     public static CartItem create(Cart cart, Goods goods) {

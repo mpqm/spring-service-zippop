@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.popup.service;
 
 import com.fiiiiive.zippop.account.model.entity.Company;
-import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceErrorCode;
+import com.fiiiiive.zippop.global.api.ServiceException;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.orders.model.enums.OrdersStatus;
 import com.fiiiiive.zippop.popup.model.enums.PopupStatus;

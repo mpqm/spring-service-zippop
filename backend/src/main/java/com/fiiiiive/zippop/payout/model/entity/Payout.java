@@ -1,15 +1,17 @@
 package com.fiiiiive.zippop.payout.model.entity;
 
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.payout.model.dto.GetPayoutsRes;
 import com.fiiiiive.zippop.payout.model.enums.PayoutStatus;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,7 +19,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Payout extends BaseEntity {
+public class Payout {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
@@ -41,6 +44,14 @@ public class Payout extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "popup_idx", nullable = false)
     private Popup popup;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     // create
     public static Payout create(Popup popup, Integer revenue, LocalDate date) {

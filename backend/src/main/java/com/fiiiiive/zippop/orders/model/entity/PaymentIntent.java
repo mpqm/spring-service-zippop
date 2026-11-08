@@ -1,8 +1,11 @@
 package com.fiiiiive.zippop.orders.model.entity;
 
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -10,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "payment_intent")
-public class PaymentIntent extends BaseEntity {
+public class PaymentIntent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
@@ -54,6 +57,14 @@ public class PaymentIntent extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private PaymentIntentStatus status;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     public static PaymentIntent ready(String merchantUid, Long accountIdx, Long popupIdx, Long reserveIdx,
                                       String goodsJson, Integer usedPoint, Integer totalPrice) {

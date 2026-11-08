@@ -1,19 +1,22 @@
 package com.fiiiiive.zippop.account.model.entity;
 
 import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Company extends BaseEntity {
+public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +28,14 @@ public class Company extends BaseEntity {
 
     @Column(nullable = false, length = 15)
     private String crn;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     public void updateCrn(String crn) { this.crn = crn; }
 

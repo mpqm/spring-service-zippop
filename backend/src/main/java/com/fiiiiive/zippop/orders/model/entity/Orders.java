@@ -1,17 +1,19 @@
 package com.fiiiiive.zippop.orders.model.entity;
 
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.account.model.entity.Customer;
-import com.fiiiiive.zippop.global.base.ServiceException;
-import com.fiiiiive.zippop.global.base.ServiceErrorCode;
+import com.fiiiiive.zippop.global.api.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceErrorCode;
 import com.fiiiiive.zippop.orders.model.enums.OrdersStatus;
 import com.fiiiiive.zippop.orders.model.dto.GetOrdersRes;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +23,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Orders extends BaseEntity {
+public class Orders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,6 +87,14 @@ public class Orders extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "popup_idx", nullable = false)
     private Popup popup;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
 
     // 예약 굿즈 주문 저장

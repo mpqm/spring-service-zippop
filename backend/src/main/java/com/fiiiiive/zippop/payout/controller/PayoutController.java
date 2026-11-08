@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.payout.controller;
 
-import com.fiiiiive.zippop.global.base.SuccessCode;
-import com.fiiiiive.zippop.global.base.SuccessResponse;
+import com.fiiiiive.zippop.global.api.SuccessCode;
+import com.fiiiiive.zippop.global.api.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.payout.model.dto.GetPayoutsRes;
 import com.fiiiiive.zippop.payout.service.PayoutService;

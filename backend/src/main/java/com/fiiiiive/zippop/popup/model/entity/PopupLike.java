@@ -1,18 +1,21 @@
 package com.fiiiiive.zippop.popup.model.entity;
 
 import com.fiiiiive.zippop.account.model.entity.Customer;
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.popup.model.dto.GetPopupRes;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class PopupLike extends BaseEntity {
+public class PopupLike {
 
     // Column
     @Id
@@ -27,6 +30,14 @@ public class PopupLike extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="customer_idx")
     private Customer customer;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     // ToDTO
     public GetPopupRes toDto() {

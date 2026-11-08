@@ -2,9 +2,8 @@ package com.fiiiiive.zippop.cart.model.entity;
 
 import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.cart.model.dto.GetCartRes;
-import com.fiiiiive.zippop.global.base.BaseEntity;
-import com.fiiiiive.zippop.global.base.ServiceErrorCode;
-import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceErrorCode;
+import com.fiiiiive.zippop.global.api.ServiceException;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.popup.model.entity.PopupImage;
@@ -13,8 +12,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Cart extends BaseEntity {
+public class Cart {
 
     // Column
     @Id
@@ -43,6 +45,14 @@ public class Cart extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "popup_idx")
     private Popup popup;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     public static Cart create(Long customerIdx, Popup popup) {
         Customer customerRef = Customer.builder().idx(customerIdx).build();

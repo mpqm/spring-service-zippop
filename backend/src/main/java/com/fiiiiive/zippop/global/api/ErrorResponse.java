@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.base;
+package com.fiiiiive.zippop.global.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

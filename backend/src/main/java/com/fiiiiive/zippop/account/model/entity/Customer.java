@@ -1,15 +1,18 @@
 package com.fiiiiive.zippop.account.model.entity;
 
 import com.fiiiiive.zippop.account.model.dto.GetAccountRes;
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Getter @Builder @NoArgsConstructor @AllArgsConstructor @Entity
-public class Customer extends BaseEntity {
+public class Customer {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
@@ -20,6 +23,14 @@ public class Customer extends BaseEntity {
 
     @Column(nullable = false)
     private Integer point;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     public String getName() { return account.getName(); }
 

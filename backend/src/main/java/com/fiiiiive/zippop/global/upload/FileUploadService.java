@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.global.upload;
 
-import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

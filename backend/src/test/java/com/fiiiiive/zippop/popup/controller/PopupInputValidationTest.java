@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.popup.controller;
 
-import com.fiiiiive.zippop.global.base.GlobalExceptionHandler;
+import com.fiiiiive.zippop.global.api.GlobalExceptionHandler;
 import com.fiiiiive.zippop.global.upload.FileUploadService;
 import com.fiiiiive.zippop.popup.repository.*;
 import com.fiiiiive.zippop.popup.service.PopupService;

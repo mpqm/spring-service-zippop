@@ -1,9 +1,9 @@
 package com.fiiiiive.zippop.reserve.controller;
 
 
-import com.fiiiiive.zippop.global.base.ServiceException;
-import com.fiiiiive.zippop.global.base.SuccessCode;
-import com.fiiiiive.zippop.global.base.SuccessResponse;
+import com.fiiiiive.zippop.global.api.ServiceException;
+import com.fiiiiive.zippop.global.api.SuccessCode;
+import com.fiiiiive.zippop.global.api.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.reserve.model.dto.*;
 import com.fiiiiive.zippop.reserve.service.ReserveService;

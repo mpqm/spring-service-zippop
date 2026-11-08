@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.global.security.socket;
 
-import com.fiiiiive.zippop.global.base.ServerErrorCode;
+import com.fiiiiive.zippop.global.api.ServerErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.messaging.Message;

@@ -85,7 +85,7 @@ class OrdersServiceTest {
 
         assertThatThrownBy(() -> ordersService.createStockOrders(user,
                 CreateOrdersReq.builder().impUid("imp-unpaid").merchantUid("merchant-unpaid").popupIdx(7L).build()))
-                .isInstanceOf(com.fiiiiive.zippop.global.base.ServiceException.class);
+                .isInstanceOf(com.fiiiiive.zippop.global.api.ServiceException.class);
         org.mockito.Mockito.verifyNoInteractions(ordersRepository, goodsRepository, eventPublisher);
     }
 
@@ -110,7 +110,7 @@ class OrdersServiceTest {
 
         assertThatThrownBy(() -> ordersService.createStockOrders(user,
                 CreateOrdersReq.builder().impUid("imp-empty").merchantUid("merchant-empty").popupIdx(7L).build()))
-                .isInstanceOf(com.fiiiiive.zippop.global.base.ServiceException.class);
+                .isInstanceOf(com.fiiiiive.zippop.global.api.ServiceException.class);
         org.mockito.Mockito.verifyNoInteractions(ordersRepository, goodsRepository);
     }
 
@@ -144,7 +144,7 @@ class OrdersServiceTest {
 
         assertThatThrownBy(() -> ordersService.createStockOrders(user,
                 CreateOrdersReq.builder().impUid("imp-stolen").merchantUid("merchant-owned-by-another-account").popupIdx(7L).build()))
-                .isInstanceOf(com.fiiiiive.zippop.global.base.ServiceException.class);
+                .isInstanceOf(com.fiiiiive.zippop.global.api.ServiceException.class);
 
         org.mockito.Mockito.verifyNoInteractions(iamportClient, customerRepository, ordersRepository, goodsRepository,
                 ordersDetailRepository, eventPublisher);
@@ -169,7 +169,7 @@ class OrdersServiceTest {
 
         assertThatThrownBy(() -> ordersService.createStockOrders(user, CreateOrdersReq.builder()
                 .impUid("imp-a").merchantUid("merchant-b").popupIdx(7L).build()))
-                .isInstanceOf(com.fiiiiive.zippop.global.base.ServiceException.class);
+                .isInstanceOf(com.fiiiiive.zippop.global.api.ServiceException.class);
 
         org.mockito.Mockito.verifyNoInteractions(goodsRepository, ordersRepository, ordersDetailRepository,
                 eventPublisher, refundOutboxService);
@@ -210,7 +210,7 @@ class OrdersServiceTest {
 
         assertThatThrownBy(() -> ordersService.createStockOrders(user, CreateOrdersReq.builder()
                 .impUid("imp-expired").merchantUid("merchant-expired").popupIdx(7L).build()))
-                .isInstanceOf(com.fiiiiive.zippop.global.base.ServiceException.class);
+                .isInstanceOf(com.fiiiiive.zippop.global.api.ServiceException.class);
 
         ArgumentCaptor<RefundEvent> event = ArgumentCaptor.forClass(RefundEvent.class);
         verify(eventPublisher).publishEvent(event.capture());
@@ -307,7 +307,7 @@ class OrdersServiceTest {
                 .build();
 
         assertThatThrownBy(() -> ordersService.createReserveOrders(user, request))
-                .isInstanceOf(com.fiiiiive.zippop.global.base.ServiceException.class);
+                .isInstanceOf(com.fiiiiive.zippop.global.api.ServiceException.class);
 
         ArgumentCaptor<RefundEvent> event = ArgumentCaptor.forClass(RefundEvent.class);
         verify(eventPublisher, times(1)).publishEvent(event.capture());

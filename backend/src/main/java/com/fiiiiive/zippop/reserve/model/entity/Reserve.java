@@ -1,11 +1,12 @@
 package com.fiiiiive.zippop.reserve.model.entity;
 
 
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
 import com.fiiiiive.zippop.reserve.model.dto.GetReserveRes;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Reserve extends BaseEntity {
+public class Reserve {
 
     // Column
     @Id
@@ -47,6 +48,14 @@ public class Reserve extends BaseEntity {
     @ManyToOne
     @JoinColumn(name ="popup_idx")
     private Popup popup;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     // create
     public static Reserve create(

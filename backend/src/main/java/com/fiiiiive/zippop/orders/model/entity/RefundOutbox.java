@@ -1,8 +1,9 @@
 package com.fiiiiive.zippop.orders.model.entity;
 
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "refund_outbox", uniqueConstraints = @UniqueConstraint(name = "uk_refund_outbox_imp_uid", columnNames = "imp_uid"))
-public class RefundOutbox extends BaseEntity {
+public class RefundOutbox {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
     @Column(name = "imp_uid", nullable = false, length = 100)
@@ -34,6 +35,14 @@ public class RefundOutbox extends BaseEntity {
     private String lastError;
     @Version
     private Long version;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     public static RefundOutbox pending(String impUid, BigDecimal amount, Orders orders) {
         return RefundOutbox.builder().impUid(impUid).amount(amount).orders(orders)

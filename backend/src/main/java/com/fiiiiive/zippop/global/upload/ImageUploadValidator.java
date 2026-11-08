@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.global.upload;
 
-import com.fiiiiive.zippop.global.base.ServerErrorCode;
-import com.fiiiiive.zippop.global.base.ServerException;
+import com.fiiiiive.zippop.global.api.ServerErrorCode;
+import com.fiiiiive.zippop.global.api.ServerException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 

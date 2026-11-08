@@ -1,4 +1,4 @@
-package com.fiiiiive.zippop.global.base;
+package com.fiiiiive.zippop.global.api;
 
 import lombok.Getter;
 

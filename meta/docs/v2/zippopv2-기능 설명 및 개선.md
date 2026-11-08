@@ -146,21 +146,21 @@ sequenceDiagram
 
 ### 두 큐와 생성 시점
 
-예약 슬롯(`Reserve`)마다 `workingUUID`와 `waitingUUID`를 저장하고, 각각 Redis ZSET의 키로 사용합니다. 멤버는 고객 이메일, score는 등록·승격 시각의 밀리초 값입니다. Working은 굿즈 선택·결제에 들어갈 수 있는 접속큐이고, Waiting은 정원이 찼을 때 순번대로 기다리는 대기큐입니다. 정원은 `Reserve.totalPeople`입니다.
+예약 슬롯(`Reserve`)은 `startTime`·`endTime`, `workingUUID`·`waitingUUID`를 저장합니다. `startDate` 필드는 없으며, 두 UUID를 각각 Redis ZSET 키로 사용합니다. 멤버는 고객 이메일, score는 등록·승격 시각의 밀리초 값입니다. Working은 굿즈 선택·결제에 들어갈 수 있는 접속큐이고, Waiting은 정원이 찼을 때 순번대로 기다리는 대기큐입니다. 정원은 `Reserve.totalPeople`입니다.
 
 기업의 `POST /api/v1/reserves`는 팝업 소유권·상태·정원·예약 시간 범위를 확인하고 예약을 저장하면서 팝업 잔여 인원을 차감합니다. DB 커밋 뒤 `afterCommit`에서 두 큐의 `:deadline` 키와 종료 시각의 TTL을 설정합니다. ZSET 본체는 첫 멤버가 들어갈 때 만들어질 수 있습니다. `afterCommit`의 Redis 오류는 로그로만 남으므로 DB 저장과 큐 생성은 하나의 원자적 트랜잭션이 아닙니다. 기업의 예약 삭제도 DB 커밋 뒤 큐를 삭제합니다.
 
 ### 입장과 공정한 순번
 
-고객의 `GET /api/v1/reserves/{reserveIdx}/enrollment`는 예약 시작 이후이면서 종료 전이고, 팝업이 진행 중이며, 예약 정원이 남아 있는지 검사합니다. 먼저 Working의 10분 경과 멤버를 제거하고 현재 고객이 두 큐 중 어디에 있는지 확인합니다. 이미 Working이면 WTOKEN을 재발급하고, Waiting이면 기존 순번을 반환합니다.
+고객의 `GET /api/v1/reserves/{reserveIdx}/enrollment`는 예약 시작 이후이면서 종료 전이고, 팝업이 진행 중이며, 예약 정원이 남아 있는지 검사합니다. 그다음 `ReserveRedisService.enrollWithLock` 한 번으로 기존 멤버 확인, Working의 10분 경과 멤버 정리, 대기자 우선 승격, 신규 등록을 처리합니다. 이미 Working이면 WTOKEN을 발급하고, 이미 Waiting이면 기존 순번을 반환합니다.
 
 새 고객은 `lock:{workingUUID}` Redisson 락(`tryLock` 대기 최대 5초, lease 3초) 아래 `FAIR_ENROLL` Lua 스크립트로 입장합니다. 스크립트는 만료된 Working 멤버를 정리하고, 빈자리가 있으면 기존 Waiting의 앞순번을 먼저 Working으로 옮깁니다. Waiting이 비고 자리가 남을 때만 새 고객을 Working에 넣으며, 그 외에는 Waiting에 넣습니다. 이 ZSET 변경은 스크립트 한 번으로 실행됩니다. Working에 바로 들어간 HTTP 응답은 10분짜리 WTOKEN 쿠키와 Authorization 헤더를 설정합니다. 대기 고객에게는 순번만 반환합니다.
 
 ### 상태 확인과 승격
 
-프론트엔드는 입장 API 호출 뒤 SockJS `/ws`로 STOMP에 연결하고 `/user/queue/reserve/status`를 구독합니다. 접속 직후와 10초마다 `/pub/reserve/status`에 `reserveIdx`를 보내면 서버가 해당 사용자에게 Working·Waiting 인원, 현재 순번, `access`를 보냅니다. STOMP `SEND` 시 세션을 예약 ID와 사용자 이메일에 묶으며, 같은 세션에서 다른 예약으로 바꾸는 요청은 거부합니다. Working 상태와 승격 알림에는 WTOKEN과 `accessExpiresAt`도 포함됩니다. 프론트엔드는 만료 시각에 접속권을 해제하고, 같은 상태의 반복 폴링으로 토스트가 계속 뜨지 않게 처리합니다.
+프론트엔드는 입장 API 호출 뒤 SockJS `/ws`로 STOMP에 연결하고 `/user/queue/reserve/status`를 구독합니다. 접속 직후와 10초마다 `/pub/reserve/status`에 `reserveIdx`를 보내면 서버가 해당 사용자에게 Working·Waiting 인원, 현재 순번, `access`를 보냅니다. `global.security.socket`의 handshake·인증 인터셉터가 접속 사용자를 확인하고, `reserve.infrastructure.stomp.ReserveStompInterceptor`가 예약 메시지 경로를 제한하며 `SEND` 시 `ReserveStompSession.bind`로 세션을 예약 ID와 이메일에 묶습니다. 같은 세션에서 다른 예약으로 바꾸는 요청은 거부합니다. Working 상태와 승격 알림에는 WTOKEN과 `accessExpiresAt`도 포함됩니다. 프론트엔드는 만료 시각에 접속권을 해제하고, 같은 상태의 반복 폴링으로 토스트가 계속 뜨지 않게 처리합니다.
 
-Working 사용자가 취소하거나 마지막 WebSocket 세션이 끊기면 해당 큐에서 제거하고 Waiting의 첫 사용자를 승격시킵니다. 승격은 동일한 Redisson 락과 `PROMOTE` Lua 스크립트로 정원·deadline을 확인하면서 Waiting 제거와 Working 추가를 한 번에 처리합니다. 승격된 고객에게 `/queue/reserve/status`로 `access=1`, WTOKEN, `accessExpiresAt`을 푸시합니다. Waiting 사용자의 이탈은 대기큐에서만 제거합니다. 같은 예약에 대해 소켓이 여러 개라면 마지막 세션이 끊길 때만 이탈 처리합니다.
+HTTP 취소와 마지막 WebSocket 세션 종료는 모두 `ReserveService.leaveQueue`를 호출합니다. Working 사용자는 큐에서 제거하고 Waiting의 첫 사용자를 승격시키며, Waiting 사용자는 대기큐에서만 제거합니다. 승격은 등록과 같은 `lock:{workingUUID}` Redisson 락과 `PROMOTE` Lua 스크립트로 정원·deadline을 확인하면서 Waiting 제거와 Working 추가를 한 번에 처리합니다. 승격된 고객에게 `/queue/reserve/status`로 `access=1`, WTOKEN, `accessExpiresAt`을 푸시합니다. HTTP 취소는 Working에서 나왔을 때 WTOKEN 쿠키를 만료시킵니다. `ReserveStompSession`은 동일 이메일·예약의 마지막 소켓이 끊겼을 때만 큐 이탈을 요청하며, 세션 맵의 삭제·마지막 연결 판정만 동기화합니다. DB 조회와 Redis 처리는 이 잠금 밖에서 실행합니다.
 
 `ReserveScheduler`에는 서울 시간 기준 10초마다 실행되는 큐 관리 작업과 매분 정각에 실행되는 승격 작업이 별도로 있습니다. 큐 관리 작업은 종료된 예약·팝업의 큐 삭제, 진행 중인 예약의 Working 만료자 제거, 누락된 `:deadline` 키 재생성을 맡습니다. 승격 작업은 진행 중인 예약만 조회해 빈자리만큼 Waiting 사용자를 Working으로 옮기고 소켓으로 통지합니다. 두 작업의 실행 순서는 보장되지 않지만 승격 Lua 스크립트도 만료자를 정리하고 deadline을 검사합니다. Redis에서 멤버 데이터 자체가 사라졌다면 기존 순번은 복원하지 못합니다.
 
@@ -183,7 +183,7 @@ Working 사용자가 취소하거나 마지막 WebSocket 세션이 끊기면 해
 | 예약 취소 버튼 | STOMP disconnect 후 enrollment DELETE |
 | `beforeunload` | `keepalive` DELETE |
 | Vue Router guard | 예약 흐름 이탈 시 confirm 후 DELETE |
-| WebSocket DisconnectHandler | 세션에 연결된 예약 한 건을 찾아 마지막 소켓 이탈 시 큐에서 제거·승격 |
+| `ReserveStompSession` 연결 종료 이벤트 | 세션에 연결된 예약 한 건을 찾아 마지막 소켓 이탈 시 `ReserveService.leaveQueue` 호출 |
 | 결제 성공 | 장바구니 삭제 후 enrollment DELETE |
 
 ---
@@ -211,7 +211,7 @@ Working 사용자가 취소하거나 마지막 WebSocket 세션이 끊기면 해
 | 우선순위 | 현재 구현 | 위험 | 권장 방향 |
 | --- | --- | --- | --- |
 | P1 | 일반 취소는 `AFTER_COMMIT`, 생성 실패는 `AFTER_ROLLBACK`으로 환불 | 커밋 후 외부 PG 장애 시 자동 재시도 없음 | outbox + 멱등 재시도 또는 `REFUND_PENDING` 상태 도입 |
-| P1 | 신규 등록·승격은 같은 Redisson 락과 Lua 스크립트로 처리 | 취소·소켓 이탈의 Working 제거와 이후 승격·알림은 하나의 작업으로 묶이지 않음 | 제거와 승격의 실패·중복 상황을 재검증하고 복구 경로 보강 |
+| P1 | 신규 등록·승격은 같은 Redisson 락과 각각의 Lua 스크립트로 처리하며, HTTP 취소·소켓 이탈은 `leaveQueue`를 공유 | Working 멤버 확인·제거와 이후 승격·알림은 별도 호출이므로 중간 실패 시 알림이나 빈자리 처리 지연 가능. 승격 스크립트는 정원을 다시 검사하고 승격 스케줄러가 빈자리를 보충 | 중간 실패의 재시도·상태 재확인 경로 검토 |
 | P1 | WebSocket disconnect 즉시 큐 제거·승격 | 일시적인 네트워크 끊김에도 사용자가 자리를 잃을 수 있음 | 재접속 유예 시간과 heartbeat 기반 만료 정책 도입 |
 | P2 | WTOKEN/JWT 만료와 Working 접속권을 10분으로 설정 | 설정값이 여러 호출부에 분산 | 공통 Duration 설정으로 단일화 |
 | P2 | 스케줄러가 시작된 예약의 누락된 deadline 키를 DB 기준으로 재생성 | Redis 멤버 데이터가 소실되면 기존 대기 순서는 복원 불가 | 필요 시 큐 이벤트 영속화 또는 Redis AOF 운영 정책 명시 |
@@ -249,7 +249,7 @@ Working 사용자가 취소하거나 마지막 WebSocket 세션이 끊기면 해
 | 성공 코드 | 6015, 7008 등 Enum 코드가 중복되고 기업 예약 목록이 취소 메시지를 사용 | 소비자는 `code`만으로 세부 행위를 구분하지 말 것 |
 | 대기자 승격 | enrollment·승격의 ZSET 변경은 같은 Redisson 락 아래 각각 Lua 스크립트로 실행 | 이탈자의 Working 제거와 승격·소켓 통지는 별도 단계이므로 실패 시 재점검 필요 |
 | 주문 취소 환불 | 정상 취소는 `AFTER_COMMIT`, 생성 실패는 `AFTER_ROLLBACK`에서 환불 | 커밋 후 PG 장애에 대한 outbox·멱등 재시도 없음 |
-| 소켓 이탈 | DisconnectHandler가 즉시 큐 제거·다음 대기자를 승격 | 일시적 네트워크 단절에도 자리를 잃을 수 있어 재접속 유예 정책 권장 |
+| 소켓 이탈 | `ReserveStompSession`이 마지막 연결 종료 시 `ReserveService.leaveQueue`를 호출 | 일시적 네트워크 단절에도 자리를 잃을 수 있어 재접속 유예 정책 권장 |
 | Page 직렬화 | `PageImpl`을 직접 응답 | 외부 API 안정성을 위해 DTO/PagedModel 고정 권장 |
 
 ### 원본 검증 기록

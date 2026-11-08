@@ -1,6 +1,6 @@
 package com.fiiiiive.zippop.global.security.socket;
 
-import com.fiiiiive.zippop.global.base.ServerErrorCode;
+import com.fiiiiive.zippop.global.api.ServerErrorCode;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.*;

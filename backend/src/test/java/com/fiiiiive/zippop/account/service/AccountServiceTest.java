@@ -12,7 +12,7 @@ import com.fiiiiive.zippop.account.model.entity.Customer;
 import com.fiiiiive.zippop.account.repository.AccountRepository;
 import com.fiiiiive.zippop.account.repository.CompanyRepository;
 import com.fiiiiive.zippop.account.repository.CustomerRepository;
-import com.fiiiiive.zippop.global.base.ServiceException;
+import com.fiiiiive.zippop.global.api.ServiceException;
 import com.fiiiiive.zippop.account.model.enums.RoleType;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;

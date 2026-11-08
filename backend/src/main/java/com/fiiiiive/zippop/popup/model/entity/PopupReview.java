@@ -1,20 +1,23 @@
 package com.fiiiiive.zippop.popup.model.entity;
 
 import com.fiiiiive.zippop.account.model.entity.Customer;
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.popup.model.dto.GetPopupReviewRes;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Page;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class PopupReview extends BaseEntity {
+public class PopupReview {
 
     // Column
     @Id
@@ -51,6 +54,14 @@ public class PopupReview extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "popup_idx")
     private Popup popup;
+
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     // create
     public static PopupReview create(

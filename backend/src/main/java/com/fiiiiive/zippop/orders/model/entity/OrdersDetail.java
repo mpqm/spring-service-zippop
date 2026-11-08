@@ -1,12 +1,14 @@
 package com.fiiiiive.zippop.orders.model.entity;
 
-import com.fiiiiive.zippop.global.base.BaseEntity;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.orders.model.dto.GetOrdersDetailRes;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +18,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class OrdersDetail extends BaseEntity {
+public class OrdersDetail {
+
     // Column
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +49,13 @@ public class OrdersDetail extends BaseEntity {
     @JoinColumn(name = "goods_idx")
     private Goods goods;
 
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(insertable = false)
+    private LocalDateTime updatedAt;
 
     public static OrdersDetail create(Orders orders, Goods goods, Integer quantity) {
         return create(orders, goods, quantity, goods.getPrice(), goods.getName());

@@ -1,9 +1,11 @@
 package com.fiiiiive.zippop.popup.model;
 
-import com.fiiiiive.zippop.global.base.InputValidationException;
+import com.fiiiiive.zippop.global.api.ServiceErrorCode;
+import com.fiiiiive.zippop.global.api.ServiceException;
 import com.fiiiiive.zippop.goods.model.entity.Goods;
 import com.fiiiiive.zippop.goods.model.enums.GoodsStatus;
 import com.fiiiiive.zippop.popup.model.entity.Popup;
+import com.fiiiiive.zippop.popup.model.dto.CreatePopupReq;
 import com.fiiiiive.zippop.popup.model.dto.UpdatePopupReq;
 import com.fiiiiive.zippop.popup.model.enums.PopupStatus;
 import com.fiiiiive.zippop.reserve.model.entity.Reserve;
@@ -16,9 +18,20 @@ import static org.assertj.core.api.Assertions.*;
 class PopupLifecycleTest {
     private final LocalDate today = LocalDate.now();
 
-    @Test void reversedPopupDatesAreRejected() {
-        assertThatThrownBy(() -> Popup.create("company@example.test", "Popup", "Content", "Address", "Food",
-                1, today.plusDays(1), today, null)).isInstanceOf(InputValidationException.class);
+    @Test void reversedPopupDatesAreRejectedByRequestValidation() {
+        CreatePopupReq request = CreatePopupReq.builder()
+                .popupName("Popup")
+                .popupContent("Content")
+                .popupAddress("Address")
+                .category("Food")
+                .totalPeople(1)
+                .popupStartDate(today.plusDays(1))
+                .popupEndDate(today)
+                .build();
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            assertThat(factory.getValidator().validate(request))
+                    .anySatisfy(violation -> assertThat(violation.getPropertyPath().toString()).isEqualTo("validDateRange"));
+        }
     }
 
     @Test void zeroRemainingCapacityIsAValidPersistedValue() {
@@ -37,6 +50,8 @@ class PopupLifecycleTest {
                 .endTime(today.plusDays(2).atStartOfDay()).build();
         Popup popup = Popup.builder().reserveList(List.of(reserve)).build();
         var request = UpdatePopupReq.builder().popupStartDate(today).popupEndDate(today).build();
-        assertThatThrownBy(() -> popup.update(request)).isInstanceOf(InputValidationException.class);
+        assertThatThrownBy(() -> popup.update(request))
+                .isInstanceOfSatisfying(ServiceException.class, exception ->
+                        assertThat(exception.getErrorCode()).isEqualTo(ServiceErrorCode.STORE_UPDATE_FAIL_INVALID_PERIOD));
     }
 }

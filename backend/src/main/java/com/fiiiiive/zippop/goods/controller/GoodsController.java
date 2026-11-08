@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.goods.controller;
 
 
-import com.fiiiiive.zippop.global.base.SuccessCode;
-import com.fiiiiive.zippop.global.base.SuccessResponse;
+import com.fiiiiive.zippop.global.api.SuccessCode;
+import com.fiiiiive.zippop.global.api.SuccessResponse;
 import com.fiiiiive.zippop.global.security.normal.CustomUserDetails;
 import com.fiiiiive.zippop.global.upload.FileUploadService;
 import com.fiiiiive.zippop.goods.model.dto.CreateGoodsReq;

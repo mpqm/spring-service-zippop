@@ -1,8 +1,8 @@
 package com.fiiiiive.zippop.account.infrastructure.mail;
 
 import com.fiiiiive.zippop.account.model.enums.RoleType;
-import com.fiiiiive.zippop.global.base.ServerErrorCode;
-import com.fiiiiive.zippop.global.base.ServerException;
+import com.fiiiiive.zippop.global.api.ServerErrorCode;
+import com.fiiiiive.zippop.global.api.ServerException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;

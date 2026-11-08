@@ -1,7 +1,7 @@
 package com.fiiiiive.zippop.reserve.service;
 
-import com.fiiiiive.zippop.global.base.ServerErrorCode;
-import com.fiiiiive.zippop.global.base.ServerException;
+import com.fiiiiive.zippop.global.api.ServerErrorCode;
+import com.fiiiiive.zippop.global.api.ServerException;
 import com.fiiiiive.zippop.reserve.infrastructure.redis.ReserveRedisService;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RLock;
